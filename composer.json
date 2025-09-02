@@ -1,7 +1,7 @@
 {
-  "name": "laravel/laravel",
+  "name": "n3xt0r/dashclip-delivery",
   "type": "project",
-  "description": "The skeleton application for the Laravel framework.",
+  "description": "Video distribution with dedup (SHA-256), channel quotas, signed expiring links (single/ZIP + info.csv), download tracking, ffmpeg previews, live ZIP progress via WebSockets, and Filament admin.",
   "keywords": [
     "laravel",
     "framework"
@@ -11,7 +11,7 @@
     "php": "^8.4",
     "ext-intl": "*",
     "ext-zip": "*",
-    "devonab/filament-easy-footer": "^2.0",
+    "devonab/filament-easy-footer": "dev-filament-v4",
     "filament/filament": "^4.0",
     "gboquizosanchez/filament-log-viewer": "^2.0.0",
     "laravel/framework": "^12.0",
@@ -88,5 +88,11 @@
     }
   },
   "minimum-stability": "stable",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "repositories": {
+    "filament-easy-footer": {
+      "type": "vcs",
+      "url": "https://github.com/N3XT0R/filament-easy-footer"
+    }
+  }
 }
