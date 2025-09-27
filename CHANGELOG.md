@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The Filament v4 upgrade may require adjustments to custom admin pages, widgets, or themes.
 
+### [2.1.3] - 2025-09-27
+
+### Security
+
+- Updated npm dependencies to resolve vulnerabilities (1 high, 1 low).
+- Ensured compatibility with `laravel-echo@2.2.0` (requires Node >=20).
+
 ## [2.1.2] - 2025-08-25
 
 ### Fixed
