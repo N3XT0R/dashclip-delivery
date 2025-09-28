@@ -127,5 +127,6 @@ return [
 
     'footer' => [
         'roadmap' => 'https://github.com/users/N3XT0R/projects/11/views/1',
+        'issues' => 'https://github.com/N3XT0R/dashclip-delivery/issues/new',
     ],
 ];
