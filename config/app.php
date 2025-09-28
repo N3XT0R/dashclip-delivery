@@ -125,4 +125,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'footer' => [
+        'roadmap' => 'https://github.com/users/N3XT0R/projects/11/views/1',
+    ],
 ];
