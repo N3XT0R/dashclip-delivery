@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2025-09-30
+
+### Added
+
+- New Blade component `<x-video-card>` including dedicated view for consistent video presentation.
+- Extracted video card logic from overview pages into the new component.
+- Display of `picked_up` assignments at the end of the overview.
+
+### Changed
+
+- Unified clip info layout:
+    - Role, time range, and submitter are now shown in a column layout.
+    - Notes are displayed in a separate row below the clip info.
+    - Submitter names now appear on their own line to avoid layout breaking with longer strings.
+
+### Fixed
+
+- Download link validation bug:
+    - Token validation now respects the case where `download_token` is only set when tracking is enabled.
+    - For logged-in Filament users, token validation is skipped.
+
 ## [2.3.0] - 2025-09-28
 
 ### Added
