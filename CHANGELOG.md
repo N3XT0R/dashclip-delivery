@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New Blade component `<x-video-card>` including dedicated view for consistent video presentation.
 - Extracted video card logic from overview pages into the new component.
 - Display of `picked_up` assignments at the end of the overview.
+- Extended test coverage:
+    - OfferController tests now cover rendering and handling of `picked_up` assignments.
+    - AssignmentDownloadController tests now include validation cases and a happy-path for streaming.
+    - New test ensuring authenticated Filament users can bypass token validation.
 
 ### Changed
 
