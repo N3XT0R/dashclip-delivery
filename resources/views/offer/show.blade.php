@@ -1,5 +1,5 @@
 @php
-    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Facades\Storage;use Illuminate\Support\Number;
 @endphp
 
 @extends('layouts.app')
@@ -41,13 +41,16 @@
                 <h3 style="margin:18px 2px;">Gruppe: {{ $bundle }}</h3>
                 <div class="grid">
                     @foreach($group as $a)
-                        @php($v = $a->video)
+                        @php
+                            $v = $a->video;
+                        @endphp
                         <div class="card">
                             <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer;">
                                 <input type="checkbox" name="assignment_ids[]" value="{{ $a->id }}" class="pickbox"
                                        style="margin-top:6px;">
                                 <div style="flex:1;">
-                                    <div class="file-name" style="font-weight:600; margin-bottom:6px; word-break: break-word; overflow: hidden; display:-webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis;">
+                                    <div class="file-name"
+                                         style="font-weight:600; margin-bottom:6px; word-break: break-word; overflow: hidden; display:-webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis;">
                                         {{ $v->original_name ?: basename($v->path) }}
                                     </div>
                                     <video class="thumb"
@@ -57,7 +60,7 @@
                                            controls playsinline></video>
 
                                     <div class="muted" style="margin-top:6px;">
-                                        {{ number_format(($v->bytes ?? 0)/1048576,1) }} MB
+                                        {{ Number::fileSize($v->bytes) }}
                                     </div>
 
                                     {{-- Clip-Infos inkl. submitted_by --}}
@@ -111,5 +114,25 @@
                 <span class="muted" id="selCount" style="align-self:center;">0 ausgewählt</span>
             </div>
         </form>
+    @endif
+    <hr class="muted-separator">
+    @if($pickedUp->isNotEmpty())
+        <h2 style="margin-bottom:12px;">Bereits heruntergeladen</h2>
+
+        @php
+            $byBundlePicked = $pickedUp->groupBy(function($a){
+              $firstClip = optional($a->video->clips->first());
+              return ($firstClip && $firstClip->bundle_key) ? $firstClip->bundle_key : 'Einzeln';
+            });
+        @endphp
+
+        @foreach($byBundlePicked as $bundle => $group)
+            <h3 style="margin:18px 2px;">Gruppe: {{ $bundle }}</h3>
+            <div class="grid">
+                @foreach($group as $assignment)
+                    <x-video-card :assignment="$assignment" :disabled="true"/>
+                @endforeach
+            </div>
+        @endforeach
     @endif
 @endsection

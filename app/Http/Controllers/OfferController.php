@@ -24,12 +24,12 @@ class OfferController extends Controller
             ->fetchPending($batch, $channel)
             ->loadMissing('video.clips');
 
-        foreach ($items as $assignment) {
-            $assignment->temp_url = $this->assignments->prepareDownload(
-                assignment: $assignment,
-                skipTracking: Filament::auth()?->check() === true
-            );
-        }
+        $pickedUp = $this->assignments
+            ->fetchPickedUp($batch, $channel)
+            ->loadMissing('video.clips');
+
+        $this->addTempUrlToAssignments($items);
+        $this->addTempUrlToAssignments($pickedUp);
 
         /**
          * @var LinkService $linkService
@@ -37,7 +37,19 @@ class OfferController extends Controller
         $linkService = app(LinkService::class);
         $zipPostUrl = $linkService->getZipSelectedUrl($batch, $channel, now()->addHours(6));
 
-        return view('offer.show', compact('batch', 'channel', 'items', 'zipPostUrl'));
+        return view('offer.show', compact('batch', 'channel', 'items', 'zipPostUrl', 'pickedUp'));
+    }
+
+    protected function addTempUrlToAssignments(Collection $items): void
+    {
+        $isAuthenticated = Filament::auth()?->check();
+
+        foreach ($items as $assignment) {
+            $assignment->temp_url = $this->assignments->prepareDownload(
+                assignment: $assignment,
+                skipTracking: $isAuthenticated === true
+            );
+        }
     }
 
     public function showUnused(Request $req, Batch $batch, Channel $channel)
