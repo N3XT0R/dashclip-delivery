@@ -7,13 +7,18 @@ namespace App\Services\Mail\Scanner\Handlers;
 use App\Enum\MailStatus;
 use App\Mail\NoReplyFAQMail;
 use App\Models\MailLog;
-use App\Services\Mail\Scanner\Contracts\MessageHandlerInterface;
+use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Webklex\PHPIMAP\Message;
 
-class ReplyHandler implements MessageHandlerInterface
+class ReplyHandler implements MessageStrategyInterface
 {
+    public function matches(Message $message): bool
+    {
+        return $message->getInReplyTo() !== null;
+    }
+
     public function handle(Message $message): void
     {
         $from = $message->getFrom()[0]->mail ?? '';

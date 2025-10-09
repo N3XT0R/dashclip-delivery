@@ -6,12 +6,19 @@ namespace App\Services\Mail\Scanner\Handlers;
 
 use App\Enum\MailStatus;
 use App\Models\MailLog;
-use App\Services\Mail\Scanner\Contracts\MessageHandlerInterface;
+use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use Illuminate\Support\Facades\Log;
 use Webklex\PHPIMAP\Message;
 
-class BounceHandler implements MessageHandlerInterface
+class BounceHandler implements MessageStrategyInterface
 {
+
+    public function matches(Message $message): bool
+    {
+        $subject = $message->getSubject() ?? '';
+        return preg_match('/(Mail Delivery Failed|Undeliverable)/i', $subject) === 1;
+    }
+
     public function handle(Message $message): void
     {
         $body = $message->getTextBody() ?? '';

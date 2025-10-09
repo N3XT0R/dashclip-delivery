@@ -6,7 +6,9 @@ namespace App\Services\Mail\Scanner\Contracts;
 
 use Webklex\PHPIMAP\Message;
 
-interface MessageTypeDetectorInterface
+interface MessageStrategyInterface
 {
     public function matches(Message $message): bool;
+
+    public function handle(Message $message): void;
 }

@@ -51,8 +51,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(MailReplyScanner::class, function () {
             return new MailReplyScanner([
-                new BounceDetector(),
-                new ReplyDetector(),
                 new BounceHandler(),
                 new ReplyHandler(),
             ]);

@@ -14,7 +14,7 @@ use Webklex\PHPIMAP\Message;
 class MailReplyScanner
 {
     /** @param  MessageHandlerInterface  $handlers */
-    public function __construct(private iterable $handlers)
+    public function __construct(private readonly iterable $handlers)
     {
     }
 
@@ -27,8 +27,8 @@ class MailReplyScanner
     {
         $client = Client::account($account);
         $client->connect();
-
         $messages = $client->getFolder('INBOX')?->messages()->unseen()->get();
+
 
         foreach ($messages as $message) {
             try {
@@ -43,7 +43,7 @@ class MailReplyScanner
     private function dispatch(Message $message): void
     {
         if ($this->shouldIgnore($message)) {
-            $message->setFlag('Seen');
+            //$message->setFlag('Seen');
             return;
         }
 
@@ -52,15 +52,16 @@ class MailReplyScanner
                 $handler instanceof MessageTypeDetectorInterface &&
                 $handler instanceof MessageHandlerInterface;
 
+
+            dump(get_class($handler));
+
             /**
              * @var MessageTypeDetectorInterface&MessageHandlerInterface $handler
              */
             if ($isValidHandler && $handler->matches($message)) {
                 $handler->handle($message);
-                return;
             }
         }
-
-        $message->setFlag('Seen');
+        //$message->setFlag('Seen');
     }
 }
