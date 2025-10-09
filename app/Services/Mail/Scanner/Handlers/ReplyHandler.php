@@ -26,13 +26,11 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
         $inReplyTo = $message->getInReplyTo()->toString();
 
         if (!$inReplyTo) {
-            $message->setFlag('Seen');
             return;
         }
 
         $log = MailLog::where('message_id', 'like', '%'.$inReplyTo.'%')->first();
         if (!$log) {
-            $message->setFlag('Seen');
             return;
         }
 
@@ -50,5 +48,5 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
     {
         return 'Processed/Replies';
     }
-    
+
 }
