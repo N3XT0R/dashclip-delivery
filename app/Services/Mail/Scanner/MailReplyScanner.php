@@ -28,6 +28,7 @@ class MailReplyScanner
     {
         if (!$client->getFolder($path)) {
             $client->createFolder($path);
+            Log::info('Folder '.$path.' created');
         }
     }
 
@@ -35,8 +36,6 @@ class MailReplyScanner
     {
         $client = Client::account($account);
         $client->connect();
-        $this->createFolder($client);
-
         $messages = $client->getFolder('INBOX')?->messages()->unseen()->get();
 
 
