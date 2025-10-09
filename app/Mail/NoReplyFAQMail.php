@@ -37,6 +37,9 @@ class NoReplyFAQMail extends Mailable
     {
         return new Content(
             view: 'emails.no_reply_faq',
+            with: [
+                'subject' => $this->envelope()->subject,
+            ],
         );
     }
 
