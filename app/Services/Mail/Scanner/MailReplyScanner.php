@@ -53,6 +53,7 @@ class MailReplyScanner
     {
         if ($this->shouldIgnore($message)) {
             //$message->setFlag('Seen');
+            Log::info('Message '.$message->getMessageId()->toString().' was ignored');
             return;
         }
 
