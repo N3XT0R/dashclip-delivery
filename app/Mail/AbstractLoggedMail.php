@@ -55,7 +55,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
                 // verhindert Schleifen, v. a. bei Outlook / Exchange
                 'X-Auto-Response-Suppress' => 'All',
                 // Easter egg header for the curious ones
-                'X-Egg' => 'If you are reading this, you are probably too curious',
+                'X-System-Meta' => 'trace-id='.bin2hex(random_bytes(4)).'; note="If you are reading this, you are way too curious"',
             ],
         );
     }
