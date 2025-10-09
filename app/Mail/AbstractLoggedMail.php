@@ -72,7 +72,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
 
     protected function generateMessageId(): string
     {
-        // Try to determine the actual sender domain first
+        // Determine domain
         $mailFrom = config('mail.from.address');
         $domain = $mailFrom && str_contains($mailFrom, '@')
             ? substr(strrchr($mailFrom, '@'), 1)
@@ -81,7 +81,8 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
         // RFC-compliant unique part for the Message-ID local section
         $unique = bin2hex(random_bytes(16));
 
-        return sprintf('<%s@%s>', $unique, $domain);
+        // Important: return without angle brackets — Symfony adds them automatically
+        return sprintf('%s@%s', $unique, $domain);
     }
 
 

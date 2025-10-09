@@ -34,7 +34,10 @@ class LogSentMail
             'internal_id' => $appId,
             'to' => $to,
             'subject' => $message->getSubject(),
-            'meta' => ['headers' => $message->getHeaders()->toString()],
+            'meta' => [
+                'headers' => $message->getHeaders()->toArray(),
+                'content' => $message->getHtmlBody(),
+            ],
         ]);
     }
 }
