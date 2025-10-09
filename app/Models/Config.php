@@ -44,7 +44,7 @@ class Config extends Model
      */
     protected static function booted(): void
     {
-        static::saving(function (Config $config): void {
+        static::saving(static function (Config $config): void {
             // Determine type and read the raw value (avoid accessor recursion)
             $type = $config->cast_type ?? 'string';
             $raw = $config->attributes['value'] ?? null;

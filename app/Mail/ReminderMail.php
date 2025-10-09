@@ -6,11 +6,11 @@ use App\Facades\Cfg;
 use App\Models\Channel;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 
-class ReminderMail extends Mailable
+class ReminderMail extends AbstractLoggedMail
 {
     use Queueable, SerializesModels;
 
@@ -22,6 +22,42 @@ class ReminderMail extends Mailable
     ) {
     }
 
+    protected function viewName(): string
+    {
+        return 'emails.reminder';
+    }
+
+    public function envelope(): Envelope
+    {
+        $mailTo = (string)Cfg::get('email_admin_mail', 'email');
+        $notification = (bool)Cfg::get('email_get_bcc_notification', 'email');
+
+        $bcc = [];
+        if ($notification && !empty($mailTo)) {
+            $bcc[] = $mailTo;
+        }
+
+        return new Envelope(
+            bcc: $bcc,
+            subject: 'Erinnerung: Angebote laufen bald ab',
+        );
+    }
+
+    protected function viewData(): array
+    {
+        return [
+            'channel' => $this->channel,
+            'offerUrl' => $this->offerUrl,
+            'expiresAt' => $this->expiresAt,
+            'assignments' => $this->assignments,
+        ];
+    }
+
+
+    /**
+     * @return ReminderMail
+     * @deprecated Use envelope() and content() instead.
+     */
     public function build(): ReminderMail
     {
         $mailTo = (string)Cfg::get('email_admin_mail', 'email');

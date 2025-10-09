@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f2b005454dee78d11d6f1ca8562eaf0",
+    "content-hash": "67a5565a2081f0805e83c41a1da1bb68",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -71,65 +71,6 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.4"
             },
             "time": "2025-07-30T15:45:57+00:00"
-        },
-        {
-            "name": "aws/aws-php-sns-message-validator",
-            "version": "1.10.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/aws/aws-php-sns-message-validator.git",
-                "reference": "d92d199179cbbf4d99601d4f23f61b9b8cc5da28"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-php-sns-message-validator/zipball/d92d199179cbbf4d99601d4f23f61b9b8cc5da28",
-                "reference": "d92d199179cbbf4d99601d4f23f61b9b8cc5da28",
-                "shasum": ""
-            },
-            "require": {
-                "ext-openssl": "*",
-                "php": ">=8.1",
-                "psr/http-message": "^2.0"
-            },
-            "require-dev": {
-                "guzzlehttp/psr7": "^2.4.5",
-                "phpunit/phpunit": "^5.6.3 || ^8.5 || ^9.5",
-                "squizlabs/php_codesniffer": "^2.3",
-                "yoast/phpunit-polyfills": "^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Aws\\Sns\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Amazon Web Services",
-                    "homepage": "http://aws.amazon.com"
-                }
-            ],
-            "description": "Amazon SNS message validation for PHP",
-            "homepage": "http://aws.amazon.com/sdkforphp",
-            "keywords": [
-                "SNS",
-                "amazon",
-                "aws",
-                "cloud",
-                "message",
-                "sdk",
-                "webhooks"
-            ],
-            "support": {
-                "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
-                "issues": "https://github.com/aws/aws-sns-message-validator/issues",
-                "source": "https://github.com/aws/aws-php-sns-message-validator/tree/1.10.0"
-            },
-            "time": "2025-03-05T22:22:58+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -9098,90 +9039,6 @@
             "time": "2025-09-11T10:12:26+00:00"
         },
         {
-            "name": "tapp/filament-maillog",
-            "version": "v1.0.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/TappNetwork/filament-maillog.git",
-                "reference": "b6050aa0785d56ee0ebe429e5f928fa2bb227edc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/TappNetwork/filament-maillog/zipball/b6050aa0785d56ee0ebe429e5f928fa2bb227edc",
-                "reference": "b6050aa0785d56ee0ebe429e5f928fa2bb227edc",
-                "shasum": ""
-            },
-            "require": {
-                "aws/aws-php-sns-message-validator": "^1.10",
-                "illuminate/contracts": "^10.0||^11.0||^12.0",
-                "php": "^8.2",
-                "spatie/laravel-package-tools": "^1.16"
-            },
-            "require-dev": {
-                "larastan/larastan": "^2.9||^3.0",
-                "laravel/pint": "^1.14",
-                "nunomaduro/collision": "^8.1.1||^7.10.0",
-                "orchestra/testbench": "^10.0.0||^9.0.0||^8.22.0",
-                "pestphp/pest": "^3.0||^2.34",
-                "pestphp/pest-plugin-arch": "^3.0||^2.7",
-                "pestphp/pest-plugin-laravel": "^3.0||^2.3",
-                "phpstan/extension-installer": "^1.3||^2.0",
-                "phpstan/phpstan-deprecation-rules": "^1.1||^2.0",
-                "phpstan/phpstan-phpunit": "^1.3||^2.0",
-                "spatie/laravel-ray": "^1.35"
-            },
-            "suggest": {
-                "filament/filament": "^3.0-stable - Adds Filament admin panel integration"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "FilamentMailLog": "Tapp\\FilamentMailLog\\Facades\\FilamentMailLog"
-                    },
-                    "providers": [
-                        "Tapp\\FilamentMailLog\\FilamentMailLogServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Tapp\\FilamentMailLog\\": "src/",
-                    "Tapp\\FilamentMailLog\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Steve Williamson",
-                    "email": "steve@tappnetwork.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Filament plugin to view outgoing mail",
-            "homepage": "https://github.com/tapp/filament-maillog",
-            "keywords": [
-                "filament-maillog",
-                "laravel",
-                "maillog",
-                "tapp network"
-            ],
-            "support": {
-                "issues": "https://github.com/TappNetwork/filament-maillog/issues",
-                "source": "https://github.com/TappNetwork/filament-maillog/tree/v1.0.8"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/TappNetwork",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-06-19T00:50:43+00:00"
-        },
-        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "v2.3.0",
             "source": {
@@ -9393,6 +9250,164 @@
                 }
             ],
             "time": "2024-11-21T01:49:47+00:00"
+        },
+        {
+            "name": "webklex/laravel-imap",
+            "version": "6.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Webklex/laravel-imap.git",
+                "reference": "57609df58c2f4ef625e4d90a47d8615cfb15f925"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Webklex/laravel-imap/zipball/57609df58c2f4ef625e4d90a47d8615cfb15f925",
+                "reference": "57609df58c2f4ef625e4d90a47d8615cfb15f925",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=6.0.0",
+                "php": "^8.0.2",
+                "webklex/php-imap": "^6.2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Client": "Webklex\\IMAP\\Facades\\Client"
+                    },
+                    "providers": [
+                        "Webklex\\IMAP\\Providers\\LaravelServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webklex\\IMAP\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Malte Goldenbaum",
+                    "email": "github@webklex.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel IMAP client",
+            "homepage": "https://github.com/webklex/laravel-imap",
+            "keywords": [
+                "idle",
+                "imap",
+                "laravel",
+                "laravel-imap",
+                "mail",
+                "oauth",
+                "pop3",
+                "webklex"
+            ],
+            "support": {
+                "issues": "https://github.com/Webklex/laravel-imap/issues",
+                "source": "https://github.com/Webklex/laravel-imap/tree/6.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.buymeacoffee.com/webklex",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://ko-fi.com/webklex",
+                    "type": "ko_fi"
+                }
+            ],
+            "time": "2025-04-25T06:06:46+00:00"
+        },
+        {
+            "name": "webklex/php-imap",
+            "version": "6.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Webklex/php-imap.git",
+                "reference": "6b8ef85d621bbbaf52741b00cca8e9237e2b2e05"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Webklex/php-imap/zipball/6b8ef85d621bbbaf52741b00cca8e9237e2b2e05",
+                "reference": "6b8ef85d621bbbaf52741b00cca8e9237e2b2e05",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "ext-iconv": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "ext-zip": "*",
+                "illuminate/pagination": ">=5.0.0",
+                "nesbot/carbon": "^2.62.1|^3.2.4",
+                "php": "^8.0.2",
+                "symfony/http-foundation": ">=2.8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5.10"
+            },
+            "suggest": {
+                "symfony/mime": "Recomended for better extension support",
+                "symfony/var-dumper": "Usefull tool for debugging"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "6.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webklex\\PHPIMAP\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Malte Goldenbaum",
+                    "email": "github@webklex.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP IMAP client",
+            "homepage": "https://github.com/webklex/php-imap",
+            "keywords": [
+                "imap",
+                "mail",
+                "php-imap",
+                "pop3",
+                "webklex"
+            ],
+            "support": {
+                "issues": "https://github.com/Webklex/php-imap/issues",
+                "source": "https://github.com/Webklex/php-imap/tree/6.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.buymeacoffee.com/webklex",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://ko-fi.com/webklex",
+                    "type": "ko_fi"
+                }
+            ],
+            "time": "2025-04-25T06:02:37+00:00"
         },
         {
             "name": "webmozart/assert",

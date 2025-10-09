@@ -8,6 +8,11 @@ use App\Services\ConfigService;
 use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
+use App\Services\Mail\Scanner\Detectors\BounceDetector;
+use App\Services\Mail\Scanner\Detectors\ReplyDetector;
+use App\Services\Mail\Scanner\Handlers\BounceHandler;
+use App\Services\Mail\Scanner\Handlers\ReplyHandler;
+use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -28,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerRefreshTokenProvider();
         $this->registerZip();
+        $this->registerMail();
     }
 
     protected function registerConfig(): void
@@ -39,6 +45,16 @@ class AppServiceProvider extends ServiceProvider
     protected function registerZip(): void
     {
         $this->app->bind(UnzipServiceInterface::class, UnzipService::class);
+    }
+
+    protected function registerMail(): void
+    {
+        $this->app->singleton(MailReplyScanner::class, function () {
+            return new MailReplyScanner([
+                new BounceHandler(),
+                new ReplyHandler(),
+            ]);
+        });
     }
 
     protected function registerRefreshTokenProvider(): void
