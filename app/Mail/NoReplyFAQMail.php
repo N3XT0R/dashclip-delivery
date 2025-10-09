@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
 class NoReplyFAQMail extends Mailable implements ShouldQueue
@@ -29,6 +30,15 @@ class NoReplyFAQMail extends Mailable implements ShouldQueue
         return new Envelope(
             subject: 'Automatische Antwort – bitte nicht direkt antworten',
         );
+    }
+
+    public function headers(): Headers
+    {
+        return new Headers(text: [
+            // RFC 3834 (Auto-Reply)
+            'Auto-Submitted' => 'auto-replied',
+            'X-Auto-Response-Suppress' => 'All',
+        ]);
     }
 
     /**

@@ -21,6 +21,8 @@ class LogSentMail
             return;
         }
 
+        file_put_contents('test.log', print_r($headers->getNames(), true));
+
         MailLog::create([
             'message_id' => $headers->getHeaderBody('Message-ID'),
             'to' => $to,

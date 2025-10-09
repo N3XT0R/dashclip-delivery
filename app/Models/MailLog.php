@@ -11,6 +11,8 @@ class MailLog extends Model
 {
     protected $fillable = [
         'message_id',
+        'transport_id',
+        'internal_id',
         'to',
         'subject',
         'status',
