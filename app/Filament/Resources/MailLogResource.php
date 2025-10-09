@@ -12,7 +12,7 @@ class MailLogResource extends Resource
 {
     protected static ?string $model = MailLog::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'System';
     protected static ?string $label = 'Mail Log';
 
