@@ -18,6 +18,14 @@ class MailReplyScanner
     {
     }
 
+    private function shouldIgnore(Message $message): bool
+    {
+        $headers = $message->getHeader();
+        $autoSubmitted = $headers?->get('Auto-Submitted')->toString();
+
+        return $autoSubmitted && stripos($autoSubmitted, 'auto-replied') !== false;
+    }
+
     public function scan(?string $account = null): void
     {
         $client = Client::account($account);
@@ -37,6 +45,11 @@ class MailReplyScanner
 
     private function dispatch(Message $message): void
     {
+        if ($this->shouldIgnore($message)) {
+            $message->setFlag('Seen');
+            return;
+        }
+        
         foreach ($this->handlers as $handler) {
             $isValidHandler =
                 $handler instanceof MessageTypeDetectorInterface &&
