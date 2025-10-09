@@ -64,7 +64,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
             // verhindert Schleifen, v. a. bei Outlook / Exchange
             $header['X-Auto-Response-Suppress'] = 'All';
         } else {
-            // RFC 3834-konform (Auto-Reply)
+            // RFC 3834-konform (Auto-generated)
             $header['Auto-Submitted'] = 'auto-generated';
         }
         return new Headers(
