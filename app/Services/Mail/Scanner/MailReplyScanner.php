@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Mail\Scanner;
 
 use App\Services\Mail\Scanner\Contracts\MessageHandlerInterface;
+use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use App\Services\Mail\Scanner\Contracts\MessageTypeDetectorInterface;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -48,17 +49,7 @@ class MailReplyScanner
         }
 
         foreach ($this->handlers as $handler) {
-            $isValidHandler =
-                $handler instanceof MessageTypeDetectorInterface &&
-                $handler instanceof MessageHandlerInterface;
-
-
-            dump(get_class($handler));
-
-            /**
-             * @var MessageTypeDetectorInterface&MessageHandlerInterface $handler
-             */
-            if ($isValidHandler && $handler->matches($message)) {
+            if ($handler instanceof MessageStrategyInterface && $handler->matches($message)) {
                 $handler->handle($message);
             }
         }
