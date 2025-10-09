@@ -16,21 +16,36 @@ return new class extends Migration {
             'content' => '# Häufige Fragen (FAQ)
 
 ## Muss ich auf diese Mail antworten?
-Nein. Du musst hier nicht antworten.  
-Das System erkennt automatisch, welche Videos du heruntergeladen hast und welche nicht.
+Nein, du musst hier **nicht** antworten.  
+Das System erkennt automatisch, welche Videos du bereits heruntergeladen hast und welche nicht.
+
+---
 
 ## Wo sehe ich, welche Videos ich schon abgeholt habe?
-In der Angebotsübersicht siehst du bereits heruntergeladene Videos ausgegraut.  
+In der Angebotsübersicht siehst du bereits heruntergeladene Videos **ausgegraut**.  
 So hast du jederzeit den Überblick, was du schon genutzt hast.
 
+---
+
 ## Was passiert, wenn ich ein Video nicht brauche?
-Du musst keine Rückmeldung geben.  
-Wenn du ein Video **nicht herunterlädst**, wird es beim nächsten Lauf automatisch wieder freigegeben und anderen Kanälen angeboten.  
-Alternativ kannst du Videos auch aktiv in der Angebotsübersicht zurückgeben, wenn du sofort klarstellen willst, dass du sie nicht brauchst.
+Du musst **keine Rückmeldung** geben.  
+Wenn du ein Video **nicht herunterlädst**, wird es beim nächsten Lauf automatisch wieder freigegeben  
+und anderen Kanälen angeboten.  
+
+Alternativ kannst du Videos auch aktiv in der Angebotsübersicht zurückgeben.  
+So stellst du sofort klar, dass du sie nicht brauchst.
+
+---
 
 ## Warum kann ich nachträglich nicht erneut herunterladen?
-Download-Links sind zeitlich limitiert.  
-Wenn du ein Video nach Ablauf noch brauchst, melde dich bitte beim Admin.',
+Download-Links sind **zeitlich limitiert**.  
+Wenn du ein Video nach Ablauf trotzdem noch brauchst, melde dich bitte beim Admin.
+
+---
+
+Diese E-Mail wurde automatisch erstellt.  
+Wenn du trotzdem geantwortet hast – kein Problem. Das System bleibt freundlich. 😉
+',
             'section' => 'email',
             'created_at' => now(),
             'updated_at' => now(),
