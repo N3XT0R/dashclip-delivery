@@ -3,7 +3,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>{{$this->envelope()->subject}}</title>
+    <title>{{$subject}}</title>
 </head>
 <body style="margin:0; padding:0; background-color:#f8fafc; font-family:Arial, sans-serif;">
 @include('emails.partials.header')

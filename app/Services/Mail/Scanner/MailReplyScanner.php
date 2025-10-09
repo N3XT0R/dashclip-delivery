@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Mail\Scanner;
 
-use App\Services\Mail\Scanner\Contracts\MessageHandlerInterface;
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
-use App\Services\Mail\Scanner\Contracts\MessageTypeDetectorInterface;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 use Webklex\IMAP\Facades\Client;
@@ -14,7 +12,7 @@ use Webklex\PHPIMAP\Message;
 
 class MailReplyScanner
 {
-    /** @param  MessageHandlerInterface  $handlers */
+    /** @param  MessageStrategyInterface  $handlers */
     public function __construct(private readonly iterable $handlers)
     {
     }
@@ -35,7 +33,7 @@ class MailReplyScanner
             try {
                 $this->dispatch($message);
             } catch (Throwable $e) {
-                Log::error('IMAP processing failed', ['error' => $e->getMessage()]);
+                Log::error('IMAP processing failed', ['exception' => $e]);
                 $message->setFlag('Flagged');
             }
         }
