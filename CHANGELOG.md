@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] -
+
+### Added
+
+- **Automated Mail Handling**
+    - New `mail:scan-replies` command checks IMAP inbox for replies and bounces.
+    - Introduced `MailReplyScanner` service class using a strategy-based design for extensibility.
+    - Implemented automatic bounce detection with `MailStatus::Bounced` updates and logging.
+    - Added auto-reply feature: system responds to incoming replies with a FAQ mail when appropriate.
+    - Auto-responses include RFC-compliant headers (`Auto-Submitted`, `X-Auto-Response-Suppress`, `Message-ID`).
+    - Easter-egg header added (`X-System-Meta`) for fun and traceability.
+
+- **Mail Infrastructure**
+    - New abstract base class `AbstractLoggedMail` standardizes headers, message-ID generation, and logging.
+    - Added `NoReplyFAQMail` mailable for automated system responses.
+    - Refactored existing mails (`NewOfferMail`, `ReminderMail`) to use the new modern envelope/content API.
+    - Introduced consistent `Message-ID` generation compliant with RFC 5322.
+    - Created dedicated `MailLog` Filament resource for version 4, with table and detail view.
+
+- **Admin Interface**
+    - New Filament v4 resource for viewing and inspecting mail logs (status, subject, timestamps, metadata).
+    - Improved visibility into sent, bounced, and replied mails.
+
+### Changed
+
+- Replaced outdated `tapp/filament-maillog` dependency with internal implementation compatible with Filament v4.
+- Unified all outgoing mails under the new base class to ensure consistent logging, headers, and traceability.
+- Clean separation of mail processing logic into strategy components for better maintainability.
+
 ## [2.4.0] - 2025-09-30
 
 ### Added
