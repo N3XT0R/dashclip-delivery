@@ -68,6 +68,6 @@ class MailReplyScanner
                 }
             }
         }
-        //$message->setFlag('Seen');
+        $message->setFlag('Seen');
     }
 }
