@@ -52,7 +52,7 @@ class MailReplyScanner
     private function dispatch(ClientAlias $client, Message $message): void
     {
         if ($this->shouldIgnore($message)) {
-            //$message->setFlag('Seen');
+            $message->setFlag('Seen');
             Log::info('Message '.$message->getMessageId()->toString().' was ignored');
             return;
         }
@@ -68,6 +68,6 @@ class MailReplyScanner
                 }
             }
         }
-        //$message->setFlag('Seen');
+        $message->setFlag('Seen');
     }
 }
