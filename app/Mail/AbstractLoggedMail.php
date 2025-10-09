@@ -19,6 +19,8 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
 
     protected string $subjectLine = '';
 
+    protected bool $isAutoResponder = false;
+
     abstract protected function viewName(): string;
 
     protected function viewData(): array
@@ -46,17 +48,25 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
 
     public function headers(): Headers
     {
+        $header = [
+            'X-App-Message-ID' => (string)Str::uuid(),
+            // RFC 3834-konform (Auto-Reply)
+            'Auto-Submitted' => 'auto-replied',
+            // verhindert Schleifen, v. a. bei Outlook / Exchange
+            'X-Auto-Response-Suppress' => 'All',
+            // Easter egg header for the curious ones
+            'X-System-Meta' => 'trace-id='.bin2hex(random_bytes(4)).'; note="If you are reading this, you are way too curious"',
+        ];
+
+        if ($this->isAutoResponder) {
+            // RFC 3834-konform (Auto-Reply)
+            $header['Auto-Submitted'] = 'auto-replied';
+            // verhindert Schleifen, v. a. bei Outlook / Exchange
+            $header['X-Auto-Response-Suppress'] = 'All';
+        }
         return new Headers(
             messageId: $this->generateMessageId(),
-            text: [
-                'X-App-Message-ID' => (string)Str::uuid(),
-                // RFC 3834-konform (Auto-Reply)
-                'Auto-Submitted' => 'auto-replied',
-                // verhindert Schleifen, v. a. bei Outlook / Exchange
-                'X-Auto-Response-Suppress' => 'All',
-                // Easter egg header for the curious ones
-                'X-System-Meta' => 'trace-id='.bin2hex(random_bytes(4)).'; note="If you are reading this, you are way too curious"',
-            ],
+            text: $header,
         );
     }
 

@@ -31,11 +31,9 @@ class NoReplyFAQMail extends AbstractLoggedMail
 
     public function headers(): Headers
     {
-        return new Headers(text: [
-            // RFC 3834 (Auto-Reply)
-            'Auto-Submitted' => 'auto-replied',
-            'X-Auto-Response-Suppress' => 'All',
-        ]);
+        $headers = parent::headers();
+        $headers->text(['Auto-Submitted' => 'auto-replied']);
+        return $headers;
     }
 
     protected function viewName(): string
