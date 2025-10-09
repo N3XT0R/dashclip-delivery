@@ -23,7 +23,7 @@ class MailReplyScanner
         $client = Client::account($account);
         $client->connect();
 
-        $messages = $client->getFolder('INBOX')->messages()->unseen()->get();
+        $messages = $client->getFolder('INBOX')?->messages()->unseen()->get();
 
         foreach ($messages as $message) {
             try {
@@ -41,7 +41,7 @@ class MailReplyScanner
             $isValidHandler =
                 $handler instanceof MessageTypeDetectorInterface &&
                 $handler instanceof MessageHandlerInterface;
-            
+
             if ($isValidHandler && $handler->matches($message)) {
                 $handler->handle($message);
                 return;
