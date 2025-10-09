@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Mail\Scanner;
 
 use App\Services\Mail\Scanner\Contracts\MessageHandlerInterface;
+use App\Services\Mail\Scanner\Contracts\MessageTypeDetectorInterface;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 use Webklex\IMAP\Facades\Client;
@@ -37,7 +38,11 @@ class MailReplyScanner
     private function dispatch(Message $message): void
     {
         foreach ($this->handlers as $handler) {
-            if ($handler->matches($message)) {
+            $isValidHandler =
+                $handler instanceof MessageTypeDetectorInterface &&
+                $handler instanceof MessageHandlerInterface;
+            
+            if ($isValidHandler && $handler->matches($message)) {
                 $handler->handle($message);
                 return;
             }
