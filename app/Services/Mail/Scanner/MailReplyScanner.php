@@ -52,6 +52,9 @@ class MailReplyScanner
                 $handler instanceof MessageTypeDetectorInterface &&
                 $handler instanceof MessageHandlerInterface;
 
+            /**
+             * @var MessageTypeDetectorInterface&MessageHandlerInterface $handler
+             */
             if ($isValidHandler && $handler->matches($message)) {
                 $handler->handle($message);
                 return;
