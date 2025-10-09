@@ -24,10 +24,10 @@ class MailReplyScanner
         return $message->getHeader()?->has('Auto-Submitted') ?? false;
     }
 
-    private function createFolder(ClientAlias $client): void
+    private function createFolder(ClientAlias $client, string $path): void
     {
-        if (!$client->getFolder('Processed/Replies')) {
-            $client->createFolder('Processed/Replies');
+        if (!$client->getFolder($path)) {
+            $client->createFolder($path);
         }
     }
 
@@ -42,7 +42,7 @@ class MailReplyScanner
 
         foreach ($messages as $message) {
             try {
-                $this->dispatch($message);
+                $this->dispatch($client, $message);
             } catch (Throwable $e) {
                 Log::error('IMAP processing failed', ['exception' => $e]);
                 $message->setFlag('Flagged');
@@ -50,7 +50,7 @@ class MailReplyScanner
         }
     }
 
-    private function dispatch(Message $message): void
+    private function dispatch(ClientAlias $client, Message $message): void
     {
         if ($this->shouldIgnore($message)) {
             //$message->setFlag('Seen');
@@ -62,6 +62,7 @@ class MailReplyScanner
                 $handler->handle($message);
                 if ($handler instanceof MoveToFolderInterface && app()->hasDebugModeEnabled() === false) {
                     $path = $handler->getMoveToFolderPath();
+                    $this->createFolder($client, $path);
                     $message->move($path);
                 }
             }

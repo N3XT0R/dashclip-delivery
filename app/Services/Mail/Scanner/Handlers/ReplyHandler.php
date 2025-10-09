@@ -50,6 +50,5 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
     {
         return 'Processed/Replies';
     }
-
-
+    
 }
