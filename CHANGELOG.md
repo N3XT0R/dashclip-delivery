@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Created dedicated `MailLog` Filament resource for version 4, with table and detail view.
 
 - **Admin Interface**
-    - New Filament v4 resource for viewing and inspecting mail logs (status, subject, timestamps, metadata).
+    - New Filament v3 resource for viewing and inspecting mail logs (status, subject, timestamps, metadata).
     - Improved visibility into sent, bounced, and replied mails.
 
 ### Changed
