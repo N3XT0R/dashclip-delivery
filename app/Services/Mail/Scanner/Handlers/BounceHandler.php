@@ -7,15 +7,16 @@ namespace App\Services\Mail\Scanner\Handlers;
 use App\Enum\MailStatus;
 use App\Models\MailLog;
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
+use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
 use Illuminate\Support\Facades\Log;
 use Webklex\PHPIMAP\Message;
 
-class BounceHandler implements MessageStrategyInterface
+class BounceHandler implements MessageStrategyInterface, MoveToFolderInterface
 {
 
     public function matches(Message $message): bool
     {
-        $subject = $message->getSubject() ?? '';
+        $subject = $message->getSubject()->toString() ?? '';
         return preg_match('/(Mail Delivery Failed|Undeliverable)/i', $subject) === 1;
     }
 
@@ -35,7 +36,12 @@ class BounceHandler implements MessageStrategyInterface
             ]);
             Log::info("Bounce for {$original}");
         }
-
-        $message->moveToFolder('Processed/Bounces');
     }
+
+    public function getMoveToFolderPath(): string
+    {
+        return 'Processed/Bounces';
+    }
+
+
 }

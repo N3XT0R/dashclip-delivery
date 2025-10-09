@@ -6,11 +6,12 @@ use App\Facades\Cfg;
 use App\Models\Channel;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 
-class ReminderMail extends Mailable
+class ReminderMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

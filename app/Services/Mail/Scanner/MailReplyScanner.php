@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Services\Mail\Scanner;
 
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
+use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 use Webklex\IMAP\Facades\Client;
+use Webklex\PHPIMAP\Client as ClientAlias;
 use Webklex\PHPIMAP\Message;
 
 class MailReplyScanner
@@ -22,10 +24,19 @@ class MailReplyScanner
         return $message->getHeader()?->has('Auto-Submitted') ?? false;
     }
 
+    private function createFolder(ClientAlias $client): void
+    {
+        if (!$client->getFolder('Processed/Replies')) {
+            $client->createFolder('Processed/Replies');
+        }
+    }
+
     public function scan(?string $account = null): void
     {
         $client = Client::account($account);
         $client->connect();
+        $this->createFolder($client);
+
         $messages = $client->getFolder('INBOX')?->messages()->unseen()->get();
 
 
@@ -49,6 +60,10 @@ class MailReplyScanner
         foreach ($this->handlers as $handler) {
             if ($handler instanceof MessageStrategyInterface && $handler->matches($message)) {
                 $handler->handle($message);
+                if ($handler instanceof MoveToFolderInterface && app()->hasDebugModeEnabled() === false) {
+                    $path = $handler->getMoveToFolderPath();
+                    $message->move($path);
+                }
             }
         }
         //$message->setFlag('Seen');

@@ -8,11 +8,12 @@ use App\Enum\MailStatus;
 use App\Mail\NoReplyFAQMail;
 use App\Models\MailLog;
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
+use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Webklex\PHPIMAP\Message;
 
-class ReplyHandler implements MessageStrategyInterface
+class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
 {
     public function matches(Message $message): bool
     {
@@ -43,9 +44,12 @@ class ReplyHandler implements MessageStrategyInterface
             ]);
             Log::info("Auto-reply sent to {$from}");
         }
-
-        if (app()->hasDebugModeEnabled() === false) {
-            $message->move('Processed/Replies');
-        }
     }
+
+    public function getMoveToFolderPath(): string
+    {
+        return 'Processed/Replies';
+    }
+
+
 }
