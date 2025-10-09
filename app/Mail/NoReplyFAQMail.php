@@ -4,7 +4,6 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
 class NoReplyFAQMail extends AbstractLoggedMail
@@ -29,13 +28,6 @@ class NoReplyFAQMail extends AbstractLoggedMail
         return new Envelope(
             subject: 'Automatische Antwort – bitte nicht direkt antworten',
         );
-    }
-
-    public function headers(): Headers
-    {
-        $headers = parent::headers();
-        $headers->text(['Auto-Submitted' => 'auto-replied']);
-        return $headers;
     }
 
     protected function viewName(): string
