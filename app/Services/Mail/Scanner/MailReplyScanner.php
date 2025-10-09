@@ -60,6 +60,7 @@ class MailReplyScanner
         foreach ($this->handlers as $handler) {
             if ($handler instanceof MessageStrategyInterface && $handler->matches($message)) {
                 $handler->handle($message);
+
                 if ($handler instanceof MoveToFolderInterface && app()->hasDebugModeEnabled() === false) {
                     $path = $handler->getMoveToFolderPath();
                     $this->createFolder($client, $path);
