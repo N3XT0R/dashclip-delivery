@@ -3,23 +3,20 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
-class NoReplyFAQMail extends Mailable implements ShouldQueue
+class NoReplyFAQMail extends AbstractLoggedMail
 {
     use Queueable, SerializesModels;
+
 
     /**
      * Create a new message instance.
      */
     public function __construct()
     {
-        //
     }
 
     /**
@@ -41,26 +38,8 @@ class NoReplyFAQMail extends Mailable implements ShouldQueue
         ]);
     }
 
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
+    protected function viewName(): string
     {
-        return new Content(
-            view: 'emails.no_reply_faq',
-            with: [
-                'subject' => $this->envelope()->subject,
-            ],
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
+        return 'emails.no_reply_faq';
     }
 }
