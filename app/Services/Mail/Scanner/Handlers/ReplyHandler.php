@@ -22,14 +22,14 @@ class ReplyHandler implements MessageStrategyInterface
     public function handle(Message $message): void
     {
         $from = $message->getFrom()[0]->mail ?? '';
-        $inReplyTo = $message->getInReplyTo();
+        $inReplyTo = $message->getInReplyTo()->toString();
 
         if (!$inReplyTo) {
             $message->setFlag('Seen');
             return;
         }
 
-        $log = MailLog::where('message_id', $inReplyTo)->first();
+        $log = MailLog::where('message_id', 'like', '%'.$inReplyTo.'%')->first();
         if (!$log) {
             $message->setFlag('Seen');
             return;
@@ -44,6 +44,8 @@ class ReplyHandler implements MessageStrategyInterface
             Log::info("Auto-reply sent to {$from}");
         }
 
-        $message->moveToFolder('Processed/Replies');
+        if (app()->hasDebugModeEnabled() === false) {
+            $message->move('Processed/Replies');
+        }
     }
 }
