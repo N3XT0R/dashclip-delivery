@@ -50,7 +50,7 @@ return [
             'host' => env('MAIL_HOST', 'localhost'),
             'port' => env('IMAP_PORT', 993),
             'protocol' => env('IMAP_PROTOCOL', 'imap'), //might also use imap, [pop3 or nntp (untested)]
-            'encryption' => env('MAIL_ENCRYPTION', 'ssl'), // Supported: false, 'ssl', 'tls', 'notls', 'starttls'
+            'encryption' => env('IMAP_ENCRYPTION', 'ssl'), // Supported: false, 'ssl', 'tls', 'notls', 'starttls'
             'validate_cert' => env('IMAP_VALIDATE_CERT', true),
             'username' => env('MAIL_USERNAME', 'root@example.com'),
             'password' => env('MAIL_PASSWORD', ''),
