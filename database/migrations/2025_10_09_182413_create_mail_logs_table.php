@@ -15,7 +15,6 @@ return new class extends Migration {
         Schema::create('mail_logs', static function (Blueprint $table) {
             $table->id();
             $table->string('message_id')->unique();
-            $table->string('transport_id')->nullable();
             $table->string('internal_id')->nullable();
             $table->string('to');
             $table->string('subject')->nullable();
