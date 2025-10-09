@@ -11,6 +11,8 @@ class NoReplyFAQMail extends AbstractLoggedMail
 {
     use Queueable, SerializesModels;
 
+    protected bool $isAutoResponder = true;
+
 
     /**
      * Create a new message instance.
