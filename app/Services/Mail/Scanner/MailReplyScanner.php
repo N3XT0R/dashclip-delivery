@@ -20,10 +20,7 @@ class MailReplyScanner
 
     private function shouldIgnore(Message $message): bool
     {
-        $headers = $message->getHeader();
-        $autoSubmitted = $headers?->get('Auto-Submitted')->toString();
-
-        return $autoSubmitted && stripos($autoSubmitted, 'auto-replied') !== false;
+        return $message->getHeader()?->has('Auto-Submitted') ?? false;
     }
 
     public function scan(?string $account = null): void
@@ -49,7 +46,7 @@ class MailReplyScanner
             $message->setFlag('Seen');
             return;
         }
-        
+
         foreach ($this->handlers as $handler) {
             $isValidHandler =
                 $handler instanceof MessageTypeDetectorInterface &&
