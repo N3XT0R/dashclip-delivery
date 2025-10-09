@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Services\Mail\MailReplyScanner;
+use App\Services\Mail\Scanner\MailReplyScanner;
 use Illuminate\Console\Command;
 
 class ScanMailReplies extends Command
