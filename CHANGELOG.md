@@ -22,7 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added `NoReplyFAQMail` mailable for automated system responses.
     - Refactored existing mails (`NewOfferMail`, `ReminderMail`) to use the new modern envelope/content API.
     - Introduced consistent `Message-ID` generation compliant with RFC 5322.
-    - Created dedicated `MailLog` Filament resource for version 4, with table and detail view.
+    - Implemented RFC 3834 conform mail classification for automated messages.
+    - Created dedicated `MailLog` Filament resource, with table and detail view.
 
 - **Admin Interface**
     - New Filament v3 resource for viewing and inspecting mail logs (status, subject, timestamps, metadata).
