@@ -6,11 +6,10 @@ use App\Facades\Cfg;
 use App\Models\{Batch, Channel};
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class NewOfferMail extends Mailable implements ShouldQueue
+class NewOfferMail extends AbstractLoggedMail
 {
     use Queueable, SerializesModels;
 
@@ -23,6 +22,43 @@ class NewOfferMail extends Mailable implements ShouldQueue
     ) {
     }
 
+    protected function viewName(): string
+    {
+        return 'emails.new-offer';
+    }
+
+    public function envelope(): Envelope
+    {
+        $mailTo = (string)Cfg::get('email_admin_mail', 'email');
+        $notification = (bool)Cfg::get('email_get_bcc_notification', 'email');
+
+        $bcc = [];
+        if ($notification && !empty($mailTo)) {
+            $bcc[] = $mailTo;
+        }
+
+        return new Envelope(
+            bcc: $bcc,
+            subject: 'Neue Videos verfügbar – Batch #'.$this->batch->getKey(),
+        );
+    }
+
+    public function viewData(): array
+    {
+        return [
+            'batch' => $this->batch,
+            'channel' => $this->channel,
+            'offerUrl' => $this->offerUrl,
+            'expiresAt' => $this->expiresAt,
+            'unusedUrl' => $this->unusedUrl,
+        ];
+    }
+
+
+    /**
+     * @return NewOfferMail
+     * @deprecated Use envelope() and content() instead.
+     */
     public function build(): NewOfferMail
     {
         $mailTo = (string)Cfg::get('email_admin_mail', 'email');

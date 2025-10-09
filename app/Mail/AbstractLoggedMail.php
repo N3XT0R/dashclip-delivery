@@ -73,4 +73,8 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
     }
 
 
+    public function attachments(): array
+    {
+        return [];
+    }
 }
