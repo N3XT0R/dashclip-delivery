@@ -50,8 +50,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
     {
         $header = [
             'X-App-Message-ID' => (string)Str::uuid(),
-            'Auto-Submitted' => 'auto-replied',
-            'X-Auto-Response-Suppress' => 'All',
+            'Auto-Submitted' => 'auto-generated',
             // Easter egg header for the curious ones
             'X-System-Meta' => 'trace-id='.bin2hex(random_bytes(4)).'; note="If you are reading this, you are way too curious"',
         ];
@@ -60,10 +59,8 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
             // RFC 3834 (Auto-Reply)
             $header['Auto-Submitted'] = 'auto-replied';
             $header['X-Auto-Response-Suppress'] = 'All';
-        } else {
-            // RFC 3834 (Auto-generated)
-            $header['Auto-Submitted'] = 'auto-generated';
         }
+
         return new Headers(
             messageId: $this->generateMessageId(),
             text: $header,
