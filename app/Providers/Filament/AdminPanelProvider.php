@@ -62,7 +62,6 @@ class AdminPanelProvider extends PanelProvider
                 FilamentLogViewerPlugin::make()
                     ->navigationGroup('System')
                     ->navigationLabel('Log Viewer'),
-                FilamentMailLogPlugin::make(),
             ]);
     }
 }

@@ -41,6 +41,7 @@ Schedule::command('notify:reminders', [
     ->dailyAt('09:00')
     ->emailOutputOnFailure($email);
 
-// Dropbox Refresh Token regelmäßig aktualisieren
 Schedule::command('dropbox:refresh-token')
     ->everyMinute();
+
+Schedule::command('mail:scan-replies')->everyTenMinutes();
