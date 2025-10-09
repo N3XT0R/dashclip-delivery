@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Replaced outdated `tapp/filament-maillog` dependency with internal implementation compatible with Filament v4.
+- Replaced outdated `tapp/filament-maillog` dependency with internal implementation compatible with Filament.
 - Unified all outgoing mails under the new base class to ensure consistent logging, headers, and traceability.
 - Clean separation of mail processing logic into strategy components for better maintainability.
 
