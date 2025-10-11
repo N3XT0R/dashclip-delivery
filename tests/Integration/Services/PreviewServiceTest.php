@@ -4,16 +4,25 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\Facades\Cfg;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
 use Tests\Helper\FfmpegBinaryFaker;
-use App\Facades\Cfg;
 
 class PreviewServiceTest extends DatabaseTestCase
 {
+
+    protected PreviewService $previewService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->previewService = $this->app->make(PreviewService::class);
+    }
+
     /** Small helper to compute the preview path like PreviewService::buildPath() does. */
     private function computePreviewPath(Video $video, int $start, int $end): string
     {
@@ -49,7 +58,7 @@ class PreviewServiceTest extends DatabaseTestCase
         Storage::disk('public')->put($previewPath, 'cached');
 
         // Act
-        $url = app(PreviewService::class)->generate($video, $start, $end);
+        $url = $this->previewService->generate($video, $start, $end);
 
         // Assert: preview came from cache; URL should contain the path
         $this->assertNotNull($url);
@@ -57,21 +66,11 @@ class PreviewServiceTest extends DatabaseTestCase
         $this->assertStringContainsString($previewPath, (string)$url);
     }
 
-    public function testGenerateCreatesPreviewViaFakeFfmpegAndStoresOutputLocalSource(): void
-    {
-        $this->markTestSkipped('ffprobe cannot be faked reliably in this environment');
-    }
-
-    public function testGenerateCreatesPreviewUsingReadStreamOnRemoteDisk(): void
-    {
-        $this->markTestSkipped('ffprobe cannot be faked reliably in this environment');
-    }
-
     public function testGenerateForClipWithMissingVideoOrInvalidRangeReturnsNull(): void
     {
         Storage::fake('local');
 
-        $svc = app(PreviewService::class);
+        $svc = $this->previewService;
 
         // Case 1: clip without video relation
         $clipNoVideo = Clip::factory()->make(['video_id' => null, 'start_sec' => 0, 'end_sec' => 2]);
@@ -97,7 +96,7 @@ class PreviewServiceTest extends DatabaseTestCase
         $end = 7;
         $previewPath = $this->computePreviewPath($video, $start, $end);
 
-        $svc = app(PreviewService::class);
+        $svc = $this->previewService;
 
         // No preview yet
         $this->assertNull($svc->url($video, $start, $end));
@@ -117,7 +116,7 @@ class PreviewServiceTest extends DatabaseTestCase
         Storage::disk('local')->put('videos/f.mp4', $this->fakeVideoContent());
         $video = Video::factory()->create(['disk' => 'local', 'path' => 'videos/f.mp4']);
 
-        $svc = app(PreviewService::class);
+        $svc = $this->previewService;
 
         // end <= start or negative start should be rejected
         $this->assertNull($svc->generate($video, 10, 10));
@@ -139,7 +138,7 @@ class PreviewServiceTest extends DatabaseTestCase
         Cfg::set('ffmpeg_bin', $faker->zeroOutputZeroExit(), 'ffmpeg');
 
         // Act
-        $url = app(PreviewService::class)->generate($video, 0, 2);
+        $url = $this->previewService->generate($video, 0, 2);
 
         // Assert: service should detect missing file and return null
         $this->assertNull($url);
