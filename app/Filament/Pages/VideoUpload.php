@@ -49,7 +49,6 @@ class VideoUpload extends Page implements HasForms
                             ->label('Video')
                             ->required()
                             ->acceptedFileTypes(['video/mp4'])
-                            ->directory('uploads/tmp')
                             ->storeFiles(false),
                         View::make('filament.forms.components.clip-selector')
                             ->dehydrated(false),
@@ -92,10 +91,8 @@ class VideoUpload extends Page implements HasForms
             $file = $clip['file'];
             $stored = $file->store('uploads/tmp');
 
-            dd($stored);
-
             ProcessUploadedVideo::dispatch(
-                path: \Storage::disk()->path($stored),
+                path: storage_path('app/'.$stored),
                 originalName: $file->getClientOriginalName(),
                 ext: $file->getClientOriginalExtension(),
                 start: (int)($clip['start_sec'] ?? 0),
