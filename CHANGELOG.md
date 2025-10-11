@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       **.
     - Optimized for real-world conditions — fully **LTE-capable** for mobile uploads on the go.
     - Updated Livewire configuration (`config/livewire.php`) to reflect new limits for smoother large uploads.
+- Optimized Admin UI readability by refining layout spacing, label hierarchy, and visual alignment
 
 ### Breaking
 

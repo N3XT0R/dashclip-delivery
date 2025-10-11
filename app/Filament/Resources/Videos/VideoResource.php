@@ -2,21 +2,20 @@
 
 namespace App\Filament\Resources\Videos;
 
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\Filter;
-use Filament\Actions\ViewAction;
-use Filament\Actions\Action;
+use App\Filament\Resources\VideoResource\Pages;
 use App\Filament\Resources\Videos\Pages\ListVideos;
 use App\Filament\Resources\Videos\Pages\ViewVideo;
-use App\Filament\Resources\VideoResource\Pages;
 use App\Filament\Resources\Videos\RelationManagers\AssignmentsRelationManager;
 use App\Filament\Resources\Videos\RelationManagers\ClipsRelationManager;
 use App\Models\Video;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Number;
 
@@ -24,8 +23,8 @@ class VideoResource extends Resource
 {
     protected static ?string $model = Video::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-film';
-    protected static string | \UnitEnum | null $navigationGroup = 'Media';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-film';
+    protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected static ?string $modelLabel = 'Video';
     protected static ?string $pluralModelLabel = 'Videos';
 
@@ -66,9 +65,9 @@ class VideoResource extends Resource
                     ->counts('assignments')
                     ->label('Assignments'),
 
-                TextColumn::make('clips_count')
-                    ->counts('clips')
-                    ->label('Clips'),
+                TextColumn::make('clips.submitted_by')
+                    ->sortable()
+                    ->label('Einsender'),
 
                 TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i')
