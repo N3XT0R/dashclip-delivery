@@ -2,18 +2,17 @@
 
 namespace App\Filament\Resources\Batches;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\Batches\Pages\ListBatches;
 use App\Filament\Resources\Batches\Pages\ViewBatch;
-use App\Filament\Resources\BatchResource\Pages;
 use App\Filament\Resources\Batches\RelationManagers\AssignmentsRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\ChannelsRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\ClipsRelationManager;
+use App\Filament\Resources\BatchResource\Pages;
 use App\Models\Batch;
-use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -21,8 +20,8 @@ class BatchResource extends Resource
 {
     protected static ?string $model = Batch::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-queue-list';
-    protected static string | \UnitEnum | null $navigationGroup = 'System';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-queue-list';
+    protected static string|\UnitEnum|null $navigationGroup = 'System';
     protected static ?string $modelLabel = 'Batch';
     protected static ?string $pluralModelLabel = 'Batches';
 
@@ -56,8 +55,17 @@ class BatchResource extends Resource
                     })->implode(', ');
                     return $lines;
                 }),
-                TextColumn::make('started_at')->dateTime()->since()->sortable(),
-                TextColumn::make('finished_at')->dateTime()->since()->sortable()->toggleable(),
+                TextColumn::make('started_at')
+                    ->dateTime()
+                    ->since()
+                    ->dateTimeTooltip()
+                    ->sortable(),
+                TextColumn::make('finished_at')
+                    ->dateTime()
+                    ->since()
+                    ->dateTimeTooltip()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('assignments_count')
                     ->counts('assignments')
                     ->label('Assignments'),
