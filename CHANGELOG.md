@@ -21,8 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preview generation now uses the `pbmedia/laravel-ffmpeg` package and reads all codec options from the database.
 - **Livewire Upload Configuration**
     - Increased maximum upload size to **1 GB** to support large video files.
-    - Extended maximum upload time to **25 minutes**, corresponding to a required minimum upload speed of ~**5.5 Mbit/s
-      **.
+    - Extended maximum upload time to **25 minutes**, corresponding to a required minimum upload speed of
+      ~**5.5 Mbit/s**.
     - Optimized for real-world conditions — fully **LTE-capable** for mobile uploads on the go.
     - Updated Livewire configuration (`config/livewire.php`) to reflect new limits for smoother large uploads.
 - Optimized Admin UI readability by refining layout spacing, label hierarchy, and visual alignment
