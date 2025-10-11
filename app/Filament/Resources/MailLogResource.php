@@ -42,7 +42,10 @@ class MailLogResource extends Resource
 
                 TextColumn::make('created_at')
                     ->label('Gesendet am')
-                    ->dateTime('d.m.Y H:i')
+                    ->label('Sent at')
+                    ->dateTime()
+                    ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
 
                 TextColumn::make('replied_at')
