@@ -2,10 +2,8 @@
 
 namespace App\Filament\Resources\Batches\RelationManagers;
 
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class ClipsRelationManager extends RelationManager
@@ -23,12 +21,12 @@ class ClipsRelationManager extends RelationManager
                     ->label('Video')
                     ->searchable()
                     ->limit(40),
-                TextColumn::make('start_sec')->label('Start'),
-                TextColumn::make('end_sec')->label('End'),
+                TextColumn::make('start_time')->label('Start'),
+                TextColumn::make('end_time')->label('End'),
                 TextColumn::make('created_at')->dateTime()->since(),
             ])
             ->headerActions([])
-            ->recordActions([ViewAction::make()])
+            ->recordActions([])
             ->toolbarActions([]);
     }
 }
