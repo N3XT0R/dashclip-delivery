@@ -7,7 +7,6 @@ namespace App\Filament\Resources\MailLogResource\Pages;
 use App\Filament\Resources\MailLogResource;
 use App\Models\MailLog;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
 
