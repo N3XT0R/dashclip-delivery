@@ -9,14 +9,15 @@ use App\Models\MailLog;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Schema;
 
 class ViewMailLog extends ViewRecord
 {
     protected static string $resource = MailLogResource::class;
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 TextEntry::make('to')->label('Empfänger'),
                 TextEntry::make('subject')->label('Betreff'),
