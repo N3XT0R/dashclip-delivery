@@ -3,6 +3,13 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
+         failOnRisky="true"
+         failOnDeprecation="true"
+         failOnSkipped="true"
+         failOnWarning="true"
+         failOnEmptyTestSuite="true"
+         failOnPhpunitDeprecation="true"
+         failOnIncomplete="true"
 >
     <coverage
             includeUncoveredFiles="true"
