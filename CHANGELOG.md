@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Increased maximum upload size to **1 GB** to support large video files.
     - Extended maximum upload time to **25 minutes**, corresponding to a required minimum upload speed of ~**5.5 Mbit/s
       **.
+    - Optimized for real-world conditions — fully **LTE-capable** for mobile uploads on the go.
     - Updated Livewire configuration (`config/livewire.php`) to reflect new limits for smoother large uploads.
 
 ### Breaking
