@@ -24,7 +24,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The Filament v4 upgrade may require adjustments to custom admin pages, widgets, or themes.
 
-### [2.1.3] - 2025-09-27
+## [2.5.0] - 2025-10-10
+
+### Added
+
+- **Automated Mail Handling**
+    - New `mail:scan-replies` command checks IMAP inbox for replies and bounces.
+    - Introduced `MailReplyScanner` service class using a strategy-based design for extensibility.
+    - Implemented automatic bounce detection with `MailStatus::Bounced` updates and logging.
+    - Added auto-reply feature: system responds to incoming replies with a FAQ mail when appropriate.
+    - Auto-responses include RFC-compliant headers (`Auto-Submitted`, `X-Auto-Response-Suppress`, `Message-ID`).
+    - Easter-egg header added (`X-System-Meta`) for fun and traceability.
+
+- **Mail Infrastructure**
+    - New abstract base class `AbstractLoggedMail` standardizes headers, message-ID generation, and logging.
+    - Added `NoReplyFAQMail` mailable for automated system responses.
+    - Refactored existing mails (`NewOfferMail`, `ReminderMail`) to use the new modern envelope/content API.
+    - Introduced consistent `Message-ID` generation compliant with RFC 5322.
+    - Implemented RFC 3834 conform mail classification for automated messages.
+    - Created dedicated `MailLog` Filament resource, with table and detail view.
+
+- **Admin Interface**
+    - New Filament v3 resource for viewing and inspecting mail logs (status, subject, timestamps, metadata).
+    - Improved visibility into sent, bounced, and replied mails.
+
+### Changed
+
+- Replaced outdated `tapp/filament-maillog` dependency with internal implementation compatible with Filament.
+- Unified all outgoing mails under the new base class to ensure consistent logging, headers, and traceability.
+- Clean separation of mail processing logic into strategy components for better maintainability.
+
+## [2.4.0] - 2025-09-30
+
+### Added
+
+- New Blade component `<x-video-card>` including dedicated view for consistent video presentation.
+- Extracted video card logic from overview pages into the new component.
+- Display of `picked_up` assignments at the end of the overview.
+- Extended test coverage:
+    - OfferController tests now cover rendering and handling of `picked_up` assignments.
+    - AssignmentDownloadController tests now include validation cases and a happy-path for streaming.
+    - New test ensuring authenticated Filament users can bypass token validation.
+
+### Changed
+
+- Unified clip info layout:
+    - Role, time range, and submitter are now shown in a column layout.
+    - Notes are displayed in a separate row below the clip info.
+    - Submitter names now appear on their own line to avoid layout breaking with longer strings.
+
+### Fixed
+
+- Download link validation bug:
+    - Token validation now respects the case where `download_token` is only set when tracking is enabled.
+    - For logged-in Filament users, token validation is skipped.
+
+## [2.3.0] - 2025-09-28
+
+### Added
+
+- Added bug-report link to footer.
+
+## [2.2.0] - 2025-09-28
+
+### Added
+
+- Added Roadmap to footer.
+
+## [2.1.3] - 2025-09-27
 
 ### Security
 

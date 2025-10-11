@@ -28,7 +28,12 @@ class AssignmentDownloadController extends Controller
 
         // Token validieren
         $token = (string)$req->query('t');
-        $valid = hash_equals($assignment->download_token, hash('sha256', $token));
+        if (Filament::auth()?->check() === true) {
+            $valid = true;
+        } else {
+            $valid = $assignment->download_token !== null
+                && hash_equals($assignment->download_token, hash('sha256', $token));
+        }
         abort_unless($valid, 403);
 
         // Videodaten holen

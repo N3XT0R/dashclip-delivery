@@ -8,6 +8,7 @@ use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Models\User;
 use App\Models\Video;
 use App\Services\AssignmentService;
 use Illuminate\Support\Facades\Storage;
@@ -210,5 +211,44 @@ final class AssignmentDownloadControllerTest extends DatabaseTestCase
             'ip' => '127.0.0.1',
             'user_agent' => 'PHPUnit',
         ]);
+    }
+
+    public function testAllowsDownloadWhenAuthenticated(): void
+    {
+        Storage::fake('local');
+        $content = 'HELLO';
+        Storage::disk('local')->put('videos/auth-ok.mp4', $content);
+
+        $batch = Batch::factory()->state(['type' => 'assign'])->create();
+        $channel = Channel::factory()->create();
+        $video = Video::factory()->create([
+            'disk' => 'local',
+            'path' => 'videos/auth-ok.mp4',
+        ]);
+
+        $assignment = Assignment::factory()
+            ->for($batch, 'batch')
+            ->for($channel, 'channel')
+            ->for($video, 'video')
+            ->create([
+                'status' => StatusEnum::NOTIFIED->value,
+                'expires_at' => now()->addHour(),
+                'download_token' => null, // skipTracking case
+            ]);
+
+        $user = User::factory()->create();
+        $this->be($user, 'web');
+
+        $url = URL::temporarySignedRoute('assignments.download', now()->addHour(), [
+            'assignment' => $assignment->getKey(),
+            't' => 'IGNORED',
+        ]);
+
+        $this->get($url)
+            ->assertOk()
+            ->assertHeader('Content-Type', 'video/mp4')
+            ->assertHeader('Content-Length', (string)strlen($content));
+
+        self::assertNull($assignment->getAttribute('download_token'));
     }
 }

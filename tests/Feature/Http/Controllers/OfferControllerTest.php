@@ -232,4 +232,41 @@ final class OfferControllerTest extends DatabaseTestCase
             'status' => StatusEnum::QUEUED->value,
         ]);
     }
+
+    /** Ensures picked_up assignments are separated and passed to the view. */
+    public function testShowSeparatesPickedUpAssignments(): void
+    {
+        $batch = Batch::factory()->state(['type' => 'assign'])->create();
+        $channel = Channel::factory()->create();
+
+        $videoReady = Video::factory()->create(['original_name' => 'ready.mp4']);
+        $videoPicked = Video::factory()->create(['original_name' => 'picked.mp4']);
+
+        $aReady = Assignment::factory()
+            ->for($batch, 'batch')->for($channel, 'channel')->for($videoReady, 'video')
+            ->create(['status' => StatusEnum::NOTIFIED->value]);
+
+        $aPicked = Assignment::factory()
+            ->for($batch, 'batch')->for($channel, 'channel')->for($videoPicked, 'video')
+            ->create(['status' => StatusEnum::PICKEDUP->value]);
+
+        $url = URL::signedRoute('offer.show', [
+            'batch' => $batch->getKey(),
+            'channel' => $channel->getKey(),
+        ]);
+
+        $this->get($url)
+            ->assertOk()
+            ->assertViewIs('offer.show')
+            ->assertViewHas('items', function ($items) use ($aReady) {
+                // only ready assignment appears in "items"
+                return collect($items)->pluck('id')->contains($aReady->id)
+                    && !collect($items)->pluck('id')->contains($aReady->id + 1); // no picked_up here
+            })
+            ->assertViewHas('pickedUp', function ($picked) use ($aPicked) {
+                // only picked_up assignment appears in "pickedUp"
+                return collect($picked)->pluck('id')->contains($aPicked->id);
+            });
+    }
+
 }

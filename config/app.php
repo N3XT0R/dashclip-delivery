@@ -15,7 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'DashClip-Delivery'),
 
-    'version' => '2.1.2',
+    'version' => '2.5.0',
 
     /*
     |--------------------------------------------------------------------------
@@ -125,4 +125,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'footer' => [
+        'roadmap' => 'https://github.com/users/N3XT0R/projects/11/views/1',
+        'issues' => 'https://github.com/N3XT0R/dashclip-delivery/issues/new',
+    ],
 ];
