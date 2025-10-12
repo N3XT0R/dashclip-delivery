@@ -46,7 +46,7 @@ class ActivityResource extends Resource
                 //
             ])
             ->recordActions([
-                Actions\EditAction::make(),
+                Actions\ViewAction::make(),
             ])
             ->toolbarActions([
                 Actions\BulkActionGroup::make([
@@ -66,8 +66,8 @@ class ActivityResource extends Resource
     {
         return [
             'index' => Pages\ListActivities::route('/'),
-            'create' => Pages\CreateActivity::route('/create'),
-            'edit' => Pages\EditActivity::route('/{record}/edit'),
+            //'create' => Pages\CreateActivity::route('/create'),
+            //'edit' => Pages\EditActivity::route('/{record}/edit'),
         ];
     }
 }
