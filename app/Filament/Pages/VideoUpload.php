@@ -90,9 +90,9 @@ class VideoUpload extends Page implements HasForms
             /** @var TemporaryUploadedFile $file */
             $file = $clip['file'];
             $stored = $file->store('uploads/tmp');
-
+            
             ProcessUploadedVideo::dispatch(
-                path: storage_path('app/'.$stored),
+                path: \Storage::disk()->path($stored),
                 originalName: $file->getClientOriginalName(),
                 ext: $file->getClientOriginalExtension(),
                 start: (int)($clip['start_sec'] ?? 0),
