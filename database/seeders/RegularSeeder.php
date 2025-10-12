@@ -19,6 +19,7 @@ class RegularSeeder extends Seeder
             'Role',
             'Page',
             'User',
+            'dropbox',
         ];
 
         $filteredPermissions = array_filter($allPermissions, function ($perm) use ($excludedResources) {
