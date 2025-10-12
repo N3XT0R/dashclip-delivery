@@ -6,8 +6,10 @@ namespace Tests\Feature\Filament\Pages;
 
 use App\Filament\Pages\DropboxConnect;
 use App\Models\Config;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
 final class DropboxConnectTest extends DatabaseTestCase
@@ -21,6 +23,15 @@ final class DropboxConnectTest extends DatabaseTestCase
         $page->mount();
 
         $this->assertFalse($page->connected);
+    }
+
+    public function testRegularUserHasNoAccess(): void
+    {
+        $regularUser = User::factory()->standard()->create();
+        $this->actingAs($regularUser);
+
+        Livewire::test(DropboxConnect::class)
+            ->assertStatus(403);
     }
 
     public function testConnectedIsFalseWhenTokenEmpty(): void
