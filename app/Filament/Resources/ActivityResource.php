@@ -51,7 +51,8 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('causer')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('properties')
-                    ->searchable(),
+                    ->searchable()
+                    ->listWithLineBreaks(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->since()
