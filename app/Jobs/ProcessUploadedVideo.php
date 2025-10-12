@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Facades\Cfg;
+use App\Models\User;
 use App\Models\Video;
 use App\Services\IngestScanner;
 use Illuminate\Bus\Queueable;
@@ -18,6 +19,7 @@ class ProcessUploadedVideo implements ShouldQueue
     protected string $hash;
 
     public function __construct(
+        public User $user,
         public string $path,
         public string $originalName,
         public string $ext,
@@ -39,6 +41,11 @@ class ProcessUploadedVideo implements ShouldQueue
         $video = Video::query()->where('hash', $this->hash)->first();
 
         if ($video) {
+            activity()
+                ->performedOn($video)
+                ->causedBy($this->user)
+                ->withProperties(['action' => 'upload', ['file' => $video->original_name]])
+                ->log('uploaded a video');
             $video->clips()->create([
                 'start_sec' => $this->start,
                 'end_sec' => $this->end,
