@@ -46,6 +46,8 @@ class ActivityResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('event')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('subject')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('causer')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('properties')
