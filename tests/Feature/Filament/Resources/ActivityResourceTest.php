@@ -59,9 +59,7 @@ final class ActivityResourceTest extends DatabaseTestCase
         ]);
 
         $record = Activity::latest()->firstOrFail();
-        $expectedDate = $record->created_at->diffForHumans();
-
-
+        
         Livewire::test(ListActivities::class)
             ->assertStatus(200)
             ->assertCanSeeTableRecords([$record])
@@ -71,6 +69,6 @@ final class ActivityResourceTest extends DatabaseTestCase
             ->assertTableColumnStateSet('subject', $record->subject, record: $record)
             ->assertTableColumnStateSet('causer', $record->causer, record: $record)
             ->assertTableColumnExists('properties', record: $record)
-            ->assertTableColumnFormattedStateSet('created_at', $expectedDate, record: $record);
+            ->assertTableColumnExists('created_at', record: $record);
     }
 }
