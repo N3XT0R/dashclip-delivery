@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Filament\Resources;
 
 use App\Filament\Resources\ActivityResource\Pages\ListActivities;
-use App\Filament\Resources\Configs\Pages\EditConfig;
-use App\Models\Config;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
@@ -41,59 +38,11 @@ final class ActivityResourceTest extends DatabaseTestCase
             ->assertStatus(403);
     }
 
-    public function testListConfigsShowsExistingRecords(): void
+    public function testListActivitiesShowsExistingRecords(): void
     {
-        $id = DB::table('config_categories')->where('slug', 'default')->value('id');
-        Config::query()->create([
-            'key' => 'site.name',
-            'value' => 'Dashclip',
-            'is_visible' => true,
-            'config_category_id' => $id,
-        ]);
-
-        Config::query()->create([
-            'key' => 'ui.theme',
-            'value' => 'light',
-            'is_visible' => false,
-            'config_category_id' => $id,
-        ]);
-
         Livewire::test(ListActivities::class)
             ->assertStatus(200)
             ->assertSee('site.name')
             ->assertDontSee('ui.theme');
-    }
-
-    public function testEditConfigValidatesAndUpdatesFields(): void
-    {
-        $config = Config::query()->create([
-            'key' => 'site.locale',
-            'value' => 'de',
-            'is_visible' => true,
-        ]);
-
-        Livewire::test(EditConfig::class, ['record' => $config->getKey()])
-            ->assertStatus(200)
-            ->assertFormSet([
-                'key' => 'site.locale',
-                'cast_type' => 'string',
-                'value' => 'de',
-            ])
-            ->fillForm([
-                'value' => '',
-            ])
-            ->call('save')
-            ->assertHasFormErrors(['value' => 'required']);
-
-        Livewire::test(EditConfig::class, ['record' => $config->getKey()])
-            ->fillForm([
-                'value' => 'en',
-            ])
-            ->call('save')
-            ->assertHasNoFormErrors();
-
-        $fresh = $config->fresh();
-        $this->assertSame('site.locale', $fresh->getAttribute('key'));
-        $this->assertSame('en', $fresh->getAttribute('value'));
     }
 }

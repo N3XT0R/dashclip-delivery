@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use UnitEnum;
 
@@ -39,8 +40,26 @@ class ActivityResource extends Resource
         return $table
             ->recordTitleAttribute('Activity')
             ->columns([
-                Tables\Columns\TextColumn::make('Activity')
+                Tables\Columns\TextColumn::make('log_name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('event')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('causer')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('properties')
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->since()
+                    ->dateTimeTooltip()
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->since()
+                    ->dateTimeTooltip()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -52,7 +71,8 @@ class ActivityResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
