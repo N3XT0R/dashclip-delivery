@@ -52,8 +52,7 @@ class VideoUpload extends Page implements HasForms
                             ->acceptedFileTypes(['video/mp4'])
                             ->storeFiles(false),
                         View::make('filament.forms.components.clip-selector')
-                            ->dehydrated(false)
-                            ->extraAttributes(['x-init' => 'init()']),
+                            ->dehydrated(false),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()
