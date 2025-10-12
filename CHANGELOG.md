@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Config table now supports a `selectable` JSON column so settings can offer predefined choices.
 - New **FFMPEG** configuration category seeds codec, preset and parameter defaults for preview generation.
 - Admin UI renders selectable values for JSON-based settings as multi-select inputs.
+- **Role and permission management** via Filament Shield (integrates Spatie Laravel Permission with the admin panel,
+  providing a full UI for roles, permissions, and access control).
 
 ### Changed
 
