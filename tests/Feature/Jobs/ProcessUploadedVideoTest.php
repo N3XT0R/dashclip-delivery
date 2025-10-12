@@ -6,6 +6,7 @@ namespace Tests\Feature\Jobs;
 
 use App\Facades\Cfg;
 use App\Jobs\ProcessUploadedVideo;
+use App\Models\User;
 use App\Models\Video;
 use App\Services\IngestScanner;
 use Tests\DatabaseTestCase;
@@ -28,9 +29,12 @@ final class ProcessUploadedVideoTest extends DatabaseTestCase
             'disk' => 'local',
         ]);
 
+        $user = User::factory()->admin()->create();
+
         $scanner = app(IngestScanner::class);
 
         $job = new ProcessUploadedVideo(
+            user: $user,
             path: $path,
             originalName: 'clip.mp4',
             ext: 'mp4',
