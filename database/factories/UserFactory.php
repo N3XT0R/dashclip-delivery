@@ -46,23 +46,19 @@ class UserFactory extends Factory
     }
 
     /**
-     * Default state für Admin-User
+     * Default state for Admin-User
      */
     public function admin(): static
     {
-        return $this->afterCreating(function (User $user) {
-            $user->assignRole(RoleEnum::SUPER_ADMIN->value);
-        });
+        return $this->withRole(RoleEnum::SUPER_ADMIN->value);
     }
 
     /**
-     * Default state für Standard-User
+     * Default state for Standard-User
      */
     public function standard(): static
     {
-        return $this->afterCreating(function (User $user) {
-            $user->assignRole(RoleEnum::REGULAR->value);
-        });
+        return $this->withRole(RoleEnum::REGULAR->value);
     }
 
     public function withRole(string $roleName): static
