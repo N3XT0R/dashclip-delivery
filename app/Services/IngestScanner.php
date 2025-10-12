@@ -17,8 +17,8 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Throwable;
 
 /**
- * Scannt rekursiv einen Eingangsordner und übernimmt neue Videodateien
- * in den konfigurierten Storage. Erkennt Duplikate über SHA-256.
+ * Recursively scans an input directory and imports new video files
+ * into the configured storage. Detects duplicates using SHA-256.
  */
 final class IngestScanner
 {
@@ -61,13 +61,13 @@ final class IngestScanner
 
         /** @var \SplFileInfo $fileInfo */
         foreach ($iterator as $path => $fileInfo) {
-            // 1) Falls der Eintrag ein Ordner ist: optional CSV im Unterordner importieren
+            // 1) If the entry is a directory: optionally import CSV from subfolder
             if ($fileInfo->isDir()) {
                 $this->maybeImportCsvForDirectory($fileInfo->getPathname());
-                continue; // nur Verzeichnis-Logik; Dateien kommen in eigener Schleife
+                continue; // directory logic only; files are handled separately
             }
 
-            // 2) Nur echte, zulässige Videodateien verarbeiten
+            // 2) Process only valid video files with allowed extensions
             if (!$fileInfo->isFile() || !$this->isAllowedExtension($fileInfo)) {
                 continue;
             }
@@ -110,6 +110,10 @@ final class IngestScanner
     }
 
     /**
+     * @param  string  $path
+     * @param  string  $ext
+     * @param  string  $fileName
+     * @param  string  $diskName
      * @return 'new'|'dups'|'err'
      */
     public function processFile(string $path, string $ext, string $fileName, string $diskName): string
@@ -125,7 +129,7 @@ final class IngestScanner
 
         $dstRel = $this->buildDestinationPath($hash, $ext);
 
-        // Video vor dem Upload anlegen, damit Preview aus lokalem Pfad generiert werden kann
+        // Create video before upload so preview can be generated from local path
         $video = Video::query()->create([
             'hash' => $hash,
             'ext' => $ext,
@@ -136,7 +140,7 @@ final class IngestScanner
             'original_name' => $fileName,
         ]);
 
-        // Clip-Informationen nach Anlage des Videos erneut importieren
+        // Re-import clip information after video has been created
         $this->maybeImportCsvForDirectory(dirname($path));
         $video->refresh();
 
@@ -229,11 +233,13 @@ final class IngestScanner
 
             return true;
         } finally {
-            // sicheres Close, falls oben Exceptions fliegen
+            // Safe close in case exceptions are thrown above
             if (is_resource($read)) {
                 fclose($read);
             }
         }
+
+        return false;
     }
 
     private function uploadToDropbox($read, string $dstRel, int $bytes, ?ProgressBar $bar = null): void
@@ -245,7 +251,7 @@ final class IngestScanner
         $provider = app(AutoRefreshTokenProvider::class);
         $client = new DropboxClient($provider);
 
-        // Edge-Case: leere Datei
+        // Edge-Case: empty file
         if ($bytes === 0) {
             $client->upload($targetPath, '');
             return;
@@ -262,7 +268,7 @@ final class IngestScanner
             $transferred += strlen($chunk);
 
             if ($transferred >= $bytes) {
-                // letzter Chunk
+                // last Chunk
                 $client->uploadSessionFinish($chunk, $cursor, $targetPath);
             } else {
                 $cursor = $client->uploadSessionAppend($chunk, $cursor);
@@ -305,7 +311,7 @@ final class IngestScanner
                 }
             }
         } catch (\UnexpectedValueException) {
-            // nicht lesbar -> behandeln wie "keine CSV"
+            // Not readable -> treat as "no CSV"
         }
 
         return $files;
