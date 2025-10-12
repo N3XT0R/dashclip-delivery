@@ -55,13 +55,15 @@ class VideoUpload extends Page implements HasForms
                             ->label('Start')
                             ->minValue(0)
                             ->maxValue(fn(Get $get) => $get('end_sec') ?? 100)
-                            ->live(),
+                            ->live()
+                            ->formatStateUsing(fn($value) => gmdate('i:s', (int)$value)),
 
                         Slider::make('end_sec')
                             ->label('Ende')
                             ->minValue(fn(Get $get) => $get('start_sec') ?? 0)
                             ->maxValue(fn(Get $get) => $get('duration') ?? 100)
-                            ->live(),
+                            ->live()
+                            ->formatStateUsing(fn($value) => gmdate('i:s', (int)$value)),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()
