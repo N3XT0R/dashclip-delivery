@@ -32,6 +32,15 @@ final class ConfigResourceTest extends DatabaseTestCase
         $this->actingAs($this->user);
     }
 
+    public function testRegularUserHasNoAccess(): void
+    {
+        $regularUser = User::factory()->standard()->create();
+        $this->actingAs($regularUser);
+
+        Livewire::test(ListConfigs::class)
+            ->assertStatus(403);
+    }
+
     public function testListConfigsShowsExistingRecords(): void
     {
         $id = DB::table('config_categories')->where('slug', 'default')->value('id');
