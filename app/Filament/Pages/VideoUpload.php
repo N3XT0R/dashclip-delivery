@@ -41,8 +41,6 @@ class VideoUpload extends Page implements HasForms
     {
         return $schema
             ->components([
-                Hidden::make('start_sec')->default(0),
-                Hidden::make('end_sec')->default(0),
                 Repeater::make('clips')
                     ->label('Video')
                     ->addActionLabel('Weiteres Video hinzufügen')
@@ -54,7 +52,8 @@ class VideoUpload extends Page implements HasForms
                             ->acceptedFileTypes(['video/mp4'])
                             ->storeFiles(false),
                         View::make('filament.forms.components.clip-selector')
-                            ->dehydrated(false),
+                            ->dehydrated(false)
+                            ->extraAttributes(['x-init' => 'init()']),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()
