@@ -3,8 +3,8 @@
         class="space-y-2"
 >
     <video x-ref="video" x-show="showPlayer" x-cloak controls class="w-full"></video>
-    <input type="hidden" x-model="start" wire:model="start_sec">
-    <input type="hidden" x-model="end" wire:model="end_sec">
+    <input type="hidden" x-model="start" name="{{ $getStatePath('start_sec') }}">
+    <input type="hidden" x-model="end" name="{{ $getStatePath('end_sec') }}">
 
     <div x-ref="slider" class="mt-2"></div>
 
