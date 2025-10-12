@@ -6,15 +6,15 @@ use App\Jobs\ProcessUploadedVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Slider;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\View;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
@@ -51,8 +51,17 @@ class VideoUpload extends Page implements HasForms
                             ->required()
                             ->acceptedFileTypes(['video/mp4'])
                             ->storeFiles(false),
-                        View::make('filament.forms.components.clip-selector')
-                            ->dehydrated(false),
+                        Slider::make('start_sec')
+                            ->label('Start')
+                            ->minValue(0)
+                            ->maxValue(fn(Get $get) => $get('end_sec') ?? 100)
+                            ->live(),
+
+                        Slider::make('end_sec')
+                            ->label('Ende')
+                            ->minValue(fn(Get $get) => $get('start_sec') ?? 0)
+                            ->maxValue(fn(Get $get) => $get('duration') ?? 100)
+                            ->live(),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()
@@ -75,8 +84,6 @@ class VideoUpload extends Page implements HasForms
                                 'R' => 'Rear',
                             ])
                             ->trim(),
-                        Hidden::make('start_sec')->default(0),
-                        Hidden::make('end_sec')->default(0),
                     ])
             ])
             ->statePath('data');
