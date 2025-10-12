@@ -41,7 +41,10 @@ class RoleResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string|null|\UnitEnum $navigationGroup = 'System';
+    public static function getNavigationGroup(): ?string
+    {
+        return 'System';
+    }
 
     public static function canAccess(): bool
     {
