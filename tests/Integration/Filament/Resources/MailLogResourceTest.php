@@ -29,7 +29,7 @@ final class MailLogResourceTest extends DatabaseTestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 

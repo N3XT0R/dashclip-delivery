@@ -33,7 +33,7 @@ final class VideoResourceTest extends DatabaseTestCase
         parent::setUp();
 
         // Authenticate — User::canAccessPanel() returns true in your app
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 

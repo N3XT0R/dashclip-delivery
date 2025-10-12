@@ -16,7 +16,7 @@ final class VideoUploadTest extends DatabaseTestCase
     {
         Bus::fake();
         $disk = \Storage::fake();
-        $user = User::factory()->create(['name' => 'Tester']);
+        $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
 
         $disk->put('uploads/tmp/file1.mp4', 'a');

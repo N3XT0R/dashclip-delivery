@@ -28,7 +28,7 @@ final class ConfigResourceTest extends DatabaseTestCase
         parent::setUp();
 
         // Authenticate as a user (User::canAccessPanel returns true)
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 
