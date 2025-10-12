@@ -17,13 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        $this->call([
+            ShieldSeeder::class,
+        ]);
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ])->assignRole(RoleEnum::SUPER_ADMIN->value);
-
-        $this->call([
-            ShieldSeeder::class,
-        ]);
     }
 }
