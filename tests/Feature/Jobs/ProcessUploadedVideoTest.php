@@ -60,6 +60,14 @@ final class ProcessUploadedVideoTest extends DatabaseTestCase
             'role' => 'driver',
         ]);
 
+
+        $this->assertDatabaseHas('activity_log', [
+            'subject_type' => Video::class,
+            'causer_type' => User::class,
+            'causer_id' => $user->id,
+            'description' => 'uploaded a video',
+        ]);
+
         if (file_exists($path)) {
             @unlink($path);
         }
