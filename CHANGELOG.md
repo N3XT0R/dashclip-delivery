@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   providing a full UI for roles, permissions, and access control).
 - **Initial roles and permissions seeder** generated via `php artisan shield:seeder`, providing default admin access and
   baseline permission data.
+- **Automatic role assignment** via `UserObserver`, ensuring that newly created users without explicit roles are
+  automatically assigned the default `panel_user` role across all creation contexts (Filament, seeding, API).
 
 ### Changed
 
