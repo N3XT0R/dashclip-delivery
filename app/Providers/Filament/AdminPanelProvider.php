@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -64,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
+                FilamentShieldPlugin::make(),
                 FilamentLogViewerPlugin::make()
                     ->navigationGroup('System')
                     ->navigationLabel('Log Viewer'),
