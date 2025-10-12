@@ -69,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Admin Interface**
     - New Filament v3 resource for viewing and inspecting mail logs (status, subject, timestamps, metadata).
     - Improved visibility into sent, bounced, and replied mails.
+
 - **System Monitoring**
     - Integrated Spatie Activity Log for detailed user and system activity tracking.
     - Added ActivityResource in the System section of the admin panel for viewing, filtering, and inspecting user
