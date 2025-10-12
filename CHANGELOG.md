@@ -9,33 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Multi-factor authentication (MFA)** with support for authenticator apps (TOTP) and one-time codes via email.
-- **Web-based video upload** in the admin UI, complementing existing ingest workflows.
-- Config table now supports a `selectable` JSON column so settings can offer predefined choices.
-- New **FFMPEG** configuration category seeds codec, preset and parameter defaults for preview generation.
-- Admin UI renders selectable values for JSON-based settings as multi-select inputs.
-- **Role and permission management** via Filament Shield (integrates Spatie Laravel Permission with the admin panel,
-  providing a full UI for roles, permissions, and access control).
-- **Initial roles and permissions seeder** generated via `php artisan shield:seeder`, providing default admin access and
-  baseline permission data.
-- **Automatic role assignment** via `UserObserver`, ensuring that newly created users without explicit roles are
-  automatically assigned the default `panel_user` role across all creation contexts (Filament, seeding, API).
+- **Auth**
+    - Multi-factor authentication (MFA) with support for authenticator apps (TOTP) and one-time codes via email.
+    - Email verification and change verification for secure and verified user identities.
+    - Automatic role assignment via `UserObserver`, assigning the default `panel_user` role to newly created users.
+
+- **Admin Panel**
+    - Role and permission management via Filament Shield (integrates Spatie Laravel Permission with the admin panel,
+      providing a full UI for roles, permissions, and access control).
+    - Initial roles and permissions seeder generated via `php artisan shield:seeder`, providing default admin access and
+      baseline permission data.
+    - Web-based video upload in the admin UI, complementing existing ingest workflows.
+
+- **Configuration**
+    - Config table now supports a `selectable` JSON column so settings can offer predefined choices.
+    - New FFMPEG configuration category seeds codec, preset and parameter defaults for preview generation.
+    - Admin UI renders selectable values for JSON-based settings as multi-select inputs.
 
 ### Changed
 
-- **Backend upgraded to Filament v4** (UI components and pages migrated).
-- Preview generation now uses the `pbmedia/laravel-ffmpeg` package and reads all codec options from the database.
-- **Livewire Upload Configuration**
+- **Framework**
+    - Backend upgraded to Filament v4 (UI components and pages migrated).
+    - Preview generation now uses the `pbmedia/laravel-ffmpeg` package and reads all codec options from the database.
+
+- **Uploads**
     - Increased maximum upload size to **1 GB** to support large video files.
-    - Extended maximum upload time to **25 minutes**, corresponding to a required minimum upload speed of
-      ~**5.5 Mbit/s**.
-    - Optimized for real-world conditions - fully **LTE-capable** for mobile uploads on the go.
-    - Updated Livewire configuration (`config/livewire.php`) to reflect new limits for smoother large uploads.
-- Optimized Admin UI readability by refining layout spacing, label hierarchy, and visual alignment
+    - Extended maximum upload time to **25 minutes** (≈ 5.5 Mbit/s minimum speed).
+    - Optimized for real-world conditions – fully LTE-capable for mobile uploads.
+    - Updated Livewire configuration (`config/livewire.php`) for smoother large uploads.
+
+- **UI**
+    - Refined layout spacing, label hierarchy, and visual alignment for improved readability.
 
 ### Breaking
 
-- The Filament v4 upgrade may require adjustments to custom admin pages, widgets, or themes.
+- **Filament v4 migration**
+    - May require adjustments to custom admin pages, widgets, or themes.
 
 ## [2.5.0] - 2025-10-10
 
