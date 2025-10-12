@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Observers\UserObserver;
 use App\Repository\Contracts\ConfigRepositoryInterface;
 use App\Repository\EloquentConfigRepository;
 use App\Services\ConfigService;
@@ -88,5 +90,12 @@ class AppServiceProvider extends ServiceProvider
             $filesystem = new Filesystem($adapter);
             return new FilesystemAdapter($filesystem, $adapter, $config);
         });
+
+        $this->bootObserver();
+    }
+
+    protected function bootObserver(): void
+    {
+        User::observe(UserObserver::class);
     }
 }
