@@ -36,6 +36,7 @@
         </include>
         <exclude>
             <file>app/Console/Commands/WeeklyRun.php</file>
+            <directory>app/Policies/</directory>
         </exclude>
     </source>
     <php>
