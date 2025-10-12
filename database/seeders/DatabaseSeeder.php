@@ -21,9 +21,12 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             RegularSeeder::class,
         ]);
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ])->assignRole(RoleEnum::SUPER_ADMIN->value);
+
+        if (class_exists(\Database\Factories\UserFactory::class)) {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ])->assignRole(RoleEnum::SUPER_ADMIN->value);
+        }
     }
 }
