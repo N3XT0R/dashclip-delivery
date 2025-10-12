@@ -1,6 +1,9 @@
 name: Nightly Path Coverage
 
 on:
+  push:
+    branches: [ '*', 'release/*' ]
+    tags: [ '*' ]
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
@@ -40,7 +43,7 @@ jobs:
         with:
           name: nightly-coverage-report
           path: coverage/clover.xml
-          
+
       - name: Upload HTML coverage report
         uses: actions/upload-artifact@v4
         with:
