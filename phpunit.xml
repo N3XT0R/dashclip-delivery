@@ -13,7 +13,7 @@
 >
     <coverage
             includeUncoveredFiles="true"
-            pathCoverage="true"
+            pathCoverage="false"
     >
         <report>
             <clover outputFile="coverage/clover.xml"/>
