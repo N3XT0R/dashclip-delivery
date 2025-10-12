@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admin UI renders selectable values for JSON-based settings as multi-select inputs.
 - **Role and permission management** via Filament Shield (integrates Spatie Laravel Permission with the admin panel,
   providing a full UI for roles, permissions, and access control).
+- **Initial roles and permissions seeder** generated via `php artisan shield:seeder`, providing default admin access and
+  baseline permission data.
 
 ### Changed
 

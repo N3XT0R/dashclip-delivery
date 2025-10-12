@@ -2,9 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Enum\Users\RoleEnum;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -37,8 +40,36 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Default state für Admin-User
+     */
+    public function admin(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole(RoleEnum::SUPER_ADMIN->value);
+        });
+    }
+
+    /**
+     * Default state für Standard-User
+     */
+    public function standard(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->assignRole(RoleEnum::REGULAR->value);
+        });
+    }
+
+    public function withRole(string $roleName): static
+    {
+        return $this->afterCreating(function (User $user) use ($roleName) {
+            $role = Role::firstOrCreate(['name' => $roleName]);
+            $user->assignRole($role);
+        });
     }
 }
