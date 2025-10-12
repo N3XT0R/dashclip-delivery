@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\Clip;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -21,7 +22,7 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class VideoUpload extends Page implements HasForms
 {
-    use InteractsWithForms;
+    use InteractsWithForms, HasPageShield;
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::ArrowUpTray;
     protected static ?string $navigationLabel = 'Video Upload';

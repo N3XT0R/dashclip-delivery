@@ -8,10 +8,21 @@ use App\Filament\Pages\VideoUpload;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\User;
 use Illuminate\Support\Facades\Bus;
+use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
 final class VideoUploadTest extends DatabaseTestCase
 {
+
+    public function testRegularUserHasAccess(): void
+    {
+        $regularUser = User::factory()->standard()->create();
+        $this->actingAs($regularUser);
+
+        Livewire::test(VideoUpload::class)
+            ->assertStatus(200);
+    }
+
     public function testSubmitDispatchesJobForEachClip(): void
     {
         Bus::fake();
