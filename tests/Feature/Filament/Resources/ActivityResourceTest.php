@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Filament\Resources;
 
 use App\Filament\Resources\ActivityResource\Pages\ListActivities;
+use App\Models\Activity;
 use App\Models\User;
+use App\Models\Video;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
@@ -40,9 +42,35 @@ final class ActivityResourceTest extends DatabaseTestCase
 
     public function testListActivitiesShowsExistingRecords(): void
     {
+        $user = User::factory()->create();
+        $video = Video::factory()->create(['original_name' => 'holiday.mp4']);
+
+        activity()
+            ->performedOn($video)
+            ->causedBy($user)
+            ->withProperties([
+                'action' => 'upload',
+                'file' => $video->original_name,
+            ])
+            ->log('uploaded a video');
+
+        $this->assertDatabaseHas(Activity::class, [
+            'description' => 'uploaded a video',
+        ]);
+
+        $record = Activity::latest()->firstOrFail();
+        $expectedDate = $record->created_at->diffForHumans();
+
+
         Livewire::test(ListActivities::class)
             ->assertStatus(200)
-            ->assertSee('site.name')
-            ->assertDontSee('ui.theme');
+            ->assertCanSeeTableRecords([$record])
+            ->assertTableColumnStateSet('log_name', $record->log_name, record: $record)
+            ->assertTableColumnStateSet('description', $record->description, record: $record)
+            ->assertTableColumnStateSet('event', $record->event, record: $record)
+            ->assertTableColumnStateSet('subject', $record->subject, record: $record)
+            ->assertTableColumnStateSet('causer', $record->causer, record: $record)
+            ->assertTableColumnExists('properties', record: $record)
+            ->assertTableColumnFormattedStateSet('created_at', $expectedDate, record: $record);
     }
 }
