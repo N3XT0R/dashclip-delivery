@@ -11,14 +11,6 @@
          failOnPhpunitDeprecation="true"
          failOnIncomplete="true"
 >
-    <coverage
-            includeUncoveredFiles="true"
-            pathCoverage="false"
-    >
-        <report>
-            <clover outputFile="coverage/clover.xml"/>
-        </report>
-    </coverage>
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
@@ -40,6 +32,7 @@
         </exclude>
     </source>
     <php>
+        <ini name="memory_limit" value="512M"/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="APP_KEY" value="base64:qX1GPfVCc+DwF6K/By7bLsmonvMfpfKR5esZzEgot2o="/>

@@ -6,10 +6,11 @@ use App\Jobs\ProcessUploadedVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Slider;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
@@ -51,19 +52,19 @@ class VideoUpload extends Page implements HasForms
                             ->required()
                             ->acceptedFileTypes(['video/mp4'])
                             ->storeFiles(false),
-                        Slider::make('start_sec')
-                            ->label('Start')
-                            ->minValue(0)
-                            ->maxValue(fn(Get $get) => $get('end_sec') ?? 100)
-                            ->live()
-                            ->formatStateUsing(fn($value) => gmdate('i:s', (int)$value)),
-
-                        Slider::make('end_sec')
-                            ->label('Ende')
-                            ->minValue(fn(Get $get) => $get('start_sec') ?? 0)
-                            ->maxValue(fn(Get $get) => $get('duration') ?? 100)
-                            ->live()
-                            ->formatStateUsing(fn($value) => gmdate('i:s', (int)$value)),
+                        Hidden::make('start_sec')
+                            ->default(0)
+                            ->dehydrated(),
+                        Hidden::make('end_sec')
+                            ->default(null)
+                            ->dehydrated(),
+                        Hidden::make('duration')
+                            ->default(null)
+                            ->dehydrated(false),
+                        ViewField::make('clip_selector')
+                            ->view('filament.forms.components.clip-selector')
+                            ->columnSpanFull()
+                            ->visible(fn(Get $get) => filled($get('file'))),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()
