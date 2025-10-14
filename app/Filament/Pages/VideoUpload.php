@@ -7,13 +7,13 @@ use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Slider;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -51,19 +51,7 @@ class VideoUpload extends Page implements HasForms
                             ->required()
                             ->acceptedFileTypes(['video/mp4'])
                             ->storeFiles(false),
-                        Slider::make('start_sec')
-                            ->label('Start')
-                            ->minValue(0)
-                            ->maxValue(fn(Get $get) => $get('end_sec') ?? 100)
-                            ->live()
-                            ->formatStateUsing(fn($value) => gmdate('i:s', (int)$value)),
-
-                        Slider::make('end_sec')
-                            ->label('Ende')
-                            ->minValue(fn(Get $get) => $get('start_sec') ?? 0)
-                            ->maxValue(fn(Get $get) => $get('duration') ?? 100)
-                            ->live()
-                            ->formatStateUsing(fn($value) => gmdate('i:s', (int)$value)),
+                        $this->timeFields(),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()
@@ -89,6 +77,74 @@ class VideoUpload extends Page implements HasForms
                     ])
             ])
             ->statePath('data');
+    }
+
+    protected function timeFields(): Grid
+    {
+        return Grid::make(2)
+            ->schema([
+                TextInput::make('start_sec')
+                    ->label('Start (mm:ss)')
+                    ->required()
+                    ->placeholder('mm:ss')
+                    ->mask('99:99')
+                    ->rule(function (Get $get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $end = $get('end_sec');
+                            if ($end !== null && static::toSeconds($value) >= (int)$end) {
+                                $fail('Der Startzeitpunkt muss kleiner als der Endzeitpunkt sein.');
+                            }
+                        };
+                    })
+                    ->afterStateHydrated(function (TextInput $component, $state) {
+                        if (!$state) {
+                            $state = 0;
+                        }
+                        $minutes = floor($state / 60);
+                        $seconds = $state % 60;
+                        $component->state(sprintf('%02d:%02d', $minutes, $seconds));
+                    })
+                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state)),
+
+                TextInput::make('end_sec')
+                    ->label('Ende (mm:ss)')
+                    ->required()
+                    ->placeholder('mm:ss')
+                    ->mask('99:99')
+                    ->rule(function (Get $get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $start = $get('start_sec');
+                            $duration = $get('duration') ?? null;
+                            $endValue = static::toSeconds($value);
+
+                            if ($start !== null && $endValue <= (int)$start) {
+                                $fail('Der Endzeitpunkt muss größer als der Startzeitpunkt sein.');
+                            }
+
+                            if ($duration !== null && $endValue > (int)$duration) {
+                                $fail('Das Ende darf nicht hinter der Videolänge liegen.');
+                            }
+                        };
+                    })
+                    ->afterStateHydrated(function (TextInput $component, $state, Get $get) {
+                        $duration = $get('duration');
+                        if (empty($state) && $duration) {
+                            $state = $duration;
+                        }
+                        $minutes = floor($state / 60);
+                        $seconds = $state % 60;
+                        $component->state(sprintf('%02d:%02d', $minutes, $seconds));
+                    })
+                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state)),
+            ]);
+    }
+
+    protected static function toSeconds($state): int
+    {
+        if (preg_match('/^(\d+):(\d{1,2})$/', $state, $matches)) {
+            return ((int)$matches[1] * 60) + (int)$matches[2];
+        }
+        return (int)$state;
     }
 
     public function submit(): void
