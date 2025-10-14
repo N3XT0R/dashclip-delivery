@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Filament\Resources;
+namespace Tests\Feature\Filament\Resources;
 
 use App\Filament\Resources\ActivityResource\Pages\ListActivities;
 use App\Models\Activity;
@@ -59,7 +59,7 @@ final class ActivityResourceTest extends DatabaseTestCase
         ]);
 
         $record = Activity::latest()->firstOrFail();
-        
+
         Livewire::test(ListActivities::class)
             ->assertStatus(200)
             ->assertCanSeeTableRecords([$record])
