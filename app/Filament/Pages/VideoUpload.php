@@ -6,6 +6,7 @@ use App\Jobs\ProcessUploadedVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -15,6 +16,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
@@ -51,6 +53,9 @@ class VideoUpload extends Page implements HasForms
                             ->required()
                             ->acceptedFileTypes(['video/mp4'])
                             ->storeFiles(false),
+                        View::make('filament.forms.components.clip-selector')
+                            ->dehydrated(false),
+                        Hidden::make('duration')->default(0)->dehydrated(),
                         $this->timeFields(),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
@@ -91,7 +96,7 @@ class VideoUpload extends Page implements HasForms
                     ->rule(function (Get $get) {
                         return function (string $attribute, $value, \Closure $fail) use ($get) {
                             $end = $get('end_sec');
-                            if ($end !== null && static::toSeconds($value) >= (int)$end) {
+                            if ($end !== null && static::toSeconds($value) <= (int)$end) {
                                 $fail('Der Startzeitpunkt muss kleiner als der Endzeitpunkt sein.');
                             }
                         };
@@ -117,7 +122,7 @@ class VideoUpload extends Page implements HasForms
                             $duration = $get('duration') ?? null;
                             $endValue = static::toSeconds($value);
 
-                            if ($start !== null && $endValue <= (int)$start) {
+                            if ($start !== null && $endValue >= (int)$start) {
                                 $fail('Der Endzeitpunkt muss größer als der Startzeitpunkt sein.');
                             }
 
