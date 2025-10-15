@@ -98,7 +98,7 @@ class VideoUpload extends Page implements HasForms
                     ->placeholder('mm:ss')
                     ->mask('99:99')
                     ->rule(function (Get $get) {
-                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                        return static function (string $attribute, $value, \Closure $fail) use ($get) {
                             $end = $get('end_sec');
                             if ($end !== null && static::toSeconds($value) >= static::toSeconds($end)) {
                                 $fail('Der Startzeitpunkt muss kleiner als der Endzeitpunkt sein.');
@@ -121,7 +121,7 @@ class VideoUpload extends Page implements HasForms
                     ->placeholder('mm:ss')
                     ->mask('99:99')
                     ->rule(function (Get $get) {
-                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                        return static function (string $attribute, $value, \Closure $fail) use ($get) {
                             $start = $get('start_sec');
                             $duration = $get('duration') ?? null;
                             $endValue = static::toSeconds($value);
