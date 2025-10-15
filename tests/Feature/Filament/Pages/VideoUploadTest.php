@@ -8,6 +8,8 @@ use App\Filament\Pages\VideoUpload;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\User;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
@@ -26,7 +28,7 @@ final class VideoUploadTest extends DatabaseTestCase
     public function testSubmitDispatchesJobForEachClip(): void
     {
         Bus::fake();
-        $disk = \Storage::fake();
+        $disk = Storage::fake();
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
 
@@ -103,12 +105,31 @@ final class VideoUploadTest extends DatabaseTestCase
 
         $page = new VideoUpload();
         $page->form = new class($state) {
+            private bool $validated = false;
+
             public function __construct(private array $state)
             {
             }
 
+            public function validate(): void
+            {
+                $this->validated = true;
+
+                foreach ($this->state['clips'] ?? [] as $index => $clip) {
+                    if (($clip['duration'] ?? 0) < 1) {
+                        throw ValidationException::withMessages([
+                            "clips.$index.duration" => 'The duration must be at least 1 second.',
+                        ]);
+                    }
+                }
+            }
+
             public function getState(): array
             {
+                if (! $this->validated) {
+                    throw new \RuntimeException('Form state accessed before validation.');
+                }
+
                 return $this->state;
             }
 
@@ -142,5 +163,86 @@ final class VideoUploadTest extends DatabaseTestCase
                     && $job->role === 'R2'
                     && $job->submittedBy === $user->name;
             });
+    }
+
+    public function testSubmitRequiresDurationGreaterThanZero(): void
+    {
+        $user = User::factory()->admin()->create();
+        $this->actingAs($user);
+
+        $disk = Storage::fake();
+        $disk->put('uploads/tmp/file-zero.mp4', 'z');
+        $path = $disk->path('uploads/tmp/file-zero.mp4');
+
+        $file = new class($path) {
+            public function __construct(private string $path)
+            {
+            }
+
+            public function store($dir): string
+            {
+                return 'uploads/tmp/'.basename($this->path);
+            }
+
+            public function getClientOriginalName(): string
+            {
+                return 'zero.mp4';
+            }
+
+            public function getClientOriginalExtension(): string
+            {
+                return 'mp4';
+            }
+        };
+
+        $state = [
+            'clips' => [[
+                'file' => $file,
+                'start_sec' => 0,
+                'end_sec' => 1,
+                'duration' => 0,
+                'note' => null,
+                'bundle_key' => null,
+                'role' => null,
+            ]],
+        ];
+
+        $page = new VideoUpload();
+        $page->form = new class($state) {
+            private bool $validated = false;
+
+            public function __construct(private array $state)
+            {
+            }
+
+            public function validate(): void
+            {
+                $this->validated = true;
+
+                foreach ($this->state['clips'] ?? [] as $index => $clip) {
+                    if (($clip['duration'] ?? 0) < 1) {
+                        throw ValidationException::withMessages([
+                            "clips.$index.duration" => 'The duration must be at least 1 second.',
+                        ]);
+                    }
+                }
+            }
+
+            public function getState(): array
+            {
+                if (! $this->validated) {
+                    throw new \RuntimeException('Form state accessed before validation.');
+                }
+
+                return $this->state;
+            }
+
+            public function fill(): void
+            {
+            }
+        };
+
+        $this->expectException(ValidationException::class);
+        $page->submit();
     }
 }
