@@ -55,7 +55,11 @@ class VideoUpload extends Page implements HasForms
                             ->storeFiles(false),
                         View::make('filament.forms.components.clip-selector')
                             ->dehydrated(false),
-                        Hidden::make('duration')->default(0)->dehydrated(),
+                        Hidden::make('duration')
+                            ->default(0)
+                            ->required()
+                            ->rule('numeric|min:1')
+                            ->dehydrated(),
                         $this->timeFields(),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
@@ -154,6 +158,7 @@ class VideoUpload extends Page implements HasForms
 
     public function submit(): void
     {
+        $this->form->validate();
         $state = $this->form->getState();
         $user = Auth::user()?->name;
 
