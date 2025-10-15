@@ -198,7 +198,6 @@ const registerClipSelector = () => {
 
             const url = window.URL.createObjectURL(file);
             this.fileUrl = url;
-            this.showPlayer = true;
             video.src = url;
             video.load();
         },
