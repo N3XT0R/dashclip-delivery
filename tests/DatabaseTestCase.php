@@ -11,9 +11,11 @@ class DatabaseTestCase extends TestCase
 {
     use RefreshDatabase;
 
+
     protected function setUp(): void
     {
         parent::setUp();
         Artisan::call('config:clear');
+        $this->seed();
     }
 }

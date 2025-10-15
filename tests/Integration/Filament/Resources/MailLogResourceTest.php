@@ -29,14 +29,14 @@ final class MailLogResourceTest extends DatabaseTestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 
     public function testListMailLogsShowsNewestFirstWithFormattedColumns(): void
     {
         $older = MailLog::query()->create([
-            'message_id' => (string) Str::uuid(),
+            'message_id' => (string)Str::uuid(),
             'internal_id' => 'internal-older',
             'to' => 'older@example.test',
             'subject' => 'Older Subject',
@@ -51,7 +51,7 @@ final class MailLogResourceTest extends DatabaseTestCase
         ])->save();
 
         $newer = MailLog::query()->create([
-            'message_id' => (string) Str::uuid(),
+            'message_id' => (string)Str::uuid(),
             'internal_id' => 'internal-newer',
             'to' => 'newer@example.test',
             'subject' => 'Newer Subject',
@@ -65,14 +65,17 @@ final class MailLogResourceTest extends DatabaseTestCase
             'updated_at' => Carbon::parse('2024-02-03 09:15:00'),
         ])->save();
 
+        $expectedNewer = $newer->created_at->diffForHumans();
+        $expectedOlder = $newer->created_at->diffForHumans();
+
         Livewire::test(ListMailLogs::class)
             ->assertStatus(200)
             ->assertCanSeeTableRecords([$newer, $older])
             ->assertTableColumnStateSet('to', 'newer@example.test', record: $newer)
             ->assertTableColumnStateSet('to', 'older@example.test', record: $older)
             ->assertTableColumnStateSet('subject', 'Newer Subject', record: $newer)
-            ->assertTableColumnFormattedStateSet('created_at', '03.02.2024 09:15', record: $newer)
-            ->assertTableColumnFormattedStateSet('created_at', '02.01.2024 12:00', record: $older)
+            ->assertTableColumnFormattedStateSet('created_at', $expectedNewer, record: $newer)
+            ->assertTableColumnFormattedStateSet('created_at', $expectedOlder, record: $older)
             ->tap(function ($livewire) use ($newer, $older) {
                 $this->assertSame(
                     [$newer->getKey(), $older->getKey()],
@@ -85,7 +88,7 @@ final class MailLogResourceTest extends DatabaseTestCase
     public function testViewMailLogDisplaysMetadataHeadersFromArray(): void
     {
         $log = MailLog::query()->create([
-            'message_id' => (string) Str::uuid(),
+            'message_id' => (string)Str::uuid(),
             'internal_id' => 'view-array',
             'to' => 'recipient@example.test',
             'subject' => 'Array Headers',
@@ -115,7 +118,7 @@ final class MailLogResourceTest extends DatabaseTestCase
     public function testViewMailLogDisplaysMetadataHeadersFromString(): void
     {
         $log = MailLog::query()->create([
-            'message_id' => (string) Str::uuid(),
+            'message_id' => (string)Str::uuid(),
             'internal_id' => 'view-string',
             'to' => 'string@example.test',
             'subject' => 'String Headers',

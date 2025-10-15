@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\DownloadResource\Pages\ListDownloads;
+use App\Filament\Resources\Downloads\Pages\ListDownloads;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -22,7 +22,7 @@ final class DownloadResourceTest extends DatabaseTestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 

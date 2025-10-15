@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\ConfigResource\Pages\EditConfig;
-use App\Filament\Resources\ConfigResource\Pages\ListConfigs;
+use App\Filament\Resources\Configs\Pages\EditConfig;
+use App\Filament\Resources\Configs\Pages\ListConfigs;
 use App\Models\Config;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -28,8 +28,17 @@ final class ConfigResourceTest extends DatabaseTestCase
         parent::setUp();
 
         // Authenticate as a user (User::canAccessPanel returns true)
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
+    }
+
+    public function testRegularUserHasNoAccess(): void
+    {
+        $regularUser = User::factory()->standard()->create();
+        $this->actingAs($regularUser);
+
+        Livewire::test(ListConfigs::class)
+            ->assertStatus(403);
     }
 
     public function testListConfigsShowsExistingRecords(): void

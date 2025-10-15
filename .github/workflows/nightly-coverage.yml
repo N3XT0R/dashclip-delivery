@@ -1,0 +1,56 @@
+name: Nightly Path Coverage
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  nightly-coverage:
+    name: Run Nightly Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer, phpunit, xdebug
+          coverage: xdebug
+
+      - name: Set up FFmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v2
+        with:
+          token: ${{ github.token }}
+      - run: ffmpeg -version
+
+      - name: Install PHP dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: --no-progress --no-interaction --prefer-dist
+
+      - name: Run PHPUnit with Coverage
+        run: vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage/clover.xml --path-coverage --coverage-html=report
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-coverage-report
+          path: coverage/clover.xml
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-coverage-report
+          path: report/
+
+      - name: Send coverage to Qlty
+        if: success()  # optional
+        uses: qltysh/qlty-action/coverage@v1
+        with:
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+          files: coverage/clover.xml
+

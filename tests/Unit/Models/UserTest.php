@@ -25,7 +25,7 @@ final class UserTest extends DatabaseTestCase
     public function testFactoryCreatesUserWithHashedPasswordAndFillableAttributes(): void
     {
         // Arrange & Act
-        $user = User::factory()->create([
+        $user = User::factory()->admin()->create([
             'name' => 'Jane Doe',
             'email' => 'jane@example.test',
             'password' => 'secret123', // "hashed" cast should hash this on save
@@ -42,7 +42,7 @@ final class UserTest extends DatabaseTestCase
 
     public function testHiddenAttributesAreExcludedFromArrayAndJson(): void
     {
-        $user = User::factory()->create([
+        $user = User::factory()->admin()->create([
             'password' => 'secret123',
             'remember_token' => 'abc123',
         ])->fresh();
@@ -60,7 +60,7 @@ final class UserTest extends DatabaseTestCase
     {
         $ts = '2025-08-10 12:34:56';
 
-        $user = User::factory()->create([
+        $user = User::factory()->admin()->create([
             'email_verified_at' => $ts,
         ])->fresh();
 
@@ -70,7 +70,7 @@ final class UserTest extends DatabaseTestCase
 
     public function testCanAccessPanelAlwaysReturnsTrue(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         // We don't care about Panel internals; the method ignores its argument.
         $panel = Mockery::mock(Panel::class);

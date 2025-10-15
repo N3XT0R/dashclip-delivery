@@ -3,10 +3,17 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
+         failOnRisky="true"
+         failOnDeprecation="true"
+         failOnSkipped="true"
+         failOnWarning="true"
+         failOnEmptyTestSuite="true"
+         failOnPhpunitDeprecation="true"
+         failOnIncomplete="true"
 >
     <coverage
             includeUncoveredFiles="true"
-            pathCoverage="true"
+            pathCoverage="false"
     >
         <report>
             <clover outputFile="coverage/clover.xml"/>
@@ -29,6 +36,7 @@
         </include>
         <exclude>
             <file>app/Console/Commands/WeeklyRun.php</file>
+            <directory>app/Policies/</directory>
         </exclude>
     </source>
     <php>

@@ -1,5 +1,7 @@
 <?php
 
+use Filament\Support\Commands\FileGenerators\FileGenerationFlag;
+
 return [
 
     /*
@@ -16,18 +18,19 @@ return [
 
     'broadcasting' => [
 
-        // 'echo' => [
-        //     'broadcaster' => 'pusher',
-        //     'key' => env('VITE_PUSHER_APP_KEY'),
-        //     'cluster' => env('VITE_PUSHER_APP_CLUSTER'),
-        //     'wsHost' => env('VITE_PUSHER_HOST'),
-        //     'wsPort' => env('VITE_PUSHER_PORT'),
-        //     'wssPort' => env('VITE_PUSHER_PORT'),
-        //     'authEndpoint' => '/broadcasting/auth',
-        //     'disableStats' => true,
-        //     'encrypted' => true,
-        //     'forceTLS' => true,
-        // ],
+        'echo' => [
+            'broadcaster' => 'reverb',
+            'key' => env('VITE_REVERB_APP_KEY'),
+            'cluster' => env('VITE_PUSHER_APP_CLUSTER'),
+            'wsHost' => env('VITE_REVERB_HOST'),
+            'wsPort' => env('VITE_REVERB_PORT', 80),
+            'wssPort' => env('VITE_REVERB_PORT', 443),
+            'authEndpoint' => '/broadcasting/auth',
+            'disableStats' => true,
+            'encrypted' => true,
+            'wsPath' => env('VITE_REVERB_SERVER'),
+            'forceTLS' => env('VITE_REVERB_SCHEME', 'https') === 'https',
+        ],
 
     ],
 
@@ -41,7 +44,7 @@ return [
     |
     */
 
-    'default_filesystem_disk' => env('FILAMENT_FILESYSTEM_DISK', 'public'),
+    'default_filesystem_disk' => env('FILESYSTEM_DISK', 'public'),
 
     /*
     |--------------------------------------------------------------------------
@@ -85,6 +88,36 @@ return [
     */
 
     'livewire_loading_delay' => 'default',
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Generation
+    |--------------------------------------------------------------------------
+    |
+    | Artisan commands that generate files can be configured here by setting
+    | configuration flags that will impact their location or content.
+    |
+    | Often, this is useful to preserve file generation behavior from a
+    | previous version of Filament, to ensure consistency between older and
+    | newer generated files. These flags are often documented in the upgrade
+    | guide for the version of Filament you are upgrading to.
+    |
+    */
+
+    'file_generation' => [
+        'flags' => [
+            FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_SCHEMAS,
+            // Define new forms and infolists inside the resource class instead of a separate schema class.
+            FileGenerationFlag::EMBEDDED_PANEL_RESOURCE_TABLES,
+            // Define new tables inside the resource class instead of a separate table class.
+            FileGenerationFlag::PANEL_CLUSTER_CLASSES_OUTSIDE_DIRECTORIES,
+            // Create new cluster classes outside of their directories. Not required if you run `php artisan filament:upgrade-directory-structure-to-v4`.
+            FileGenerationFlag::PANEL_RESOURCE_CLASSES_OUTSIDE_DIRECTORIES,
+            // Create new resource classes outside of their directories. Not required if you run `php artisan filament:upgrade-directory-structure-to-v4`.
+            FileGenerationFlag::PARTIAL_IMPORTS,
+            // Partially import components such as form fields and table columns instead of importing each component explicitly.
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

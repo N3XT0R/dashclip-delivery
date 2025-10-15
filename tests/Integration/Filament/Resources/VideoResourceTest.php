@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\VideoResource\Pages\ListVideos;
-use App\Filament\Resources\VideoResource\Pages\ViewVideo;
+use App\Filament\Resources\Videos\Pages\ListVideos;
+use App\Filament\Resources\Videos\Pages\ViewVideo;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -33,7 +33,7 @@ final class VideoResourceTest extends DatabaseTestCase
         parent::setUp();
 
         // Authenticate — User::canAccessPanel() returns true in your app
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\BatchResource\Pages\ListBatches;
-use App\Filament\Resources\BatchResource\Pages\ViewBatch;
-use App\Filament\Resources\BatchResource\RelationManagers\ChannelsRelationManager;
+use App\Filament\Resources\Batches\Pages\ListBatches;
+use App\Filament\Resources\Batches\Pages\ViewBatch;
+use App\Filament\Resources\Batches\RelationManagers\ChannelsRelationManager;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -24,7 +24,7 @@ final class BatchResourceTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 

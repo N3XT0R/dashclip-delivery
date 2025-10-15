@@ -164,6 +164,10 @@ task('artisan:storage:link', artisan('storage:link', ['min' => 5.3]));
 desc('Compiles all of the application\'s Blade templates');
 task('artisan:view:cache', artisan('view:cache', ['min' => 5.6]));
 
+
+desc('Compiles all of the filament\'s Blade templates');
+task('filament:view:cache', artisan('filament:optimize'));
+
 desc('Clears all compiled view files');
 task('artisan:view:clear', artisan('view:clear'));
 
@@ -347,13 +351,14 @@ task('deploy', [
     // workaround for https://github.com/laravel/framework/commit/c74782097556740b75563f43d7f8c351fc01a375?diff=split
     'artisan:config:cache',
     'artisan:route:cache',
+    'filament:view:cache',
     'artisan:view:cache',
     'artisan:event:cache',
     'artisan:migrate',
     'deploy:publish',
 ]);
 
-before('artisan:view:cache', 'npm:ci');
+before('filament:view:cache', 'npm:ci');
 after('npm:ci', 'npm:build');
 before('systemd:restart', 'systemd:detect');
 after('deploy:cleanup', 'systemd:restart');

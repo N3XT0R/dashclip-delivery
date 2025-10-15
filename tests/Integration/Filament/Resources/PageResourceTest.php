@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\PageResource\Pages\EditPage;
-use App\Filament\Resources\PageResource\Pages\ListPages;
+use App\Filament\Resources\Configs\Pages\ListConfigs;
+use App\Filament\Resources\Pages\Pages\EditPage;
+use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Models\Page;
 use App\Models\User;
 use Livewire\Livewire;
@@ -27,8 +28,17 @@ final class PageResourceTest extends DatabaseTestCase
         parent::setUp();
 
         // Authenticate as a user (User::canAccessPanel returns true)
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
+    }
+
+    public function testRegularUserHasNoAccess(): void
+    {
+        $regularUser = User::factory()->standard()->create();
+        $this->actingAs($regularUser);
+
+        Livewire::test(ListConfigs::class)
+            ->assertStatus(403);
     }
 
     public function testListPagesShowsExistingRecords(): void

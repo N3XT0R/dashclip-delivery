@@ -236,7 +236,7 @@ final class AssignmentDownloadControllerTest extends DatabaseTestCase
                 'download_token' => null, // skipTracking case
             ]);
 
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $this->be($user, 'web');
 
         $url = URL::temporarySignedRoute('assignments.download', now()->addHour(), [

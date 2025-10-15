@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\NotificationResource;
-use App\Filament\Resources\NotificationResource\Pages\ListNotifications;
+use App\Filament\Resources\Notifications\NotificationResource;
+use App\Filament\Resources\Notifications\Pages\ListNotifications;
 use App\Models\Notification;
 use App\Models\User;
 use Filament\Tables\Table;
@@ -19,7 +19,7 @@ final class NotificationResourceTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
     }
 
