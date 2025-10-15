@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Carbon\CarbonInterval;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -130,8 +131,8 @@ class VideoUpload extends Page implements HasForms
                             }
 
                             if ($duration !== null && $endValue > (int)$duration) {
-                                $fail(sprintf('Das Ende darf nicht hinter der Videolänge von %s Sekunden liegen.',
-                                    $duration));
+                                $fail(sprintf('Das Ende darf nicht hinter der Videolänge von %s liegen.',
+                                    CarbonInterval::seconds($duration)->cascade()->format('%I:%S')));
                             }
                         };
                     })
