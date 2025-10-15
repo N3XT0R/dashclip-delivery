@@ -130,7 +130,8 @@ class VideoUpload extends Page implements HasForms
                             }
 
                             if ($duration !== null && $endValue > (int)$duration) {
-                                $fail('Das Ende darf nicht hinter der Videolänge liegen.');
+                                $fail(sprintf('Das Ende darf nicht hinter der Videolänge von %s Sekunden liegen.',
+                                    $duration));
                             }
                         };
                     })
