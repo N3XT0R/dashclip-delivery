@@ -58,7 +58,7 @@ class VideoUpload extends Page implements HasForms
                         Hidden::make('duration')
                             ->default(0)
                             ->required()
-                            ->rule('integer|min:1')
+                            //->rule('integer|min:1')
                             ->dehydrated(),
                         $this->timeFields(),
                         Textarea::make('note')->label('Notiz')
