@@ -1,5 +1,21 @@
-<div x-data="clipSelector()" class="space-y-2" x-init="init()">
-    <input type="hidden" x-model="start" wire:model.defer="{{ $getStatePath() }}.start_sec">
-    <input type="hidden" x-model="end" wire:model.defer="{{ $getStatePath() }}.end_sec">
-    <input type="hidden" x-model="duration" wire:model.defer="{{ $getStatePath() }}.duration">
+<div>
+    <input
+            type="hidden"
+            value="0"
+            wire:model.defer="{{ $getStatePath() }}.duration"
+    >
 </div>
+<script>
+    document.addEventListener('FilePond:addfile', (event) => {
+        console.log(event.target);
+        const file = event.detail.file.file;
+        const url = URL.createObjectURL(file);
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.src = url;
+        video.onloadedmetadata = () => {
+            URL.revokeObjectURL(url);
+            console.log('Dauer:', video.duration);
+        };
+    });
+</script>
