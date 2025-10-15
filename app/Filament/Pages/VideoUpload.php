@@ -53,13 +53,12 @@ class VideoUpload extends Page implements HasForms
                             ->required()
                             ->acceptedFileTypes(['video/mp4'])
                             ->storeFiles(false),
-                        View::make('filament.forms.components.clip-selector')
-                            ->dehydrated(false),
                         Hidden::make('duration')
                             ->default(0)
                             ->required()
-                            //->rule('integer|min:1')
                             ->dehydrated(),
+                        View::make('filament.forms.components.clip-selector')
+                            ->dehydrated(false),
                         $this->timeFields(),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
