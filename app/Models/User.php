@@ -25,6 +25,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
      */
     protected $fillable = [
         'name',
+        'submitted_name',
         'email',
         'password',
     ];
