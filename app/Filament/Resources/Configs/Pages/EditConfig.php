@@ -38,7 +38,7 @@ class EditConfig extends EditRecord
                 ->withProperties([
                     'key' => $record->getAttribute('key'),
                     'old' => $record->getAttribute('value'),
-                    'new' => [$data['value']]
+                    'new' => $data['value']
                 ]);
         } catch (ValidationException $e) {
             Notification::make()
