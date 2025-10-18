@@ -164,7 +164,7 @@ class VideoUpload extends Page implements HasForms
     {
         $this->form->validate();
         $state = $this->form->getState();
-        $user = Auth::user()?->name;
+        $user = Auth::user()?->display_name;
 
         foreach ($state['clips'] ?? [] as $clip) {
             /** @var TemporaryUploadedFile $file */
