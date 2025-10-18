@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
-use App\Models\Video;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Facades\Log;
@@ -134,15 +133,7 @@ final class IngestScanner
         $dstRel = $this->buildDestinationPath($hash, $ext);
 
         // Create video before upload so preview can be generated from local path
-        $video = Video::query()->create([
-            'hash' => $hash,
-            'ext' => $ext,
-            'bytes' => $bytes,
-            'path' => $this->makeStorageRelative($path),
-            'disk' => 'local',
-            'meta' => null,
-            'original_name' => $fileName,
-        ]);
+        $video = $this->videoService->createLocal($hash, $ext, $bytes, $path, $fileName);
 
         // Re-import clip information after video has been created
         $this->maybeImportCsvForDirectory(dirname($path));

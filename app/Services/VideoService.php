@@ -79,4 +79,13 @@ readonly class VideoService
 
         return implode('/', $relParts);
     }
+
+    public function finalizeUpload(Video $video, string $dstRel, string $diskName, ?string $previewUrl): void
+    {
+        $video->update([
+            'path' => $dstRel,
+            'disk' => $diskName,
+            'preview_url' => $previewUrl,
+        ]);
+    }
 }
