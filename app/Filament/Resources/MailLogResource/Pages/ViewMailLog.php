@@ -18,6 +18,7 @@ class ViewMailLog extends ViewRecord
     {
         return $schema
             ->schema([
+                TextEntry::make('direction')->label('Richtung'),
                 TextEntry::make('to')->label('Empfänger'),
                 TextEntry::make('subject')->label('Betreff'),
                 TextEntry::make('status')->label('Status'),
