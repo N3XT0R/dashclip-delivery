@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Initial roles and permissions seeder generated via `php artisan shield:seeder`, providing default admin access and
       baseline permission data.
     - Web-based video upload in the admin UI, complementing existing ingest workflows.
+        - Ensures a valid preview range is available even if the user doesn't manually
+          adjust the start/end time after upload.
+
 
 - **Configuration**
     - Config table now supports a `selectable` JSON column so settings can offer predefined choices.
