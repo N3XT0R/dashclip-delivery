@@ -63,7 +63,8 @@ class VideoUpload extends Page implements HasForms
                             ])
                             ->mimeTypeMap([
                                 'mp4' => 'video/mp4',
-                            ]),
+                            ])
+                            ->storeFiles(false),
                         Hidden::make('duration')
                             ->default(0)
                             ->required()
@@ -174,10 +175,14 @@ class VideoUpload extends Page implements HasForms
         $user = Auth::user();
 
         foreach ($state['clips'] ?? [] as $clip) {
+            /**
+             * @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile $file
+             */
             $file = $clip['file'];
+            $stored = $file->store('uploads/tmp', 'public');
             ProcessUploadedVideo::dispatch(
                 user: $user,
-                path: \Storage::disk('public')->path($file),
+                path: \Storage::disk('public')->path($stored),
                 originalName: $file->getClientOriginalName(),
                 ext: $file->getClientOriginalExtension(),
                 start: (int)($clip['start_sec'] ?? 0),
