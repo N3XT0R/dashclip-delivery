@@ -164,7 +164,7 @@ class VideoUpload extends Page implements HasForms
     {
         $this->form->validate();
         $state = $this->form->getState();
-        $user = Auth::user()?->display_name;
+        $user = Auth::user();
 
         foreach ($state['clips'] ?? [] as $clip) {
             /** @var TemporaryUploadedFile $file */
@@ -172,13 +172,13 @@ class VideoUpload extends Page implements HasForms
             $stored = $file->store('uploads/tmp');
 
             ProcessUploadedVideo::dispatch(
-                user: auth()->user(),
+                user: $user,
                 path: \Storage::disk()->path($stored),
                 originalName: $file->getClientOriginalName(),
                 ext: $file->getClientOriginalExtension(),
                 start: (int)($clip['start_sec'] ?? 0),
                 end: (int)($clip['end_sec'] ?? 0),
-                submittedBy: $user,
+                submittedBy: $user?->display_name,
                 note: $clip['note'] ?? null,
                 bundleKey: $clip['bundle_key'] ?? null,
                 role: $clip['role'] ?? null,
