@@ -58,6 +58,6 @@ class InboundHandler implements MessageStrategyInterface
             ],
         ]);
 
-        Log::info("Inbound mail stored: {$subject} from {$from}");
+        Log::info("Inbound mail stored: {$subject} from {$from}", ['from' => $from]);
     }
 }
