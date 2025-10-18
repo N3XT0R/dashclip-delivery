@@ -8,7 +8,7 @@ return [
     ],
 
     'ffprobe' => [
-        'binaries' => env('FFPROBE_BINARIES', 'ffprobe'),
+        'binaries' => env('FFPROBE_BINARIES', '/usr/bin/ffprobe'),
     ],
 
     'timeout' => 3600,
@@ -17,5 +17,8 @@ return [
 
     'temporary_files_root' => env('FFMPEG_TEMPORARY_FILES_ROOT', sys_get_temp_dir()),
 
-    'temporary_files_encrypted_hls' => env('FFMPEG_TEMPORARY_ENCRYPTED_HLS', env('FFMPEG_TEMPORARY_FILES_ROOT', sys_get_temp_dir())),
+    'temporary_files_encrypted_hls' => env(
+        'FFMPEG_TEMPORARY_ENCRYPTED_HLS',
+        env('FFMPEG_TEMPORARY_FILES_ROOT', sys_get_temp_dir())
+    ),
 ];

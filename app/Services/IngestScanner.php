@@ -19,6 +19,7 @@ use Throwable;
 /**
  * Recursively scans an input directory and imports new video files
  * into the configured storage. Detects duplicates using SHA-256.
+ * @todo refactor
  */
 final class IngestScanner
 {
