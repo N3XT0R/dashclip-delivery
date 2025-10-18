@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use App\Models\MailLog;
+
+class MailRepository
+{
+    public function findMailByInReplyTo(string $inReplyTo): ?MailLog
+    {
+        return MailLog::where('message_id', 'like', '%'.$inReplyTo.'%')
+            ->first();
+    }
+}

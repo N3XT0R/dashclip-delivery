@@ -6,7 +6,7 @@ namespace App\Services\Mail\Scanner\Handlers;
 
 use App\Enum\MailStatus;
 use App\Mail\NoReplyFAQMail;
-use App\Models\MailLog;
+use App\Repository\MailRepository;
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +15,10 @@ use Webklex\PHPIMAP\Message;
 
 class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
 {
+    public function __construct(private MailRepository $mailRepository)
+    {
+    }
+
     public function matches(Message $message): bool
     {
         return $message->getInReplyTo() !== null;
@@ -29,7 +33,7 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
             return;
         }
 
-        $log = MailLog::where('message_id', 'like', '%'.$inReplyTo.'%')->first();
+        $log = $this->mailRepository->findMailByInReplyTo($inReplyTo);
         if (!$log) {
             return;
         }
