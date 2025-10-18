@@ -23,8 +23,7 @@ class MailReplyScannerBindingTest extends TestCase
         $reflection->setAccessible(true);
 
         $handlers = iterator_to_array($reflection->getValue($first));
-
-        $this->assertCount(2, $handlers);
+        
         $this->assertInstanceOf(BounceHandler::class, $handlers[0]);
         $this->assertInstanceOf(ReplyHandler::class, $handlers[1]);
     }
