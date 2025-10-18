@@ -55,7 +55,13 @@ class VideoUpload extends Page implements HasForms
                         FileUpload::make('file')
                             ->label('Video')
                             ->required()
-                            ->acceptedFileTypes(['video/mp4'])
+                            ->acceptedFileTypes([
+                                'video/mp4',
+                                'application/mp4',
+                            ])
+                            ->mimeTypeMap([
+                                'mp4' => 'video/mp4',
+                            ])
                             ->storeFiles(false),
                         Hidden::make('duration')
                             ->default(0)
