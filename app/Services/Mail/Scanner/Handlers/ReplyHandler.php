@@ -42,7 +42,7 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
             $mail = new NoReplyFAQMail();
             Mail::to($from)->queue($mail);
             $this->mailRepository->updateStatus($log, MailStatus::Replied);
-            Log::info("Auto-reply sent to {$from}");
+            Log::info("Auto-reply sent to {$from}", ['to' => $from]);
         }
     }
 
