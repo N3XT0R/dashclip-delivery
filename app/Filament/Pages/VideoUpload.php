@@ -67,9 +67,9 @@ class VideoUpload extends Page implements HasForms
                             ->default(0)
                             ->required()
                             ->dehydrated(),
+                        $this->timeFields(),
                         View::make('filament.forms.components.clip-selector')
                             ->dehydrated(false),
-                        $this->timeFields(),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()

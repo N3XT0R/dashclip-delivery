@@ -6,10 +6,26 @@
     >
 </div>
 <script>
+    function formatDuration(value) {
+        const seconds = Number(value);
+
+        if (!Number.isFinite(seconds)) return "00:00";
+
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
     document.addEventListener('FilePond:addfile', (event) => {
         const modelPath = '{{ $getStatePath() }}.duration';
         const selector = `input[wire\\:model\\.defer="${modelPath}"]`;
         const input = document.querySelector(selector);
+
+        const endSec = '{{ $getStatePath() }}.end_sec';
+        const endSelector = `input[wire\\:model="${endSec}"]`;
+        const endInput = document.querySelector(endSelector);
+        console.log(endInput);
+
         if (!input) {
             return;
         }
@@ -24,10 +40,17 @@
         video.preload = 'metadata';
         video.src = url;
         video.onloadedmetadata = () => {
+            let duration = Math.floor(video.duration ?? 0);
+            console.log(duration);
             URL.revokeObjectURL(url);
-            input.value = Math.floor(video.duration ?? 0);
-            console.log(input.value);
+            input.value = duration;
+
             input.dispatchEvent(new Event('input', {bubbles: true}));
+            if (endInput) {
+                let formatted = formatDuration(duration);
+                endInput.value = formatDuration(duration);
+                endInput.dispatchEvent(new Event('input', {bubbles: true}));
+            }
         };
     });
 </script>
