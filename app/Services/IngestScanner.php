@@ -158,7 +158,7 @@ final class IngestScanner
                 $previewUrl = $this->previews->generate($video, 0, 10);
             }
         } catch (Throwable $e) {
-            Log::warning('Preview generation failed', ['file' => $path, 'e' => $e->getMessage()]);
+            Log::warning('Preview generation failed', ['file' => $path, 'exception' => $e->getMessage()]);
             $this->log("Warnung: Preview konnte nicht erstellt werden ({$e->getMessage()})");
         }
 
