@@ -74,9 +74,8 @@ class ReplyHandlerTest extends DatabaseTestCase
         Log::shouldReceive('info')
             ->once()
             ->with('Auto-reply sent to customer@example.com');
-
-        $handler = new ReplyHandler();
-        $handler->handle($message);
+        
+        $this->replyHandler->handle($message);
 
         $log->refresh();
 
@@ -136,7 +135,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message->shouldReceive('getFrom')->andReturn([$from]);
 
         Log::shouldReceive('info')->never();
-        
+
         $this->replyHandler->handle($message);
 
         Mail::assertNothingQueued();
