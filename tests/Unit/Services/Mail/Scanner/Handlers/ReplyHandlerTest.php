@@ -73,8 +73,8 @@ class ReplyHandlerTest extends DatabaseTestCase
 
         Log::shouldReceive('info')
             ->once()
-            ->with('Auto-reply sent to customer@example.com');
-        
+            ->with('Auto-reply sent to customer@example.com', ['to' => 'customer@example.com']);
+
         $this->replyHandler->handle($message);
 
         $log->refresh();
