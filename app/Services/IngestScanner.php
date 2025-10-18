@@ -151,12 +151,7 @@ final class IngestScanner
             return 'err';
         }
 
-        $video->update([
-            'path' => $dstRel,
-            'disk' => $diskName,
-            'preview_url' => $previewUrl,
-        ]);
-
+        $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
         $this->log('Upload abgeschlossen');
         return 'new';
     }
