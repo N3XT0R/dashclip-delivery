@@ -52,6 +52,10 @@ class InboundHandler implements MessageStrategyInterface
             'status' => MailStatus::Received,
             'created_at' => $createdAt,
             'updated_at' => $createdAt,
+            'meta' => [
+                'headers' => $message->getHeader()?->getAttributes(),
+                'content' => $message->getRawBody(),
+            ],
         ]);
 
         Log::info("Inbound mail stored: {$subject} from {$from}");
