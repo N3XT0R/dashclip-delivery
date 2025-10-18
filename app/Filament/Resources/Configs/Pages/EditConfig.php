@@ -32,14 +32,15 @@ class EditConfig extends EditRecord
                 $record->getAttribute('cast_type'),
                 $record->getAttribute('is_visible')
             );
-            activity('config-entry changed')
+            activity()
                 ->performedOn($record)
                 ->causedBy(auth()->user())
                 ->withProperties([
                     'key' => $record->getAttribute('key'),
                     'old_value' => $record->getAttribute('value'),
                     'new_value' => $data['value']
-                ]);
+                ])
+                ->log('config-entry changed');
         } catch (ValidationException $e) {
             Notification::make()
                 ->title('Speichern fehlgeschlagen')
