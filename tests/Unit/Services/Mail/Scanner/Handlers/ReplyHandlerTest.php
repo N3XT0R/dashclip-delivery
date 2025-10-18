@@ -16,6 +16,17 @@ use Webklex\PHPIMAP\Message;
 
 class ReplyHandlerTest extends DatabaseTestCase
 {
+
+    protected ReplyHandler $replyHandler;
+
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->replyHandler = $this->app->make(ReplyHandler::class);
+    }
+
+
     public function testMatchesReturnsTrueWhenInReplyToHeaderPresent(): void
     {
         $inReplyTo = Mockery::mock();
@@ -33,9 +44,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn(null);
 
-        $handler = new ReplyHandler();
-
-        $this->assertFalse($handler->matches($message));
+        $this->assertFalse($this->replyHandler->matches($message));
     }
 
     public function testHandleQueuesAutoResponderAndUpdatesMailLog(): void
@@ -96,8 +105,7 @@ class ReplyHandlerTest extends DatabaseTestCase
 
         Log::shouldReceive('info')->never();
 
-        $handler = new ReplyHandler();
-        $handler->handle($message);
+        $this->replyHandler->handle($message);
 
         Mail::assertNothingQueued();
         $this->assertDatabaseCount('mail_logs', 0);
@@ -128,9 +136,8 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message->shouldReceive('getFrom')->andReturn([$from]);
 
         Log::shouldReceive('info')->never();
-
-        $handler = new ReplyHandler();
-        $handler->handle($message);
+        
+        $this->replyHandler->handle($message);
 
         Mail::assertNothingQueued();
         $this->assertSame(1, MailLog::count());
