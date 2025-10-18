@@ -28,62 +28,21 @@ final class VideoUploadTest extends DatabaseTestCase
     public function testSubmitDispatchesJobForEachClip(): void
     {
         Bus::fake();
-        $disk = Storage::fake();
+        $disk = Storage::fake('public');
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
 
         $disk->put('uploads/tmp/file1.mp4', 'a');
-        $disk->put('uploads/tmp/file2.mp4', 'b');
+        $disk->put('uploads/tmp/file2.mov', 'b');
 
-        $path1 = $disk->path('uploads/tmp/file1.mp4');
-        $path2 = $disk->path('uploads/tmp/file2.mp4');
-
-        $file1 = new class($path1) {
-            public function __construct(private string $path)
-            {
-            }
-
-            public function store($dir): string
-            {
-                return 'uploads/tmp/'.basename($this->path);
-            }
-
-            public function getClientOriginalName(): string
-            {
-                return 'one.mp4';
-            }
-
-            public function getClientOriginalExtension(): string
-            {
-                return 'mp4';
-            }
-        };
-
-        $file2 = new class($path2) {
-            public function __construct(private string $path)
-            {
-            }
-
-            public function store($dir): string
-            {
-                return 'uploads/tmp/'.basename($this->path);
-            }
-
-            public function getClientOriginalName(): string
-            {
-                return 'two.mov';
-            }
-
-            public function getClientOriginalExtension(): string
-            {
-                return 'mov';
-            }
-        };
+        $path1 = 'uploads/tmp/file1.mp4';
+        $path2 = 'uploads/tmp/file2.mov';
 
         $state = [
             'clips' => [
                 [
-                    'file' => $file1,
+                    'file' => $path1,
+                    'original_name' => 'one.mp4',
                     'start_sec' => 1,
                     'end_sec' => 3,
                     'duration' => 3,
@@ -92,7 +51,8 @@ final class VideoUploadTest extends DatabaseTestCase
                     'role' => 'R1',
                 ],
                 [
-                    'file' => $file2,
+                    'file' => $path2,
+                    'original_name' => 'two.mov',
                     'start_sec' => 2,
                     'end_sec' => 4,
                     'duration' => 4,
@@ -114,7 +74,6 @@ final class VideoUploadTest extends DatabaseTestCase
             public function validate(): void
             {
                 $this->validated = true;
-
                 foreach ($this->state['clips'] ?? [] as $index => $clip) {
                     if (($clip['duration'] ?? 0) < 1) {
                         throw ValidationException::withMessages([
@@ -126,10 +85,9 @@ final class VideoUploadTest extends DatabaseTestCase
 
             public function getState(): array
             {
-                if (! $this->validated) {
+                if (!$this->validated) {
                     throw new \RuntimeException('Form state accessed before validation.');
                 }
-
                 return $this->state;
             }
 
@@ -142,26 +100,28 @@ final class VideoUploadTest extends DatabaseTestCase
 
         Bus::assertDispatchedTimes(ProcessUploadedVideo::class, 2);
         Bus::assertDispatched(ProcessUploadedVideo::class,
-            static function (ProcessUploadedVideo $job) use ($user, $file1) {
-                return $job->originalName === $file1->getClientOriginalName()
-                    && $job->ext === $file1->getClientOriginalExtension()
+            static function (ProcessUploadedVideo $job) use ($user, $path1) {
+                return $job->originalName === 'one.mp4'
+                    && $job->ext === 'mp4'
                     && $job->start === 1
                     && $job->end === 3
                     && $job->note === 'first'
                     && $job->bundleKey === 'B1'
                     && $job->role === 'R1'
-                    && $job->submittedBy === $user->name;
+                    && $job->submittedBy === $user->display_name
+                    && str_ends_with($job->path, $path1);
             });
         Bus::assertDispatched(ProcessUploadedVideo::class,
-            static function (ProcessUploadedVideo $job) use ($user, $file2) {
-                return $job->originalName === $file2->getClientOriginalName()
-                    && $job->ext === $file2->getClientOriginalExtension()
+            static function (ProcessUploadedVideo $job) use ($user, $path2) {
+                return $job->originalName === 'two.mov'
+                    && $job->ext === 'mov'
                     && $job->start === 2
                     && $job->end === 4
                     && $job->note === 'second'
                     && $job->bundleKey === 'B2'
                     && $job->role === 'R2'
-                    && $job->submittedBy === $user->name;
+                    && $job->submittedBy === $user->display_name
+                    && str_ends_with($job->path, $path2);
             });
     }
 
@@ -196,15 +156,17 @@ final class VideoUploadTest extends DatabaseTestCase
         };
 
         $state = [
-            'clips' => [[
-                'file' => $file,
-                'start_sec' => 0,
-                'end_sec' => 1,
-                'duration' => 0,
-                'note' => null,
-                'bundle_key' => null,
-                'role' => null,
-            ]],
+            'clips' => [
+                [
+                    'file' => $file,
+                    'start_sec' => 0,
+                    'end_sec' => 1,
+                    'duration' => 0,
+                    'note' => null,
+                    'bundle_key' => null,
+                    'role' => null,
+                ]
+            ],
         ];
 
         $page = new VideoUpload();
@@ -230,7 +192,7 @@ final class VideoUploadTest extends DatabaseTestCase
 
             public function getState(): array
             {
-                if (! $this->validated) {
+                if (!$this->validated) {
                     throw new \RuntimeException('Form state accessed before validation.');
                 }
 
