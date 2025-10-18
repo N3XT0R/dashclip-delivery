@@ -46,6 +46,7 @@ class InboundHandler implements MessageStrategyInterface
 
         $this->mailRepository->create([
             'message_id' => $messageId,
+            'internal_id' => $messageId,
             'from' => $from,
             'subject' => $subject,
             'direction' => MailDirection::INBOUND,
