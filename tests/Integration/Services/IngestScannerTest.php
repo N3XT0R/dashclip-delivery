@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\Facades\Cfg;
 use App\Models\Batch;
 use App\Models\Clip;
 use App\Models\Video;
-use App\Services\InfoImporter;
 use App\Services\IngestScanner;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
 use Tests\Helper\FfmpegBinaryFaker;
-use App\Facades\Cfg;
 
 class IngestScannerTest extends DatabaseTestCase
 {
@@ -106,7 +105,7 @@ class IngestScannerTest extends DatabaseTestCase
         ]));
 
         $preview = $this->makePreviewService();
-        $scanner = new IngestScanner($preview, app(InfoImporter::class));
+        $scanner = $this->app->make(IngestScanner::class, ['previewService' => $preview]);
 
         // Act
         $stats = $scanner->scan($inbox, 'local');
@@ -165,7 +164,7 @@ class IngestScannerTest extends DatabaseTestCase
         $hash = hash_file('sha256', $abs1);
         $destRel = $this->expectedDest($hash, 'mp4');
 
-        $scanner = new IngestScanner($this->makePreviewService(), app(InfoImporter::class));
+        $scanner = $this->app->make(IngestScanner::class, ['previewService' => $this->makePreviewService()]);
         $stats1 = $scanner->scan($inbox, 'local');
         $this->assertSame(['new' => 1, 'dups' => 0, 'err' => 0], $stats1);
         $this->assertTrue(Storage::exists($destRel));
@@ -197,7 +196,7 @@ class IngestScannerTest extends DatabaseTestCase
         @mkdir($destAbs, 0777, true);
         @file_put_contents($destAbs.'/keep', 'x');
 
-        $scanner = new IngestScanner($this->makePreviewService(), app(InfoImporter::class));
+        $scanner = $this->app->make(IngestScanner::class, ['previewService' => $this->makePreviewService()]);
         $stats = $scanner->scan($inbox, 'local');
 
         $this->assertSame(['new' => 0, 'dups' => 0, 'err' => 1], $stats);
