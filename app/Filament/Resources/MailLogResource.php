@@ -20,6 +20,10 @@ class MailLogResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('direction')
+                    ->label('Richtung')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('to')
                     ->label('Empfänger')
                     ->sortable()
