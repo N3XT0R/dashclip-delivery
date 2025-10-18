@@ -24,7 +24,6 @@
         const endSec = '{{ $getStatePath() }}.end_sec';
         const endSelector = `input[wire\\:model="${endSec}"]`;
         const endInput = document.querySelector(endSelector);
-        console.log(endInput);
 
         if (!input) {
             return;
@@ -41,7 +40,6 @@
         video.src = url;
         video.onloadedmetadata = () => {
             let duration = Math.floor(video.duration ?? 0);
-            console.log(duration);
             URL.revokeObjectURL(url);
             input.value = duration;
 
