@@ -22,7 +22,6 @@ use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class VideoUpload extends Page implements HasForms
 {
@@ -55,6 +54,8 @@ class VideoUpload extends Page implements HasForms
                         FileUpload::make('file')
                             ->label('Video')
                             ->required()
+                            ->disk('public')
+                            ->directory('uploads/tmp')
                             ->acceptedFileTypes([
                                 'video/mp4',
                                 'application/mp4',
@@ -62,8 +63,7 @@ class VideoUpload extends Page implements HasForms
                             ])
                             ->mimeTypeMap([
                                 'mp4' => 'video/mp4',
-                            ])
-                            ->storeFiles(false),
+                            ]),
                         Hidden::make('duration')
                             ->default(0)
                             ->required()
@@ -174,13 +174,10 @@ class VideoUpload extends Page implements HasForms
         $user = Auth::user();
 
         foreach ($state['clips'] ?? [] as $clip) {
-            /** @var TemporaryUploadedFile $file */
             $file = $clip['file'];
-            $stored = $file->store('uploads/tmp');
-
             ProcessUploadedVideo::dispatch(
                 user: $user,
-                path: \Storage::disk()->path($stored),
+                path: \Storage::disk('public')->path($file),
                 originalName: $file->getClientOriginalName(),
                 ext: $file->getClientOriginalExtension(),
                 start: (int)($clip['start_sec'] ?? 0),
