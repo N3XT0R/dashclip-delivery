@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('mail_logs', function (Blueprint $table) {
+        Schema::table('mail_logs', static function (Blueprint $table) {
             $table->enum('direction', ['inbound', 'outbound'])->default('outbound')->after('id');
         });
     }
@@ -20,7 +20,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('mail_logs', function (Blueprint $table) {
+        Schema::table('mail_logs', static function (Blueprint $table) {
             $table->dropColumn('direction');
         });
     }
