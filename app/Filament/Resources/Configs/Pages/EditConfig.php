@@ -37,8 +37,8 @@ class EditConfig extends EditRecord
                 ->causedBy(auth()->user())
                 ->withProperties([
                     'key' => $record->getAttribute('key'),
-                    'old' => $record->getAttribute('value'),
-                    'new' => $data['value']
+                    'old_value' => $record->getAttribute('value'),
+                    'new_value' => $data['value']
                 ]);
         } catch (ValidationException $e) {
             Notification::make()
