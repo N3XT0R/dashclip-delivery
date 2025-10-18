@@ -5,17 +5,56 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Video;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
-class VideoService
+readonly class VideoService
 {
     public function __construct(
-        private readonly PreviewService $previews
+        private PreviewService $previews
     ) {
     }
 
     public function isDuplicate(string $hash): bool
     {
         return Video::query()->where('hash', $hash)->exists();
+    }
+
+    public function createLocal(string $hash, string $ext, int $bytes, string $absolutePath, string $fileName): Video
+    {
+        return Video::query()->create([
+            'hash' => $hash,
+            'ext' => $ext,
+            'bytes' => $bytes,
+            'path' => $this->makeStorageRelative($absolutePath),
+            'disk' => 'local',
+            'meta' => null,
+            'original_name' => $fileName,
+        ]);
+    }
+
+    public function generatePreview(Video $video, string $sourcePath, ?callable $log = null): ?string
+    {
+        try {
+            $clip = $video->clips()->first();
+
+            if ($clip && $clip->start_sec !== null && $clip->end_sec !== null) {
+                return $this->previews->generateForClip($clip);
+            }
+
+            return $this->previews->generate($video, 0, 10);
+        } catch (Throwable $e) {
+            Log::warning('Preview generation failed', [
+                'file' => $sourcePath,
+                'exception' => $e->getMessage(),
+            ]);
+
+            if ($log) {
+                $log("Warnung: Preview konnte nicht erstellt werden ({$e->getMessage()})");
+            }
+
+            return null;
+        }
     }
 
 
