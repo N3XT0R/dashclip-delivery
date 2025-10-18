@@ -10,4 +10,5 @@ enum MailStatus: string
     case Sent = 'sent';
     case Replied = 'replied';
     case Bounced = 'bounced';
+    case Received = 'received';
 }
