@@ -22,6 +22,7 @@ use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class VideoUpload extends Page implements HasForms
 {
@@ -62,10 +63,10 @@ class VideoUpload extends Page implements HasForms
                                 'application/octet-stream',
                                 'binary/octet-stream',
                             ])
+                            ->storeFileNamesIn('original_name')
                             ->mimeTypeMap([
                                 'mp4' => 'video/mp4',
-                            ])
-                            ->storeFiles(false),
+                            ]),
                         Hidden::make('duration')
                             ->default(0)
                             ->required()
@@ -176,16 +177,15 @@ class VideoUpload extends Page implements HasForms
         $user = Auth::user();
 
         foreach ($state['clips'] ?? [] as $clip) {
-            /**
-             * @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile $file
-             */
-            $file = $clip['file'];
-            $stored = $file->store('uploads/tmp', 'public');
+            $file = $clip['file'] ?? '';
+            $disk = \Storage::disk('public');
+            $ext = Str::afterLast($file, '.');
+            
             ProcessUploadedVideo::dispatch(
                 user: $user,
-                path: \Storage::disk('public')->path($stored),
-                originalName: $file->getClientOriginalName(),
-                ext: $file->getClientOriginalExtension(),
+                path: $disk->path($file),
+                originalName: $clip['original_name'],
+                ext: $ext,
                 start: (int)($clip['start_sec'] ?? 0),
                 end: (int)($clip['end_sec'] ?? 0),
                 submittedBy: $user?->display_name,
