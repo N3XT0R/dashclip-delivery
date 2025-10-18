@@ -84,8 +84,23 @@ final class UserTest extends TestCase
             'display_name is submitted name' => [
                 [
                     'submitted_name' => 'Max Mustermann',
+                    'name' => 'Admin',
                 ],
                 'Max Mustermann',
+            ],
+            'display_name is name' => [
+                [
+                    'submitted_name' => null,
+                    'name' => 'Admin',
+                ],
+                'Admin',
+            ],
+            'display_name is null' => [
+                [
+                    'submitted_name' => null,
+                    'name' => null,
+                ],
+                null,
             ],
         ];
     }
