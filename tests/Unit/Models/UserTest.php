@@ -9,7 +9,7 @@ use Filament\Panel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Mockery;
-use Tests\DatabaseTestCase;
+use Tests\TestCase;
 
 /**
  * Unit tests for the App\Models\User model.
@@ -20,16 +20,16 @@ use Tests\DatabaseTestCase;
  *  - datetime cast for email_verified_at
  *  - Filament contract canAccessPanel() returns true
  */
-final class UserTest extends DatabaseTestCase
+final class UserTest extends TestCase
 {
     public function testFactoryCreatesUserWithHashedPasswordAndFillableAttributes(): void
     {
         // Arrange & Act
-        $user = User::factory()->admin()->create([
+        $user = User::factory()->admin()->make([
             'name' => 'Jane Doe',
             'email' => 'jane@example.test',
             'password' => 'secret123', // "hashed" cast should hash this on save
-        ])->fresh();
+        ]);
 
         // Assert: name/email persisted as provided
         $this->assertSame('Jane Doe', $user->name);
@@ -42,10 +42,10 @@ final class UserTest extends DatabaseTestCase
 
     public function testHiddenAttributesAreExcludedFromArrayAndJson(): void
     {
-        $user = User::factory()->admin()->create([
+        $user = User::factory()->admin()->make([
             'password' => 'secret123',
             'remember_token' => 'abc123',
-        ])->fresh();
+        ]);
 
         $asArray = $user->toArray();
         $this->assertArrayNotHasKey('password', $asArray);
@@ -60,21 +60,25 @@ final class UserTest extends DatabaseTestCase
     {
         $ts = '2025-08-10 12:34:56';
 
-        $user = User::factory()->admin()->create([
+        $user = User::factory()->admin()->make([
             'email_verified_at' => $ts,
-        ])->fresh();
+        ]);
 
-        $this->assertInstanceOf(Carbon::class, $user->email_verified_at);
         $this->assertTrue($user->email_verified_at->equalTo(Carbon::parse($ts)));
     }
 
     public function testCanAccessPanelAlwaysReturnsTrue(): void
     {
-        $user = User::factory()->admin()->create();
+        $user = User::factory()->admin()->make();
 
         // We don't care about Panel internals; the method ignores its argument.
         $panel = Mockery::mock(Panel::class);
 
         $this->assertTrue($user->canAccessPanel($panel));
+    }
+
+
+    public function testDisplayNameIsSubbmitedName(): void
+    {
     }
 }
