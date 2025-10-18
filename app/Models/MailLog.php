@@ -21,6 +21,8 @@ class MailLog extends Model
         'bounced_at',
         'replied_at',
         'meta',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
