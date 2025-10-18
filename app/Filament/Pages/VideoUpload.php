@@ -180,10 +180,11 @@ class VideoUpload extends Page implements HasForms
             $file = $clip['file'] ?? '';
             $disk = \Storage::disk('public');
             $ext = Str::afterLast($file, '.');
-            
+            $path = $disk->path($file);
+
             ProcessUploadedVideo::dispatch(
                 user: $user,
-                path: $disk->path($file),
+                path: $path,
                 originalName: $clip['original_name'],
                 ext: $ext,
                 start: (int)($clip['start_sec'] ?? 0),
