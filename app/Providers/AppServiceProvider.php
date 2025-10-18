@@ -13,6 +13,7 @@ use App\Services\Dropbox\AutoRefreshTokenProvider;
 use App\Services\Mail\Scanner\Detectors\BounceDetector;
 use App\Services\Mail\Scanner\Detectors\ReplyDetector;
 use App\Services\Mail\Scanner\Handlers\BounceHandler;
+use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
@@ -54,7 +55,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(MailReplyScanner::class, function () {
             return new MailReplyScanner([
                 new BounceHandler(),
-                new ReplyHandler(),
+                $this->app->get(InboundHandler::class),
+                $this->app->get(ReplyHandler::class),
             ]);
         });
     }
