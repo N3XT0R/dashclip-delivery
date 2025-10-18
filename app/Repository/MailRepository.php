@@ -22,4 +22,9 @@ class MailRepository
             'replied_at' => now(),
         ]);
     }
+
+    public function create(array $attributes): MailLog
+    {
+        return MailLog::create($attributes);
+    }
 }
