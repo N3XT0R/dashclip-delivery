@@ -8,6 +8,8 @@ use App\Enum\MailDirection;
 use App\Enum\MailStatus;
 use App\Repository\MailRepository;
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
+use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Webklex\PHPIMAP\Message;
 
@@ -22,12 +24,20 @@ class InboundHandler implements MessageStrategyInterface
         return $message->getFolderPath() === 'INBOX';
     }
 
+
+    private function getDateByMessage(Message $message): Carbon|\Carbon\Carbon|CarbonInterface
+    {
+        return $message->getHeader()?->get('Date')?->toDate()
+            ?? $message->getDate()?->toDate()
+            ?? now();
+    }
+
     public function handle(Message $message): void
     {
         $from = $message->getFrom()[0]->mail ?? '';
         $subject = $message->getSubject()->toString() ?? '';
         $messageId = $message->getMessageId()->toString();
-        $createdAt = $message->getDate()?->toDate() ?? now();
+        $createdAt = $this->getDateByMessage($message);
 
         if ($this->mailRepository->existsByMessageId($messageId)) {
             Log::info("Mail already processed: {$messageId}");
