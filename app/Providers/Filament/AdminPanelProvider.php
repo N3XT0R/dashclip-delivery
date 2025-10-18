@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfile;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
@@ -44,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->emailVerification()
             ->emailChangeVerification()
-            ->profile(isSimple: false)
+            ->profile(EditProfile::class, false)
             ->colors([
                 'primary' => Color::Amber,
             ])
