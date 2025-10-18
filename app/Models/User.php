@@ -132,7 +132,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     protected function displayName(): Attribute
     {
         return Attribute::make(
-            get: static fn($value, array $attribute) => $attribute['submitted_name'] ?? $attribute['name'] ?? null,
+            get: static fn($value, array $attributes) => $attributes['submitted_name'] ?? $attributes['name'] ?? null,
         );
     }
 }

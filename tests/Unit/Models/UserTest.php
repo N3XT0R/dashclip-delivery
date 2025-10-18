@@ -9,6 +9,7 @@ use Filament\Panel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -77,8 +78,23 @@ final class UserTest extends TestCase
         $this->assertTrue($user->canAccessPanel($panel));
     }
 
-
-    public function testDisplayNameIsSubbmitedName(): void
+    public static function submittedNameDataProvider(): array
     {
+        return [
+            'display_name is submitted name' => [
+                [
+                    'submitted_name' => 'Max Mustermann',
+                ],
+                'Max Mustermann',
+            ],
+        ];
+    }
+
+
+    #[DataProvider('submittedNameDataProvider')]
+    public function testDisplayNameIsSubmittedName(array $fillable, ?string $expected): void
+    {
+        $user = User::factory()->admin()->make($fillable);
+        self::assertSame($expected, $user->getAttribute('display_name'));
     }
 }
