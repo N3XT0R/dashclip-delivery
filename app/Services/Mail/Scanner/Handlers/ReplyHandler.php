@@ -40,10 +40,7 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
 
         if ($log->status !== MailStatus::Replied) {
             Mail::to($from)->queue(new NoReplyFAQMail());
-            $log->update([
-                'status' => MailStatus::Replied,
-                'replied_at' => now(),
-            ]);
+            $this->mailRepository->updateStatus($log, MailStatus::Replied);
             Log::info("Auto-reply sent to {$from}");
         }
     }
