@@ -123,8 +123,9 @@ final class IngestScanner
     {
         $hash = hash_file('sha256', $path);
         $bytes = filesize($path);
+        $videoService = $this->videoService;
 
-        if ($this->videoService->isDuplicate($hash)) {
+        if ($videoService->isDuplicate($hash)) {
             @unlink($path);
             $this->log('Duplikat übersprungen');
             return 'dups';
@@ -133,25 +134,13 @@ final class IngestScanner
         $dstRel = $this->buildDestinationPath($hash, $ext);
 
         // Create video before upload so preview can be generated from local path
-        $video = $this->videoService->createLocal($hash, $ext, $bytes, $path, $fileName);
+        $video = $videoService->createLocal($hash, $ext, $bytes, $path, $fileName);
 
         // Re-import clip information after video has been created
         $this->maybeImportCsvForDirectory(dirname($path));
         $video->refresh();
 
-        $previewUrl = null;
-        try {
-            $this->previews->setOutput($this->output);
-            $clip = $video->clips()->first();
-            if ($clip && $clip->start_sec !== null && $clip->end_sec !== null) {
-                $previewUrl = $this->previews->generateForClip($clip);
-            } else {
-                $previewUrl = $this->previews->generate($video, 0, 10);
-            }
-        } catch (Throwable $e) {
-            Log::warning('Preview generation failed', ['file' => $path, 'exception' => $e->getMessage()]);
-            $this->log("Warnung: Preview konnte nicht erstellt werden ({$e->getMessage()})");
-        }
+        $previewUrl = $videoService->generatePreview($video, $path, $this->output, fn($msg) => $this->log($msg));
 
         $this->log("Upload nach {$dstRel}");
         $uploaded = $this->uploadFile($path, $dstRel, $diskName, $bytes);

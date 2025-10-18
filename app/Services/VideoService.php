@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Video;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 readonly class VideoService
@@ -33,9 +34,14 @@ readonly class VideoService
         ]);
     }
 
-    public function generatePreview(Video $video, string $sourcePath, ?callable $log = null): ?string
-    {
+    public function generatePreview(
+        Video $video,
+        string $sourcePath,
+        ?OutputInterface $output = null,
+        ?callable $log = null
+    ): ?string {
         try {
+            $this->previews->setOutput($output);
             $clip = $video->clips()->first();
 
             if ($clip && $clip->start_sec !== null && $clip->end_sec !== null) {
