@@ -60,6 +60,7 @@ class VideoUpload extends Page implements HasForms
                                 'video/mp4',
                                 'application/mp4',
                                 'application/octet-stream',
+                                'binary/octet-stream',
                             ])
                             ->mimeTypeMap([
                                 'mp4' => 'video/mp4',
