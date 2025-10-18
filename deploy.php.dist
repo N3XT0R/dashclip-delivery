@@ -24,7 +24,7 @@ set('allow_anonymous_stats', false);
 // Laravel specifics
 add('shared_files', ['.env']);
 add('shared_dirs', ['storage']);
-add('writable_dirs', ['storage', 'bootstrap/cache']);
+add('writable_dirs', ['storage', 'bootstrap/cache', 'storage/app/public/uploads/tmp']);
 set('writable_mode', 'chmod');
 set('writable_chmod_mode', '0775');
 set('writable_chmod_recursive', true);
