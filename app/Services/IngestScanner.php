@@ -31,8 +31,11 @@ final class IngestScanner
 
     private ?OutputStyle $output = null;
 
-    public function __construct(private PreviewService $previews, private InfoImporter $infoImporter)
-    {
+    public function __construct(
+        private PreviewService $previews,
+        private InfoImporter $infoImporter,
+        private VideoService $videoService
+    ) {
     }
 
     public function setOutput(?OutputStyle $outputStyle = null): void
@@ -122,7 +125,7 @@ final class IngestScanner
         $hash = hash_file('sha256', $path);
         $bytes = filesize($path);
 
-        if ($this->isDuplicate($hash)) {
+        if ($this->videoService->isDuplicate($hash)) {
             @unlink($path);
             $this->log('Duplikat übersprungen');
             return 'dups';
@@ -176,11 +179,6 @@ final class IngestScanner
 
         $this->log('Upload abgeschlossen');
         return 'new';
-    }
-
-    private function isDuplicate(string $hash): bool
-    {
-        return Video::query()->where('hash', $hash)->exists();
     }
 
     private function buildDestinationPath(string $hash, string $ext): string
