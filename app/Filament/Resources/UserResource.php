@@ -48,6 +48,7 @@ class UserResource extends Resource
             ->components([
                 Forms\Components\TextInput::make('name')
                     ->required(),
+                Forms\Components\TextInput::make('submitted_name'),
                 Forms\Components\TextInput::make('email')
                     ->label('Email address')
                     ->email()
@@ -76,6 +77,8 @@ class UserResource extends Resource
             ->recordTitleAttribute('User')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('submitted_name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email address')
