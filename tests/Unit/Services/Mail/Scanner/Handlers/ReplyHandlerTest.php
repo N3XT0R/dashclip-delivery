@@ -23,7 +23,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
 
-        $handler = new ReplyHandler();
+        $handler = $this->app->make(ReplyHandler::class);
 
         $this->assertTrue($handler->matches($message));
     }
@@ -71,7 +71,7 @@ class ReplyHandlerTest extends DatabaseTestCase
 
         $log->refresh();
 
-        Mail::assertQueued(NoReplyFAQMail::class, fn ($mail) => true);
+        Mail::assertQueued(NoReplyFAQMail::class, fn($mail) => true);
 
         $this->assertSame(MailStatus::Replied, $log->status);
         $this->assertNotNull($log->replied_at);
