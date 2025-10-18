@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Facades\Cfg;
 use App\Models\Clip;
 use App\Models\Video;
-use App\Facades\Cfg;
 use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\Filters\Video\VideoFilters;
 use FFMpeg\Format\Video\X264;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use FFMpeg\Filters\Video\VideoFilters;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 use Throwable;
 
@@ -76,7 +76,7 @@ final class PreviewService
         // Configure FFMpeg binary
         if ($bin = Cfg::get('ffmpeg_bin', 'ffmpeg', null)) {
             config(['laravel-ffmpeg.ffmpeg.binaries' => $bin]);
-            config(['laravel-ffmpeg.ffprobe.binaries' => $bin]);
+            //config(['laravel-ffmpeg.ffprobe.binaries' => $bin]);
         }
 
         try {
