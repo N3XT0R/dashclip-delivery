@@ -27,4 +27,10 @@ class MailRepository
     {
         return MailLog::create($attributes);
     }
+
+    public function existsByMessageId(string $messageId): bool
+    {
+        $log = $this->findMailByInReplyTo($messageId);
+        return null !== $log;
+    }
 }
