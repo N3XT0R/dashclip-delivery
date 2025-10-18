@@ -25,7 +25,7 @@ class InboundHandler implements MessageStrategyInterface
     public function handle(Message $message): void
     {
         $from = $message->getFrom()[0]->mail ?? '';
-        $subject = $message->getSubject() ?? '';
+        $subject = $message->getSubject()->toString() ?? '';
         $messageId = $message->getMessageId()->toString();
 
         if ($this->mailRepository->existsByMessageId($messageId)) {
