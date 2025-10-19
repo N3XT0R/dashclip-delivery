@@ -56,6 +56,9 @@ class IngestScanner
                 continue;
             }
             $this->log("Verarbeite {$file}");
+            try {
+            } catch (\Throwable $e) {
+            }
         }
     }
 
