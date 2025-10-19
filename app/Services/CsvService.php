@@ -83,7 +83,7 @@ class CsvService
             ->values();
     }
 
-    public function maybeImportCsvForDisk(Filesystem $disk, string $basePath = ''): void
+    public function importCsvForDisk(Filesystem $disk, string $basePath = ''): void
     {
         $csvFiles = $this->listCsvFiles($disk, $basePath);
         foreach ($csvFiles as $csv) {
