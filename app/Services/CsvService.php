@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\FileInfoDto;
 use App\Models\Assignment;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 class CsvService
 {
+    private const CSV_REGEX = '/\.(csv|txt)$/i';
+
+    
     /**
      * @param  Collection<Assignment>  $items
      */
@@ -60,5 +65,16 @@ class CsvService
         fclose($fp);
 
         return $csv;
+    }
+
+    /**
+     * Listet alle CSV/Text-Dateien im angegebenen Ordner (nicht rekursiv).
+     */
+    public function listCsvFiles(Filesystem $disk, string $basePath = ''): Collection
+    {
+        return collect($disk->files($basePath))
+            ->filter(fn(string $path) => preg_match(self::CSV_REGEX, basename($path)))
+            ->map(fn(string $path) => FileInfoDto::fromPath($path))
+            ->values();
     }
 }
