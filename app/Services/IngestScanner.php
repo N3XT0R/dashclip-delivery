@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\BatchTypeEnum;
+use App\Facades\DynamicStorage;
 use App\Models\Batch;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use Illuminate\Console\OutputStyle;
@@ -31,7 +32,7 @@ final class IngestScanner
     private ?OutputStyle $output = null;
 
     public function __construct(
-        private PreviewService $previews,
+        private BatchService $batchService,
         private InfoImporter $infoImporter,
         private VideoService $videoService
     ) {
@@ -40,6 +41,14 @@ final class IngestScanner
     public function setOutput(?OutputStyle $outputStyle = null): void
     {
         $this->output = $outputStyle;
+    }
+
+    public function scanDisk(string $inboxPath, string $targetDiskName): array
+    {
+        $this->assertDirectory($inboxPath);
+        $inboxDisk = DynamicStorage::fromPath($inboxPath);
+        $this->log(sprintf('Starte Scan: %s -> %s', $inboxPath, $targetDiskName));
+        $batch = $this->batchService->createNewBatch(BatchTypeEnum::INGEST);
     }
 
     /**
@@ -53,10 +62,7 @@ final class IngestScanner
 
         $this->log(sprintf('Starte Scan: %s -> %s', $inbox, $diskName));
 
-        $batch = Batch::query()->create([
-            'type' => BatchTypeEnum::INGEST->value,
-            'started_at' => now(),
-        ]);
+        $batch = $this->batchService->createNewBatch(BatchTypeEnum::INGEST);
 
         $stats = ['new' => 0, 'dups' => 0, 'err' => 0];
 
