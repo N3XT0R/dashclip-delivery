@@ -38,4 +38,14 @@ class BatchService
 
         return $assignBatch;
     }
+
+    public function createNewBatch(BatchTypeEnum $type): Batch
+    {
+        $batch = new Batch();
+        $batch->type = $type->value;
+        $batch->started_at = now();
+        $batch->save();
+
+        return $batch;
+    }
 }
