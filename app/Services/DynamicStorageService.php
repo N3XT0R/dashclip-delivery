@@ -18,7 +18,7 @@ class DynamicStorageService
 
         return Storage::build([
             'driver' => 'local',
-            'root' => $root,
+            'root' => realpath($root) ?: $root,
         ]);
     }
 
@@ -29,7 +29,9 @@ class DynamicStorageService
         }
     }
 
-
+    /**
+     * Listet rekursiv alle Dateien als DTOs.
+     */
     public function listFiles(Filesystem $disk, string $basePath = ''): Collection
     {
         return collect($disk->allFiles($basePath))
