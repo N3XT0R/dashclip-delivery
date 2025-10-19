@@ -121,6 +121,7 @@ final class IngestScanner
      */
     public function processFile(string $path, string $ext, string $fileName, string $diskName): string
     {
+        //"/var/www/html/storage/app/private/uploads/tmp/01K7XY7J75282QZV2Q4DA2REJ0.mp4" -> path
         $hash = hash_file('sha256', $path);
         $bytes = filesize($path);
         $videoService = $this->videoService;

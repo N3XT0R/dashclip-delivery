@@ -55,7 +55,7 @@ class VideoUpload extends Page implements HasForms
                         FileUpload::make('file')
                             ->label('Video')
                             ->required()
-                            ->disk('public')
+                            ->disk('local')
                             ->directory('uploads/tmp')
                             ->acceptedFileTypes([
                                 'video/mp4',
@@ -178,7 +178,7 @@ class VideoUpload extends Page implements HasForms
 
         foreach ($state['clips'] ?? [] as $clip) {
             $file = $clip['file'] ?? '';
-            $disk = \Storage::disk('public');
+            $disk = \Storage::disk('local');
             $ext = Str::afterLast($file, '.');
             $path = $disk->path($file);
 

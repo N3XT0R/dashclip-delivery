@@ -57,6 +57,9 @@ final class PreviewService
         }
 
         $duration = $end - $start;
+        /**
+         * @var string $sourceDisk
+         */
         $sourceDisk = $video->disk ?? 'local';
         $relPath = $this->normalizeRelative($video->path);
 
@@ -66,12 +69,12 @@ final class PreviewService
 
         if ($previewDisk->exists($previewPath)) {
             $this->info("Preview exists in cache: {$previewPath}");
-
             return $previewDisk->url($previewPath);
         }
 
         // Ensure destination directory exists (especially for fake disks)
         $previewDisk->makeDirectory(dirname($previewPath));
+        Log::error(dirname($previewPath));
 
         // Configure FFMpeg binary
         if ($bin = Cfg::get('ffmpeg_bin', 'ffmpeg', null)) {
@@ -87,6 +90,10 @@ final class PreviewService
             if ($params !== []) {
                 $format->setAdditionalParameters($params);
             }
+
+            Log::error($sourceDisk);
+            Log::error($relPath);
+            Log::error($previewPath);
 
             FFMpeg::fromDisk($sourceDisk)
                 ->open($relPath)
@@ -113,7 +120,9 @@ final class PreviewService
 
             return $previewDisk->url($previewPath);
         } catch (Throwable $e) {
-            $this->error('ffmpeg failed: '.$e->getMessage());
+            $message = 'ffmpeg failed: '.$e->getMessage();
+            $this->error($message);
+            Log::error($message, ['exception' => $e]);
 
             return null;
         }
@@ -147,10 +156,10 @@ final class PreviewService
         return $start >= 0 && $end > $start;
     }
 
-    private function normalizeRelative(string $p): string
+    private function normalizeRelative(string $path): string
     {
         // Filesystem adapters expect relative paths (root is prefixed by the adapter)
-        return ltrim($p, '/');
+        return ltrim($path, '/');
     }
 
     private function buildPath(Video $video, int $start, int $end): string
