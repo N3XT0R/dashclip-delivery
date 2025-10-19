@@ -92,6 +92,14 @@ class IngestScanner
             $this->log('Duplikat übersprungen');
             return 'dups';
         }
+
+        $dstRel = $this->buildDestinationPath($hash, $file->extension);
     }
 
+
+    private function buildDestinationPath(string $hash, string $ext): string
+    {
+        $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
+        return sprintf('videos/%s/%s%s', $sub, $hash, $ext !== '' ? ".{$ext}" : '');
+    }
 }
