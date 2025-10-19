@@ -12,6 +12,7 @@ use App\Services\VideoService;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Laravel\Reverb\Loggers\Log;
+use Throwable;
 
 class IngestScanner
 {
@@ -57,7 +58,7 @@ class IngestScanner
             }
             $this->log("Verarbeite {$file}");
             try {
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
             }
         }
     }
@@ -67,7 +68,7 @@ class IngestScanner
         foreach ($inboxDisk->allDirectories() as $directory) {
             try {
                 $this->csvService->importCsvForDisk($inboxDisk, $directory);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::warning('CSV-Import fehlgeschlagen', [
                     'dir' => $directory,
                     'e' => $e->getMessage(),
