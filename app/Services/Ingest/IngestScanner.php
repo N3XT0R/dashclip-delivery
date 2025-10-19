@@ -11,7 +11,7 @@ use App\Services\BatchService;
 use App\Services\InfoImporter;
 use App\Services\VideoService;
 use Illuminate\Console\OutputStyle;
-use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 class IngestScanner
