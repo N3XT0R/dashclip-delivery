@@ -11,7 +11,7 @@ use App\Services\CsvService;
 use App\Services\VideoService;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Laravel\Reverb\Loggers\Log;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class IngestScanner
