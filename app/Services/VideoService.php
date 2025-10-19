@@ -34,6 +34,19 @@ readonly class VideoService
         ]);
     }
 
+    public function createLocalFileByDisk(string $hash, string $ext, int $bytes, string $basename): Video
+    {
+        return Video::query()->create([
+            'hash' => $hash,
+            'ext' => $ext,
+            'bytes' => $bytes,
+            'path' => $this->makeStorageRelative($absolutePath),
+            'disk' => 'local',
+            'meta' => null,
+            'original_name' => $basename,
+        ]);
+    }
+
     public function generatePreview(
         Video $video,
         string $sourcePath,

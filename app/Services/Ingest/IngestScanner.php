@@ -84,7 +84,9 @@ class IngestScanner
     {
         $hash = DynamicStorage::getHashForFile($inboxDisk, $file);
         $pathToFile = $file->path;
+        $baseName = $file->basename;
         $bytes = $inboxDisk->size($pathToFile);
+        $ext = $file->extension;
         $videoService = $this->videoService;
 
         if ($videoService->isDuplicate($hash)) {
@@ -93,13 +95,11 @@ class IngestScanner
             return 'dups';
         }
 
-        $dstRel = $this->buildDestinationPath($hash, $file->extension);
-    }
-
-
-    private function buildDestinationPath(string $hash, string $ext): string
-    {
         $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
-        return sprintf('videos/%s/%s%s', $sub, $hash, $ext !== '' ? ".{$ext}" : '');
+        $dstRel = sprintf('videos/%s/%s%s', $sub, $hash, $ext !== '' ? ".{$ext}" : '');
+
+        // Create video before upload so preview can be generated from local path
+        $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
     }
+    
 }
