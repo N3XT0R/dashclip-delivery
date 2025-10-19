@@ -6,8 +6,9 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\LockJobTrait;
-use App\Services\IngestScanner;
 use App\Facades\Cfg;
+use App\Facades\DynamicStorage;
+use App\Services\IngestScanner;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\Lock;
 use RuntimeException;
@@ -77,6 +78,7 @@ class IngestScan extends Command
         $this->scanner->setOutput($this->getOutput());
 
         try {
+            $inboxDisk = DynamicStorage::fromPath($inbox);
             $stats = $this->scanner->scan($inbox, $diskName);
             $this->info("Ingest done. new={$stats['new']} dups={$stats['dups']} err={$stats['err']} disk={$diskName}");
             return self::SUCCESS;
