@@ -23,9 +23,9 @@ class DynamicStorageServiceTest extends TestCase
         $inboxPath = base_path('tests/Fixtures/Inbox');
         $disk = $this->dynamicStorageService->fromPath($inboxPath);
         $fileInfoDtos = $this->dynamicStorageService->listFiles($disk);
-
         $this->assertNotNull($disk);
         $this->assertNotCount(0, $fileInfoDtos);
+
         foreach ($fileInfoDtos as $fileInfoDto) {
             $this->assertInstanceOf(FileInfoDto::class, $fileInfoDto);
             $this->assertNotEmpty($fileInfoDto->path);
