@@ -13,7 +13,11 @@ class CsvService
 {
     private const CSV_REGEX = '/\.(csv|txt)$/i';
 
-    
+    public function __construct(private InfoImporter $infoImporter)
+    {
+    }
+
+
     /**
      * @param  Collection<Assignment>  $items
      */
@@ -69,6 +73,7 @@ class CsvService
 
     /**
      * Listet alle CSV/Text-Dateien im angegebenen Ordner (nicht rekursiv).
+     * @return Collection<FileInfoDto>
      */
     public function listCsvFiles(Filesystem $disk, string $basePath = ''): Collection
     {
@@ -77,4 +82,13 @@ class CsvService
             ->map(fn(string $path) => FileInfoDto::fromPath($path))
             ->values();
     }
+
+    public function maybeImportCsvForDisk(Filesystem $disk, string $basePath = ''): void
+    {
+        $csvFiles = $this->listCsvFiles($disk, $basePath);
+        foreach ($csvFiles as $csv) {
+            $this->infoImporter->importInfoFromDisk($disk, $csv->path);
+        }
+    }
+
 }
