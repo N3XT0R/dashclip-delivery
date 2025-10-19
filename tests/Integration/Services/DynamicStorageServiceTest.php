@@ -18,6 +18,14 @@ class DynamicStorageServiceTest extends TestCase
         $this->dynamicStorageService = $this->app->make(DynamicStorageService::class);
     }
 
+    public function testFromPathReturnsFilesystem(): void
+    {
+        $inboxPath = base_path('tests/Fixtures/Inbox');
+        $disk = $this->dynamicStorageService->fromPath($inboxPath);
+        $this->assertNotNull($disk);
+        $this->assertTrue($disk->exists('example.mp4'));
+    }
+
     public function testListFilesReturnsFileInfoDtos(): void
     {
         $inboxPath = base_path('tests/Fixtures/Inbox');
