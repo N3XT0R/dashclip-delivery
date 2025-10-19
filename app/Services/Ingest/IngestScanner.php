@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Ingest;
 
-use App\DTO\FileInfoDto;
 use App\Enum\BatchTypeEnum;
 use App\Facades\DynamicStorage;
 use App\Services\BatchService;
 use App\Services\InfoImporter;
 use App\Services\VideoService;
 use Illuminate\Console\OutputStyle;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
 
 class IngestScanner
 {
@@ -42,20 +39,13 @@ class IngestScanner
 
     public function scanDisk(string $inboxPath, string $targetDiskName): array
     {
-        $this->assertDirectory($inboxPath);
         $inboxDisk = DynamicStorage::fromPath($inboxPath);
         $this->log(sprintf('Starte Scan: %s -> %s', $inboxPath, $targetDiskName));
         $batch = $this->batchService->createNewBatch(BatchTypeEnum::INGEST);
         $stats = ['new' => 0, 'dups' => 0, 'err' => 0];
 
-        $allFiles = $this->listFiles($inboxDisk);
+        $allFiles = DynamicStorage::listFiles($inboxDisk);
         foreach ($allFiles as $relativePath) {
         }
-    }
-
-    private function listFiles(Filesystem $disk, string $basePath = ''): Collection
-    {
-        return collect($disk->allFiles($basePath))
-            ->map(fn(string $path) => FileInfoDto::fromPath($path));
     }
 }
