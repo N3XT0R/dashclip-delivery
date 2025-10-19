@@ -37,4 +37,20 @@ class DynamicStorageService
         return collect($disk->allFiles($basePath))
             ->map(fn(string $path) => FileInfoDto::fromPath($path));
     }
+
+
+    public function getHashForFile(Filesystem $disk, FileInfoDto $file): string
+    {
+        $stream = $disk->readStream($file->path);
+        if ($stream === false) {
+            throw new \RuntimeException("Konnte Datei nicht lesen: {$file->path}");
+        }
+
+        $context = hash_init('sha256');
+        hash_update_stream($context, $stream);
+        $hash = hash_final($context);
+
+        fclose($stream);
+        return $hash;
+    }
 }

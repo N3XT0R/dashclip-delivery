@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Ingest;
 
+use App\DTO\FileInfoDto;
 use App\Enum\BatchTypeEnum;
 use App\Facades\DynamicStorage;
 use App\Services\BatchService;
@@ -55,8 +56,9 @@ class IngestScanner
             if (!$file->isOneOfExtensions(self::ALLOWED_EXTENSIONS)) {
                 continue;
             }
-            $this->log("Verarbeite {$file}");
+            $this->log("Verarbeite {$file->basename}");
             try {
+                $this->processFile($inboxDisk, $file, $targetDiskName);
             } catch (Throwable $e) {
             }
         }
@@ -76,4 +78,20 @@ class IngestScanner
             }
         }
     }
+
+
+    public function processFile(Filesystem $inboxDisk, FileInfoDto $file, string $diskName): string
+    {
+        $hash = DynamicStorage::getHashForFile($inboxDisk, $file);
+        $pathToFile = $file->path;
+        $bytes = $inboxDisk->size($pathToFile);
+        $videoService = $this->videoService;
+
+        if ($videoService->isDuplicate($hash)) {
+            $inboxDisk->delete($pathToFile);
+            $this->log('Duplikat übersprungen');
+            return 'dups';
+        }
+    }
+
 }
