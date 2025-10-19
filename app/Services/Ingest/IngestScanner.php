@@ -7,9 +7,11 @@ namespace App\Services\Ingest;
 use App\Enum\BatchTypeEnum;
 use App\Facades\DynamicStorage;
 use App\Services\BatchService;
-use App\Services\InfoImporter;
+use App\Services\CsvService;
 use App\Services\VideoService;
 use Illuminate\Console\OutputStyle;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Laravel\Reverb\Loggers\Log;
 
 class IngestScanner
 {
@@ -22,7 +24,7 @@ class IngestScanner
 
     public function __construct(
         private BatchService $batchService,
-        private InfoImporter $infoImporter,
+        private CsvService $csvService,
         private VideoService $videoService
     ) {
     }
@@ -44,8 +46,31 @@ class IngestScanner
         $batch = $this->batchService->createNewBatch(BatchTypeEnum::INGEST);
         $stats = ['new' => 0, 'dups' => 0, 'err' => 0];
 
+        // CSV-Import für alle Verzeichnisse
+        $this->importCsvForDirectory($inboxDisk);
+
+        // Videodateien verarbeiten
         $allFiles = DynamicStorage::listFiles($inboxDisk);
-        foreach ($allFiles as $relativePath) {
+        foreach ($allFiles as $file) {
+            if (!$file->isOneOfExtensions(self::ALLOWED_EXTENSIONS)) {
+                continue;
+            }
+            $this->log("Verarbeite {$file}");
+        }
+    }
+
+    private function importCsvForDirectory(Filesystem $inboxDisk): void
+    {
+        foreach ($inboxDisk->allDirectories() as $directory) {
+            try {
+                $this->csvService->importCsvForDisk($inboxDisk, $directory);
+            } catch (\Throwable $e) {
+                Log::warning('CSV-Import fehlgeschlagen', [
+                    'dir' => $directory,
+                    'e' => $e->getMessage(),
+                ]);
+                $this->log("Warnung: CSV-Import für {$directory} fehlgeschlagen ({$e->getMessage()})");
+            }
         }
     }
 }

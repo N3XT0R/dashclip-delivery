@@ -21,4 +21,14 @@ final class FileInfoDto
             extension: pathinfo($path, PATHINFO_EXTENSION),
         );
     }
+    
+    public function isCsv(): bool
+    {
+        return $this->isOneOfExtensions(['csv', 'txt']);
+    }
+
+    public function isOneOfExtensions(array $extensions): bool
+    {
+        return in_array(strtolower($this->extension), $extensions, true);
+    }
 }
