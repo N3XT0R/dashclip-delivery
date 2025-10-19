@@ -6,12 +6,19 @@ namespace App\Services;
 
 use App\Models\Clip;
 use App\Models\Video;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use RuntimeException;
 
 class InfoImporter
 {
     private const CSV_DELIMITER = ';';
     private const ROW_COLUMNS = 7;
+
+
+    private function createStatsArray(): array
+    {
+        return ['created' => 0, 'updated' => 0, 'warnings' => 0];
+    }
 
     /**
      * Import clip information from a CSV file.
@@ -25,14 +32,14 @@ class InfoImporter
         [$inferRole, $defaultBundle, $defaultSubmitter] = $this->parseOptions($options);
 
         $fh = $this->openCsvOrFail($csvPath);
-        $stats = ['created' => 0, 'updated' => 0, 'warnings' => 0];
+        $stats = $this->createStatsArray();
 
         // Read and ignore the header line. If there is no header, return empty stats.
         if ($this->readHeader($fh) === false) {
             fclose($fh);
             return $stats;
         }
-        
+
         while (($row = fgetcsv($fh, 0, self::CSV_DELIMITER)) !== false) {
             $this->processRow(
                 row: $row,
@@ -48,6 +55,48 @@ class InfoImporter
 
         return $stats;
     }
+
+    public function importInfoFromDisk(
+        Filesystem $disk,
+        string $path,
+        array $options = [],
+        ?callable $onWarning = null
+    ): array {
+        $stream = $disk->readStream($path);
+
+        if ($stream === false) {
+            throw new RuntimeException("Kann CSV nicht lesen: {$path}");
+        }
+
+        return $this->importFromStream($stream, $options, $onWarning);
+    }
+
+    public function importFromStream($stream, array $options = [], ?callable $onWarning = null): array
+    {
+        [$inferRole, $defaultBundle, $defaultSubmitter] = $this->parseOptions($options);
+
+        $stats = $this->createStatsArray();
+
+        if ($this->readHeader($stream) === false) {
+            fclose($stream);
+            return $stats;
+        }
+
+        while (($row = fgetcsv($stream, 0, self::CSV_DELIMITER)) !== false) {
+            $this->processRow(
+                row: $row,
+                inferRole: $inferRole,
+                defaultBundle: (string)$defaultBundle,
+                defaultSubmitter: (string)$defaultSubmitter,
+                onWarning: $onWarning,
+                stats: $stats
+            );
+        }
+
+        fclose($stream);
+        return $stats;
+    }
+
 
     // === Pipeline steps =======================================================
 
