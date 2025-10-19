@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\FileInfoDto;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class DynamicStorageService
@@ -27,4 +29,10 @@ class DynamicStorageService
         }
     }
 
+
+    public function listFiles(Filesystem $disk, string $basePath = ''): Collection
+    {
+        return collect($disk->allFiles($basePath))
+            ->map(fn(string $path) => FileInfoDto::fromPath($path));
+    }
 }
