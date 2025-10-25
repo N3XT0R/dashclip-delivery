@@ -64,16 +64,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Backend upgraded to Filament v4 (UI components and pages migrated).
     - Preview generation now uses the `pbmedia/laravel-ffmpeg` package and reads all codec options from the database.
 
-- **Ingest Architecture** ([#152](https://github.com/N3XT0R/dashclip-delivery/issues/152))
-    - Replaced all direct filesystem operations (`fopen`, `unlink`, `hash_file`) with `DynamicStorage`.
-    - Preview generation is now model-independent; `PreviewService` no longer depends on `Video` Eloquent models.
-    - Unified code path for web uploads and CLI (cron) ingestion.
-    - Clear separation of concerns:
-        - `VideoService` - handles video metadata and persistence.
-        - `PreviewService` - handles preview rendering.
-        - `UploadService` / `DropboxUploadService` - handles upload and remote storage transfer.
-    - Added full rollback safety for video creation, CSV import, and upload operations.
-    - Logging unified for CLI and web contexts with improved error tracing.
+- **Ingest & Upload Refactor** ([#152](https://github.com/N3XT0R/dashclip-delivery/issues/152))
+    - Introduced a fully modular ingestion pipeline with transactional safety and storage abstraction.
+    - Added `IngestResult` enum for standardized ingest return values.
+    - Added `IngestStats` value object for batch statistics and aggregation.
+    - Added dedicated exception classes for clearer flow control and debugging:
+        - `InvalidTimeRangeException` — thrown when preview clip ranges are invalid.
+        - `PreviewGenerationException` — includes contextual metadata for FFmpeg errors.
+    - Added new `App\Services\Ingest\IngestScanner` (modular replacement of legacy class).
+    - Added `CsvService` for isolated metadata (CSV) import.
+    - Implemented unified logging and consistent exception handling across CLI and web ingest.
+    - Integrated **Laravel-FFmpeg** for preview generation with dynamic codec, preset, and parameter configuration.
+    - Added full database transaction handling (`DB::beginTransaction`, `commit`, `rollback`) during video processing.
+    - Introduced `DynamicStorageService` and `DynamicStorage` facade for transparent, driver-agnostic file access:
+        - Automatically builds a Laravel `Filesystem` instance for any given path (local, Dropbox, S3, etc.).
+        - Provides recursive file listing via `listFiles()` returning `FileInfoDto` objects.
+        - Replaces all direct filesystem calls (`fopen`, `unlink`, `hash_file`, etc.) with stream-safe equivalents.
+        - Implements efficient hashing (`sha256`) using stream-based `hash_update_stream` for large files.
+        - Enables consistent file handling across CLI and Web contexts through the same unified API layer.
 
 - **Uploads**
     - Increased maximum upload size to **1 GB** to support large video files.
