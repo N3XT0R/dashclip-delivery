@@ -44,6 +44,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Implements efficient hashing (`sha256`) using stream-based `hash_update_stream` for large files.
         - Enables consistent file handling across CLI and Web contexts through the same unified API layer.
 
+- **CSV Import**
+    - Introduced `ClipImportResult` value object to encapsulate import outcomes:
+        - Tracks created, updated, and warning counts.
+        - Optionally aggregates references to affected `Clip` models.
+        - Enables downstream traceability and structured reporting for batch imports.
+    - Added strong-typed result flow (`ClipImportResult` → `ImportStats`) replacing mutable array counters.
+    - Added dedicated method signatures to support typed aggregation in `processRow`, `updateClipIfDirty`, and
+      `createClip`.
+    - Added improved error handling and warning tracking for malformed or missing data rows.
+    - Added `importInfoFromDisk()` and `importFromStream()` methods for driver-agnostic import via `Filesystem`
+      (compatible with `DynamicStorageService`).
+
 - **Configuration**
     - Config table now supports a `selectable` JSON column so settings can offer predefined choices.
     - New FFMPEG configuration category seeds codec, preset and parameter defaults for preview generation.
@@ -92,6 +104,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Now fully parameterized via database configuration (codec, preset, additional parameters).
         - Provides improved stability, consistent error handling, and framework-native integration.
 
+- **InfoImporter**
+    - Refactored to use `ClipImportResult` instead of primitive array-based `$stats`.
+    - Replaced legacy counter passing (`&$stats`) with immutable, typed result aggregation.
+    - Updated all internal pipeline methods:
+        - `processRow()` now receives and updates a `ClipImportResult` instance.
+        - `findVideoOrWarn()`, `updateClipIfDirty()`, and `createClip()` now contribute structured results.
+    - Unified return values and removed duplicate stat calculation logic.
+    - Improved naming consistency and method visibility (private helpers now focused on single responsibility).
+    - Enhanced readability and maintainability by removing nested array manipulation patterns.
 
 - **Uploads**
     - Increased maximum upload size to **1 GB** to support large video files.
@@ -112,6 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Old inline CSV import logic — replaced by `CsvService`.
 - Legacy Dropbox upload implementation using direct stream operations.
 - Direct filesystem access in preview and upload logic.
+- Deprecated raw `import()` method now superseded by `importFromStream()` and `importInfoFromDisk()`.
 
 ### Removed
 
@@ -119,6 +141,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tight coupling between `Video` models and preview generation.
 - Legacy mail handling classes replaced by the new inbound mail processing system.
 - Filament v3 dependencies and components.
+
+- Removed mutable `$stats` arrays (`['created' => 0, 'updated' => 0, 'warnings' => 0]`) in favor of `ClipImportResult`.
+- Removed inline CSV parsing logic tied to direct file handles (`fopen`, `fgetcsv`, etc.) — now delegated to
+  stream-based workflow.
+- Removed implicit counter manipulation inside helper methods; replaced with domain-specific result updates.
 
 ## [2.5.0] - 2025-10-10
 
