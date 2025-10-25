@@ -6,10 +6,12 @@ namespace App\Services\Ingest;
 
 use App\DTO\FileInfoDto;
 use App\Enum\BatchTypeEnum;
+use App\Enum\Ingest\IngestResult;
 use App\Facades\DynamicStorage;
 use App\Services\BatchService;
 use App\Services\CsvService;
 use App\Services\VideoService;
+use App\ValueObjects\IngestStats;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +47,7 @@ class IngestScanner
         $inboxDisk = DynamicStorage::fromPath($inboxPath);
         $this->log(sprintf('Starte Scan: %s -> %s', $inboxPath, $targetDiskName));
         $batch = $this->batchService->createNewBatch(BatchTypeEnum::INGEST);
-        $stats = ['new' => 0, 'dups' => 0, 'err' => 0];
+        $stats = new IngestStats();
 
         // CSV-Import für alle Verzeichnisse
         $this->importCsvForDirectory($inboxDisk);
@@ -53,13 +55,17 @@ class IngestScanner
         // Videodateien verarbeiten
         $allFiles = DynamicStorage::listFiles($inboxDisk);
         foreach ($allFiles as $file) {
-            if (!$file->isOneOfExtensions(self::ALLOWED_EXTENSIONS)) {
+            if (false === $file->isOneOfExtensions(self::ALLOWED_EXTENSIONS)) {
                 continue;
             }
             $this->log("Verarbeite {$file->basename}");
             try {
-                $this->processFile($inboxDisk, $file, $targetDiskName);
+                $result = $this->processFile($inboxDisk, $file, $targetDiskName);
+                $stats->increment($result);
             } catch (Throwable $e) {
+                $stats->increment(IngestResult::ERR);
+                $this->log("Fehler: {$e->getMessage()}");
+                Log::error($e->getMessage(), ['file' => $path]);
             }
         }
     }
@@ -80,7 +86,7 @@ class IngestScanner
     }
 
 
-    public function processFile(Filesystem $inboxDisk, FileInfoDto $file, string $diskName): string
+    public function processFile(Filesystem $inboxDisk, FileInfoDto $file, string $diskName): IngestResult
     {
         $hash = DynamicStorage::getHashForFile($inboxDisk, $file);
         $pathToFile = $file->path;
@@ -92,7 +98,7 @@ class IngestScanner
         if ($videoService->isDuplicate($hash)) {
             $inboxDisk->delete($pathToFile);
             $this->log('Duplikat übersprungen');
-            return 'dups';
+            return IngestResult::DUPS;
         }
 
         $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
@@ -102,7 +108,7 @@ class IngestScanner
         $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
 
 
-        return '';
+        return IngestResult::NEW;
     }
 
 }
