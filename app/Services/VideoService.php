@@ -24,6 +24,15 @@ readonly class VideoService
         return Video::query()->where('hash', $hash)->exists();
     }
 
+    /**
+     * @param  string  $hash
+     * @param  string  $ext
+     * @param  int  $bytes
+     * @param  string  $absolutePath
+     * @param  string  $fileName
+     * @return Video
+     * @deprecated use createVideoBydDiskAndFileInfoDto instead
+     */
     public function createLocal(string $hash, string $ext, int $bytes, string $absolutePath, string $fileName): Video
     {
         return Video::query()->create([
