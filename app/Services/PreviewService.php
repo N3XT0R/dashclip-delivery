@@ -11,8 +11,10 @@ use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Filters\Video\VideoFilters;
 use FFMpeg\Format\Video\X264;
 use Illuminate\Console\OutputStyle;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Number;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 use Throwable;
 
@@ -116,7 +118,7 @@ final class PreviewService
             } catch (Throwable $e) {
                 $size = 0;
             }
-            $this->info("Preview created: {$previewPath} (".$this->humanBytes($size).')');
+            $this->info("Preview created: {$previewPath} (".Number::fileSize($size).')');
 
             return $previewDisk->url($previewPath);
         } catch (Throwable $e) {
@@ -194,20 +196,8 @@ final class PreviewService
         Log::debug($message, ['service' => 'PreviewService']);
     }
 
-    private function humanBytes(int $bytes): string
-    {
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $i = 0;
-        while ($bytes >= 1024 && $i < count($units) - 1) {
-            $bytes /= 1024;
-            $i++;
-        }
 
-        return sprintf('%.1f %s', $bytes, $units[$i]);
-    }
-
-
-    public function generatePreviewByDisk(): ?string
+    public function generatePreviewByDisk(Filesystem $disk): ?string
     {
     }
 }
