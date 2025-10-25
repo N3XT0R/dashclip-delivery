@@ -166,7 +166,7 @@ final class IngestScanner
      * @param  string  $diskName
      * @param  int  $bytes
      * @return bool
-     * @deprecated
+     * @deprecated use UploadService::uploadFile instead
      */
     private function uploadFile(string $srcPath, string $dstRel, string $diskName, int $bytes): bool
     {
