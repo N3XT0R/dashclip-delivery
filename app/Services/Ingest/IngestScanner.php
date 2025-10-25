@@ -85,6 +85,11 @@ class IngestScanner
         return $stats;
     }
 
+    /**
+     * Import CSV files for all directories in the given disk.
+     * @param  Filesystem  $inboxDisk
+     * @return IngestResult
+     */
     private function importCsvForDirectory(Filesystem $inboxDisk): IngestResult
     {
         $aggregate = null;
