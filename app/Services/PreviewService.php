@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Facades\Cfg;
+use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
 use FFMpeg\Coordinate\TimeCode;
@@ -197,8 +198,14 @@ final class PreviewService
     }
 
 
-    public function generatePreviewByDisk(Filesystem $disk): ?string
-    {
+    public function generatePreviewByDisk(
+        Filesystem $disk,
+        string $relativePath,
+        ?int $startSec = 0,
+        ?int $endSec = null
+    ): ?string {
+        $absoluteSource = $disk->path($relativePath);
+        $hash = DynamicStorage::getHashForFilePath($disk, $relativePath);
     }
 }
 

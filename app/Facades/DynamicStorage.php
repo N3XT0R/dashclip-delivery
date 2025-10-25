@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static Filesystem fromPath(string $path)
  * @method static Collection<FileInfoDto> listFiles(Filesystem $disk, string $basePath = '')
- * @method static string getHashForFile(Filesystem $disk, FileInfoDto $file)
+ * @method static string getHashForFileInfoDto(Filesystem $disk, FileInfoDto $file)
+ * @method static string getHashForFilePath(Filesystem $disk, string $relativePath)
  */
 class DynamicStorage extends Facade
 {

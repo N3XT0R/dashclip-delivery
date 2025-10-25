@@ -102,7 +102,7 @@ class IngestScanner
 
     public function processFile(Filesystem $inboxDisk, FileInfoDto $file, string $diskName): IngestResult
     {
-        $hash = DynamicStorage::getHashForFile($inboxDisk, $file);
+        $hash = DynamicStorage::getHashForFileInfoDto($inboxDisk, $file);
         $pathToFile = $file->path;
         $baseName = $file->basename;
         $bytes = $inboxDisk->size($pathToFile);
