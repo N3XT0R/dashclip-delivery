@@ -123,7 +123,7 @@ class IngestScanner
         $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
         $this->importCsvForDirectory($inboxDisk);
         $video->refresh();
-
+        
         try {
             $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
