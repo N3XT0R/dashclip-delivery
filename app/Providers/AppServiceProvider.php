@@ -74,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
                 foreach ($steps as $stepClass) {
                     $step = $app->make($stepClass);
                     if ($step instanceof IngestStepInterface) {
-                        $instances[] = $app->make($stepClass);
+                        $instances[] = $step;
                     }
                 }
             }
