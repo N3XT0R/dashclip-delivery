@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\FileInfoDto;
+use App\Facades\DynamicStorage;
 use App\Models\Video;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
@@ -31,6 +34,28 @@ readonly class VideoService
             'disk' => 'local',
             'meta' => null,
             'original_name' => $fileName,
+        ]);
+    }
+
+    public function createVideoBydDiskAndFileInfoDto(
+        FileSystem $disk,
+        FileInfoDto $file,
+        string $diskName = 'custom',
+    ): Video {
+        $hash = DynamicStorage::getHashForFileInfoDto($disk, $file);
+        $pathToFile = $file->path;
+        $baseName = $file->basename;
+        $bytes = $disk->size($pathToFile);
+        $ext = $file->extension;
+
+        return Video::query()->create([
+            'hash' => $hash,
+            'ext' => $ext,
+            'bytes' => $bytes,
+            'path' => $pathToFile,
+            'disk' => $diskName,
+            'meta' => null,
+            'original_name' => $baseName,
         ]);
     }
 

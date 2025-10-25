@@ -111,8 +111,6 @@ class IngestScanner
     {
         $hash = DynamicStorage::getHashForFileInfoDto($inboxDisk, $file);
         $pathToFile = $file->path;
-        $baseName = $file->basename;
-        $bytes = $inboxDisk->size($pathToFile);
         $ext = $file->extension;
         $videoService = $this->videoService;
         $previewService = app(PreviewService::class);
@@ -130,7 +128,7 @@ class IngestScanner
         DB::beginTransaction();
 
         try {
-            $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
+            $video = $videoService->createVideoBydDiskAndFileInfoDto($inboxDisk, $file, $diskName);
             $this->importCsvForDirectory($inboxDisk);
             $video->refresh();
 
