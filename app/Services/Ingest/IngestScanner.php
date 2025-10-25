@@ -122,7 +122,7 @@ class IngestScanner
         $this->importCsvForDirectory($inboxDisk);
         $video->refresh();
 
-        $previewUrl = app(PreviewService::class)->generatePreviewByDisk();
+        $previewUrl = app(PreviewService::class)->generatePreviewByDisk($inboxDisk, $dstRel);
 
 
         return IngestResult::NEW;
