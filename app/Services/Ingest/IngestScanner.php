@@ -37,9 +37,10 @@ class IngestScanner
         $this->output = $outputStyle;
     }
 
-    private function log(string $message): void
+    private function log(string $message, string $level = 'info', array $context = []): void
     {
         $this->output?->writeln($message);
+        Log::log($level, $message, $context);
     }
 
     public function scanDisk(string $inboxPath, string $targetDiskName): IngestStats
@@ -60,14 +61,14 @@ class IngestScanner
             }
 
             $this->log("Verarbeite {$file->basename}");
-            
+
             try {
                 $result = $this->processFile($inboxDisk, $file, $targetDiskName);
                 $stats->increment($result);
             } catch (Throwable $e) {
                 $stats->increment(IngestResult::ERR);
-                $this->log("Fehler: {$e->getMessage()}");
-                Log::error($e->getMessage(), ['file' => $file->path]);
+                $this->log("Fehler bei der Verarbeitung: {$e->getMessage()}", 'error',
+                    ['exception' => $e, 'file' => $file->path]);
             }
             $this->batchService->updateStats($batch, $stats);
         }
@@ -84,11 +85,14 @@ class IngestScanner
             try {
                 $this->csvService->importCsvForDisk($inboxDisk, $directory);
             } catch (Throwable $e) {
-                Log::warning('CSV-Import fehlgeschlagen', [
-                    'dir' => $directory,
-                    'e' => $e->getMessage(),
-                ]);
-                $this->log("Warnung: CSV-Import für {$directory} fehlgeschlagen ({$e->getMessage()})");
+                $this->log(
+                    "Warnung: CSV-Import für {$directory} fehlgeschlagen ({$e->getMessage()})",
+                    'warning',
+                    [
+                        'exception' => $e,
+                        'dir' => $directory,
+                    ]
+                );
             }
         }
     }
@@ -105,7 +109,7 @@ class IngestScanner
 
         if ($videoService->isDuplicate($hash)) {
             $inboxDisk->delete($pathToFile);
-            $this->log('Duplikat übersprungen');
+            $this->log('Duplikat übersprungen', 'info', ['file' => $file->path, 'hash' => $hash]);
             return IngestResult::DUPS;
         }
 
