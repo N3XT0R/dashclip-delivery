@@ -34,6 +34,14 @@ readonly class VideoService
         ]);
     }
 
+    /**
+     * @param  Video  $video
+     * @param  string  $sourcePath
+     * @param  OutputInterface|null  $output
+     * @param  callable|null  $log
+     * @return string|null
+     * @deprecated use PreviewService::generatePreviewByDisk instead
+     */
     public function generatePreview(
         Video $video,
         string $sourcePath,
