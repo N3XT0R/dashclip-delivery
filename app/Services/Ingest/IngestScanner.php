@@ -125,9 +125,9 @@ class IngestScanner
 
         $dstRel = PathBuilder::forVideo($hash, $ext);
 
-        DB::beginTransaction();
 
         try {
+            DB::beginTransaction();
             $video = $videoService->createVideoBydDiskAndFileInfoDto('dynamicStorage', $inboxDisk, $file);
             $this->importCsvForDirectory($inboxDisk);
             $video->refresh();
