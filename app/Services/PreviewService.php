@@ -103,8 +103,8 @@ final class PreviewService
         } catch (Throwable $e) {
             $this->error('ffmpeg failed: '.$e->getMessage());
             Log::error('Preview generation failed', [
-                'file' => $relativePath,
-                'disk_path' => $disk->path(''),
+                'relative_path' => $relativePath,
+                'disk_path' => $disk->path($relativePath),
                 'exception' => $e,
             ]);
         }
