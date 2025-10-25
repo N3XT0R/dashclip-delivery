@@ -26,6 +26,7 @@ class InfoImporter
      * @param  array{infer-role?:bool, default-bundle?:string|null, default-submitter?:string|null}  $options
      * @param  callable(string):void|null  $onWarning  Optional callback for warnings
      * @return array{created:int, updated:int, warnings:int}
+     * @deprecated use importFromStream or importInfoFromDisk instead
      */
     public function import(string $csvPath, array $options = [], ?callable $onWarning = null): array
     {
