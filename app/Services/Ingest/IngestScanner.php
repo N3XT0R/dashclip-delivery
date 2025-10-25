@@ -32,9 +32,9 @@ class IngestScanner
     private ?OutputStyle $output = null;
 
     public function __construct(
-        private BatchService $batchService,
-        private CsvService $csvService,
-        private VideoService $videoService
+        private readonly BatchService $batchService,
+        private readonly CsvService $csvService,
+        private readonly VideoService $videoService
     ) {
     }
 
