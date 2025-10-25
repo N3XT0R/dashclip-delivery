@@ -22,13 +22,17 @@ class DropboxUploadService
         Filesystem $disk,
         string $relativePath,
         string $dstRel,
-        int $bytes,
         ?ProgressBar $bar = null
-    ): void {
+    ): bool {
         $root = (string)config('filesystems.disks.dropbox.root', '');
         $read = $disk->readStream($relativePath);
+        $bytes = $disk->size($relativePath);
+
         if ($read === false) {
             throw new RuntimeException("Konnte Datei nicht lesen: {$relativePath}");
         }
+
+
+        return true;
     }
 }

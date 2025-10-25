@@ -15,7 +15,7 @@ class UploadService
     {
         if ($targetDisk === 'dropbox') {
             return app(DropboxUploadService::class)
-                ->upload($sourceDisk, $relativePath, PathBuilder::forDropbox('', $relativePath));
+                ->uploadFile($sourceDisk, $relativePath, PathBuilder::forDropbox('', $relativePath));
         }
 
         return Storage::disk($targetDisk)
