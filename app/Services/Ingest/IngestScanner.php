@@ -129,6 +129,8 @@ class IngestScanner
             $video->refresh();
             $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
+            $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
+            $this->log('Upload abgeschlossen');
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
             $video->delete();
             $this->log($e->getMessage(), 'error', $e->context());
