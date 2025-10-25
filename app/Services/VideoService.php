@@ -47,9 +47,9 @@ readonly class VideoService
     }
 
     public function createVideoBydDiskAndFileInfoDto(
+        string $diskName,
         FileSystem $disk,
         FileInfoDto $file,
-        string $diskName,
     ): Video {
         $hash = DynamicStorage::getHashForFileInfoDto($disk, $file);
         $pathToFile = $file->path;
