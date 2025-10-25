@@ -12,6 +12,7 @@ use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use App\Services\Ingest\IngestProcessor;
 use App\Services\Ingest\Steps\CreateVideoStep;
+use App\Services\Ingest\Steps\FinalizeStep;
 use App\Services\Ingest\Steps\GeneratePreviewStep;
 use App\Services\Ingest\Steps\ImportCsvStep;
 use App\Services\Ingest\Steps\UploadStep;
@@ -75,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(ImportCsvStep::class),
                 $app->make(GeneratePreviewStep::class),
                 $app->make(UploadStep::class),
-                $app->make(\App\Services\Ingest\Steps\FinalizeStep::class),
+                $app->make(FinalizeStep::class),
             ]);
         });
     }
