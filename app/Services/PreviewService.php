@@ -69,6 +69,11 @@ final class PreviewService
 
         $previewDisk = Storage::disk('public');
         $previewPath = PathBuilder::forPreview($hash);
+
+        if ($previewDisk->exists($previewPath)) {
+            $this->info("Preview exists in cache: {$previewPath}");
+            return $previewDisk->url($previewPath);
+        }
     }
 
     public function generate(Video $video, int $start, int $end): ?string
