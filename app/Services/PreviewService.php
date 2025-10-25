@@ -33,6 +33,12 @@ final class PreviewService
         $this->output = $outputStyle;
     }
 
+    /**
+     * Generate a video preview for the given clip.
+     * @param  Clip  $clip
+     * @return string|null
+     * @deprecated use generatePreviewByDisk instead
+     */
     public function generateForClip(Clip $clip): ?string
     {
         $video = $clip->video;
