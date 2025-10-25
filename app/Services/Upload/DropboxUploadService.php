@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Upload;
 
+use App\Services\Dropbox\AutoRefreshTokenProvider;
 use App\Support\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Spatie\Dropbox\Client as DropboxClient;
