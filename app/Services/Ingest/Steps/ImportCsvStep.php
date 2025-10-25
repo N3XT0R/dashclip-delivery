@@ -26,7 +26,7 @@ class ImportCsvStep implements IngestStepInterface
 
             // Video-Instanz sollte bereits vom vorherigen Step gesetzt worden sein
             if ($context->video) {
-                $clip = $importResult->clipsForVideo($context->video)->first();
+                $clip = $importResult?->clipsForVideo($context->video)->first();
                 if ($clip) {
                     // Start/Endzeiten direkt im Context verfügbar machen
                     $context->clip = $clip;
