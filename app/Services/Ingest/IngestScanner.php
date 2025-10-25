@@ -58,7 +58,9 @@ class IngestScanner
             if (false === $file->isOneOfExtensions(self::ALLOWED_EXTENSIONS)) {
                 continue;
             }
+
             $this->log("Verarbeite {$file->basename}");
+            
             try {
                 $result = $this->processFile($inboxDisk, $file, $targetDiskName);
                 $stats->increment($result);
