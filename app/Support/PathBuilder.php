@@ -12,10 +12,15 @@ final class PathBuilder
         return sprintf('videos/%s/%s%s', $sub, $hash, $ext !== '' ? ".{$ext}" : '');
     }
 
-    public static function forPreview(string $hash): string
+    public static function forPreview(int $id, int $start, int $end): string
     {
-        $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
-        return sprintf('previews/%s/%s.jpg', $sub, $hash);
+        $hash = md5($id.'_'.$start.'_'.$end);
+        return self::forPreviewByHash($hash);
+    }
+
+    public static function forPreviewByHash(string $hash): string
+    {
+        return sprintf('previews/%s.mp4', $hash);
     }
 
     public static function forDropbox(string $root, string $dstRel): string
