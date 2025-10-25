@@ -4,7 +4,21 @@ declare(strict_types=1);
 
 namespace App\Services\Upload;
 
+use App\Support\PathBuilder;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
+
 class UploadService
 {
 
+    public function uploadFile(Filesystem $sourceDisk, string $relativePath, string $targetDisk): bool
+    {
+        if ($targetDisk === 'dropbox') {
+            return app(DropboxUploadService::class)
+                ->upload($sourceDisk, $relativePath, PathBuilder::forDropbox('', $relativePath));
+        }
+
+        return Storage::disk($targetDisk)
+            ->put($relativePath, $sourceDisk->readStream($relativePath));
+    }
 }
