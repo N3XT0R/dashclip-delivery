@@ -28,7 +28,6 @@ class IngestScanner
 {
     private const ALLOWED_EXTENSIONS = ['mp4', 'mov', 'mkv', 'avi', 'm4v', 'webm'];
 
-    private const CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB
 
     private ?OutputStyle $output = null;
 
