@@ -122,7 +122,7 @@ class IngestScanner
         }
 
         $dstRel = PathBuilder::forVideo($hash, $ext);
-        
+
         try {
             $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
             $this->importCsvForDirectory($inboxDisk);
@@ -134,7 +134,7 @@ class IngestScanner
             $this->log($e->getMessage(), 'error', $e->context());
         } catch (Throwable $e) {
             $video->delete();
-            $this->log('Upload fehlgeschlagen', 'error', [
+            $this->log('Upload fehlgeschlagen: '.$e->getMessage(), 'error', [
                 'exception' => $e,
                 'file' => $file->path,
             ]);
