@@ -8,6 +8,7 @@ use App\Facades\Cfg;
 use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
+use App\Support\PathBuilder;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Filters\Video\VideoFilters;
 use FFMpeg\Format\Video\X264;
@@ -49,6 +50,25 @@ final class PreviewService
         }
 
         return $this->generate($video, $start, $end);
+    }
+
+    public function generatePreviewByDisk(
+        Filesystem $disk,
+        string $relativePath,
+        ?int $startSec = 0,
+        ?int $endSec = null
+    ): ?string {
+        if (!$this->isValidRange($startSec, $endSec)) {
+            $this->warn("Invalid time range: start={$startSec}, end={$endSec}");
+            return null;
+        }
+
+        $absoluteSource = $disk->path($relativePath);
+        $hash = DynamicStorage::getHashForFilePath($disk, $relativePath);
+        $duration = $endSec - $startSec;
+
+        $previewDisk = Storage::disk('public');
+        $previewPath = PathBuilder::forPreview($hash);
     }
 
     public function generate(Video $video, int $start, int $end): ?string
@@ -190,22 +210,6 @@ final class PreviewService
     {
         $this->output?->writeln("<error>{$message}</error>");
         Log::error($message, ['service' => 'PreviewService']);
-    }
-
-    private function debug(string $message): void
-    {
-        Log::debug($message, ['service' => 'PreviewService']);
-    }
-
-
-    public function generatePreviewByDisk(
-        Filesystem $disk,
-        string $relativePath,
-        ?int $startSec = 0,
-        ?int $endSec = null
-    ): ?string {
-        $absoluteSource = $disk->path($relativePath);
-        $hash = DynamicStorage::getHashForFilePath($disk, $relativePath);
     }
 }
 
