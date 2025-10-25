@@ -122,11 +122,11 @@ class IngestScanner
         }
 
         $dstRel = PathBuilder::forVideo($hash, $ext);
-        $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
-        $this->importCsvForDirectory($inboxDisk);
-        $video->refresh();
-
+        
         try {
+            $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
+            $this->importCsvForDirectory($inboxDisk);
+            $video->refresh();
             $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
