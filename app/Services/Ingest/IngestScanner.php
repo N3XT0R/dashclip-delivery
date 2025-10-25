@@ -104,9 +104,6 @@ class IngestScanner
     }
 
 
-    /**
-     * @throws Throwable
-     */
     public function processFile(Filesystem $inboxDisk, FileInfoDto $file, string $diskName): IngestResult
     {
         $hash = DynamicStorage::getHashForFileInfoDto($inboxDisk, $file);
