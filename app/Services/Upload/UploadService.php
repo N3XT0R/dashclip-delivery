@@ -13,12 +13,17 @@ class UploadService
     public function uploadFile(Filesystem $sourceDisk, string $relativePath, string $targetDisk): void
     {
         if ($targetDisk === 'dropbox') {
-            app(DropboxUploadService::class)
-                ->uploadFile($sourceDisk, $relativePath, PathBuilder::forDropbox('', $relativePath));
+            $this->uploadToDropbox($sourceDisk, $relativePath, $relativePath);
             return;
         }
 
         Storage::disk($targetDisk)
             ->put($relativePath, $sourceDisk->readStream($relativePath));
+    }
+
+    protected function uploadToDropbox(Filesystem $disk, string $relativePath, string $dstRel): void
+    {
+        app(DropboxUploadService::class)
+            ->uploadFile($disk, $relativePath, PathBuilder::forDropbox('', $dstRel));
     }
 }
