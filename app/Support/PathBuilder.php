@@ -15,12 +15,13 @@ final class PathBuilder
     public static function forPreview(int $id, int $start, int $end): string
     {
         $hash = md5($id.'_'.$start.'_'.$end);
-        return self::forPreviewByHash($hash);
+        return sprintf('previews/%s.mp4', $hash);
     }
 
-    public static function forPreviewByHash(string $hash): string
+    public static function forPreviewByHash(string $fileHash): string
     {
-        return sprintf('previews/%s.mp4', $hash);
+        $sub = substr($fileHash, 0, 2).'/'.substr($fileHash, 2, 2);
+        return sprintf('previews/%s/%s.mp4', $sub, $fileHash);
     }
 
     public static function forDropbox(string $root, string $dstRel): string
