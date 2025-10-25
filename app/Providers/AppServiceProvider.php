@@ -11,6 +11,7 @@ use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use App\Services\Ingest\Contracts\IngestPipelineInterface;
+use App\Services\Ingest\Contracts\IngestStepInterface;
 use App\Services\Ingest\IngestPipeline;
 use App\Services\Mail\Scanner\Detectors\BounceDetector;
 use App\Services\Mail\Scanner\Detectors\ReplyDetector;
@@ -71,7 +72,10 @@ class AppServiceProvider extends ServiceProvider
             $steps = $app['config']->get('ingest.steps', []);
             if (!empty($steps)) {
                 foreach ($steps as $stepClass) {
-                    $instances[] = $app->make($stepClass);
+                    $step = $app->make($stepClass);
+                    if ($step instanceof IngestStepInterface) {
+                        $instances[] = $app->make($stepClass);
+                    }
                 }
             }
             return new IngestPipeline($instances);
