@@ -11,14 +11,15 @@ use Illuminate\Support\Facades\Storage;
 class UploadService
 {
 
-    public function uploadFile(Filesystem $sourceDisk, string $relativePath, string $targetDisk): bool
+    public function uploadFile(Filesystem $sourceDisk, string $relativePath, string $targetDisk): void
     {
         if ($targetDisk === 'dropbox') {
-            return app(DropboxUploadService::class)
+            app(DropboxUploadService::class)
                 ->uploadFile($sourceDisk, $relativePath, PathBuilder::forDropbox('', $relativePath));
+            return;
         }
 
-        return Storage::disk($targetDisk)
+        Storage::disk($targetDisk)
             ->put($relativePath, $sourceDisk->readStream($relativePath));
     }
 }
