@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
 
     protected function registerIngest(): void
     {
-        $this->app->bind(IngestPipelineInterface::class, function ($app) {
+        $this->app->bind(IngestPipelineInterface::class, function (Application $app) {
             $instances = [];
             $steps = $app['config']->get('ingest.steps', []);
             if (!empty($steps)) {
