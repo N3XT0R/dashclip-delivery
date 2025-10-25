@@ -222,6 +222,14 @@ final class IngestScanner
         return false;
     }
 
+    /**
+     * @param $read
+     * @param  string  $dstRel
+     * @param  int  $bytes
+     * @param  ProgressBar|null  $bar
+     * @return void
+     * @deprecated use DropboxUploadService::uploadFile instead
+     */
     private function uploadToDropbox($read, string $dstRel, int $bytes, ?ProgressBar $bar = null): void
     {
         $root = (string)config('filesystems.disks.dropbox.root', '');
