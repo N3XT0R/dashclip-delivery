@@ -63,11 +63,11 @@ final class PreviewService
             return null;
         }
 
-        $absoluteSource = $disk->path($relativePath);
+        $targetDisk = config('preview.default_disk', 'public');
         $hash = DynamicStorage::getHashForFilePath($disk, $relativePath);
         $duration = $endSec - $startSec;
 
-        $previewDisk = Storage::disk(config('preview.default_disk', 'public'));
+        $previewDisk = Storage::disk($targetDisk);
         $previewPath = PathBuilder::forPreview($hash);
 
         if ($previewDisk->exists($previewPath)) {
@@ -89,12 +89,13 @@ final class PreviewService
                 $format->setAdditionalParameters($params);
             }
 
-            FFMpeg::open($absoluteSource)
+            FFMpeg::fromDisk($disk)
+                ->open($relativePath)
                 ->addFilter(function (VideoFilters $filters) use ($startSec, $duration): void {
                     $filters->clip(TimeCode::fromSeconds($startSec), TimeCode::fromSeconds($duration));
                 })
                 ->export()
-                ->toDisk('public')
+                ->toDisk($targetDisk)
                 ->inFormat($format)
                 ->save($previewPath);
 
@@ -102,7 +103,8 @@ final class PreviewService
         } catch (Throwable $e) {
             $this->error('ffmpeg failed: '.$e->getMessage());
             Log::error('Preview generation failed', [
-                'file' => $absoluteSource,
+                'file' => $relativePath,
+                'disk_path' => $disk->path(''),
                 'exception' => $e,
             ]);
         }
