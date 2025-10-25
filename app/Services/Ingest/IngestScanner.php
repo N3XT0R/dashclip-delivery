@@ -150,7 +150,13 @@ class IngestScanner
             $endSec = $clip?->end_sec ?? null;
 
 
-            $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile, $startSec, $endSec);
+            $previewUrl = $previewService->generatePreviewByDisk(
+                $inboxDisk,
+                $pathToFile,
+                $video->getKey(),
+                $startSec,
+                $endSec
+            );
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
 
 
