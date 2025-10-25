@@ -18,7 +18,7 @@ use Throwable;
 /**
  * Recursively scans an input directory and imports new video files
  * into the configured storage. Detects duplicates using SHA-256.
- * @todo refactor
+ * @deprecated use \App\Services\Ingest\IngestScanner instead
  */
 final class IngestScanner
 {
@@ -160,6 +160,14 @@ final class IngestScanner
         return sprintf('videos/%s/%s%s', $sub, $hash, $ext !== '' ? ".{$ext}" : '');
     }
 
+    /**
+     * @param  string  $srcPath
+     * @param  string  $dstRel
+     * @param  string  $diskName
+     * @param  int  $bytes
+     * @return bool
+     * @deprecated
+     */
     private function uploadFile(string $srcPath, string $dstRel, string $diskName, int $bytes): bool
     {
         $read = fopen($srcPath, 'rb');
