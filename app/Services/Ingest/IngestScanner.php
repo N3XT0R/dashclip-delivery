@@ -11,6 +11,7 @@ use App\Facades\DynamicStorage;
 use App\Services\BatchService;
 use App\Services\CsvService;
 use App\Services\PreviewService;
+use App\Services\Upload\UploadService;
 use App\Services\VideoService;
 use App\Support\PathBuilder;
 use App\ValueObjects\IngestStats;
@@ -110,6 +111,7 @@ class IngestScanner
         $videoService = $this->videoService;
         $previewService = app(PreviewService::class);
         $previewService->setOutput($this->output);
+        $uploadService = app(UploadService::class);
 
         if ($videoService->isDuplicate($hash)) {
             $inboxDisk->delete($pathToFile);
@@ -118,11 +120,22 @@ class IngestScanner
         }
 
         $dstRel = PathBuilder::forVideo($hash, $ext);
-
         $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
         $this->importCsvForDirectory($inboxDisk);
         $video->refresh();
-        $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
+
+        try {
+            $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
+            $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
+        } catch (Throwable $e) {
+            $video->delete();
+            $this->log('Upload fehlgeschlagen', 'error', [
+                'exception' => $e,
+                'file' => $file->path,
+            ]);
+
+            return IngestResult::ERR;
+        }
 
 
         return IngestResult::NEW;
