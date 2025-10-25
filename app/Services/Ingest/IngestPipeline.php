@@ -13,7 +13,7 @@ use Traversable;
 class IngestPipeline
 {
     /** @var IngestStepInterface[] */
-    private array $steps = [];
+    private array $steps;
 
     public function __construct(iterable $steps)
     {
