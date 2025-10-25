@@ -106,7 +106,8 @@ class InfoImport extends Command
                 $this->line("CSV/TXT behalten: {$csvPath}");
             }
 
-            $this->info("Import fertig: neu={$result['created']}, aktualisiert={$result['updated']}, Warnungen={$result['warnings']}");
+            $stats = $result->stats;
+            $this->info("Import fertig: neu={$stats->created}, aktualisiert={$stats->updated}, Warnungen={$stats->warnings}");
             $this->line('Reihenfolge im Cron: ingest:scan → info:import (--dir oder --csv) → weekly:run');
 
             return self::SUCCESS;

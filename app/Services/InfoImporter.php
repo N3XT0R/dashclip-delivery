@@ -6,39 +6,35 @@ namespace App\Services;
 
 use App\Models\Clip;
 use App\Models\Video;
+use App\ValueObjects\ClipImportResult;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use RuntimeException;
 
 class InfoImporter
 {
-    private const CSV_DELIMITER = ';';
-    private const ROW_COLUMNS = 7;
+    private const string CSV_DELIMITER = ';';
+    private const int ROW_COLUMNS = 7;
 
-
-    private function createStatsArray(): array
-    {
-        return ['created' => 0, 'updated' => 0, 'warnings' => 0];
-    }
 
     /**
      * Import clip information from a CSV file.
      *
      * @param  array{infer-role?:bool, default-bundle?:string|null, default-submitter?:string|null}  $options
      * @param  callable(string):void|null  $onWarning  Optional callback for warnings
-     * @return array{created:int, updated:int, warnings:int}
+     * @return ClipImportResult
      * @deprecated use importFromStream or importInfoFromDisk instead
      */
-    public function import(string $csvPath, array $options = [], ?callable $onWarning = null): array
+    public function import(string $csvPath, array $options = [], ?callable $onWarning = null): ClipImportResult
     {
         [$inferRole, $defaultBundle, $defaultSubmitter] = $this->parseOptions($options);
 
         $fh = $this->openCsvOrFail($csvPath);
-        $stats = $this->createStatsArray();
+        $result = ClipImportResult::empty();
 
         // Read and ignore the header line. If there is no header, return empty stats.
         if ($this->readHeader($fh) === false) {
             fclose($fh);
-            return $stats;
+            return $result;
         }
 
         while (($row = fgetcsv($fh, 0, self::CSV_DELIMITER)) !== false) {
@@ -48,21 +44,29 @@ class InfoImporter
                 defaultBundle: (string)$defaultBundle,
                 defaultSubmitter: (string)$defaultSubmitter,
                 onWarning: $onWarning,
-                stats: $stats
+                result: $result
             );
         }
 
         fclose($fh);
 
-        return $stats;
+        return $result;
     }
 
+    /**
+     * Import clip information from a CSV file stored on the given disk.
+     * @param  Filesystem  $disk
+     * @param  string  $path
+     * @param  array  $options
+     * @param  callable|null  $onWarning
+     * @return ClipImportResult
+     */
     public function importInfoFromDisk(
         Filesystem $disk,
         string $path,
         array $options = [],
         ?callable $onWarning = null
-    ): array {
+    ): ClipImportResult {
         $stream = $disk->readStream($path);
 
         if ($stream === false) {
@@ -72,15 +76,14 @@ class InfoImporter
         return $this->importFromStream($stream, $options, $onWarning);
     }
 
-    public function importFromStream($stream, array $options = [], ?callable $onWarning = null): array
+    public function importFromStream($stream, array $options = [], ?callable $onWarning = null): ClipImportResult
     {
         [$inferRole, $defaultBundle, $defaultSubmitter] = $this->parseOptions($options);
-
-        $stats = $this->createStatsArray();
+        $result = ClipImportResult::empty();
 
         if ($this->readHeader($stream) === false) {
             fclose($stream);
-            return $stats;
+            return $result;
         }
 
         while (($row = fgetcsv($stream, 0, self::CSV_DELIMITER)) !== false) {
@@ -90,12 +93,12 @@ class InfoImporter
                 defaultBundle: (string)$defaultBundle,
                 defaultSubmitter: (string)$defaultSubmitter,
                 onWarning: $onWarning,
-                stats: $stats
+                result: $result
             );
         }
 
         fclose($stream);
-        return $stats;
+        return $result;
     }
 
 
@@ -139,10 +142,14 @@ class InfoImporter
     }
 
     /**
-     * Process a single CSV row end-to-end.
-     *
-     * @param  list<string|null>  $row
-     * @param  array{created:int,updated:int,warnings:int}  $stats  (by-ref)
+     * Process a single CSV row.
+     * @param  array  $row
+     * @param  bool  $inferRole
+     * @param  string  $defaultBundle
+     * @param  string  $defaultSubmitter
+     * @param  callable|null  $onWarning
+     * @param  ClipImportResult  $result
+     * @return void
      */
     private function processRow(
         array $row,
@@ -150,7 +157,7 @@ class InfoImporter
         string $defaultBundle,
         string $defaultSubmitter,
         ?callable $onWarning,
-        array &$stats
+        ClipImportResult $result
     ): void {
         [$filename, $start, $end, $note, $bundle, $role, $submittedBy] = $this->sanitizeRow($row);
 
@@ -159,14 +166,14 @@ class InfoImporter
             return;
         }
 
-        $startSec = $this->parseTimeToSec($start, $onWarning, $stats['warnings']);
-        $endSec = $this->parseTimeToSec($end, $onWarning, $stats['warnings']);
+        $startSec = $this->parseTimeToSec($start, $onWarning, $result);
+        $endSec = $this->parseTimeToSec($end, $onWarning, $result);
 
         $role = $this->inferRoleIfNeeded($filename, $role, $inferRole);
         [$bundle, $submittedBy] = $this->applyDefaults($bundle, $submittedBy, $defaultBundle, $defaultSubmitter);
 
         $baseName = basename($filename);
-        $video = $this->findVideoOrWarn($baseName, $onWarning, $stats['warnings']);
+        $video = $this->findVideoOrWarn($baseName, $onWarning, $result);
         if (!$video) {
             // Without a video, nothing more to do for this row
             return;
@@ -180,9 +187,9 @@ class InfoImporter
         );
 
         if ($clip) {
-            $this->updateClipIfDirty($clip, $note, $bundle, $submittedBy, $stats['updated']);
+            $this->updateClipIfDirty($clip, $note, $bundle, $submittedBy, $result);
         } else {
-            $this->createClip($video, $startSec, $endSec, $note, $bundle, $role, $submittedBy, $stats['created']);
+            $this->createClip($video, $startSec, $endSec, $note, $bundle, $role, $submittedBy, $result);
         }
     }
 
@@ -203,7 +210,11 @@ class InfoImporter
     }
 
     /**
-     * Infer role from filename suffix if requested and role is empty.
+     * Infer role from filename if needed.
+     * @param  string  $filename
+     * @param  string  $role
+     * @param  bool  $inferRole
+     * @return string
      */
     private function inferRoleIfNeeded(string $filename, string $role, bool $inferRole): string
     {
@@ -243,14 +254,18 @@ class InfoImporter
     }
 
     /**
-     * Look up video by original name, or emit a warning.
+     * Find video by original name or issue a warning.
+     * @param  string  $baseName
+     * @param  callable|null  $onWarning
+     * @param  ClipImportResult  $result
+     * @return Video|null
      */
-    private function findVideoOrWarn(string $baseName, ?callable $onWarning, int &$warningCount): ?Video
+    private function findVideoOrWarn(string $baseName, ?callable $onWarning, ClipImportResult $result): ?Video
     {
         $video = Video::query()->where('original_name', $baseName)->first();
 
         if (!$video) {
-            $warningCount++;
+            $result->incrementWarnings();
             if ($onWarning) {
                 // Keep original user-facing message
                 $onWarning("Kein Video gefunden für filename='{$baseName}'");
@@ -261,7 +276,12 @@ class InfoImporter
     }
 
     /**
-     * Find an existing clip by composite identity (video + start/end/role).
+     * Find existing clip by video ID, start/end seconds, and role.
+     * @param  int  $videoId
+     * @param  int|null  $startSec
+     * @param  int|null  $endSec
+     * @param  string  $role
+     * @return Clip|null
      */
     private function findExistingClip(int $videoId, ?int $startSec, ?int $endSec, string $role): ?Clip
     {
@@ -286,14 +306,20 @@ class InfoImporter
     }
 
     /**
-     * Update the clip only if any relevant field actually changed.
+     * Update clip if any of the given fields differ.
+     * @param  Clip  $clip
+     * @param  string  $note
+     * @param  string  $bundle
+     * @param  string  $submittedBy
+     * @param  ClipImportResult  $result
+     * @return void
      */
     private function updateClipIfDirty(
         Clip $clip,
         string $note,
         string $bundle,
         string $submittedBy,
-        int &$updatedCount
+        ClipImportResult $result
     ): void {
         $dirty = false;
 
@@ -312,12 +338,21 @@ class InfoImporter
 
         if ($dirty) {
             $clip->save();
-            $updatedCount++;
+            $result->addUpdated($clip);
         }
     }
 
     /**
-     * Create a new clip from the given values.
+     * Create a new clip.
+     * @param  Video  $video
+     * @param  int|null  $startSec
+     * @param  int|null  $endSec
+     * @param  string  $note
+     * @param  string  $bundle
+     * @param  string  $role
+     * @param  string  $submittedBy
+     * @param  ClipImportResult  $result
+     * @return void
      */
     private function createClip(
         Video $video,
@@ -327,9 +362,9 @@ class InfoImporter
         string $bundle,
         string $role,
         string $submittedBy,
-        int &$createdCount
+        ClipImportResult $result
     ): void {
-        Clip::query()->create([
+        $clip = Clip::query()->create([
             'video_id' => $video->getKey(),
             'start_sec' => $startSec,
             'end_sec' => $endSec,
@@ -339,12 +374,12 @@ class InfoImporter
             'submitted_by' => $submittedBy !== '' ? $submittedBy : null,
         ]);
 
-        $createdCount++;
+        $result->addCreated($clip);
     }
 
     // === Existing helpers (behavior preserved) ================================
 
-    private function parseTimeToSec(?string $s, ?callable $onWarning, int &$warningCount): ?int
+    private function parseTimeToSec(?string $s, ?callable $onWarning, ClipImportResult $result): ?int
     {
         $s = trim((string)$s);
         if ($s === '') {
@@ -367,7 +402,7 @@ class InfoImporter
             return (int)$s;
         }
 
-        $warningCount++;
+        $result->incrementWarnings();
         if ($onWarning) {
             // Keep original user-facing message
             $onWarning("Ungültige Zeitangabe: '{$s}' (erwartet MM:SS oder H:MM:SS oder Sekunden)");
