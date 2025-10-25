@@ -28,8 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added `IngestResult` enum for standardized ingest return values.
     - Added `IngestStats` value object for batch statistics and aggregation.
     - Added dedicated exception classes for clearer flow control and debugging:
-        - `InvalidTimeRangeException` — thrown when preview clip ranges are invalid.
-        - `PreviewGenerationException` — includes contextual metadata for FFmpeg errors.
+        - `InvalidTimeRangeException` - thrown when preview clip ranges are invalid.
+        - `PreviewGenerationException` - includes contextual metadata for FFmpeg errors.
     - Added new `App\Services\Ingest\IngestScanner` (modular replacement of legacy class).
     - Added `CsvService` for isolated metadata (CSV) import.
     - Implemented unified logging and consistent exception handling across CLI and web ingest.
@@ -69,16 +69,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Preview generation is now model-independent; `PreviewService` no longer depends on `Video` Eloquent models.
     - Unified code path for web uploads and CLI (cron) ingestion.
     - Clear separation of concerns:
-        - `VideoService` — handles video metadata and persistence.
-        - `PreviewService` — handles preview rendering.
-        - `UploadService` / `DropboxUploadService` — handles upload and remote storage transfer.
+        - `VideoService` - handles video metadata and persistence.
+        - `PreviewService` - handles preview rendering.
+        - `UploadService` / `DropboxUploadService` - handles upload and remote storage transfer.
     - Added full rollback safety for video creation, CSV import, and upload operations.
     - Logging unified for CLI and web contexts with improved error tracing.
 
 - **Uploads**
     - Increased maximum upload size to **1 GB** to support large video files.
     - Extended maximum upload time to **25 minutes** (≈ 5.5 Mbit/s minimum speed).
-    - Optimized for real-world conditions – fully LTE-capable for mobile uploads.
+    - Optimized for real-world conditions - fully LTE-capable for mobile uploads.
     - Updated Livewire configuration (`config/livewire.php`) for smoother large uploads.
 
 - **UI**
