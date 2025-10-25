@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerRefreshTokenProvider();
         $this->registerZip();
         $this->registerMail();
-        $this->registerIngestProcessor();
+        $this->registerIngest();
     }
 
     protected function registerConfig(): void
@@ -68,7 +68,7 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    protected function registerIngestProcessor(): void
+    protected function registerIngest(): void
     {
         $this->app->bind(IngestPipeline::class, function ($app) {
             return new IngestPipeline([
