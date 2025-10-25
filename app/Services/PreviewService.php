@@ -111,6 +111,14 @@ final class PreviewService
         }
     }
 
+    /**
+     * Generate a video preview for the given time range.
+     * @param  Video  $video
+     * @param  int  $start
+     * @param  int  $end
+     * @return string|null
+     * @deprecated use generatePreviewByDisk instead
+     */
     public function generate(Video $video, int $start, int $end): ?string
     {
         if (!$this->isValidRange($start, $end)) {
@@ -205,6 +213,10 @@ final class PreviewService
 
     // ───────────────────────── internal / helpers ─────────────────────────
 
+    /**
+     * Get ffmpeg parameters from config.
+     * @return array
+     */
     private function ffmpegParams(): array
     {
         $crf = (int)Cfg::get('ffmpeg_crf', 'ffmpeg', 28);
@@ -214,17 +226,37 @@ final class PreviewService
         return array_merge(['-preset', $preset, '-crf', (string)$crf], $extra);
     }
 
+    /**
+     * Check if the given time range is valid.
+     * @param  int  $start
+     * @param  int  $end
+     * @return bool
+     */
     private function isValidRange(int $start, int $end): bool
     {
         return $start >= 0 && $end > $start;
     }
 
+    /**
+     * Normalize a path to be relative (no leading slash).
+     * @param  string  $path
+     * @return string
+     * @deprecated no replacement
+     */
     private function normalizeRelative(string $path): string
     {
         // Filesystem adapters expect relative paths (root is prefixed by the adapter)
         return ltrim($path, '/');
     }
 
+    /**
+     * Build the preview path for the given video and time range.
+     * @param  Video  $video
+     * @param  int  $start
+     * @param  int  $end
+     * @return string
+     * @deprecated use PathBuilder instead
+     */
     private function buildPath(Video $video, int $start, int $end): string
     {
         $hash = md5($video->getKey().'_'.$start.'_'.$end);
