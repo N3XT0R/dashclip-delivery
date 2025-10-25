@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class UploadService
 {
-
     public function uploadFile(Filesystem $sourceDisk, string $relativePath, string $targetDisk): void
     {
         if ($targetDisk === 'dropbox') {
