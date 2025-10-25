@@ -10,7 +10,7 @@ use Closure;
 use Illuminate\Support\Facades\Log;
 use Traversable;
 
-class IngestProcessor
+class IngestPipeline
 {
     /** @var IngestStepInterface[] */
     private array $steps = [];
