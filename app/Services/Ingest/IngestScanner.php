@@ -16,6 +16,7 @@ use App\Services\PreviewService;
 use App\Services\Upload\UploadService;
 use App\Services\VideoService;
 use App\Support\PathBuilder;
+use App\ValueObjects\ClipImportResult;
 use App\ValueObjects\IngestStats;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -90,7 +91,7 @@ class IngestScanner
      * @param  Filesystem  $inboxDisk
      * @return IngestResult
      */
-    private function importCsvForDirectory(Filesystem $inboxDisk): IngestResult
+    private function importCsvForDirectory(Filesystem $inboxDisk): ClipImportResult
     {
         $aggregate = null;
         foreach ($inboxDisk->allDirectories() as $directory) {
@@ -98,7 +99,7 @@ class IngestScanner
                 $res = $this->csvService->importCsvForDisk($inboxDisk, $directory);
                 if ($res) {
                     /**
-                     * @var IngestResult|null $aggregate
+                     * @var ClipImportResult|null $aggregate
                      */
                     $aggregate = $aggregate ? tap($aggregate)->merge($res) : $res;
                 }
@@ -140,7 +141,8 @@ class IngestScanner
         try {
             DB::beginTransaction();
             $video = $videoService->createVideoBydDiskAndFileInfoDto('dynamicStorage', $inboxDisk, $file);
-            $this->importCsvForDirectory($inboxDisk);
+            $importResult = $this->importCsvForDirectory($inboxDisk);
+            $clip = $importResult->clipsForVideo($video)->first();
             $video->refresh();
 
             $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
