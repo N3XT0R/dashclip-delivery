@@ -65,7 +65,7 @@ class IngestScanner
             } catch (Throwable $e) {
                 $stats->increment(IngestResult::ERR);
                 $this->log("Fehler: {$e->getMessage()}");
-                Log::error($e->getMessage(), ['file' => $path]);
+                Log::error($e->getMessage(), ['file' => $file->path]);
             }
         }
     }
