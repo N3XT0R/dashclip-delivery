@@ -128,7 +128,7 @@ class IngestScanner
         DB::beginTransaction();
 
         try {
-            $video = $videoService->createVideoBydDiskAndFileInfoDto('custom', $inboxDisk, $file);
+            $video = $videoService->createVideoBydDiskAndFileInfoDto('dynamicStorage', $inboxDisk, $file);
             $this->importCsvForDirectory($inboxDisk);
             $video->refresh();
 
