@@ -258,6 +258,11 @@ final class IngestScanner
         }
     }
 
+    /**
+     * @param  string  $dirPath
+     * @return void
+     * @deprecated use CsvService::importFromDirectory instead
+     */
     private function maybeImportCsvForDirectory(string $dirPath): void
     {
         $csvFiles = $this->findCsvFiles($dirPath);
@@ -280,6 +285,7 @@ final class IngestScanner
 
     /**
      * @return string[]
+     * @deprecated no replacement
      */
     private function findCsvFiles(string $dirPath): array
     {
