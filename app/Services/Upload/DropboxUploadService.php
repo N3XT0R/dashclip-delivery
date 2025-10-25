@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Upload;
 
+use App\Support\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use RuntimeException;
+use Spatie\Dropbox\Client as DropboxClient;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 class DropboxUploadService
 {
@@ -23,16 +25,47 @@ class DropboxUploadService
         string $relativePath,
         string $dstRel,
         ?ProgressBar $bar = null
-    ): bool {
-        $root = (string)config('filesystems.disks.dropbox.root', '');
+    ): void {
         $read = $disk->readStream($relativePath);
-        $bytes = $disk->size($relativePath);
-
         if ($read === false) {
-            throw new RuntimeException("Konnte Datei nicht lesen: {$relativePath}");
+            throw new IOException("Konnte Datei nicht lesen: {$relativePath}");
         }
 
+        $bytes = $disk->size($relativePath);
+        $root = (string)config('filesystems.disks.dropbox.root', '');
+        $targetPath = PathBuilder::forDropbox($root, $dstRel);
 
-        return true;
+        $client = new DropboxClient($this->tokenProvider);
+
+        try {
+            // Edge case: empty file
+            if ($bytes === 0) {
+                $client->upload($targetPath, '');
+                return;
+            }
+
+            $firstChunk = fread($read, self::CHUNK_SIZE) ?: '';
+            $cursor = $client->uploadSessionStart($firstChunk);
+            $bar?->advance(strlen($firstChunk));
+
+            $transferred = strlen($firstChunk);
+
+            while (!feof($read)) {
+                $chunk = fread($read, self::CHUNK_SIZE) ?: '';
+                $transferred += strlen($chunk);
+
+                if ($transferred >= $bytes) {
+                    // Last chunk
+                    $client->uploadSessionFinish($chunk, $cursor, $targetPath);
+                } else {
+                    $cursor = $client->uploadSessionAppend($chunk, $cursor);
+                }
+
+                $bar?->advance(strlen($chunk));
+            }
+        } finally {
+            fclose($read);
+            $bar?->finish();
+        }
     }
 }
