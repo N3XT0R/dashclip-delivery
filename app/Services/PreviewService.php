@@ -103,7 +103,7 @@ final class PreviewService
                 $format->setAdditionalParameters($params);
             }
 
-            FFMpeg::fromDisk($disk)
+            FFMpeg::fromFilesystem($disk)
                 ->open($relativePath)
                 ->addFilter(function (VideoFilters $filters) use ($startSec, $duration): void {
                     $filters->clip(TimeCode::fromSeconds($startSec), TimeCode::fromSeconds($duration));
