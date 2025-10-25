@@ -97,6 +97,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **UI**
     - Refined layout spacing, label hierarchy, and visual alignment for improved readability.
+    - Updated Filament resources and forms to align with v4 design patterns.
+- **Filament v4 migration**
+    - May require adjustments to custom admin pages, widgets, or themes.
 
 ### Deprecated
 
@@ -106,15 +109,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Legacy Dropbox upload implementation using direct stream operations.
 - Direct filesystem access in preview and upload logic.
 
-### Breaking
-
-- **Filament v4 migration**
-    - May require adjustments to custom admin pages, widgets, or themes.
-
 ### Removed
 
 - Low-level file handling (`fopen`, `unlink`, etc.) from the ingest process.
 - Tight coupling between `Video` models and preview generation.
+- Legacy mail handling classes replaced by the new inbound mail processing system.
+- Filament v3 dependencies and components.
 
 ## [2.5.0] - 2025-10-10
 
