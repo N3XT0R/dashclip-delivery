@@ -118,6 +118,7 @@ class IngestScanner
 
         // Create video before upload so preview can be generated from local path
         $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
+        $this->importCsvForDirectory($inboxDisk);
 
 
         return IngestResult::NEW;
