@@ -67,7 +67,7 @@ final class PreviewService
         $hash = DynamicStorage::getHashForFilePath($disk, $relativePath);
         $duration = $endSec - $startSec;
 
-        $previewDisk = Storage::disk('public');
+        $previewDisk = Storage::disk(config('preview.default_disk', 'public'));
         $previewPath = PathBuilder::forPreview($hash);
 
         if ($previewDisk->exists($previewPath)) {
