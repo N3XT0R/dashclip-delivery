@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Services\Ingest;
 
 use App\Enum\Ingest\IngestResult;
+use App\Services\Ingest\Contracts\IngestPipelineInterface;
 use App\Services\Ingest\Contracts\IngestStepInterface;
 use Closure;
 use Illuminate\Support\Facades\Log;
 use Traversable;
 
-class IngestPipeline
+class IngestPipeline implements IngestPipelineInterface
 {
     /** @var IngestStepInterface[] */
     private array $steps;

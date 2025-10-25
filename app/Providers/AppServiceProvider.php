@@ -10,6 +10,7 @@ use App\Services\ConfigService;
 use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
+use App\Services\Ingest\Contracts\IngestPipelineInterface;
 use App\Services\Ingest\IngestPipeline;
 use App\Services\Ingest\Steps\CreateVideoStep;
 use App\Services\Ingest\Steps\FinalizeStep;
@@ -70,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
 
     protected function registerIngest(): void
     {
-        $this->app->bind(IngestPipeline::class, function ($app) {
+        $this->app->bind(IngestPipelineInterface::class, function ($app) {
             return new IngestPipeline([
                 $app->make(CreateVideoStep::class),
                 $app->make(ImportCsvStep::class),
