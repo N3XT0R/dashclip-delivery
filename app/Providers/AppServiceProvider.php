@@ -12,11 +12,6 @@ use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use App\Services\Ingest\Contracts\IngestPipelineInterface;
 use App\Services\Ingest\IngestPipeline;
-use App\Services\Ingest\Steps\CreateVideoStep;
-use App\Services\Ingest\Steps\FinalizeStep;
-use App\Services\Ingest\Steps\GeneratePreviewStep;
-use App\Services\Ingest\Steps\ImportCsvStep;
-use App\Services\Ingest\Steps\UploadStep;
 use App\Services\Mail\Scanner\Detectors\BounceDetector;
 use App\Services\Mail\Scanner\Detectors\ReplyDetector;
 use App\Services\Mail\Scanner\Handlers\BounceHandler;
@@ -72,13 +67,14 @@ class AppServiceProvider extends ServiceProvider
     protected function registerIngest(): void
     {
         $this->app->bind(IngestPipelineInterface::class, function ($app) {
-            return new IngestPipeline([
-                $app->make(CreateVideoStep::class),
-                $app->make(ImportCsvStep::class),
-                $app->make(GeneratePreviewStep::class),
-                $app->make(UploadStep::class),
-                $app->make(FinalizeStep::class),
-            ]);
+            $instances = [];
+            $steps = $app['config']->get('ingest.steps', []);
+            if (!empty($steps)) {
+                foreach ($steps as $stepClass) {
+                    $instances[] = $app->make($stepClass);
+                }
+            }
+            return new IngestPipeline($instances);
         });
     }
 
