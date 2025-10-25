@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Upload;
 
-use App\Support\PathBuilder;
+use App\Facades\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 

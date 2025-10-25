@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Support;
+namespace App\Services;
 
-final class PathBuilder
+class PathBuilderService
 {
     /**
      * Get the video path by its hash and extension.
@@ -12,7 +12,7 @@ final class PathBuilder
      * @param  string  $ext
      * @return string
      */
-    public static function forVideo(string $hash, string $ext): string
+    public function forVideo(string $hash, string $ext): string
     {
         $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
         return sprintf('videos/%s/%s%s', $sub, $hash, $ext !== '' ? ".{$ext}" : '');
@@ -25,7 +25,7 @@ final class PathBuilder
      * @param  int  $end
      * @return string
      */
-    public static function forPreview(int $id, int $start, int $end): string
+    public function forPreview(int $id, int $start, int $end): string
     {
         $hash = md5($id.'_'.$start.'_'.$end);
         return sprintf('previews/%s.mp4', $hash);
@@ -37,7 +37,7 @@ final class PathBuilder
      * @return string
      * @note This is used to get the preview path based on the video file hash, it will replace forPreview in the future.
      */
-    public static function forPreviewByHash(string $fileHash): string
+    public function forPreviewByHash(string $fileHash): string
     {
         $sub = substr($fileHash, 0, 2).'/'.substr($fileHash, 2, 2);
         return sprintf('previews/%s/%s.mp4', $sub, $fileHash);
@@ -45,13 +45,13 @@ final class PathBuilder
 
     /**
      * Build a path for Dropbox storage.
-     * @param  string  $root
-     * @param  string  $dstRel
+     * @param  string  $basePath
+     * @param  string  $relativePath
      * @return string
      */
-    public static function forDropbox(string $root, string $dstRel): string
+    public function forDropbox(string $basePath, string $relativePath): string
     {
-        return self::join($root, $dstRel);
+        return $this->join($basePath, $relativePath);
     }
 
     /**
@@ -59,7 +59,7 @@ final class PathBuilder
      * @param  string  ...$parts
      * @return string
      */
-    public static function join(string ...$parts): string
+    public function join(string ...$parts): string
     {
         return '/'.trim(implode('/', array_filter($parts)), '/');
     }
