@@ -23,6 +23,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Ensures a valid preview range is available even if the user doesn't manually
           adjust the start/end time after upload.
 
+- **Ingest & Upload Refactor** ([#152](https://github.com/N3XT0R/dashclip-delivery/issues/152))
+    - Introduced a fully modular ingestion pipeline with transactional safety and storage abstraction.
+    - Added `IngestResult` enum for standardized ingest return values.
+    - Added `IngestStats` value object for batch statistics and aggregation.
+    - Added dedicated exception classes for clearer flow control and debugging:
+        - `InvalidTimeRangeException` — thrown when preview clip ranges are invalid.
+        - `PreviewGenerationException` — includes contextual metadata for FFmpeg errors.
+    - Added new `App\Services\Ingest\IngestScanner` (modular replacement of legacy class).
+    - Added `CsvService` for isolated metadata (CSV) import.
+    - Implemented unified logging and consistent exception handling across CLI and web ingest.
+    - Integrated **Laravel-FFmpeg** for preview generation with dynamic codec, preset, and parameter configuration.
+    - Added full database transaction handling (`DB::beginTransaction`, `commit`, `rollback`) during video processing.
 
 - **Configuration**
     - Config table now supports a `selectable` JSON column so settings can offer predefined choices.
@@ -52,6 +64,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Backend upgraded to Filament v4 (UI components and pages migrated).
     - Preview generation now uses the `pbmedia/laravel-ffmpeg` package and reads all codec options from the database.
 
+- **Ingest Architecture** ([#152](https://github.com/N3XT0R/dashclip-delivery/issues/152))
+    - Replaced all direct filesystem operations (`fopen`, `unlink`, `hash_file`) with `DynamicStorage`.
+    - Preview generation is now model-independent; `PreviewService` no longer depends on `Video` Eloquent models.
+    - Unified code path for web uploads and CLI (cron) ingestion.
+    - Clear separation of concerns:
+        - `VideoService` — handles video metadata and persistence.
+        - `PreviewService` — handles preview rendering.
+        - `UploadService` / `DropboxUploadService` — handles upload and remote storage transfer.
+    - Added full rollback safety for video creation, CSV import, and upload operations.
+    - Logging unified for CLI and web contexts with improved error tracing.
+
 - **Uploads**
     - Increased maximum upload size to **1 GB** to support large video files.
     - Extended maximum upload time to **25 minutes** (≈ 5.5 Mbit/s minimum speed).
@@ -61,10 +84,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **UI**
     - Refined layout spacing, label hierarchy, and visual alignment for improved readability.
 
+### Deprecated
+
+- Legacy `App\Services\IngestScanner` class and all direct file I/O operations — replaced by the new modular ingest
+  system ([#152](https://github.com/N3XT0R/dashclip-delivery/issues/152)).
+- Old inline CSV import logic — replaced by `CsvService`.
+- Legacy Dropbox upload implementation using direct stream operations.
+- Direct filesystem access in preview and upload logic.
+
 ### Breaking
 
 - **Filament v4 migration**
     - May require adjustments to custom admin pages, widgets, or themes.
+
+### Removed
+
+- Low-level file handling (`fopen`, `unlink`, etc.) from the ingest process.
+- Tight coupling between `Video` models and preview generation.
 
 ## [2.5.0] - 2025-10-10
 
