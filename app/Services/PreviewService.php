@@ -75,10 +75,12 @@ final class PreviewService
         $duration = $endSec - $startSec;
 
         $previewDisk = Storage::disk($targetDisk);
+
         if ($id) {
             $previewPath = PathBuilder::forPreview($id, $startSec, $endSec);
         } else {
-            $previewPath = PathBuilder::forPreviewByHash(DynamicStorage::getHashForFilePath($disk, $relativePath));
+            $fileHash = DynamicStorage::getHashForFilePath($disk, $relativePath);
+            $previewPath = PathBuilder::forPreviewByHash($fileHash);
         }
 
 
