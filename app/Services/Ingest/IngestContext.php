@@ -12,7 +12,8 @@ use Symfony\Component\Console\Style\OutputStyle;
 class IngestContext
 {
     public ?OutputStyle $output = null;
-    
+    public ?string $finalPath = null;
+
     public function __construct(
         public Filesystem $disk,
         public FileInfoDto $file,

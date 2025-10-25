@@ -14,6 +14,7 @@ use App\Services\Ingest\IngestProcessor;
 use App\Services\Ingest\Steps\CreateVideoStep;
 use App\Services\Ingest\Steps\GeneratePreviewStep;
 use App\Services\Ingest\Steps\ImportCsvStep;
+use App\Services\Ingest\Steps\UploadStep;
 use App\Services\Mail\Scanner\Detectors\BounceDetector;
 use App\Services\Mail\Scanner\Detectors\ReplyDetector;
 use App\Services\Mail\Scanner\Handlers\BounceHandler;
@@ -73,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(CreateVideoStep::class),
                 $app->make(ImportCsvStep::class),
                 $app->make(GeneratePreviewStep::class),
-                $app->make(\App\Services\Ingest\Steps\UploadStep::class),
+                $app->make(UploadStep::class),
                 $app->make(\App\Services\Ingest\Steps\FinalizeStep::class),
             ]);
         });
