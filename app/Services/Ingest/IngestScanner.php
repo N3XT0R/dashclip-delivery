@@ -10,6 +10,7 @@ use App\Enum\Ingest\IngestResult;
 use App\Facades\DynamicStorage;
 use App\Services\BatchService;
 use App\Services\CsvService;
+use App\Services\PreviewService;
 use App\Services\VideoService;
 use App\Support\PathBuilder;
 use App\ValueObjects\IngestStats;
@@ -120,6 +121,8 @@ class IngestScanner
         $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
         $this->importCsvForDirectory($inboxDisk);
         $video->refresh();
+
+        $previewUrl = app(PreviewService::class)->generatePreviewByDisk();
 
 
         return IngestResult::NEW;

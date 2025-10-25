@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\DTO\FileInfoDto;
 use App\Models\Video;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,26 +32,6 @@ readonly class VideoService
             'meta' => null,
             'original_name' => $fileName,
         ]);
-    }
-
-    public function createLocalFileByDisk(
-        FileInfoDto $file,
-        string $hash,
-        int $bytes,
-    ): Video {
-        return Video::query()->create([
-            'hash' => $hash,
-            'bytes' => $bytes,
-            'disk' => 'local',
-            'meta' => null,
-            'original_name' => $file->basename,
-            'ext' => $file->extension,
-            'path' => $file->path,
-        ]);
-    }
-
-    public function generatePreviewByDisk(): ?string
-    {
     }
 
     public function generatePreview(

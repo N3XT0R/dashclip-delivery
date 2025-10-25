@@ -205,5 +205,10 @@ final class PreviewService
 
         return sprintf('%.1f %s', $bytes, $units[$i]);
     }
+
+
+    public function generatePreviewByDisk(): ?string
+    {
+    }
 }
 
