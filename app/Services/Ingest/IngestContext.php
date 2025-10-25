@@ -6,6 +6,7 @@ namespace App\Services\Ingest;
 
 use App\DTO\FileInfoDto;
 use App\Enum\Ingest\IngestResult;
+use App\Models\Batch;
 use App\Models\Video;
 use App\ValueObjects\IngestStats;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -16,7 +17,7 @@ class IngestContext
     public ?OutputStyle $output = null;
     public ?string $finalPath = null;
     public ?IngestStats $stats = null;
-    public ?object $batch = null;
+    public ?Batch $batch = null;
     public ?IngestResult $result = null;
 
     public function __construct(
