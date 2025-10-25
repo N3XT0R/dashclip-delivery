@@ -170,6 +170,8 @@ class IngestScanner
 
             DB::commit();
             $this->log('Upload abgeschlossen für '.$file->basename, 'info', [
+                'path' => $video->path,
+                'disk' => $video->disk,
                 'file' => $file->path,
                 'video_id' => $video->getKey(),
             ]);
