@@ -120,7 +120,7 @@ class IngestScanner
 
 
     /**
-     * Process a single file from the inbox.
+     * Process a single file from the inbox-disk.
      * @param  Filesystem  $inboxDisk
      * @param  FileInfoDto  $file
      * @param  string  $diskName
