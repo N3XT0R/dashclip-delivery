@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Each log entry records the affected model, action type, timestamp, and the responsible user (causer).
     - Activity logs include CRUD operations as well as custom system events (e.g. login, configuration changes).
     - Added observer integration for automatic logging of key model events (create, update, delete).
-  
+
 - **Mail Infrastructure**
     - Introduced `InboundHandler` implementing `MessageStrategyInterface` to process incoming IMAP messages.
     - Inbound mails are now stored via the central `MailRepository`, including message ID, sender, subject,
@@ -100,7 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- Legacy `App\Services\IngestScanner` class and all direct file I/O operations — replaced by the new modular ingest
+- Legacy `App\Services\IngestScanner` class and all direct file I/O operations - replaced by the new modular ingest
   system ([#152](https://github.com/N3XT0R/dashclip-delivery/issues/152)).
 - Old inline CSV import logic — replaced by `CsvService`.
 - Legacy Dropbox upload implementation using direct stream operations.
