@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;
+use App\Models\Clip;
 use App\Models\Video;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
@@ -137,5 +138,18 @@ readonly class VideoService
             'disk' => $diskName,
             'preview_url' => $previewUrl,
         ]);
+    }
+
+    public function createClipForVideo(Video $video, int $startSec, int $endSec): void
+    {
+        $video->clips()->create([
+            'start_sec' => $startSec,
+            'end_sec' => $endSec,
+        ]);
+    }
+
+    public function getClipForVideo(Video $video, int $startSec, int $endSec): ?Clip
+    {
+        return $video->clips()->where('start_sec', $startSec)->where('end_sec', $endSec)->first();
     }
 }
