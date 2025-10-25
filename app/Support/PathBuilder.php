@@ -22,7 +22,7 @@ final class PathBuilder
      * Get the preview path by video file hash.
      * @param  string  $fileHash
      * @return string
-     * @note This is used to get the preview path based on the video file hash, it will replace forPreview in future.
+     * @note This is used to get the preview path based on the video file hash, it will replace forPreview in the future.
      */
     public static function forPreviewByHash(string $fileHash): string
     {
