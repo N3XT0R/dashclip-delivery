@@ -74,6 +74,39 @@ final class PreviewService
             $this->info("Preview exists in cache: {$previewPath}");
             return $previewDisk->url($previewPath);
         }
+
+        if ($bin = Cfg::get('ffmpeg_bin', 'ffmpeg', null)) {
+            config(['laravel-ffmpeg.ffmpeg.binaries' => $bin]);
+        }
+
+        try {
+            $audioCodec = (string)Cfg::get('ffmpeg_audio_codec', 'ffmpeg', 'aac');
+            $videoCodec = (string)Cfg::get('ffmpeg_video_codec', 'ffmpeg', 'libx264');
+            $format = new X264($audioCodec, $videoCodec);
+
+            $params = $this->ffmpegParams();
+            if ($params !== []) {
+                $format->setAdditionalParameters($params);
+            }
+
+            FFMpeg::open($absoluteSource)
+                ->addFilter(function (VideoFilters $filters) use ($startSec, $duration): void {
+                    $filters->clip(TimeCode::fromSeconds($startSec), TimeCode::fromSeconds($duration));
+                })
+                ->export()
+                ->toDisk('public')
+                ->inFormat($format)
+                ->save($previewPath);
+
+            return $previewDisk->url($previewPath);
+        } catch (Throwable $e) {
+            $this->error('ffmpeg failed: '.$e->getMessage());
+            Log::error('Preview generation failed', [
+                'file' => $absoluteSource,
+                'exception' => $e,
+            ]);
+        }
+        return null;
     }
 
     public function generate(Video $video, int $start, int $end): ?string
