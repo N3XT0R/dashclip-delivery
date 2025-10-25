@@ -172,7 +172,7 @@ class IngestScanner
             $this->log('Upload abgeschlossen für '.$file->basename, 'info', [
                 'path' => $video->path,
                 'disk' => $video->disk,
-                'file' => $file->path,
+                'original_file' => $file->path,
                 'video_id' => $video->getKey(),
             ]);
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
