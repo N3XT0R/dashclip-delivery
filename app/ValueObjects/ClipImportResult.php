@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\ValueObjects;
 
 use App\Models\Clip;
+use App\Models\Video;
 use Illuminate\Support\Collection;
 
 final class ClipImportResult
@@ -51,5 +52,26 @@ final class ClipImportResult
             'created_ids' => $this->created->pluck('id')->all(),
             'updated_ids' => $this->updated->pluck('id')->all(),
         ];
+    }
+
+    public function merge(self $other): void
+    {
+        $this->stats->merge($other->stats);
+        $this->created = $this->created->merge($other->created);
+        $this->updated = $this->updated->merge($other->updated);
+    }
+
+    public function clipsForVideo(Video $video): Collection
+    {
+        $id = (int)$video->getKey();
+        return $this->created
+            ->merge($this->updated)
+            ->filter(fn(Clip $clip) => (int)$clip->video_id === $id)
+            ->values();
+    }
+
+    public function allClips(): Collection
+    {
+        return $this->created->merge($this->updated)->values();
     }
 }

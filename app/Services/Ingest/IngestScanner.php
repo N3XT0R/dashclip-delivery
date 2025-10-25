@@ -87,9 +87,10 @@ class IngestScanner
 
     private function importCsvForDirectory(Filesystem $inboxDisk): void
     {
+        $result = null;
         foreach ($inboxDisk->allDirectories() as $directory) {
             try {
-                $this->csvService->importCsvForDisk($inboxDisk, $directory);
+                $result = $this->csvService->importCsvForDisk($inboxDisk, $directory);
             } catch (Throwable $e) {
                 $this->log(
                     "Warnung: CSV-Import für {$directory} fehlgeschlagen ({$e->getMessage()})",
