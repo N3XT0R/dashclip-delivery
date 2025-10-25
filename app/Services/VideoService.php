@@ -53,18 +53,15 @@ readonly class VideoService
     ): Video {
         $hash = DynamicStorage::getHashForFileInfoDto($disk, $file);
         $pathToFile = $file->path;
-        $baseName = $file->basename;
-        $bytes = $disk->size($pathToFile);
-        $ext = $file->extension;
 
         return Video::query()->create([
             'hash' => $hash,
-            'ext' => $ext,
-            'bytes' => $bytes,
+            'ext' => $file->extension,
+            'bytes' => $disk->size($pathToFile),
             'path' => $pathToFile,
             'disk' => $diskName,
             'meta' => null,
-            'original_name' => $baseName,
+            'original_name' => $file->basename,
         ]);
     }
 
