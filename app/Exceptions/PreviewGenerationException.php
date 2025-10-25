@@ -34,4 +34,10 @@ final class PreviewGenerationException extends RuntimeException
             'exception' => $previous?->getMessage(),
         ], $previous);
     }
+
+
+    public function context(): array
+    {
+        return $this->context;
+    }
 }

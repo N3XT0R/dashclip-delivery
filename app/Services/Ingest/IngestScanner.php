@@ -7,6 +7,7 @@ namespace App\Services\Ingest;
 use App\DTO\FileInfoDto;
 use App\Enum\BatchTypeEnum;
 use App\Enum\Ingest\IngestResult;
+use App\Exceptions\InvalidTimeRangeException;
 use App\Exceptions\PreviewGenerationException;
 use App\Facades\DynamicStorage;
 use App\Services\BatchService;
@@ -128,9 +129,9 @@ class IngestScanner
         try {
             $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
-        } catch (PreviewGenerationException $e) {
+        } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
             $video->delete();
-            $this->log($e->getMessage(), 'error', $e->context);
+            $this->log($e->getMessage(), 'error', $e->context());
         } catch (Throwable $e) {
             $video->delete();
             $this->log('Upload fehlgeschlagen', 'error', [
