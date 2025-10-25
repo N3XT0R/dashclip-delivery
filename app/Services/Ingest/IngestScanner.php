@@ -11,6 +11,7 @@ use App\Facades\DynamicStorage;
 use App\Services\BatchService;
 use App\Services\CsvService;
 use App\Services\VideoService;
+use App\Support\PathBuilder;
 use App\ValueObjects\IngestStats;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -113,8 +114,7 @@ class IngestScanner
             return IngestResult::DUPS;
         }
 
-        $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
-        $dstRel = sprintf('videos/%s/%s%s', $sub, $hash, $ext !== '' ? ".{$ext}" : '');
+        $dstRel = PathBuilder::forVideo($hash, $ext);
 
         // Create video before upload so preview can be generated from local path
         $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
