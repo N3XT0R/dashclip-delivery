@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\FileInfoDto;
 use App\Models\Assignment;
+use App\ValueObjects\ClipImportResult;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
@@ -83,12 +84,21 @@ class CsvService
             ->values();
     }
 
-    public function importCsvForDisk(Filesystem $disk, string $basePath = ''): void
+    public function importCsvForDisk(Filesystem $disk, string $basePath = ''): ?ClipImportResult
     {
         $csvFiles = $this->listCsvFiles($disk, $basePath);
-        foreach ($csvFiles as $csv) {
-            $this->infoImporter->importInfoFromDisk($disk, $csv->path);
+        if ($csvFiles->isEmpty()) {
+            return null;
         }
+
+        $aggregate = ClipImportResult::empty();
+
+        foreach ($csvFiles as $csv) {
+            $res = $this->infoImporter->importInfoFromDisk($disk, $csv->path);
+            $aggregate->merge($res);
+        }
+
+        return $aggregate;
     }
 
 }
