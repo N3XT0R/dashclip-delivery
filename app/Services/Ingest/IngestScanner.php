@@ -169,7 +169,10 @@ class IngestScanner
             $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
 
             DB::commit();
-            $this->log('Upload abgeschlossen');
+            $this->log('Upload abgeschlossen für '.$file->basename, 'info', [
+                'file' => $file->path,
+                'video_id' => $video->getKey(),
+            ]);
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
             DB::rollBack();
             $this->log($e->getMessage(), 'error', $e->context());
