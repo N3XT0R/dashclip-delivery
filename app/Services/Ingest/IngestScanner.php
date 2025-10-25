@@ -19,6 +19,7 @@ use App\Support\PathBuilder;
 use App\ValueObjects\IngestStats;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -123,19 +124,26 @@ class IngestScanner
 
         $dstRel = PathBuilder::forVideo($hash, $ext);
 
+        DB::beginTransaction();
+
         try {
             $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
             $this->importCsvForDirectory($inboxDisk);
             $video->refresh();
+
             $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
+
+
             $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
+
+            DB::commit();
             $this->log('Upload abgeschlossen');
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
-            $video->delete();
+            DB::rollBack();
             $this->log($e->getMessage(), 'error', $e->context());
         } catch (Throwable $e) {
-            $video->delete();
+            DB::rollBack();
             $this->log('Upload fehlgeschlagen: '.$e->getMessage(), 'error', [
                 'exception' => $e,
                 'file' => $file->path,
