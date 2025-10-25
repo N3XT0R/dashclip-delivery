@@ -108,6 +108,8 @@ class IngestScanner
         $bytes = $inboxDisk->size($pathToFile);
         $ext = $file->extension;
         $videoService = $this->videoService;
+        $previewService = app(PreviewService::class);
+        $previewService->setOutput($this->output);
 
         if ($videoService->isDuplicate($hash)) {
             $inboxDisk->delete($pathToFile);
@@ -121,7 +123,7 @@ class IngestScanner
         $video = $videoService->createLocal($hash, $ext, $bytes, $pathToFile, $baseName);
         $this->importCsvForDirectory($inboxDisk);
         $video->refresh();
-        $previewUrl = app(PreviewService::class)->generatePreviewByDisk($inboxDisk, $pathToFile);
+        $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
 
 
         return IngestResult::NEW;
