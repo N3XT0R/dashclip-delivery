@@ -165,9 +165,8 @@ class IngestScanner
                 $startSec,
                 $endSec
             );
+            
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
-
-
             $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
 
             DB::commit();
