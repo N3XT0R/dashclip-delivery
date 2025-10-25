@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\InvalidTimeRangeException;
+use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
 use App\Facades\DynamicStorage;
 use App\Models\Clip;
@@ -57,10 +59,9 @@ final class PreviewService
         string $relativePath,
         ?int $startSec = 0,
         ?int $endSec = null
-    ): ?string {
+    ): string {
         if (!$this->isValidRange($startSec, $endSec)) {
-            $this->warn("Invalid time range: start={$startSec}, end={$endSec}");
-            return null;
+            throw new InvalidTimeRangeException($startSec, $endSec);
         }
 
         $targetDisk = config('preview.default_disk', 'public');
@@ -102,13 +103,12 @@ final class PreviewService
             return $previewDisk->url($previewPath);
         } catch (Throwable $e) {
             $this->error('ffmpeg failed: '.$e->getMessage());
-            Log::error('Preview generation failed', [
-                'relative_path' => $relativePath,
-                'disk_path' => $disk->path($relativePath),
-                'exception' => $e,
-            ]);
+            throw PreviewGenerationException::fromDisk(
+                $relativePath,
+                $disk->path($relativePath),
+                $e
+            );
         }
-        return null;
     }
 
     public function generate(Video $video, int $start, int $end): ?string
