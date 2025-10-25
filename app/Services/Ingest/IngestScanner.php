@@ -85,12 +85,18 @@ class IngestScanner
         return $stats;
     }
 
-    private function importCsvForDirectory(Filesystem $inboxDisk): void
+    private function importCsvForDirectory(Filesystem $inboxDisk): IngestResult
     {
-        $result = null;
+        $aggregate = null;
         foreach ($inboxDisk->allDirectories() as $directory) {
             try {
-                $result = $this->csvService->importCsvForDisk($inboxDisk, $directory);
+                $res = $this->csvService->importCsvForDisk($inboxDisk, $directory);
+                if ($res) {
+                    /**
+                     * @var IngestResult|null $aggregate
+                     */
+                    $aggregate = $aggregate ? tap($aggregate)->merge($res) : $res;
+                }
             } catch (Throwable $e) {
                 $this->log(
                     "Warnung: CSV-Import für {$directory} fehlgeschlagen ({$e->getMessage()})",
@@ -102,6 +108,8 @@ class IngestScanner
                 );
             }
         }
+
+        return $aggregate;
     }
 
 
