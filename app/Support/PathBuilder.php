@@ -18,6 +18,12 @@ final class PathBuilder
         return sprintf('previews/%s.mp4', $hash);
     }
 
+    /**
+     * Get the preview path by video file hash.
+     * @param  string  $fileHash
+     * @return string
+     * @note This is used to get the preview path based on the video file hash, it will replace forPreview in future.
+     */
     public static function forPreviewByHash(string $fileHash): string
     {
         $sub = substr($fileHash, 0, 2).'/'.substr($fileHash, 2, 2);
