@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Exceptions\InvalidTimeRangeException;
 use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
+use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Support\PathBuilder;
@@ -62,7 +63,7 @@ final class PreviewService
     public function generatePreviewByDisk(
         Filesystem $disk,
         string $relativePath,
-        string $hash,
+        ?int $id,
         ?int $startSec = 0,
         ?int $endSec = null
     ): string {
@@ -74,7 +75,12 @@ final class PreviewService
         $duration = $endSec - $startSec;
 
         $previewDisk = Storage::disk($targetDisk);
-        $previewPath = PathBuilder::forPreviewByHash($hash);
+        if ($id) {
+            $previewPath = PathBuilder::forPreview($id, $startSec, $endSec);
+        } else {
+            $previewPath = PathBuilder::forPreviewByHash(DynamicStorage::getHashForFilePath($disk, $relativePath));
+        }
+
 
         if ($previewDisk->exists($previewPath)) {
             $this->info("Preview exists in cache: {$previewPath}");

@@ -142,10 +142,15 @@ class IngestScanner
             DB::beginTransaction();
             $video = $videoService->createVideoBydDiskAndFileInfoDto('dynamicStorage', $inboxDisk, $file);
             $importResult = $this->importCsvForDirectory($inboxDisk);
-            $clip = $importResult->clipsForVideo($video)->first();
             $video->refresh();
 
-            $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile);
+            $clip = $importResult->clipsForVideo($video)->first();
+
+            $startSec = $clip?->start_sec ?? 0;
+            $endSec = $clip?->end_sec ?? null;
+
+
+            $previewUrl = $previewService->generatePreviewByDisk($inboxDisk, $pathToFile, $startSec, $endSec);
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName);
 
 
