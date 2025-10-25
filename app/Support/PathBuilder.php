@@ -17,4 +17,14 @@ final class PathBuilder
         $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
         return sprintf('previews/%s/%s.jpg', $sub, $hash);
     }
+
+    public static function forDropbox(string $root, string $dstRel): string
+    {
+        return self::join($root, $dstRel);
+    }
+
+    public static function join(string ...$parts): string
+    {
+        return '/'.trim(implode('/', array_filter($parts)), '/');
+    }
 }
