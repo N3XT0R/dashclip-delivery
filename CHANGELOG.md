@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Auth**
     - Multi-factor authentication (MFA) with support for authenticator apps (TOTP) and one-time codes via email.
     - Email verification and change verification for secure and verified user identities.
-    - Automatic role assignment via `UserObserver`, assigning the default `panel_user` role to newly created users.
+    - Automatic role assignment via `UserObserver`, assigning the default `panel_user` role to newly created
+      users. ([#126](https://github.com/N3XT0R/dashclip-delivery/issues/126))
 
 - **Admin Panel**
     - Role and permission management via Filament Shield (integrates Spatie Laravel Permission with the admin panel,
