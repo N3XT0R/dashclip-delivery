@@ -88,6 +88,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - `UploadService` / `DropboxUploadService` — handles upload and remote storage transfer.
     - Added full rollback safety for video creation, CSV import, and upload operations.
     - Logging unified for CLI and web contexts with improved error tracing.
+      Integrated **Laravel-FFmpeg** for preview generation, replacing the previous custom FFmpeg implementation.
+        - Now fully parameterized via database configuration (codec, preset, additional parameters).
+        - Provides improved stability, consistent error handling, and framework-native integration.
+
 
 - **Uploads**
     - Increased maximum upload size to **1 GB** to support large video files.
