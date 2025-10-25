@@ -16,9 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Admin Panel**
     - Role and permission management via Filament Shield (integrates Spatie Laravel Permission with the admin panel,
-      providing a full UI for roles, permissions, and access control).
+      providing a full UI for roles, permissions, and access
+      control). ([#126](https://github.com/N3XT0R/dashclip-delivery/issues/126))
     - Initial roles and permissions seeder generated via `php artisan shield:seeder`, providing default admin access and
-      baseline permission data.
+      baseline permission data. ([#126](https://github.com/N3XT0R/dashclip-delivery/issues/126))
     - Web-based video upload in the admin UI, complementing existing ingest workflows.
         - Ensures a valid preview range is available even if the user doesn't manually
           adjust the start/end time after upload.
