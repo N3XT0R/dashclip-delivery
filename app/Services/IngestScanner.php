@@ -46,6 +46,7 @@ final class IngestScanner
      * Scan an inbox recursively and ingest new videos.
      *
      * @return array{new:int, dups:int, err:int}
+     * @deprecated use \App\Services\Ingest\IngestScanner::scanDisk instead
      */
     public function scan(string $inbox, string $diskName): array
     {
@@ -104,6 +105,10 @@ final class IngestScanner
 
     // ─────────────────────────────────────────────────────────────────────────────
 
+    /**
+     * @param  \SplFileInfo  $file
+     * @return bool
+     */
     private function isAllowedExtension(\SplFileInfo $file): bool
     {
         return in_array(strtolower($file->getExtension()), self::ALLOWED_EXTENSIONS, true);
@@ -154,6 +159,12 @@ final class IngestScanner
         return 'new';
     }
 
+    /**
+     * @param  string  $hash
+     * @param  string  $ext
+     * @return string
+     * @deprecated use PathBuilder::forVideo instead
+     */
     private function buildDestinationPath(string $hash, string $ext): string
     {
         $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
