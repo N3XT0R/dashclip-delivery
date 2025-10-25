@@ -119,6 +119,14 @@ class IngestScanner
     }
 
 
+    /**
+     * Process a single file from the inbox.
+     * @param  Filesystem  $inboxDisk
+     * @param  FileInfoDto  $file
+     * @param  string  $diskName
+     * @return IngestResult
+     * @throws Throwable
+     */
     public function processFile(Filesystem $inboxDisk, FileInfoDto $file, string $diskName): IngestResult
     {
         $hash = DynamicStorage::getHashForFileInfoDto($inboxDisk, $file);
