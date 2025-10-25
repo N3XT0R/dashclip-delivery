@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
+use App\ValueObjects\IngestStats;
 use RuntimeException;
 
 class BatchService
@@ -47,5 +48,20 @@ class BatchService
         $batch->save();
 
         return $batch;
+    }
+
+    public function updateStats(Batch $batch, IngestStats $stats): void
+    {
+        $batch->update([
+            'stats' => $stats->toArray(),
+        ]);
+    }
+
+    public function finalizeStats(Batch $batch, IngestStats $stats): void
+    {
+        $batch->update([
+            'finished_at' => now(),
+            'stats' => $stats->toArray(),
+        ]);
     }
 }

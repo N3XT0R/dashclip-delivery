@@ -42,7 +42,7 @@ class IngestScanner
         $this->output?->writeln($message);
     }
 
-    public function scanDisk(string $inboxPath, string $targetDiskName): array
+    public function scanDisk(string $inboxPath, string $targetDiskName): IngestStats
     {
         $inboxDisk = DynamicStorage::fromPath($inboxPath);
         $this->log(sprintf('Starte Scan: %s -> %s', $inboxPath, $targetDiskName));
@@ -67,7 +67,13 @@ class IngestScanner
                 $this->log("Fehler: {$e->getMessage()}");
                 Log::error($e->getMessage(), ['file' => $file->path]);
             }
+            $this->batchService->updateStats($batch, $stats);
         }
+
+        $this->batchService->finalizeStats($batch, $stats);
+        $this->log(sprintf('Fertig. %s', (string)$stats));
+
+        return $stats;
     }
 
     private function importCsvForDirectory(Filesystem $inboxDisk): void
