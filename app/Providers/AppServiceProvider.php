@@ -10,6 +10,10 @@ use App\Services\ConfigService;
 use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
+use App\Services\Ingest\IngestProcessor;
+use App\Services\Ingest\Steps\CreateVideoStep;
+use App\Services\Ingest\Steps\GeneratePreviewStep;
+use App\Services\Ingest\Steps\ImportCsvStep;
 use App\Services\Mail\Scanner\Detectors\BounceDetector;
 use App\Services\Mail\Scanner\Detectors\ReplyDetector;
 use App\Services\Mail\Scanner\Handlers\BounceHandler;
@@ -37,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerRefreshTokenProvider();
         $this->registerZip();
         $this->registerMail();
+        $this->registerIngestProcessor();
     }
 
     protected function registerConfig(): void
@@ -57,6 +62,19 @@ class AppServiceProvider extends ServiceProvider
                 new BounceHandler(),
                 $this->app->get(InboundHandler::class),
                 $this->app->get(ReplyHandler::class),
+            ]);
+        });
+    }
+
+    protected function registerIngestProcessor(): void
+    {
+        $this->app->bind(IngestProcessor::class, function ($app) {
+            return new IngestProcessor([
+                $app->make(CreateVideoStep::class),
+                $app->make(ImportCsvStep::class),
+                $app->make(GeneratePreviewStep::class),
+                $app->make(\App\Services\Ingest\Steps\UploadStep::class),
+                $app->make(\App\Services\Ingest\Steps\FinalizeStep::class),
             ]);
         });
     }
