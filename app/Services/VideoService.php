@@ -103,6 +103,11 @@ readonly class VideoService
     }
 
 
+    /**
+     * @param  string  $absolute
+     * @return string
+     * @deprecated use PathBuilder instead
+     */
     private function makeStorageRelative(string $absolute): string
     {
         $root = rtrim(str_replace('\\', '/', storage_path('app')), '/');
