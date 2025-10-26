@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class DynamicStorageService
 {
+    /**
+     * Create a filesystem disk from the given path.
+     * @param  string  $path
+     * @return Filesystem
+     */
     public function fromPath(string $path): Filesystem
     {
         $root = is_dir($path) ? $path : dirname($path);
@@ -22,6 +27,11 @@ class DynamicStorageService
         ]);
     }
 
+    /**
+     * Assert that the given path is a directory.
+     * @param  string  $path
+     * @return void
+     */
     private function assertDirectory(string $path): void
     {
         if (!is_dir($path)) {
@@ -30,7 +40,10 @@ class DynamicStorageService
     }
 
     /**
-     * Listet rekursiv alle Dateien als DTOs.
+     * List all files in the given disk and base path.
+     * @param  Filesystem  $disk
+     * @param  string  $basePath
+     * @return Collection
      */
     public function listFiles(Filesystem $disk, string $basePath = ''): Collection
     {
@@ -38,12 +51,23 @@ class DynamicStorageService
             ->map(fn(string $path) => FileInfoDto::fromPath($path));
     }
 
-
+    /**
+     * Get the hash for the given FileInfoDto.
+     * @param  Filesystem  $disk
+     * @param  FileInfoDto  $file
+     * @return string
+     */
     public function getHashForFileInfoDto(Filesystem $disk, FileInfoDto $file): string
     {
         return $this->getHashForFilePath($disk, $file->path);
     }
 
+    /**
+     * Get the hash for the given file path.
+     * @param  Filesystem  $disk
+     * @param  string  $relativePath
+     * @return string
+     */
     public function getHashForFilePath(Filesystem $disk, string $relativePath): string
     {
         $stream = $disk->readStream($relativePath);
