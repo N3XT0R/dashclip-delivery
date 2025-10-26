@@ -11,6 +11,13 @@ use Tests\DatabaseTestCase;
 
 class InfoImporterTest extends DatabaseTestCase
 {
+    protected InfoImporter $infoImporter;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->infoImporter = app(InfoImporter::class);
+    }
 
     /** Write a small CSV file with given rows; returns absolute path. */
     private function writeCsv(array $rows): string
@@ -41,10 +48,10 @@ class InfoImporterTest extends DatabaseTestCase
         ]);
 
         // Act
-        $result = app(InfoImporter::class)->import($csv);
+        $result = $this->infoImporter->import($csv);
 
         // Assert counters
-        $this->assertSame(['created' => 2, 'updated' => 0, 'warnings' => 0], $result);
+        $this->assertSame(['created' => 2, 'updated' => 0, 'warnings' => 0], $result->toArray());
 
         // Assert DB rows for A
         $this->assertDatabaseHas('clips', [
@@ -90,7 +97,7 @@ class InfoImporterTest extends DatabaseTestCase
         ]);
 
         // Act
-        $result = app(InfoImporter::class)->import($csv, [
+        $result = $this->infoImporter->import($csv, [
             'default-bundle' => 'DEF-BUNDLE',
             'default-submitter' => 'system',
         ]);
@@ -125,7 +132,7 @@ class InfoImporterTest extends DatabaseTestCase
         ]);
 
         // Act
-        $result = app(InfoImporter::class)->import($csv, ['infer-role' => true]);
+        $result = $this->infoImporter->import($csv, ['infer-role' => true]);
 
         $this->assertSame(['created' => 2, 'updated' => 0, 'warnings' => 0], $result);
 
@@ -155,7 +162,7 @@ class InfoImporterTest extends DatabaseTestCase
             ['not_found.mp4', 'xx:yy', 'aa', 'note', '', '', ''],
         ]);
 
-        $result = app(InfoImporter::class)->import($csv, [], function (string $msg) use (&$warnings) {
+        $result = $this->infoImporter->import($csv, [], function (string $msg) use (&$warnings) {
             $warnings[] = $msg;
         });
 
@@ -181,7 +188,7 @@ class InfoImporterTest extends DatabaseTestCase
             ['hms.mp4', '1:02:03', '75', 'timed', 'B', '', 'tester'],
         ]);
 
-        $result = app(InfoImporter::class)->import($csv);
+        $result = $this->infoImporter->import($csv);
 
         $this->assertSame(['created' => 1, 'updated' => 0, 'warnings' => 0], $result);
 
