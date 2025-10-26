@@ -12,6 +12,15 @@ use Tests\DatabaseTestCase;
 
 class BatchServiceTest extends DatabaseTestCase
 {
+    protected BatchService $batchService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->batchService = $this->app->make(BatchService::class);
+    }
+
+
     public function testReturnsLatestFinishedAssignBatch(): void
     {
         // Arrange: some noise batches that must be ignored
@@ -30,7 +39,7 @@ class BatchServiceTest extends DatabaseTestCase
             ->create();
 
         // Act
-        $result = app(BatchService::class)->getLatestAssignBatch();
+        $result = $this->batchService->getLatestAssignBatch();
 
         // Assert: latest by id and finished
         $this->assertTrue($result->is($newer));
@@ -50,6 +59,6 @@ class BatchServiceTest extends DatabaseTestCase
         $this->expectExceptionMessage('Kein Assign-Batch gefunden.');
 
         // Act
-        app(BatchService::class)->getLatestAssignBatch();
+        $this->batchService->getLatestAssignBatch();
     }
 }
