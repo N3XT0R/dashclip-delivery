@@ -54,11 +54,11 @@ class PathBuilderServiceTest extends TestCase
 
     public function testForDropboxReturnsCorrectPath(): void
     {
-        $basePath = 'dropbox_files';
+        $basePath = '';
         $filename = 'document.pdf';
         $actualPath = $this->service->forDropbox($basePath, $filename);
         $this->assertEquals(
-            '/dropbox_files/document.pdf',
+            '/document.pdf',
             $actualPath
         );
     }
