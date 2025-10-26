@@ -27,4 +27,17 @@ class PathBuilderServiceTest extends TestCase
             $actualPath
         );
     }
+
+    public function testForPreviewReturnsCorrectPath(): void
+    {
+        $id = 123;
+        $start = 0;
+        $end = 10;
+        $hash = md5($id.'_'.$start.'_'.$end);
+        $actualPath = $this->service->forPreview($id, $start, $end);
+        $this->assertEquals(
+            sprintf('previews/%s.mp4', $hash),
+            $actualPath
+        );
+    }
 }
