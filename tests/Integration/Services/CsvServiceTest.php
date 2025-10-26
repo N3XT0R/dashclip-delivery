@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;
 use App\Models\Assignment;
 use App\Models\Batch;
@@ -145,6 +146,15 @@ class CsvServiceTest extends DatabaseTestCase
     {
         $disk = DynamicStorage::fromPath(base_path('tests/Fixtures/Inbox'));
         $collection = $this->csvService->listCsvFiles($disk, 'Videos');
+
         self::assertCount(1, $collection);
+
+        $entry = $collection->first();
+        
+        self::assertInstanceOf(FileInfoDto::class, $entry);
+        self::assertSame('Videos/notizen.csv', $entry->path);
+        self::assertSame('notizen.csv', $entry->basename);
+        self::assertSame('csv', $entry->extension);
+        self::assertTrue($entry->isCsv());
     }
 }
