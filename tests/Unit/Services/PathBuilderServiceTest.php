@@ -62,4 +62,16 @@ class PathBuilderServiceTest extends TestCase
             $actualPath
         );
     }
+
+    public function testJoinReturnsCorrectPath(): void
+    {
+        $part1 = 'folder';
+        $part2 = 'subfolder';
+        $part3 = 'file.txt';
+        $actualPath = $this->service->join($part1, $part2, $part3);
+        $this->assertEquals(
+            '/folder/subfolder/file.txt',
+            $actualPath
+        );
+    }
 }
