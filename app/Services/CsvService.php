@@ -13,12 +13,7 @@ use Illuminate\Support\Collection;
 class CsvService
 {
     private const CSV_REGEX = '/\.(csv|txt)$/i';
-
-    public function __construct(private InfoImporter $infoImporter)
-    {
-    }
-
-
+    
     /**
      * @param  Collection<Assignment>  $items
      */
@@ -92,9 +87,10 @@ class CsvService
         }
 
         $aggregate = ClipImportResult::empty();
+        $infoImporter = app(InfoImporter::class);
 
         foreach ($csvFiles as $csv) {
-            $res = $this->infoImporter->importInfoFromDisk($disk, $csv->path);
+            $res = $infoImporter->importInfoFromDisk($disk, $csv->path);
             $aggregate->merge($res);
         }
 
