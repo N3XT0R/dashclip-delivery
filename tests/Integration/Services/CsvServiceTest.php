@@ -14,6 +14,15 @@ use Tests\DatabaseTestCase;
 
 class CsvServiceTest extends DatabaseTestCase
 {
+    protected CsvService $csvService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->csvService = $this->app->make(CsvService::class);
+    }
+
+
     public function testBuildInfoCsvGeneratesHeaderAndRowsForVideosWithAndWithoutClips(): void
     {
         // Arrange: shared finished assign batch + single channel (respecting unique (video, channel))
@@ -62,7 +71,7 @@ class CsvServiceTest extends DatabaseTestCase
         $items = collect([$assignmentA, $assignmentB]);
 
         // Act
-        $csv = app(CsvService::class)->buildInfoCsv($items);
+        $csv = $this->csvService->buildInfoCsv($items);
 
         // Assert: BOM is present (UTF-8 with BOM)
         $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
