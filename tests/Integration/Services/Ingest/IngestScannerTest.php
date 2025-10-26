@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Services\Ingest;
 
-use App\DTO\FileInfoDto;
 use App\Services\Ingest\IngestScanner;
 use Tests\DatabaseTestCase;
 
@@ -18,13 +17,14 @@ class IngestScannerTest extends DatabaseTestCase
         $this->ingestScanner = $this->app->make(IngestScanner::class);
     }
 
-    public function testScanInboxReturnsFileInfoDtos(): void
+    public function testScanInboxReturnsNozEmptyIngestStats(): void
     {
         \Storage::fake('local');
         $inboxPath = base_path('tests/Fixtures/Inbox');
-        $fileInfoDtos = $this->ingestScanner->scanDisk($inboxPath, 'local');
-        foreach ($fileInfoDtos as $fileInfoDto) {
-            $this->assertInstanceOf(FileInfoDto::class, $fileInfoDto);
-        }
+        $ingestStats = $this->ingestScanner->scanDisk($inboxPath, 'local');
+        $this->assertNotNull($ingestStats);
+        $stats = $ingestStats->toArray();
+
+        $this->assertSame(['new' => 0, 'dups' => 0, 'err' => 1], $stats);
     }
 }

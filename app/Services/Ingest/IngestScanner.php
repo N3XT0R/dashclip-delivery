@@ -88,9 +88,9 @@ class IngestScanner
     /**
      * Import CSV files for all directories in the given disk.
      * @param  Filesystem  $inboxDisk
-     * @return IngestResult
+     * @return ClipImportResult|null
      */
-    private function importCsvForDirectory(Filesystem $inboxDisk): ClipImportResult
+    private function importCsvForDirectory(Filesystem $inboxDisk): ?ClipImportResult
     {
         $aggregate = null;
         foreach ($inboxDisk->allDirectories() as $directory) {
