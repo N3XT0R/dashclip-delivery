@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\Facades\DynamicStorage;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -137,5 +138,13 @@ class CsvServiceTest extends DatabaseTestCase
             'review',
             'user2@example.test',
         ], $rowB2);
+    }
+
+
+    public function testListCsvFilesReturnsOneFileInCollection(): void
+    {
+        $disk = DynamicStorage::fromPath(base_path('tests/Fixtures/Inbox'));
+        $collection = $this->csvService->listCsvFiles($disk, 'Videos');
+        self::assertCount(1, $collection);
     }
 }
