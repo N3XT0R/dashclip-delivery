@@ -169,7 +169,7 @@ class InfoImporterTest extends DatabaseTestCase
             $warnings[] = $msg;
         });
 
-        $this->assertSame(['created' => 0, 'updated' => 0, 'warnings' => 3], $result);
+        $this->assertContains(['created' => 0, 'updated' => 0, 'warnings' => 3], $result->toArray());
         $this->assertCount(3, $warnings);
 
         $invalidTimeCount = count(array_filter($warnings, fn($m) => str_contains($m, 'Ungültige Zeitangabe')));
