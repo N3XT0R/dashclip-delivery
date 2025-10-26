@@ -27,7 +27,7 @@ final class VideoUploadTest extends DatabaseTestCase
 
     /**
      * @return void
-     * @todorefactor this test to not be skipped
+     * @todo refactor this test to not be skipped
      */
     public function testSubmitDispatchesJobForEachClip(): void
     {
