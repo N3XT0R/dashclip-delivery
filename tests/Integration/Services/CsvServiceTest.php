@@ -150,11 +150,22 @@ class CsvServiceTest extends DatabaseTestCase
         self::assertCount(1, $collection);
 
         $entry = $collection->first();
-        
+
         self::assertInstanceOf(FileInfoDto::class, $entry);
         self::assertSame('Videos/notizen.csv', $entry->path);
         self::assertSame('notizen.csv', $entry->basename);
         self::assertSame('csv', $entry->extension);
         self::assertTrue($entry->isCsv());
+    }
+
+
+    public function testImportCsvForDiskReturnsCorrectImportResult(): void
+    {
+        $disk = DynamicStorage::fromPath(base_path('tests/Fixtures/Inbox'));
+        $importResult = $this->csvService->importCsvForDisk($disk, 'Videos');
+
+        $resultArray = $importResult->toArray();
+        $this->assertSame(3, $resultArray['stats']['created']);
+        $this->assertCount(3, $resultArray['created_ids']);
     }
 }
