@@ -94,7 +94,6 @@ class IngestScannerTest extends DatabaseTestCase
     public function testScanIngestsNewVideo_generatesPreview_importsCsv_andDeletesSourceAndCsv(): void
     {
         $this->markTestSkipped('needs refactoring due to DynamicStorage changes');
-        return;
         $inbox = $this->makeInbox();
 
         // Source video inside inbox
