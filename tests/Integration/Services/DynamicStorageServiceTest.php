@@ -26,6 +26,14 @@ class DynamicStorageServiceTest extends TestCase
         $this->assertTrue($disk->exists('example.mp4'));
     }
 
+
+    public function testFromPathThrowsRuntimeException(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $invalidPath = base_path('tests/Fixtures/NonExistentDirectory/xxx.txt');
+        $this->dynamicStorageService->fromPath($invalidPath);
+    }
+
     public function testListFilesReturnsFileInfoDtos(): void
     {
         $inboxPath = base_path('tests/Fixtures/Inbox');
