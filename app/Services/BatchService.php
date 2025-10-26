@@ -57,9 +57,9 @@ class BatchService
         ]);
     }
 
-    public function finalizeStats(Batch $batch, IngestStats $stats): void
+    public function finalizeStats(Batch $batch, IngestStats $stats): bool
     {
-        $batch->update([
+        return $batch->update([
             'finished_at' => now(),
             'stats' => $stats->toArray(),
         ]);

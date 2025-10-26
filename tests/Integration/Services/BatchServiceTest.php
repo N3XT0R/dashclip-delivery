@@ -78,4 +78,24 @@ class BatchServiceTest extends DatabaseTestCase
             'stats->err' => $stats->getErr(),
         ]);
     }
+
+    public function testItFinalizesTheBatchWithTheGivenIngestStats(): void
+    {
+        $batch = Batch::factory()->type(BatchTypeEnum::INGEST->value)->create();
+        $stats = IngestStats::fromArray(['new' => 5, 'dups' => 2, 'err' => 1]);
+
+        $result = $this->batchService->finalizeStats($batch, $stats);
+        self::assertTrue($result);
+
+        $this->assertDatabaseHas('batches', [
+            'id' => $batch->getKey(),
+            'stats->new' => $stats->getNew(),
+            'stats->dups' => $stats->getDups(),
+            'stats->err' => $stats->getErr(),
+        ]);
+
+        $batch->refresh();
+        $this->assertNotNull($batch->finished_at);
+    }
+
 }
