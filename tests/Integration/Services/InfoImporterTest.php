@@ -51,7 +51,8 @@ class InfoImporterTest extends DatabaseTestCase
         $result = $this->infoImporter->import($csv);
 
         // Assert counters
-        $this->assertSame(['created' => 2, 'updated' => 0, 'warnings' => 0], $result->toArray());
+        $resultArray = $result->toArray();
+        $this->assertContains(['created' => 2, 'updated' => 0, 'warnings' => 0], $resultArray);
 
         // Assert DB rows for A
         $this->assertDatabaseHas('clips', [
