@@ -20,11 +20,11 @@ class IngestScannerTest extends DatabaseTestCase
     public function testScanInboxReturnsNozEmptyIngestStats(): void
     {
         \Storage::fake('local');
-        $inboxPath = base_path('tests/Fixtures/Inbox');
+        $inboxPath = base_path('tests/Fixtures/Inbox/Videos');
         $ingestStats = $this->ingestScanner->scanDisk($inboxPath, 'local');
         $this->assertNotNull($ingestStats);
         $stats = $ingestStats->toArray();
-
-        $this->assertSame(['new' => 0, 'dups' => 0, 'err' => 1], $stats);
+        $this->assertSame(3, $ingestStats->total());
+        $this->assertSame(['new' => 3, 'dups' => 0, 'err' => 0], $stats);
     }
 }
