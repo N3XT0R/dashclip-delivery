@@ -92,15 +92,12 @@ class IngestScanner
      */
     private function importCsvForDirectory(Filesystem $inboxDisk): ClipImportResult
     {
-        $aggregate = null;
+        $aggregate = ClipImportResult::empty();
         foreach ($inboxDisk->allDirectories() as $directory) {
             try {
                 $res = $this->csvService->importCsvForDisk($inboxDisk, $directory);
                 if ($res) {
-                    /**
-                     * @var ClipImportResult|null $aggregate
-                     */
-                    $aggregate = $aggregate ? tap($aggregate)->merge($res) : $res;
+                    $aggregate->merge($res);
                 }
             } catch (Throwable $e) {
                 $this->log(
