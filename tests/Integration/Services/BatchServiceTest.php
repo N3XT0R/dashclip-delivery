@@ -7,6 +7,7 @@ namespace Tests\Integration\Services;
 use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
 use App\Services\BatchService;
+use App\ValueObjects\IngestStats;
 use RuntimeException;
 use Tests\DatabaseTestCase;
 
@@ -60,5 +61,21 @@ class BatchServiceTest extends DatabaseTestCase
 
         // Act
         $this->batchService->getLatestAssignBatch();
+    }
+
+    public function testItUpdatesTheBatchWithTheGivenIngestStats(): void
+    {
+        $batch = Batch::factory()->type(BatchTypeEnum::INGEST->value)->create();
+        $stats = IngestStats::fromArray(['new' => 5, 'dups' => 2, 'err' => 1]);
+
+        $result = $this->batchService->updateStats($batch, $stats);
+        self::assertTrue($result);
+
+        $this->assertDatabaseHas('batches', [
+            'id' => $batch->id,
+            'stats->new' => $stats->getNew(),
+            'stats->dups' => $stats->getDups(),
+            'stats->err' => $stats->getErr(),
+        ]);
     }
 }

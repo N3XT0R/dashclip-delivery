@@ -50,9 +50,9 @@ class BatchService
         return $batch;
     }
 
-    public function updateStats(Batch $batch, IngestStats $stats): void
+    public function updateStats(Batch $batch, IngestStats $stats): bool
     {
-        $batch->update([
+        return $batch->update([
             'stats' => $stats->toArray(),
         ]);
     }
