@@ -161,6 +161,21 @@ class CsvServiceTest extends DatabaseTestCase
 
     public function testImportCsvForDiskReturnsCorrectImportResult(): void
     {
+        $videos = [
+            'example_R.mp4',
+            'example_F.mp4',
+            'standalone.mp4',
+        ];
+        foreach ($videos as $id => $videoName) {
+            Video::factory()->create([
+                'hash' => hash('sha256', 'video'.$id),
+                'bytes' => 1024,
+                'ext' => 'mp4',
+                'path' => 'Videos/'.$videoName,
+                'original_name' => $videoName,
+            ]);
+        }
+
         $disk = DynamicStorage::fromPath(base_path('tests/Fixtures/Inbox'));
         $importResult = $this->csvService->importCsvForDisk($disk, 'Videos');
 
