@@ -72,7 +72,7 @@ class BatchServiceTest extends DatabaseTestCase
         self::assertTrue($result);
 
         $this->assertDatabaseHas('batches', [
-            'id' => $batch->id,
+            'id' => $batch->getKey(),
             'stats->new' => $stats->getNew(),
             'stats->dups' => $stats->getDups(),
             'stats->err' => $stats->getErr(),
