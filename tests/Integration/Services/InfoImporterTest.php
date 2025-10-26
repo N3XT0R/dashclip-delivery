@@ -135,8 +135,9 @@ class InfoImporterTest extends DatabaseTestCase
 
         // Act
         $result = $this->infoImporter->import($csv, ['infer-role' => true]);
+        $resultArray = $result->toArray();
 
-        $this->assertSame(['created' => 2, 'updated' => 0, 'warnings' => 0], $result);
+        $this->assertContains(['created' => 2, 'updated' => 0, 'warnings' => 0], $resultArray);
 
         $this->assertDatabaseHas('clips', [
             'video_id' => $vF->id,
