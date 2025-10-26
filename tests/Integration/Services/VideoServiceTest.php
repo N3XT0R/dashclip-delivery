@@ -30,4 +30,15 @@ class VideoServiceTest extends DatabaseTestCase
         Video::factory()->create(['hash' => $hash]);
         self::assertTrue($this->videoService->isDuplicate($hash));
     }
+
+    public function testCreateClipForVideoWorks(): void
+    {
+        $video = Video::factory()->create();
+        $startSec = 10;
+        $endSec = 20;
+        $clip = $this->videoService->createClipForVideo($video, $startSec, $endSec);
+        self::assertSame($startSec, $clip->start_sec);
+        self::assertSame($endSec, $clip->end_sec);
+        self::assertSame($video->id, $clip->video_id);
+    }
 }

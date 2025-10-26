@@ -9,6 +9,7 @@ use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
@@ -140,9 +141,9 @@ readonly class VideoService
         ]);
     }
 
-    public function createClipForVideo(Video $video, int $startSec, int $endSec): void
+    public function createClipForVideo(Video $video, int $startSec, int $endSec): Model&Clip
     {
-        $video->clips()->create([
+        return $video->clips()->create([
             'start_sec' => $startSec,
             'end_sec' => $endSec,
         ]);
