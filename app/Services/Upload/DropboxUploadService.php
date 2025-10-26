@@ -24,7 +24,7 @@ class DropboxUploadService
     public function uploadFile(
         Filesystem $disk,
         string $relativePath,
-        string $dstRel,
+        string $targetPath,
         ?ProgressBar $bar = null
     ): void {
         $read = $disk->readStream($relativePath);
@@ -34,7 +34,7 @@ class DropboxUploadService
 
         $bytes = $disk->size($relativePath);
         $root = (string)config('filesystems.disks.dropbox.root', '');
-        $targetPath = PathBuilder::forDropbox($root, $dstRel);
+        $targetPath = PathBuilder::forDropbox($root, $targetPath);
 
         $client = new DropboxClient($this->tokenProvider);
 
