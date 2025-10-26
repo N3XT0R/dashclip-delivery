@@ -6,9 +6,9 @@ namespace Services\Ingest;
 
 use App\DTO\FileInfoDto;
 use App\Services\Ingest\IngestScanner;
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 
-class IngestScannerTest extends TestCase
+class IngestScannerTest extends DatabaseTestCase
 {
     protected IngestScanner $ingestScanner;
 
