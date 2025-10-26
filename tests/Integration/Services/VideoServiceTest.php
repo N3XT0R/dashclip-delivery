@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\Models\Clip;
 use App\Models\Video;
 use App\Services\VideoService;
 use Tests\DatabaseTestCase;
@@ -40,5 +41,15 @@ class VideoServiceTest extends DatabaseTestCase
         self::assertSame($startSec, $clip->start_sec);
         self::assertSame($endSec, $clip->end_sec);
         self::assertSame($video->id, $clip->video_id);
+    }
+
+
+    public function testGetClipForVideoWorks(): void
+    {
+        $video = Video::factory()->create();
+        $clip = Clip::factory()->create(['start_sec' => 5, 'end_sec' => 15, 'video_id' => $video->getKey()]);
+        $fetchedClip = $this->videoService->getClipForVideo($video, 5, 15);
+        self::assertNotNull($fetchedClip);
+        self::assertSame($clip->id, $fetchedClip->id);
     }
 }
