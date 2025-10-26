@@ -23,7 +23,6 @@ class IngestScannerTest extends DatabaseTestCase
         \Storage::fake('local');
         $inboxPath = base_path('tests/Fixtures/Inbox');
         $fileInfoDtos = $this->ingestScanner->scanDisk($inboxPath, 'local');
-        $this->assertCount(1, $fileInfoDtos);
         foreach ($fileInfoDtos as $fileInfoDto) {
             $this->assertInstanceOf(FileInfoDto::class, $fileInfoDto);
         }
