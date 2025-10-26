@@ -23,7 +23,7 @@ class DynamicStorageServiceTest extends TestCase
         $inboxPath = base_path('tests/Fixtures/Inbox');
         $disk = $this->dynamicStorageService->fromPath($inboxPath);
         $this->assertNotNull($disk);
-        $this->assertTrue($disk->exists('example.mp4'));
+        $this->assertTrue($disk->exists('example.txt'));
     }
 
 
