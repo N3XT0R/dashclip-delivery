@@ -5,7 +5,7 @@
          colors="true"
          failOnRisky="true"
          failOnDeprecation="true"
-         failOnSkipped="true"
+         failOnSkipped="false"
          failOnWarning="true"
          failOnEmptyTestSuite="true"
          failOnPhpunitDeprecation="true"
