@@ -104,7 +104,8 @@ class InfoImporterTest extends DatabaseTestCase
         ]);
 
         // Assert: one row updated, none created, no warnings
-        $this->assertSame(['created' => 0, 'updated' => 1, 'warnings' => 0], $result);
+        $resultArray = $result->toArray();
+        $this->assertContains(['created' => 0, 'updated' => 1, 'warnings' => 0], $resultArray);
 
         $this->assertDatabaseHas('clips', [
             'id' => $clip->id,
