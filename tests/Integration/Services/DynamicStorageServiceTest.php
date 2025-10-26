@@ -50,4 +50,20 @@ class DynamicStorageServiceTest extends TestCase
         }
     }
 
+    public function testGetHashForFileInfoDtoReturnsHash(): void
+    {
+        $inboxPath = base_path('tests/Fixtures/Inbox');
+        $disk = $this->dynamicStorageService->fromPath($inboxPath);
+        $fileInfoDtos = $this->dynamicStorageService->listFiles($disk);
+        self::assertNotNull($disk);
+        self::assertNotCount(0, $fileInfoDtos);
+
+        $textFileDto = $fileInfoDtos->filter(fn(FileInfoDto $dto) => $dto->isOneOfExtensions(['txt']))->first();
+        self::assertInstanceOf(FileInfoDto::class, $textFileDto);
+
+        $hash = $this->dynamicStorageService->getHashForFileInfoDto($disk, $textFileDto);
+        self::assertNotEmpty($hash);
+        self::assertSame('73b248344dcf25034d70136a54a9200cee05df4c109100264fa4b4bc3b7b4cf4', $hash);
+    }
+
 }
