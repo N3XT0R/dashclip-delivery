@@ -40,4 +40,14 @@ class PathBuilderServiceTest extends TestCase
             $actualPath
         );
     }
+
+    public function testForPreviewByHash(): void
+    {
+        $hash = md5('custom_hash');
+        $actualPath = $this->service->forPreviewByHash($hash);
+        $this->assertEquals(
+            'previews/1f/9d/1f9d42c2cbd56b1194faa9955b97eda3.mp4',
+            $actualPath
+        );
+    }
 }
