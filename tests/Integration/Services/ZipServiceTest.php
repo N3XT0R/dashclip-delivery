@@ -81,8 +81,7 @@ class ZipServiceTest extends DatabaseTestCase
 
         // Test double: swallow all cache calls (no expectations)
         $cacheDouble = Mockery::mock(DownloadCacheService::class)->shouldIgnoreMissing();
-
-        $svc = new ZipService($cacheDouble, new CsvService());
+        $svc = new ZipService($cacheDouble, $this->app->make(CsvService::class));
 
         // Act
         $zipRel = $svc->build($batch, $channel, collect([$a1, $a2]), '203.0.113.10', 'UA/1.0');
