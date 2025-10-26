@@ -13,9 +13,11 @@ use Illuminate\Support\Collection;
 class CsvService
 {
     private const CSV_REGEX = '/\.(csv|txt)$/i';
-    
+
     /**
-     * @param  Collection<Assignment>  $items
+     * Creates a CSV-String with info about the given Assignments and their Videos/Clips.
+     * @param  Collection<Assignment>  $items  $items
+     * @return string CSV-Content as String
      */
     public function buildInfoCsv(Collection $items): string
     {
@@ -68,7 +70,7 @@ class CsvService
     }
 
     /**
-     * Listet alle CSV/Text-Dateien im angegebenen Ordner (nicht rekursiv).
+     * List all CSV files in the given disk and base path.
      * @return Collection<FileInfoDto>
      */
     public function listCsvFiles(Filesystem $disk, string $basePath = ''): Collection
@@ -79,6 +81,12 @@ class CsvService
             ->values();
     }
 
+    /**
+     * Import CSV files from the given disk and base path.
+     * @param  Filesystem  $disk
+     * @param  string  $basePath
+     * @return ClipImportResult|null
+     */
     public function importCsvForDisk(Filesystem $disk, string $basePath = ''): ?ClipImportResult
     {
         $csvFiles = $this->listCsvFiles($disk, $basePath);
