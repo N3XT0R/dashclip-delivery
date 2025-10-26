@@ -89,6 +89,7 @@ class IngestScannerTest extends DatabaseTestCase
      * Test that scanning an inbox with a new video and a CSV works end-to-end
      * @return void
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @todo refactor this
      */
     public function testScanIngestsNewVideo_generatesPreview_importsCsv_andDeletesSourceAndCsv(): void
     {
