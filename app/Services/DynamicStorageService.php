@@ -47,7 +47,7 @@ class DynamicStorageService
     public function getHashForFilePath(Filesystem $disk, string $relativePath): string
     {
         $stream = $disk->readStream($relativePath);
-        if ($stream === false) {
+        if ($stream === false || $stream === null) {
             throw new \RuntimeException("Konnte Datei nicht lesen: {$relativePath}");
         }
 

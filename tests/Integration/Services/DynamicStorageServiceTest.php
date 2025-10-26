@@ -66,4 +66,23 @@ class DynamicStorageServiceTest extends TestCase
         self::assertSame('73b248344dcf25034d70136a54a9200cee05df4c109100264fa4b4bc3b7b4cf4', $hash);
     }
 
+
+    public function testGetHashForFilePathReturnsHash(): void
+    {
+        $inboxPath = base_path('tests/Fixtures/Inbox');
+        $disk = $this->dynamicStorageService->fromPath($inboxPath);
+
+        $hash = $this->dynamicStorageService->getHashForFilePath($disk, 'example.txt');
+        self::assertNotEmpty($hash);
+        self::assertSame('73b248344dcf25034d70136a54a9200cee05df4c109100264fa4b4bc3b7b4cf4', $hash);
+    }
+
+    public function testGetHashForFileThrowsRuntimeException(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $inboxPath = base_path('tests/Fixtures/Inbox');
+        $disk = $this->dynamicStorageService->fromPath($inboxPath);
+
+        $this->dynamicStorageService->getHashForFilePath($disk, 'non_existent_file.txt');
+    }
 }
