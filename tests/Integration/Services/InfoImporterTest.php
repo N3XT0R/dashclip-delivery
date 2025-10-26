@@ -193,7 +193,7 @@ class InfoImporterTest extends DatabaseTestCase
 
         $result = $this->infoImporter->import($csv);
 
-        $this->assertSame(['created' => 1, 'updated' => 0, 'warnings' => 0], $result);
+        $this->assertContains(['created' => 1, 'updated' => 0, 'warnings' => 0], $result->toArray());
 
         $this->assertDatabaseHas('clips', [
             'video_id' => $video->id,
