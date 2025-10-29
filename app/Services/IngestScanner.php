@@ -120,6 +120,7 @@ final class IngestScanner
      * @param  string  $fileName
      * @param  string  $diskName
      * @return 'new'|'dups'|'err'
+     * @deprecated replaced by \App\Services\Ingest\IngestScanner::processFile
      */
     public function processFile(string $path, string $ext, string $fileName, string $diskName): string
     {
@@ -288,7 +289,7 @@ final class IngestScanner
         foreach ($csvFiles as $csv) {
             try {
                 $result = $this->infoImporter->import($csv);
-                if (($result['warnings'] ?? 0) === 0) {
+                if ($result?->stats->warnings === 0) {
                     @unlink($csv);
                 }
             } catch (Throwable $e) {
