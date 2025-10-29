@@ -11,6 +11,8 @@ use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use InvalidArgumentException;
 
+use function count;
+
 class UnzipPending extends Command
 {
     use LockJobTrait;
@@ -61,9 +63,9 @@ class UnzipPending extends Command
             $this->info(sprintf(
                 'Done. total=%d extracted=%d failed=%d skipped=%d',
                 $stats->total(),
-                \count($stats->extractedArchives),
-                \count($stats->failedArchives),
-                \count($stats->skippedArchives),
+                count($stats->extractedArchives),
+                count($stats->failedArchives),
+                count($stats->skippedArchives),
             ));
 
             // Optional verbose listing
