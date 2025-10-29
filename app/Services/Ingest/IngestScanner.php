@@ -145,7 +145,7 @@ class IngestScanner
         try {
             DB::beginTransaction();
             $video = $videoService->createVideoBydDiskAndFileInfoDto('dynamicStorage', $inboxDisk, $file);
-            $importResult = $this->importCsvForDirectory($inboxDisk);
+            $importResult = $this->importCsvForDirectory($inboxDisk, true);
             $video->refresh();
 
             $clip = $importResult->clipsForVideo($video)->first();
