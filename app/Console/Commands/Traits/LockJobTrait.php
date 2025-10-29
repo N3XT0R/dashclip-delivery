@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Traits;
 
-use App\Facades\Cfg;
 use Closure;
 use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
-use Symfony\Component\Console\Command\Command as CommandAlias;
 
 trait LockJobTrait
 {
@@ -122,50 +120,32 @@ trait LockJobTrait
     }
 
     /**
-     * Run a job wrapped with locking logic.
+     * Execute the given callback under lock control.
      *
-     * @param  callable  $callback  The actual job logic to execute (receives $inbox, $disk)
-     * @param  array  $options  Optional CLI-like options ['inbox' => ..., 'disk' => ..., 'ttl' => ..., 'wait' => ..., 'lock-store' => ...]
-     * @param  string  $abortMsg  Message to display when lock is already held
+     * @param  callable(Lock $lock): int  $callback
+     * @param  int  $ttl
+     * @param  int  $wait
+     * @param  string  $abortMessage
      * @return int
      * @throws LockTimeoutException
      */
-    public function handleLockedJob(
+    protected function runWithLockFlow(
         callable $callback,
-        array $options = [],
-        string $abortMsg = 'Another job is already running. Abort.'
+        int $ttl,
+        int $wait,
+        string $abortMessage = 'Another job is already running. Abort.'
     ): int {
-        // Optional lock store (e.g., redis)
-        if (!empty($options['lock-store'])) {
-            $this->setLockStore((string)$options['lock-store']);
-        }
-
-        $inbox = rtrim((string)($options['inbox'] ?? $this->option('inbox')), '/');
-        $disk = (string)($options['disk'] ??
-            $this->option('disk') ??
-            Cfg::get('default_file_system', 'default', 'dropbox'));
-
-        $ttl = (int)($options['ttl'] ?? $this->option('ttl') ?? 30);
-        $waitSec = (int)($options['wait'] ?? $this->option('wait') ?? 0);
-
-        // blocking mode: wait up to N seconds to acquire the lock
-        if ($waitSec > 0) {
-            return (int)$this->blockWithLock(
-                fn(Lock $lock) => $callback($inbox, $disk),
-                $waitSec,
-                $ttl
-            );
+        // blocking mode
+        if ($wait > 0) {
+            return (int)$this->blockWithLock($callback, $wait, $ttl);
         }
 
         // non-blocking mode
-        $result = $this->tryWithLock(
-            fn(Lock $lock) => $callback($inbox, $disk),
-            $ttl
-        );
+        $result = $this->tryWithLock($callback, $ttl);
 
         if ($result === null) {
-            $this->info($abortMsg);
-            return CommandAlias::SUCCESS;
+            $this->info($abortMessage);
+            return self::SUCCESS;
         }
 
         return (int)$result;

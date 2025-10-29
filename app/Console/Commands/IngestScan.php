@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\LockJobTrait;
+use App\Facades\Cfg;
 use App\Services\Ingest\IngestScanner;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class IngestScan extends Command
@@ -36,16 +38,20 @@ class IngestScan extends Command
      */
     public function handle(): int
     {
-        return $this->handleLockedJob(
-            fn(string $inbox, string $disk) => $this->runIngest($inbox, $disk),
-            options: [
-                'inbox' => $this->option('inbox'),
-                'disk' => $this->option('disk'),
-                'ttl' => $this->option('ttl'),
-                'wait' => $this->option('wait'),
-                'lock-store' => $this->option('lock-store'),
-            ],
-            abortMsg: 'Another ingest task is running. Abort.'
+        if ($store = (string)($this->option('lock-store') ?? '')) {
+            $this->setLockStore($store);
+        }
+
+        $inbox = rtrim((string)$this->option('inbox'), '/');
+        $disk = (string)($this->option('disk') ?: Cfg::get('default_file_system', 'default', 'dropbox'));
+        $ttl = (int)$this->option('ttl');
+        $wait = (int)$this->option('wait');
+
+        return $this->runWithLockFlow(
+            fn(Lock $lock) => $this->runIngest($inbox, $disk),
+            $ttl,
+            $wait,
+            'Another ingest task is running. Abort.'
         );
     }
 
