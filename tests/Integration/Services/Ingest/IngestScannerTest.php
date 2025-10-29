@@ -28,7 +28,7 @@ class IngestScannerTest extends DatabaseTestCase
         Storage::fake('local');
         $inboxPath = base_path('tests/Fixtures/Inbox/Videos');
         $inboxDisk = DynamicStorage::fromPath($inboxPath);
-        $tmpDisk = DynamicStorage::fromPath(sys_get_temp_dir());
+        $tmpDisk = Storage::fake('tmp');
         $tmpDisk->deleteDirectory('');
         $tmpDisk->makeDirectory('');
 
