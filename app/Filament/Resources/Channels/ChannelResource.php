@@ -2,27 +2,26 @@
 
 namespace App\Filament\Resources\Channels;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\Channels\Pages\ListChannels;
+use App\Filament\Resources\ChannelResource\Pages;
 use App\Filament\Resources\Channels\Pages\CreateChannel;
 use App\Filament\Resources\Channels\Pages\EditChannel;
-use App\Filament\Resources\ChannelResource\Pages;
+use App\Filament\Resources\Channels\Pages\ListChannels;
 use App\Models\Channel;
-use Filament\Forms;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class ChannelResource extends Resource
 {
     protected static ?string $model = Channel::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-envelope';
-    protected static string | \UnitEnum | null $navigationGroup = 'Media';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-envelope';
+    protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected static ?string $modelLabel = 'Channel';
     protected static ?string $pluralModelLabel = 'Channels';
 
@@ -74,6 +73,10 @@ class ChannelResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
+            ])
+            ->headerActions([
+                CreateAction::make()
+                    ->icon('heroicon-o-plus-circle'),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
