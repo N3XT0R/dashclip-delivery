@@ -289,7 +289,7 @@ final class IngestScanner
         foreach ($csvFiles as $csv) {
             try {
                 $result = $this->infoImporter->import($csv);
-                if ($result?->stats->warnings === 0) {
+                if ($result->stats->warnings === 0) {
                     @unlink($csv);
                 }
             } catch (Throwable $e) {
