@@ -143,4 +143,56 @@ class PreviewServiceTest extends DatabaseTestCase
         // Assert: service should detect missing file and return null
         $this->assertNull($url);
     }
+
+    public function testGeneratePreviewByDiskCreatesPreviewSuccessfully(): void
+    {
+        // prepare input video (real fixture)
+        $fixtureDir = base_path('tests/Fixtures/Inbox/Videos');
+        $fixtureVideo = $fixtureDir.'/standalone.mp4';
+        $this->assertFileExists($fixtureVideo, 'Fixture video missing: '.$fixtureVideo);
+
+        // use the real local disk from the fixture directory
+        $disk = Storage::build([
+            'driver' => 'local',
+            'root' => $fixtureDir,
+        ]);
+
+        // ensure a fresh fake target disk for previews
+        Storage::fake('public');
+        config(['preview.default_disk' => 'public']);
+
+        $relativePath = 'standalone.mp4';
+        $startSec = 1;
+        $endSec = 3;
+
+        // calculate expected SHA-256 hash (like DynamicStorage::getHashForFilePath)
+        $expectedHash = hash_file('sha256', $fixtureVideo);
+        $sub = substr($expectedHash, 0, 2).'/'.substr($expectedHash, 2, 2);
+        $expectedPath = sprintf('previews/%s/%s.mp4', $sub, $expectedHash);
+
+        // act
+        $url = $this->previewService->generatePreviewByDisk(
+            $disk,
+            $relativePath,
+            id: null,
+            startSec: $startSec,
+            endSec: $endSec
+        );
+
+        // assert
+        $this->assertIsString($url);
+        $this->assertStringContainsString($expectedPath, $url, 'Preview URL does not match expected path.');
+
+        // preview file should exist on fake disk
+        $previewDisk = Storage::disk('public');
+        $this->assertTrue(
+            $previewDisk->exists($expectedPath),
+            'Expected preview file not found on target disk'
+        );
+
+        $size = $previewDisk->size($expectedPath);
+        $this->assertGreaterThan(0, $size, 'Generated preview file has zero bytes');
+    }
+
+
 }
