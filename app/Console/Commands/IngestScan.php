@@ -1,5 +1,4 @@
 <?php
-// app/Console/Commands/IngestScan.php
 
 declare(strict_types=1);
 
@@ -7,16 +6,15 @@ namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\LockJobTrait;
 use App\Facades\Cfg;
-use App\Services\IngestScanner;
+use App\Services\Ingest\IngestScanner;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\Lock;
-use RuntimeException;
 
 class IngestScan extends Command
 {
     use LockJobTrait;
 
-    protected $signature = 'ingest:scan
+    protected $signature = 'ingest:new-scan
         {--inbox=/srv/ingest/pending : Root directory of uploads (recursive)}
         {--disk= : Target storage disk (e.g., dropbox|local)}
         {--wait=0 : Seconds to wait for the lock (0 = non-blocking)}
@@ -66,9 +64,6 @@ class IngestScan extends Command
         return (int)$result;
     }
 
-    /**
-     * Execute the ingest scan using the injected service.
-     */
     private function runIngest(string $inbox, string $diskName): int
     {
         $this->info('started...');
@@ -77,10 +72,10 @@ class IngestScan extends Command
         $this->scanner->setOutput($this->getOutput());
 
         try {
-            $stats = $this->scanner->scan($inbox, $diskName);
-            $this->info("Ingest done. new={$stats['new']} dups={$stats['dups']} err={$stats['err']} disk={$diskName}");
+            $stats = $this->scanner->scanDisk($inbox, $diskName);
+            $this->info(sprintf('ingest done. %s disk=%s', $stats->__toString(), $diskName));
             return self::SUCCESS;
-        } catch (RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
         }
