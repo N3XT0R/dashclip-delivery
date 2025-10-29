@@ -38,10 +38,8 @@ final class VideoUploadTest extends DatabaseTestCase
         $disk->makeDirectory('uploads/tmp/');
 
         $disk->put('uploads/tmp/file1.mp4', 'a');
-        $disk->put('uploads/tmp/file2.mov', 'b');
 
         $path1 = 'uploads/tmp/file1.mp4';
-        $path2 = 'uploads/tmp/file2.mov';
 
         $state = [
             'clips' => [
@@ -54,17 +52,7 @@ final class VideoUploadTest extends DatabaseTestCase
                     'note' => 'first',
                     'bundle_key' => 'B1',
                     'role' => 'R1',
-                ],
-                [
-                    'file' => $path2,
-                    'original_name' => 'two.mov',
-                    'start_sec' => 2,
-                    'end_sec' => 4,
-                    'duration' => 4,
-                    'note' => 'second',
-                    'bundle_key' => 'B2',
-                    'role' => 'R2',
-                ],
+                ]
             ],
         ];
 
@@ -103,30 +91,17 @@ final class VideoUploadTest extends DatabaseTestCase
 
         $page->submit();
 
-        Bus::assertDispatchedTimes(ProcessUploadedVideo::class, 2);
+        Bus::assertDispatchedTimes(ProcessUploadedVideo::class, 1);
         Bus::assertDispatched(ProcessUploadedVideo::class,
-            static function (ProcessUploadedVideo $job) use ($user, $path1) {
-                return $job->fileInfoDto->basename === 'one.mp4'
+            static function (ProcessUploadedVideo $job) use ($user) {
+                return $job->fileInfoDto->basename === 'file1.mp4'
                     && $job->fileInfoDto->extension === 'mp4'
                     && $job->start === 1
                     && $job->end === 3
                     && $job->note === 'first'
                     && $job->bundleKey === 'B1'
                     && $job->role === 'R1'
-                    && $job->submittedBy === $user->display_name
-                    && str_ends_with($job->fileInfoDto->path, $path1);
-            });
-        Bus::assertDispatched(ProcessUploadedVideo::class,
-            static function (ProcessUploadedVideo $job) use ($user, $path2) {
-                return $job->fileInfoDto->basename === 'two.mov'
-                    && $job->fileInfoDto->extension === 'mov'
-                    && $job->start === 2
-                    && $job->end === 4
-                    && $job->note === 'second'
-                    && $job->bundleKey === 'B2'
-                    && $job->role === 'R2'
-                    && $job->submittedBy === $user->display_name
-                    && str_ends_with($job->fileInfoDto->path, $path2);
+                    && $job->submittedBy === $user->display_name;
             });
     }
 

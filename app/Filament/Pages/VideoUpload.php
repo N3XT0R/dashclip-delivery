@@ -181,7 +181,7 @@ class VideoUpload extends Page implements HasForms
             $file = $clip['file'] ?? '';
             $fileInfoDto = new FileInfoDto(
                 $file,
-                Str::afterLast('/', $file),
+                Str::afterLast($file, '/'),
                 Str::afterLast($file, '.')
             );
 
