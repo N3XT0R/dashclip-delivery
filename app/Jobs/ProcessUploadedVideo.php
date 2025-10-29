@@ -33,6 +33,12 @@ class ProcessUploadedVideo implements ShouldQueue
     ) {
     }
 
+    /**
+     * Handle the job for processing the uploaded video.
+     * @param  IngestScanner  $scanner
+     * @return void
+     * @throws \Throwable
+     */
     public function handle(IngestScanner $scanner): void
     {
         $fileInfoDto = $this->fileInfoDto;
