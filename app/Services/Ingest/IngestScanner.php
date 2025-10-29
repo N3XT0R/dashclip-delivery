@@ -88,16 +88,17 @@ class IngestScanner
     /**
      * Import CSV files for all directories in the given disk.
      * @param  Filesystem  $inboxDisk
+     * @param  bool  $deleteAfter
      * @return ClipImportResult
      */
-    private function importCsvForDirectory(Filesystem $inboxDisk): ClipImportResult
+    private function importCsvForDirectory(Filesystem $inboxDisk, bool $deleteAfter = false): ClipImportResult
     {
         $aggregate = ClipImportResult::empty();
 
         // Include root ("") + all subdirectories
         foreach (array_merge([''], $inboxDisk->allDirectories()) as $dir) {
             try {
-                if ($res = $this->csvService->importCsvForDisk($inboxDisk, $dir)) {
+                if ($res = $this->csvService->importCsvForDisk($inboxDisk, $dir, $deleteAfter)) {
                     $aggregate->merge($res);
                 }
             } catch (Throwable $e) {

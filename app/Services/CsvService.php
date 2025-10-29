@@ -87,8 +87,11 @@ class CsvService
      * @param  string  $basePath
      * @return ClipImportResult|null
      */
-    public function importCsvForDisk(Filesystem $disk, string $basePath = ''): ?ClipImportResult
-    {
+    public function importCsvForDisk(
+        Filesystem $disk,
+        string $basePath = '',
+        bool $deleteAfterSuccess = false
+    ): ?ClipImportResult {
         $csvFiles = $this->listCsvFiles($disk, $basePath);
         if ($csvFiles->isEmpty()) {
             return null;
@@ -99,10 +102,27 @@ class CsvService
 
         foreach ($csvFiles as $csv) {
             $res = $infoImporter->importInfoFromDisk($disk, $csv->path);
+            if ($res->stats->warnings === 0 && $deleteAfterSuccess) {
+                $this->deleteCsvFile($disk, $csv);
+            }
             $aggregate->merge($res);
         }
 
         return $aggregate;
+    }
+
+
+    public function deleteCsvFile(
+        Filesystem $disk,
+        FileInfoDto $infoDto
+    ): bool {
+        $result = false;
+        $path = $infoDto->path;
+        if ($infoDto->isCsv() && $disk->exists($path)) {
+            $result = $disk->delete($path);
+        }
+
+        return $result;
     }
 
 }
