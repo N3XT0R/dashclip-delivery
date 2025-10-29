@@ -16,6 +16,10 @@ use App\Repository\ChannelRepository;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
+/**
+ * Service to distribute videos across channels based on quotas, weights, and blocks.
+ * @todo refactor to smaller services?
+ */
 class AssignmentDistributor
 {
 
