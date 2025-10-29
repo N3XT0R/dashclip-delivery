@@ -12,6 +12,10 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\Lock;
 use RuntimeException;
 
+/**
+ * Command to scan a legacy inbox directory for files to ingest.
+ * @deprecated use IngestScan instead
+ */
 class IngestLegacyScan extends Command
 {
     use LockJobTrait;
