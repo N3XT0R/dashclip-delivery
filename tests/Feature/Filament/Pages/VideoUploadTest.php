@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Pages;
 
+use App\Facades\Cfg;
 use App\Filament\Pages\VideoUpload;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\User;
@@ -107,6 +108,7 @@ final class VideoUploadTest extends DatabaseTestCase
 
     public function testSubmitRequiresDurationGreaterThanZero(): void
     {
+        Cfg::set('default_file_system', 'local', 'default');
         $user = User::factory()->admin()->create();
         $this->actingAs($user);
 
