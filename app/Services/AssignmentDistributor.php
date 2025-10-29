@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enum\BatchTypeEnum;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
@@ -118,14 +117,6 @@ readonly class AssignmentDistributor
     }
 
     /* ===================== Helpers ===================== */
-
-    private function startBatch(): Batch
-    {
-        return Batch::query()->create([
-            'type' => BatchTypeEnum::ASSIGN->value,
-            'started_at' => now(),
-        ]);
-    }
 
     /**
      * Sammle Videos für den Verteilungspool:
