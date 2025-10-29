@@ -60,5 +60,7 @@ class IngestScannerTest extends DatabaseTestCase
         // Assert: preview was generated
         $this->assertNotNull($video->preview_url);
         $this->assertStringEndsWith('.mp4', $video->preview_url);
+
+        $this->assertDatabaseCount('clips', 1);
     }
 }
