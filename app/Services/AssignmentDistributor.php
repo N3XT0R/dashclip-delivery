@@ -33,7 +33,7 @@ readonly class AssignmentDistributor
      */
     public function distribute(?int $quotaOverride = null): array
     {
-        $batch = $this->startBatch();
+        $batch = $this->batchService->startBatch();
         $lastFinished = $this->batchService->getLastFinishedAssignBatch();
 
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)

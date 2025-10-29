@@ -65,6 +65,14 @@ class BatchService
         ]);
     }
 
+    public function startBatch(): Batch
+    {
+        return Batch::query()->create([
+            'type' => BatchTypeEnum::ASSIGN->value,
+            'started_at' => now(),
+        ]);
+    }
+
     public function getLastFinishedAssignBatch(): ?Batch
     {
         return Batch::query()
