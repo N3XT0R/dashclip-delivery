@@ -52,10 +52,6 @@ class ChannelResource extends Resource
     {
         return $table
             ->columns([
-                IconColumn::make('is_video_reception_paused')
-                    ->label('Paused video reception')
-                    ->boolean()
-                    ->sortable(),
                 TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
@@ -74,6 +70,14 @@ class ChannelResource extends Resource
                 TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i')
                     ->since()
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->dateTime('Y-m-d H:i')
+                    ->since()
+                    ->sortable(),
+                IconColumn::make('is_video_reception_paused')
+                    ->label('Paused video reception')
+                    ->boolean()
                     ->sortable(),
             ])
             ->filters([
