@@ -19,6 +19,7 @@ class ChannelFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'weight' => $this->faker->numberBetween(1, 10),
             'weekly_quota' => $this->faker->numberBetween(1, 20),
+            'is_video_reception_paused' => 0,
         ];
     }
 
@@ -30,5 +31,10 @@ class ChannelFactory extends Factory
     public function withQuota(int $quota): static
     {
         return $this->state(fn() => ['weekly_quota' => $quota]);
+    }
+
+    public function paused(): static
+    {
+        return $this->state(fn() => ['is_video_reception_paused' => 1]);
     }
 }
