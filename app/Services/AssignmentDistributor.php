@@ -31,12 +31,13 @@ class AssignmentDistributor
     public function distribute(?int $quotaOverride = null): array
     {
         $channelService = app(ChannelService::class);
+        $batchService = app(BatchService::class);
         $batch = $this->startBatch();
 
-        $lastFinished = $this->lastFinishedAssignBatch();
+        $lastFinished = $batchService->getLastFinishedAssignBatch();
 
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
-        $poolVideos = $this->collectPoolVideos($lastFinished);
+        $poolVideos = $batchService->collectPoolVideos($lastFinished);
 
         if ($poolVideos->isEmpty()) {
             $batch->update(['finished_at' => now(), 'stats' => ['assigned' => 0, 'skipped' => 0]]);
