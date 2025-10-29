@@ -93,20 +93,19 @@ class IngestScanner
     private function importCsvForDirectory(Filesystem $inboxDisk): ClipImportResult
     {
         $aggregate = ClipImportResult::empty();
-        foreach ($inboxDisk->allDirectories() as $directory) {
+
+        // Include root ("") + all subdirectories
+        foreach (array_merge([''], $inboxDisk->allDirectories()) as $dir) {
             try {
-                $res = $this->csvService->importCsvForDisk($inboxDisk, $directory);
-                if ($res) {
+                if ($res = $this->csvService->importCsvForDisk($inboxDisk, $dir)) {
                     $aggregate->merge($res);
                 }
             } catch (Throwable $e) {
+                // Log warning and continue on failure
                 $this->log(
-                    "Warnung: CSV-Import für {$directory} fehlgeschlagen ({$e->getMessage()})",
+                    "CSV import failed for {$dir} ({$e->getMessage()})",
                     'warning',
-                    [
-                        'exception' => $e,
-                        'dir' => $directory,
-                    ]
+                    ['exception' => $e, 'dir' => $dir]
                 );
             }
         }
