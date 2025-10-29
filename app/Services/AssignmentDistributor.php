@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enum\BatchTypeEnum;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
-use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
@@ -32,7 +30,7 @@ class AssignmentDistributor
     {
         $channelService = app(ChannelService::class);
         $batchService = app(BatchService::class);
-        $batch = $this->startBatch();
+        $batch = $batchService->startBatch();
 
         $lastFinished = $batchService->getLastFinishedAssignBatch();
 
@@ -118,14 +116,6 @@ class AssignmentDistributor
     }
 
     /* ===================== Helpers ===================== */
-
-    private function startBatch(): Batch
-    {
-        return Batch::query()->create([
-            'type' => BatchTypeEnum::ASSIGN->value,
-            'started_at' => now(),
-        ]);
-    }
 
     /**
      * Stelle sicher, dass alle Videos aus Bundles mitkommen, wenn eines im Pool ist.
