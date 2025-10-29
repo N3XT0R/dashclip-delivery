@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
 use App\Models\Clip;
 use App\Models\Video;
@@ -194,5 +195,79 @@ class PreviewServiceTest extends DatabaseTestCase
         $this->assertGreaterThan(0, $size, 'Generated preview file has zero bytes');
     }
 
+    public function testGeneratePreviewByDiskReturnsCachedUrlWhenPreviewExists(): void
+    {
+        // setup fixture disk
+        $fixtureDir = base_path('tests/Fixtures/Inbox/Videos');
+        $fixtureVideo = $fixtureDir.'/standalone.mp4';
+        $this->assertFileExists($fixtureVideo, 'Fixture video missing');
+
+        $disk = Storage::build([
+            'driver' => 'local',
+            'root' => $fixtureDir,
+        ]);
+
+        // target disk fake
+        Storage::fake('public');
+        config(['preview.default_disk' => 'public']);
+
+        $relativePath = 'standalone.mp4';
+
+        // pre-compute expected path like PathBuilder::forPreviewByHash()
+        $hash = hash_file('sha256', $fixtureVideo);
+        $sub = substr($hash, 0, 2).'/'.substr($hash, 2, 2);
+        $previewPath = sprintf('previews/%s/%s.mp4', $sub, $hash);
+
+        // create a dummy cached preview file
+        $cachedContent = 'EXISTING_PREVIEW';
+        Storage::disk('public')->put($previewPath, $cachedContent);
+
+        // act
+        $url = $this->previewService->generatePreviewByDisk(
+            $disk,
+            $relativePath,
+            id: null,
+            startSec: 1,
+            endSec: 3
+        );
+
+        // assert
+        $this->assertIsString($url);
+        $this->assertStringContainsString($previewPath, $url);
+        $this->assertSame($cachedContent, Storage::disk('public')->get($previewPath));
+
+        // ensure ffmpeg was NOT executed by checking no new files created
+        $allFiles = Storage::disk('public')->allFiles();
+        $this->assertCount(1, $allFiles, 'Expected only cached preview to exist');
+    }
+
+    public function testGeneratePreviewByDiskThrowsPreviewGenerationExceptionOnInvalidInput(): void
+    {
+        $fixtureDir = base_path('tests/Fixtures/Inbox/Videos');
+        $fixtureFile = $fixtureDir.'/notizen.csv';
+        $this->assertFileExists($fixtureFile, 'Fixture CSV missing');
+
+        $disk = Storage::build([
+            'driver' => 'local',
+            'root' => $fixtureDir,
+        ]);
+
+        // fake target disk
+        Storage::fake('public');
+        config(['preview.default_disk' => 'public']);
+
+        $relativePath = 'notizen.csv';
+
+        $this->expectException(PreviewGenerationException::class);
+
+        // act — ffmpeg will fail since it's not a video file
+        $this->previewService->generatePreviewByDisk(
+            $disk,
+            $relativePath,
+            id: null,
+            startSec: 0,
+            endSec: 2
+        );
+    }
 
 }
