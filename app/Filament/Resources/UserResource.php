@@ -24,9 +24,7 @@ class UserResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     protected static string|UnitEnum|null $navigationGroup = 'System';
-
-    protected static ?string $recordTitleAttribute = 'User';
-
+    
     public static function getNavigationBadge(): ?string
     {
         return auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value) ? static::getModel()::count() : null;

@@ -21,9 +21,13 @@ class ActivityResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Activity';
 
     protected static string|UnitEnum|null $navigationGroup = 'System';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['description', 'event', 'subject_type', 'causer.name'];
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -38,7 +42,6 @@ class ActivityResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('Activity')
             ->columns([
                 Tables\Columns\TextColumn::make('log_name')
                     ->searchable(),
