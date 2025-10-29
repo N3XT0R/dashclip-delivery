@@ -18,7 +18,7 @@ use Tests\Helper\FfmpegBinaryFaker;
  * - We create real files under storage_path('app/...') so the default 'local' disk resolves correctly.
  * - We assert DB side-effects (ingest batch, video rows) and on-disk outcomes (files moved).
  */
-final class IngestScanTest extends DatabaseTestCase
+final class IngestScanLegacyTest extends DatabaseTestCase
 {
     /** Sets up a fake ffmpeg binary and returns its path. */
     private function useFakeFfmpegSuccess(): string
