@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\Exceptions\InvalidTimeRangeException;
 use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
 use App\Models\Clip;
@@ -267,6 +268,38 @@ class PreviewServiceTest extends DatabaseTestCase
             id: null,
             startSec: 0,
             endSec: 2
+        );
+    }
+
+    public function testGeneratePreviewByDiskThrowsInvalidTimeRangeExceptionWhenStartAfterEnd(): void
+    {
+        $fixtureDir = base_path('tests/Fixtures/Inbox/Videos');
+        $fixtureVideo = $fixtureDir.'/standalone.mp4';
+        $this->assertFileExists($fixtureVideo, 'Fixture video missing: '.$fixtureVideo);
+
+        // real local source disk
+        $disk = Storage::build([
+            'driver' => 'local',
+            'root' => $fixtureDir,
+        ]);
+
+        // fake target disk
+        Storage::fake('public');
+        config(['preview.default_disk' => 'public']);
+
+        $relativePath = 'standalone.mp4';
+        $startSec = 5;
+        $endSec = 1;
+
+        $this->expectException(InvalidTimeRangeException::class);
+
+        // act — should fail immediately before ffmpeg is called
+        $this->previewService->generatePreviewByDisk(
+            $disk,
+            $relativePath,
+            id: null,
+            startSec: $startSec,
+            endSec: $endSec
         );
     }
 
