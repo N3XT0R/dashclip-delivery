@@ -13,7 +13,18 @@ class Channel extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'creator_name', 'email', 'weight', 'weekly_quota'];
+    protected $fillable = [
+        'name',
+        'creator_name',
+        'email',
+        'weight',
+        'weekly_quota',
+        'is_video_reception_paused',
+    ];
+
+    protected $casts = [
+        'is_video_reception_paused' => 'boolean',
+    ];
 
     public function assignments(): HasMany
     {

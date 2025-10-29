@@ -9,9 +9,11 @@ use App\Filament\Resources\Channels\Pages\ListChannels;
 use App\Models\Channel;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -41,6 +43,8 @@ class ChannelResource extends Resource
             TextInput::make('weekly_quota')
                 ->label('Weekly quota')
                 ->numeric(),
+            Checkbox::make('is_video_reception_paused')
+                ->label('Pause video reception'),
         ]);
     }
 
@@ -51,6 +55,9 @@ class ChannelResource extends Resource
                 TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
+                CheckboxColumn::make('is_video_reception_paused')
+                    ->label('Paused video reception')
+                    ->sortable(),
                 TextColumn::make('creator_name')
                     ->label('Creator')
                     ->sortable()
