@@ -35,10 +35,7 @@ class UnzipPending extends Command
      */
     public function handle(): int
     {
-        // Optionally set a specific cache store (e.g., redis)
-        if ($store = (string)($this->option('lock-store') ?? '')) {
-            $this->setLockStore($store);
-        }
+        $this->applyLockStore($this->option('lock-store'));
 
         $dir = rtrim((string)$this->option('inbox'), '/');
         $ttl = (int)$this->option('ttl');
