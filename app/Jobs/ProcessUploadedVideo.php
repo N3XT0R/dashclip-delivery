@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\DTO\FileInfoDto;
-use App\Facades\DynamicStorage;
 use App\Models\User;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
@@ -23,6 +22,7 @@ class ProcessUploadedVideo implements ShouldQueue
         public User $user,
         public FileInfoDto $fileInfoDto,
         public string $targetDisk,
+        public string $sourceDisk,
         public int $start,
         public int $end,
         public ?string $submittedBy,
@@ -41,11 +41,13 @@ class ProcessUploadedVideo implements ShouldQueue
     public function handle(IngestScanner $scanner): void
     {
         $fileInfoDto = $this->fileInfoDto;
-        $disk = \Storage::disk($this->targetDisk);
+        $disk = \Storage::disk($this->sourceDisk);
         $scanner->processFile($disk, $fileInfoDto, $this->targetDisk);
 
-        $hash = DynamicStorage::getHashForFilePath($disk, $fileInfoDto->path);
-        $video = Video::query()->where('hash', $hash)->first();
+        $video = Video::query()
+            ->where('original_name', $fileInfoDto->basename)
+            ->orderByDesc('created_at')
+            ->first();
 
         if ($video) {
             activity()

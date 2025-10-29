@@ -20,6 +20,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
 
     public function testJobWritesActivityAndCreatesClip(): void
     {
+        \Storage::fake('tmp');
         // Arrange
         $user = User::factory()->create();
         $fileInfo = new FileInfoDto('standalone.mp4', 'standalone.mp4', 'mp4');
@@ -44,6 +45,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         $job = new ProcessUploadedVideo(
             $user,
             $fileInfo,
+            'tmp',
             'local',
             0,
             10,
