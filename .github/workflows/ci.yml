@@ -23,10 +23,14 @@ jobs:
           tools: composer, phpunit, xdebug
           coverage: xdebug
       # Install system dependencies (optional but ensures codecs are available)
-      - name: Install system packages
+      - name: Ensure ffmpeg is installed and expose binary paths
         run: |
-           sudo apt-get update
-           sudo apt-get install -y libavcodec-extra
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg libavcodec-extra
+          which ffmpeg
+          which ffprobe
+          echo "FFMPEG_BINARIES=$(which ffmpeg)" >> $GITHUB_ENV
+          echo "FFPROBE_BINARIES=$(which ffprobe)" >> $GITHUB_ENV
 
       # install ffmpeg system package
       - name: Set up FFmpeg
@@ -41,6 +45,9 @@ jobs:
           composer-options: --no-progress --no-interaction --prefer-dist
 
       - name: Run PHPUnit Tests
+        env:
+          FFMPEG_BINARIES: ${{ env.FFMPEG_BINARIES }}
+          FFPROBE_BINARIES: ${{ env.FFPROBE_BINARIES }}
         run: vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage/clover.xml
 
       - uses: qltysh/qlty-action/coverage@v1
