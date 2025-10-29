@@ -13,7 +13,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\CheckboxColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -52,12 +52,13 @@ class ChannelResource extends Resource
     {
         return $table
             ->columns([
+                IconColumn::make('is_video_reception_paused')
+                    ->label('Paused video reception')
+                    ->boolean()
+                    ->sortable(),
                 TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                CheckboxColumn::make('is_video_reception_paused')
-                    ->label('Paused video reception')
-                    ->sortable(),
                 TextColumn::make('creator_name')
                     ->label('Creator')
                     ->sortable()
