@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\DTO\FileInfoDto;
+use App\Facades\Cfg;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -176,6 +177,7 @@ class VideoUpload extends Page implements HasForms
         $this->form->validate();
         $state = $this->form->getState();
         $user = Auth::user();
+        $targetDisk = Cfg::get('default_file_system', 'default', 'local');
 
         foreach ($state['clips'] ?? [] as $clip) {
             $file = $clip['file'] ?? '';
@@ -188,7 +190,7 @@ class VideoUpload extends Page implements HasForms
             ProcessUploadedVideo::dispatch(
                 user: $user,
                 fileInfoDto: $fileInfoDto,
-                targetDisk: 'public',
+                targetDisk: $targetDisk,
                 start: (int)($clip['start_sec'] ?? 0),
                 end: (int)($clip['end_sec'] ?? 0),
                 submittedBy: $user?->display_name,
