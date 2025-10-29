@@ -9,6 +9,7 @@ use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Storage;
 use Tests\DatabaseTestCase;
 
@@ -25,12 +26,33 @@ class IngestScannerTest extends DatabaseTestCase
     public function testScanInboxReturnsNotEmptyIngestStats(): void
     {
         Storage::fake('local');
-        $inboxPath = base_path('tests/Fixtures/Inbox/Videos2');
-        $ingestStats = $this->ingestScanner->scanDisk($inboxPath, 'local');
+        $inboxPath = base_path('tests/Fixtures/Inbox/Videos');
+        $inboxDisk = DynamicStorage::fromPath($inboxPath);
+        $tmpDisk = DynamicStorage::fromPath(sys_get_temp_dir());
+        $tmpDisk->deleteDirectory('');
+        $tmpDisk->makeDirectory('');
+
+        $this->copyDisk($inboxDisk, $tmpDisk);
+        $ingestStats = $this->ingestScanner->scanDisk($tmpDisk->path(''), 'local');
         $this->assertNotNull($ingestStats);
         $stats = $ingestStats->toArray();
         $this->assertSame(3, $ingestStats->total());
         $this->assertSame(['new' => 1, 'dups' => 2, 'err' => 0], $stats);
+    }
+
+    /**
+     * Recursively copies all files from one Laravel disk to another.
+     */
+    private function copyDisk(Filesystem $source, Filesystem $target): void
+    {
+        foreach ($source->allFiles() as $path) {
+            $target->put($path, $source->get($path));
+        }
+
+        // Optional: copy empty directories as well
+        foreach ($source->allDirectories() as $dir) {
+            $target->makeDirectory($dir);
+        }
     }
 
     /**

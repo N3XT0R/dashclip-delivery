@@ -1,4 +1,0 @@
-﻿filename(Genauer Dateiname im Ordner);start(MM:SS oder leer);end(MM:SS oder leer);note(Freitext/Anmerkung);bundle(Gemeinsame ID für zusammenhängende Videos);role(F=Front,R=Rear,etc.);submitted_by(Einsender/Quelle)
-example_F.mp4;00:00;00:21;Etwas super spannendes ;example; F;Max Mustermann
-example_R.mp4;00:00;00:21;etwas kurioses hinten;example;R;Max Mustermann
-standalone.mp4;00:05;00:15;hier passiert was;;F;Maxine Musterfrau
