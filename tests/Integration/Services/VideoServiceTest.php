@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\DTO\FileInfoDto;
+use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Services\VideoService;
@@ -51,5 +53,35 @@ class VideoServiceTest extends DatabaseTestCase
         $fetchedClip = $this->videoService->getClipForVideo($video, 5, 15);
         self::assertNotNull($fetchedClip);
         self::assertSame($clip->id, $fetchedClip->id);
+    }
+
+
+    public function testCreateVideoByDiskAndFileInfoDtoCreatesVideo(): void
+    {
+        $inboxPath = base_path('tests/Fixtures/Inbox');
+        $diskName = 'inbox';
+        $disk = DynamicStorage::fromPath($inboxPath);
+        $fileInfoDtos = DynamicStorage::listFiles($disk);
+
+        /** @var FileInfoDto $file */
+        $file = $fileInfoDtos->first();
+        self::assertInstanceOf(FileInfoDto::class, $file);
+
+        // Act
+        $video = $this->videoService->createVideoBydDiskAndFileInfoDto($diskName, $disk, $file);
+
+        // Assert
+        self::assertNotEmpty($video->hash);
+        self::assertSame($file->extension, $video->ext);
+        self::assertSame($file->path, $video->path);
+        self::assertSame($diskName, $video->disk);
+        self::assertSame($file->basename, $video->original_name);
+        self::assertNull($video->meta);
+
+        $this->assertDatabaseHas('videos', [
+            'hash' => $video->hash,
+            'path' => $file->path,
+            'disk' => $diskName,
+        ]);
     }
 }
