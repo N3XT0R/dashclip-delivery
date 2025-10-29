@@ -36,7 +36,7 @@ readonly class AssignmentDistributor
         $lastFinished = $this->batchService->getLastFinishedAssignBatch();
 
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
-        $poolVideos = $this->collectPoolVideos($lastFinished);
+        $poolVideos = $this->batchService->collectPoolVideos($lastFinished);
 
         if ($poolVideos->isEmpty()) {
             $batch->update(['finished_at' => now(), 'stats' => ['assigned' => 0, 'skipped' => 0]]);
