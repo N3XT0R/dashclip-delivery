@@ -12,18 +12,11 @@ use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Video;
-use App\Repository\ChannelRepository;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
-readonly class AssignmentDistributor
+class AssignmentDistributor
 {
-
-    public function __construct(
-        protected ChannelRepository $channelRepository,
-        protected BatchService $batchService,
-    ) {
-    }
 
     /**
      * Distribute new and requeueable videos across channels.
@@ -34,7 +27,8 @@ readonly class AssignmentDistributor
     public function distribute(?int $quotaOverride = null): array
     {
         $batch = $this->startBatch();
-        $lastFinished = $this->batchService->getLastFinishedAssignBatch();
+
+        $lastFinished = $this->lastFinishedAssignBatch();
 
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
         $poolVideos = $this->collectPoolVideos($lastFinished);
@@ -127,6 +121,15 @@ readonly class AssignmentDistributor
         ]);
     }
 
+    private function lastFinishedAssignBatch(): ?Batch
+    {
+        return Batch::query()
+            ->where('type', BatchTypeEnum::ASSIGN->value)
+            ->whereNotNull('finished_at')
+            ->orderByDesc('finished_at') // semantisch korrekter als latest() auf created_at
+            ->first();
+    }
+
     /**
      * Sammle Videos für den Verteilungspool:
      *  - unzugewiesene EVER
@@ -198,7 +201,8 @@ readonly class AssignmentDistributor
      */
     private function prepareChannelsAndPool(?int $quotaOverride): array
     {
-        $channels = $this->channelRepository->getActiveChannels();
+        $channels = Channel::query()->orderBy('id')->get();
+
         $rotationPool = collect();
         foreach ($channels as $channel) {
             $rotationPool = $rotationPool->merge(
