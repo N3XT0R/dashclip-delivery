@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
+use App\Facades\Cfg;
 use App\Models\Batch;
 use App\Models\Video;
 use Illuminate\Console\Command;
 use Tests\DatabaseTestCase;
 use Tests\Helper\FfmpegBinaryFaker;
-use App\Facades\Cfg;
 
 /**
- * Feature tests for the "ingest:scan" console command with the real IngestScanner.
+ * Feature tests for the "ingest:scan-legacy" console command with the real IngestScanner.
  *
  * - No mocking/faking of services; we only point ffmpeg to a tiny shell script that "succeeds".
  * - We create real files under storage_path('app/...') so the default 'local' disk resolves correctly.
@@ -58,7 +58,7 @@ final class IngestScanTest extends DatabaseTestCase
         $this->assertNull(Batch::query()->where('type', 'ingest')->latest('id')->first());
 
         // Act
-        $this->artisan("ingest:scan --inbox={$inboxAbs} --disk=local")
+        $this->artisan("ingest:scan-legacy --inbox={$inboxAbs} --disk=local")
             ->expectsOutput('started...')
             ->expectsOutputToContain('Ingest done.')
             ->assertExitCode(Command::SUCCESS);
@@ -95,7 +95,6 @@ final class IngestScanTest extends DatabaseTestCase
         $destAbs = app('filesystem')->disk('local')->path($video->path);
         $this->assertFileExists($destAbs);
         $this->assertGreaterThan(0, filesize($destAbs) ?: 0);
-
     }
 
     /** When another ingest job holds the lock, the command aborts gracefully. */
@@ -106,7 +105,7 @@ final class IngestScanTest extends DatabaseTestCase
 
         $inbox = storage_path('app/inbox_'.bin2hex(random_bytes(4)));
 
-        $this->artisan("ingest:scan --inbox={$inbox} --disk=local")
+        $this->artisan("ingest:scan-legacy --inbox={$inbox} --disk=local")
             ->expectsOutput('Another ingest task is running. Abort.')
             ->assertExitCode(Command::SUCCESS);
 
@@ -125,7 +124,7 @@ final class IngestScanTest extends DatabaseTestCase
         [, $fn2] = $this->makeInboxFile($inboxRel, 'b.mp4', 'SAMEBYTES'); // identical content → same hash
         $inboxAbs = rtrim(storage_path('app/'.$inboxRel), '/');
 
-        $this->artisan("ingest:scan --inbox={$inboxAbs} --disk=local")
+        $this->artisan("ingest:scan-legacy --inbox={$inboxAbs} --disk=local")
             ->assertExitCode(Command::SUCCESS);
 
         $batch = Batch::query()->where('type', 'ingest')->latest('id')->first();
@@ -146,7 +145,7 @@ final class IngestScanTest extends DatabaseTestCase
     public function testFailsWhenInboxDoesNotExist(): void
     {
         $missing = storage_path('app/not_there_'.bin2hex(random_bytes(4)));
-        $this->artisan("ingest:scan --inbox={$missing} --disk=local")
+        $this->artisan("ingest:scan-legacy --inbox={$missing} --disk=local")
             ->expectsOutputToContain('Inbox fehlt:')
             ->assertExitCode(Command::FAILURE);
     }
