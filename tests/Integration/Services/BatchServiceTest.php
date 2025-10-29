@@ -98,4 +98,22 @@ class BatchServiceTest extends DatabaseTestCase
         $this->assertNotNull($batch->finished_at);
     }
 
+    public function testGetAssignBatchByIdReturnsBatch(): void
+    {
+        $batch = Batch::factory()->type(BatchTypeEnum::ASSIGN->value)
+            ->create(['finished_at' => now()]);
+
+        $gotBatch = $this->batchService->getAssignBatchById($batch->getKey());
+        $this->assertEquals(BatchTypeEnum::ASSIGN->value, $gotBatch->type);
+        $this->assertSame($batch->getKey(), $gotBatch->getKey());
+    }
+
+    public function testGetAssignBatchByIdThrowsExceptionWhenNotFound(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Kein Assign-Batch gefunden.');
+
+        $this->batchService->getAssignBatchById(9999);
+    }
+
 }
