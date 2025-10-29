@@ -6,6 +6,7 @@ namespace Services\Ingest;
 
 use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;
+use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
 use Tests\DatabaseTestCase;
 
@@ -48,5 +49,16 @@ class IngestScannerTest extends DatabaseTestCase
         $importResult = $this->ingestScanner->processFile($disk, $fileInfoDto, 'local');
         $this->assertNotNull($importResult);
         self::assertSame('NEW', $importResult->name);
+        // Assert: video created
+        $this->assertDatabaseCount('videos', 1);
+        $video = Video::first();
+        $this->assertNotNull($video);
+        $this->assertStringEndsWith('.mp4', $video->path);
+        $this->assertSame('local', $video->disk);
+        $this->assertNotEmpty($video->hash);
+
+        // Assert: preview was generated
+        $this->assertNotNull($video->preview_url);
+        $this->assertStringEndsWith('.mp4', $video->preview_url);
     }
 }
