@@ -150,4 +150,20 @@ trait LockJobTrait
 
         return (int)$result;
     }
+
+    /**
+     * Optionally set a specific lock store (e.g. redis, file, database).
+     *
+     * @param  string|null  $storeName
+     * @return void
+     */
+    public function applyLockStore(?string $storeName): void
+    {
+        $storeName = trim((string)$storeName);
+
+        if ($storeName !== '') {
+            // Only set if a value is actually provided
+            $this->setLockStore($storeName);
+        }
+    }
 }

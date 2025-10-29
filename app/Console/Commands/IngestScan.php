@@ -38,10 +38,7 @@ class IngestScan extends Command
      */
     public function handle(): int
     {
-        if ($store = (string)($this->option('lock-store') ?? '')) {
-            $this->setLockStore($store);
-        }
-
+        $this->applyLockStore($this->option('lock-store'));
         $inbox = rtrim((string)$this->option('inbox'), '/');
         $disk = (string)($this->option('disk') ?: Cfg::get('default_file_system', 'default', 'dropbox'));
         $ttl = (int)$this->option('ttl');
