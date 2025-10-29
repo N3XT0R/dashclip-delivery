@@ -8,7 +8,7 @@ use App\Models\Video;
 use App\Repository\ClipRepository;
 use Illuminate\Support\Collection;
 
-class BundleService
+readonly class BundleService
 {
 
     public function __construct(private ClipRepository $clipRepository)
