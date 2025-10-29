@@ -7,7 +7,6 @@ use App\Filament\Resources\Channels\Pages\CreateChannel;
 use App\Filament\Resources\Channels\Pages\EditChannel;
 use App\Filament\Resources\Channels\Pages\ListChannels;
 use App\Models\Channel;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
@@ -73,10 +72,6 @@ class ChannelResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
-            ])
-            ->headerActions([
-                CreateAction::make()
-                    ->icon('heroicon-o-plus-circle'),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
