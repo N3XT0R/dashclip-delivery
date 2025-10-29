@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\DTO\FileInfoDto;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -178,15 +179,16 @@ class VideoUpload extends Page implements HasForms
 
         foreach ($state['clips'] ?? [] as $clip) {
             $file = $clip['file'] ?? '';
-            $disk = \Storage::disk('local');
-            $ext = Str::afterLast($file, '.');
-            $path = $disk->path($file);
+            $fileInfoDto = new FileInfoDto(
+                $file,
+                Str::afterLast('/', $file),
+                Str::afterLast($file, '.')
+            );
 
             ProcessUploadedVideo::dispatch(
                 user: $user,
-                path: $path,
-                originalName: $clip['original_name'],
-                ext: $ext,
+                fileInfoDto: $fileInfoDto,
+                targetDisk: 'public',
                 start: (int)($clip['start_sec'] ?? 0),
                 end: (int)($clip['end_sec'] ?? 0),
                 submittedBy: $user?->display_name,

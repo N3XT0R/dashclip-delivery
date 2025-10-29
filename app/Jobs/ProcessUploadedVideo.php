@@ -2,10 +2,12 @@
 
 namespace App\Jobs;
 
+use App\DTO\FileInfoDto;
 use App\Facades\Cfg;
+use App\Facades\DynamicStorage;
 use App\Models\User;
 use App\Models\Video;
-use App\Services\IngestScanner;
+use App\Services\Ingest\IngestScanner;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,9 +22,8 @@ class ProcessUploadedVideo implements ShouldQueue
 
     public function __construct(
         public User $user,
-        public string $path,
-        public string $originalName,
-        public string $ext,
+        public FileInfoDto $fileInfoDto,
+        public string $targetDisk,
         public int $start,
         public int $end,
         public ?string $submittedBy,
@@ -30,15 +31,16 @@ class ProcessUploadedVideo implements ShouldQueue
         public ?string $bundleKey = null,
         public ?string $role = null,
     ) {
-        $this->hash = hash_file('sha256', $path);
     }
 
     public function handle(IngestScanner $scanner): void
     {
+        $fileInfoDto = $this->fileInfoDto;
         $disk = Cfg::get('default_file_system', 'default', 'dropbox');
-        $scanner->processFile($this->path, $this->ext, $this->originalName, $disk);
+        $scanner->processFile($disk, $fileInfoDto, $this->targetDisk);
 
-        $video = Video::query()->where('hash', $this->hash)->first();
+        $hash = DynamicStorage::getHashForFilePath($disk, $fileInfoDto->path);
+        $video = Video::query()->where('hash', $hash)->first();
 
         if ($video) {
             activity()

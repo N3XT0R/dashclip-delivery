@@ -31,12 +31,11 @@ final class VideoUploadTest extends DatabaseTestCase
      */
     public function testSubmitDispatchesJobForEachClip(): void
     {
-        $this->markTestSkipped('must be refactored');
-        return;
         Bus::fake();
         $disk = Storage::fake('public');
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
+        $disk->makeDirectory('uploads/tmp/');
 
         $disk->put('uploads/tmp/file1.mp4', 'a');
         $disk->put('uploads/tmp/file2.mov', 'b');
@@ -107,27 +106,27 @@ final class VideoUploadTest extends DatabaseTestCase
         Bus::assertDispatchedTimes(ProcessUploadedVideo::class, 2);
         Bus::assertDispatched(ProcessUploadedVideo::class,
             static function (ProcessUploadedVideo $job) use ($user, $path1) {
-                return $job->originalName === 'one.mp4'
-                    && $job->ext === 'mp4'
+                return $job->fileInfoDto->basename === 'one.mp4'
+                    && $job->fileInfoDto->extension === 'mp4'
                     && $job->start === 1
                     && $job->end === 3
                     && $job->note === 'first'
                     && $job->bundleKey === 'B1'
                     && $job->role === 'R1'
                     && $job->submittedBy === $user->display_name
-                    && str_ends_with($job->path, $path1);
+                    && str_ends_with($job->fileInfoDto->path, $path1);
             });
         Bus::assertDispatched(ProcessUploadedVideo::class,
             static function (ProcessUploadedVideo $job) use ($user, $path2) {
-                return $job->originalName === 'two.mov'
-                    && $job->ext === 'mov'
+                return $job->fileInfoDto->basename === 'two.mov'
+                    && $job->fileInfoDto->extension === 'mov'
                     && $job->start === 2
                     && $job->end === 4
                     && $job->note === 'second'
                     && $job->bundleKey === 'B2'
                     && $job->role === 'R2'
                     && $job->submittedBy === $user->display_name
-                    && str_ends_with($job->path, $path2);
+                    && str_ends_with($job->fileInfoDto->path, $path2);
             });
     }
 
