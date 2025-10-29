@@ -9,6 +9,7 @@ use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
+use Storage;
 use Tests\DatabaseTestCase;
 
 class IngestScannerTest extends DatabaseTestCase
@@ -23,8 +24,8 @@ class IngestScannerTest extends DatabaseTestCase
 
     public function testScanInboxReturnsNotEmptyIngestStats(): void
     {
-        \Storage::fake('local');
-        $inboxPath = base_path('tests/Fixtures/Inbox/Videos');
+        Storage::fake('local');
+        $inboxPath = base_path('tests/Fixtures/Inbox/Videos2');
         $ingestStats = $this->ingestScanner->scanDisk($inboxPath, 'local');
         $this->assertNotNull($ingestStats);
         $stats = $ingestStats->toArray();
@@ -37,7 +38,7 @@ class IngestScannerTest extends DatabaseTestCase
      */
     public function testProcessFileReturnsImportResultWithNew(): void
     {
-        \Storage::fake('local');
+        Storage::fake('local');
         $inboxPath = base_path('tests/Fixtures/Inbox/Videos/');
         $disk = DynamicStorage::fromPath($inboxPath);
         $fileInfoDto = new FileInfoDto(
