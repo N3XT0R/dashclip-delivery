@@ -41,11 +41,6 @@ class UnzipPending extends Command
         $ttl = (int)$this->option('ttl');
         $wait = (int)$this->option('wait');
 
-
-        $dir = rtrim((string)$this->option('inbox'), '/');
-        $ttl = (int)$this->option('ttl');
-        $wait = (int)$this->option('wait');
-
         return $this->runWithLockFlow(
             fn(Lock $lock) => $this->runExtraction($dir),
             $ttl,
