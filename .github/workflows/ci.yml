@@ -22,6 +22,11 @@ jobs:
           php-version: '8.4'
           tools: composer, phpunit, xdebug
           coverage: xdebug
+      # Install system dependencies (optional but ensures codecs are available)
+      - name: Install system packages
+        run: |
+           sudo apt-get update
+           sudo apt-get install -y libavcodec-extra
 
       # install ffmpeg system package
       - name: Set up FFmpeg
