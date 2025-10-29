@@ -76,16 +76,16 @@ final class PreviewService
         ?int $startSec = 0,
         ?int $endSec = null
     ): string {
-        if (!$this->isValidRange($startSec, $endSec)) {
+        if ($endSec !== null && !$this->isValidRange($startSec, $endSec)) {
             throw new InvalidTimeRangeException($startSec, $endSec);
         }
 
         $targetDisk = config('preview.default_disk', 'public');
-        $duration = $endSec - $startSec;
+        $duration = $endSec !== null ? $endSec - $startSec : null;
 
         $previewDisk = Storage::disk($targetDisk);
 
-        if ($id) {
+        if ($id && $endSec) {
             $previewPath = PathBuilder::forPreview($id, $startSec, $endSec);
         } else {
             $fileHash = DynamicStorage::getHashForFilePath($disk, $relativePath);
@@ -115,7 +115,11 @@ final class PreviewService
             FFMpeg::fromFilesystem($disk)
                 ->open($relativePath)
                 ->addFilter(function (VideoFilters $filters) use ($startSec, $duration): void {
-                    $filters->clip(TimeCode::fromSeconds($startSec), TimeCode::fromSeconds($duration));
+                    if ($duration === null) {
+                        $filters->clip(TimeCode::fromSeconds($startSec));
+                    } else {
+                        $filters->clip(TimeCode::fromSeconds($startSec), TimeCode::fromSeconds($duration));
+                    }
                 })
                 ->export()
                 ->toDisk($targetDisk)
