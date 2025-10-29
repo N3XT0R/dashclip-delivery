@@ -60,6 +60,15 @@ final class PreviewService
         return $this->generate($video, $start, $end);
     }
 
+    /**
+     * Generate a video preview for the given time range.
+     * @param  Filesystem  $disk
+     * @param  string  $relativePath
+     * @param  int|null  $id
+     * @param  int|null  $startSec
+     * @param  int|null  $endSec
+     * @return string
+     */
     public function generatePreviewByDisk(
         Filesystem $disk,
         string $relativePath,
