@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enum\BatchTypeEnum;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
+use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
@@ -20,7 +22,6 @@ readonly class AssignmentDistributor
     public function __construct(
         protected ChannelRepository $channelRepository,
         protected BatchService $batchService,
-        protected BundleService $bundleService,
     ) {
     }
 
@@ -32,11 +33,11 @@ readonly class AssignmentDistributor
      */
     public function distribute(?int $quotaOverride = null): array
     {
-        $batch = $this->batchService->startBatch();
+        $batch = $this->startBatch();
         $lastFinished = $this->batchService->getLastFinishedAssignBatch();
 
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
-        $poolVideos = $this->batchService->collectPoolVideos($lastFinished);
+        $poolVideos = $this->collectPoolVideos($lastFinished);
 
         if ($poolVideos->isEmpty()) {
             $batch->update(['finished_at' => now(), 'stats' => ['assigned' => 0, 'skipped' => 0]]);
@@ -44,7 +45,7 @@ readonly class AssignmentDistributor
         }
 
         // 2) Bundles vollständig machen
-        $poolVideos = $this->bundleService->expand($poolVideos)->values();
+        $poolVideos = $this->expandBundles($poolVideos)->values();
 
         // 3) Kanäle + Rotationspool + Quotas
         [$channels, $rotationPool, $quota] = $this->prepareChannelsAndPool($quotaOverride);
@@ -117,6 +118,75 @@ readonly class AssignmentDistributor
     }
 
     /* ===================== Helpers ===================== */
+
+    private function startBatch(): Batch
+    {
+        return Batch::query()->create([
+            'type' => BatchTypeEnum::ASSIGN->value,
+            'started_at' => now(),
+        ]);
+    }
+
+    /**
+     * Sammle Videos für den Verteilungspool:
+     *  - unzugewiesene EVER
+     *  - oder neu seit letztem fertigen Assign-Batch
+     *  - plus requeue-fähige (expired/returned/...)
+     */
+    private function collectPoolVideos(?Batch $lastFinished): Collection
+    {
+        // Unassigned EVER ODER neuer als letzter Batch
+        $newOrUnassigned = Video::query()
+            ->whereDoesntHave('assignments')
+            ->when($lastFinished, function ($q) use ($lastFinished) {
+                $q->orWhere('created_at', '>', $lastFinished->finished_at);
+            })
+            ->orderBy('id')
+            ->get();
+
+        // Requeue-Fälle (z. B. expired)
+        $requeueIds = Assignment::query()
+            ->whereIn('status', StatusEnum::getRequeueStatuses())
+            ->pluck('video_id')
+            ->unique();
+
+        $requeueVideos = $requeueIds->isNotEmpty()
+            ? Video::query()->whereIn('id', $requeueIds)->get()
+            : collect();
+
+        return $newOrUnassigned->concat($requeueVideos)->unique('id');
+    }
+
+    /**
+     * Stelle sicher, dass alle Videos aus Bundles mitkommen, wenn eines im Pool ist.
+     */
+    private function expandBundles(Collection $poolVideos): Collection
+    {
+        $videoIds = $poolVideos->pluck('id');
+
+        $bundleKeys = Clip::query()
+            ->whereIn('video_id', $videoIds)
+            ->whereNotNull('bundle_key')
+            ->pluck('bundle_key')
+            ->unique();
+
+        if ($bundleKeys->isEmpty()) {
+            return $poolVideos;
+        }
+
+        $bundleVideoIds = Clip::query()
+            ->whereIn('bundle_key', $bundleKeys)
+            ->pluck('video_id')
+            ->unique();
+
+        if ($bundleVideoIds->isEmpty()) {
+            return $poolVideos;
+        }
+
+        $bundleVideos = Video::query()->whereIn('id', $bundleVideoIds)->get();
+
+        return $poolVideos->concat($bundleVideos)->unique('id');
+    }
 
     /**
      * Liefert:
