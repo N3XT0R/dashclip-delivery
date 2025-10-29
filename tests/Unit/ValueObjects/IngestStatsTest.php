@@ -108,4 +108,13 @@ class IngestStatsTest extends TestCase
         self::assertSame(8, $stats->getDups());
         self::assertSame(9, $stats->getErr());
     }
+
+    public function testToStringFormatsOutputCorrectly(): void
+    {
+        $stats = IngestStats::fromArray(['new' => 3, 'dups' => 1, 'err' => 2]);
+        $expected = 'Neu: 3 | Doppelt: 1 | Fehler: 2';
+
+        self::assertSame($expected, (string)$stats);
+    }
+
 }
