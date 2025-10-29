@@ -6,6 +6,7 @@ namespace Services\Ingest;
 
 use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;
+use App\Models\Clip;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
 use Tests\DatabaseTestCase;
@@ -62,5 +63,7 @@ class IngestScannerTest extends DatabaseTestCase
         $this->assertStringEndsWith('.mp4', $video->preview_url);
 
         $this->assertDatabaseCount('clips', 1);
+        $clip = Clip::first();
+        $this->assertSame($video->id, $clip->video_id);
     }
 }
