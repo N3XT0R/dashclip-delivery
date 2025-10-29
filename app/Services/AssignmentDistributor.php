@@ -20,6 +20,7 @@ readonly class AssignmentDistributor
     public function __construct(
         protected ChannelRepository $channelRepository,
         protected BatchService $batchService,
+        protected BundleService $bundleService,
     ) {
     }
 
@@ -43,7 +44,7 @@ readonly class AssignmentDistributor
         }
 
         // 2) Bundles vollständig machen
-        $poolVideos = $this->expandBundles($poolVideos)->values();
+        $poolVideos = $this->bundleService->expand($poolVideos)->values();
 
         // 3) Kanäle + Rotationspool + Quotas
         [$channels, $rotationPool, $quota] = $this->prepareChannelsAndPool($quotaOverride);
@@ -116,37 +117,6 @@ readonly class AssignmentDistributor
     }
 
     /* ===================== Helpers ===================== */
-
-    /**
-     * Stelle sicher, dass alle Videos aus Bundles mitkommen, wenn eines im Pool ist.
-     */
-    private function expandBundles(Collection $poolVideos): Collection
-    {
-        $videoIds = $poolVideos->pluck('id');
-
-        $bundleKeys = Clip::query()
-            ->whereIn('video_id', $videoIds)
-            ->whereNotNull('bundle_key')
-            ->pluck('bundle_key')
-            ->unique();
-
-        if ($bundleKeys->isEmpty()) {
-            return $poolVideos;
-        }
-
-        $bundleVideoIds = Clip::query()
-            ->whereIn('bundle_key', $bundleKeys)
-            ->pluck('video_id')
-            ->unique();
-
-        if ($bundleVideoIds->isEmpty()) {
-            return $poolVideos;
-        }
-
-        $bundleVideos = Video::query()->whereIn('id', $bundleVideoIds)->get();
-
-        return $poolVideos->concat($bundleVideos)->unique('id');
-    }
 
     /**
      * Liefert:
