@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\DTO\FileInfoDto;
-use App\Facades\Cfg;
 use App\Facades\DynamicStorage;
 use App\Models\User;
 use App\Models\Video;
@@ -42,7 +41,7 @@ class ProcessUploadedVideo implements ShouldQueue
     public function handle(IngestScanner $scanner): void
     {
         $fileInfoDto = $this->fileInfoDto;
-        $disk = Cfg::get('default_file_system', 'default', 'dropbox');
+        $disk = \Storage::disk($this->targetDisk);
         $scanner->processFile($disk, $fileInfoDto, $this->targetDisk);
 
         $hash = DynamicStorage::getHashForFilePath($disk, $fileInfoDto->path);

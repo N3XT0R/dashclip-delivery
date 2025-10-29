@@ -12,7 +12,6 @@ use App\Models\Activity;
 use App\Models\User;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Mockery;
 use Tests\DatabaseTestCase;
 
@@ -35,7 +34,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         // Mock IngestScanner, so processFile does nothing
         $scannerMock = Mockery::mock(IngestScanner::class);
         $scannerMock->shouldReceive('processFile')
-            ->withArgs(function (Filesystem $inboxDisk, FileInfoDto $file, string $diskName) {
+            ->withArgs(function ($inboxDisk, $file, $diskName) {
                 return true;
             })
             ->andReturn(IngestResult::NEW);
