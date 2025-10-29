@@ -41,24 +41,17 @@ class UnzipPending extends Command
         $ttl = (int)$this->option('ttl');
         $wait = (int)$this->option('wait');
 
-        // BLOCKING mode: wait up to --wait seconds for the lock
-        if ($wait > 0) {
-            return (int)$this->blockWithLock(function (Lock $lock) use ($dir) {
-                return $this->runExtraction($dir);
-            }, $wait, $ttl);
-        }
 
-        // NON-BLOCKING mode: try to acquire the lock immediately; bail out if taken
-        $result = $this->tryWithLock(function (Lock $lock) use ($dir) {
-            return $this->runExtraction($dir);
-        }, $ttl);
+        $dir = rtrim((string)$this->option('inbox'), '/');
+        $ttl = (int)$this->option('ttl');
+        $wait = (int)$this->option('wait');
 
-        if ($result === null) {
-            $this->info('Another ingest task is running. Abort.');
-            return self::SUCCESS;
-        }
-
-        return (int)$result;
+        return $this->runWithLockFlow(
+            fn(Lock $lock) => $this->runExtraction($dir),
+            $ttl,
+            $wait,
+            'Another ingest task is running. Abort.'
+        );
     }
 
     /**
