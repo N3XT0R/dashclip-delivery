@@ -12,7 +12,6 @@ use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Video;
-use App\Repository\ChannelRepository;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
@@ -31,6 +30,7 @@ class AssignmentDistributor
      */
     public function distribute(?int $quotaOverride = null): array
     {
+        $channelService = app(ChannelService::class);
         $batch = $this->startBatch();
 
         $lastFinished = $this->lastFinishedAssignBatch();
@@ -47,7 +47,7 @@ class AssignmentDistributor
         $poolVideos = $this->expandBundles($poolVideos)->values();
 
         // 3) Kanäle + Rotationspool + Quotas
-        [$channels, $rotationPool, $quota] = $this->prepareChannelsAndPool($quotaOverride);
+        [$channels, $rotationPool, $quota] = $channelService->prepareChannelsAndPool($quotaOverride);
 
         if ($channels->isEmpty()) {
             $batch->update(['finished_at' => now(), 'stats' => ['assigned' => 0, 'skipped' => 0]]);
@@ -194,33 +194,6 @@ class AssignmentDistributor
         $bundleVideos = Video::query()->whereIn('id', $bundleVideoIds)->get();
 
         return $poolVideos->concat($bundleVideos)->unique('id');
-    }
-
-    /**
-     * Liefert:
-     *  - sortierte Kanalliste
-     *  - Rotationspool (Gewichtung über "weight")
-     *  - Quota je Kanal
-     *
-     * @return array{0: Collection<Channel>, 1: Collection<Channel>, 2: array<int,int>}
-     */
-    private function prepareChannelsAndPool(?int $quotaOverride): array
-    {
-        $channels = app(ChannelRepository::class)->getActiveChannels();
-
-        $rotationPool = collect();
-        foreach ($channels as $channel) {
-            $rotationPool = $rotationPool->merge(
-                array_fill(0, max(1, (int)$channel->weight), $channel)
-            );
-        }
-
-        /** @var array<int,int> $quota */
-        $quota = $channels
-            ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
-            ->all();
-
-        return [$channels, $rotationPool, $quota];
     }
 
     /**
