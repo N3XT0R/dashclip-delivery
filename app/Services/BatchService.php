@@ -87,6 +87,14 @@ class BatchService
     }
 
 
+    /**
+     * Collect videos for the distribution pool:
+     *  - unassigned videos (ever)
+     *  - or newly added since the last completed assign batch
+     *  - plus re-queueable ones (expired / returned / etc.)
+     * @param  Batch|null  $lastFinished
+     * @return Collection
+     */
     public function collectPoolVideos(?Batch $lastFinished): Collection
     {
         // Unassigned EVER ODER neuer als letzter Batch

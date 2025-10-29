@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
-use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
@@ -117,36 +116,6 @@ readonly class AssignmentDistributor
     }
 
     /* ===================== Helpers ===================== */
-
-    /**
-     * Sammle Videos für den Verteilungspool:
-     *  - unzugewiesene EVER
-     *  - oder neu seit letztem fertigen Assign-Batch
-     *  - plus requeue-fähige (expired/returned/...)
-     */
-    private function collectPoolVideos(?Batch $lastFinished): Collection
-    {
-        // Unassigned EVER ODER neuer als letzter Batch
-        $newOrUnassigned = Video::query()
-            ->whereDoesntHave('assignments')
-            ->when($lastFinished, function ($q) use ($lastFinished) {
-                $q->orWhere('created_at', '>', $lastFinished->finished_at);
-            })
-            ->orderBy('id')
-            ->get();
-
-        // Requeue-Fälle (z. B. expired)
-        $requeueIds = Assignment::query()
-            ->whereIn('status', StatusEnum::getRequeueStatuses())
-            ->pluck('video_id')
-            ->unique();
-
-        $requeueVideos = $requeueIds->isNotEmpty()
-            ? Video::query()->whereIn('id', $requeueIds)->get()
-            : collect();
-
-        return $newOrUnassigned->concat($requeueVideos)->unique('id');
-    }
 
     /**
      * Stelle sicher, dass alle Videos aus Bundles mitkommen, wenn eines im Pool ist.
