@@ -12,6 +12,7 @@ use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Video;
+use App\Repository\ChannelRepository;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
@@ -201,7 +202,7 @@ class AssignmentDistributor
      */
     private function prepareChannelsAndPool(?int $quotaOverride): array
     {
-        $channels = Channel::query()->orderBy('id')->get();
+        $channels = app(ChannelRepository::class)->getActiveChannels();
 
         $rotationPool = collect();
         foreach ($channels as $channel) {
