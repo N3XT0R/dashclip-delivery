@@ -7,6 +7,7 @@ namespace App\Listeners;
 use App\Models\MailLog;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class LogSentMail
 {
@@ -21,16 +22,16 @@ class LogSentMail
             return;
         }
 
-        $messageId = $message->getHeaders()->get('Message-ID')?->getBodyAsString()
+        $messageId = $headers->get('Message-ID')?->getBodyAsString()
             ?? $event->data['headers']['Message-ID']
             ?? null;
 
-        $appId = $message->getHeaders()->get('X-App-Message-ID')?->getBodyAsString()
+        $appId = $headers->get('X-App-Message-ID')?->getBodyAsString()
             ?? $event->data['headers']['X-App-Message-ID']
             ?? null;
 
         MailLog::create([
-            'message_id' => $messageId,
+            'message_id' => $messageId ?? Str::uuid(),
             'internal_id' => $appId,
             'to' => $to,
             'subject' => $message->getSubject(),
