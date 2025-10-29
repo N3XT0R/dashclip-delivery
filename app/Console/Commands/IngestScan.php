@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\LockJobTrait;
-use App\Facades\Cfg;
 use App\Services\Ingest\IngestScanner;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Cache\Lock;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class IngestScan extends Command
 {
@@ -32,36 +31,22 @@ class IngestScan extends Command
         $this->setLockKey('ingest:lock');
     }
 
+    /**
+     * @throws LockTimeoutException
+     */
     public function handle(): int
     {
-        // Optionally select a specific cache store (e.g., redis) at runtime
-        if ($store = (string)($this->option('lock-store') ?? '')) {
-            $this->setLockStore($store);
-        }
-
-        $inbox = rtrim((string)$this->option('inbox'), '/');
-        $disk = (string)($this->option('disk') ?: Cfg::get('default_file_system', 'default', 'dropbox'));
-        $ttl = (int)$this->option('ttl');
-        $waitSec = (int)$this->option('wait');
-
-        // BLOCKING mode: wait up to --wait seconds to acquire the lock
-        if ($waitSec > 0) {
-            return (int)$this->blockWithLock(function (Lock $lock) use ($inbox, $disk) {
-                return $this->runIngest($inbox, $disk);
-            }, $waitSec, $ttl);
-        }
-
-        // NON-BLOCKING mode: try to acquire immediately; bail out if already running
-        $result = $this->tryWithLock(function (Lock $lock) use ($inbox, $disk) {
-            return $this->runIngest($inbox, $disk);
-        }, $ttl);
-
-        if ($result === null) {
-            $this->info('Another ingest task is running. Abort.');
-            return self::SUCCESS;
-        }
-
-        return (int)$result;
+        return $this->handleLockedJob(
+            fn(string $inbox, string $disk) => $this->runIngest($inbox, $disk),
+            options: [
+                'inbox' => $this->option('inbox'),
+                'disk' => $this->option('disk'),
+                'ttl' => $this->option('ttl'),
+                'wait' => $this->option('wait'),
+                'lock-store' => $this->option('lock-store'),
+            ],
+            abortMsg: 'Another ingest task is running. Abort.'
+        );
     }
 
     private function runIngest(string $inbox, string $diskName): int
