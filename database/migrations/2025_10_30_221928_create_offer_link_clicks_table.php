@@ -13,7 +13,8 @@ return new class extends Migration {
         Schema::create('offer_link_clicks', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->foreignId('assignment_id')->constrained('assignments')->cascadeOnDelete();
+            $table->foreignId('batch_id')->constrained('batches')->cascadeOnDelete();
+            $table->foreignId('channel_id')->constrained('channels')->cascadeOnDelete();
             $table->timestamp('clicked_at')->useCurrent();
             $table->string('user_agent')->nullable();
             $table->timestamps();
