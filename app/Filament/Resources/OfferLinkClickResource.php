@@ -76,7 +76,8 @@ class OfferLinkClickResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('clicked_at', 'desc');
     }
 
     public static function getRelations(): array
