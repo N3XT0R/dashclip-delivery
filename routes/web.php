@@ -22,7 +22,9 @@ Route::get('/changelog', function () {
 Route::view('/impressum', 'impressum')->name('impressum');
 
 Route::view('/datenschutz', 'datenschutz')->name('datenschutz');
-
+Route::get('/license', function () {
+    return Str::markdown(nl2br(file_get_contents(base_path('LICENSE'))));
+})->name('license');
 
 Route::get('/offer/{batch}/{channel}', [OfferController::class, 'show'])->name('offer.show');
 // ZIP-Download via asynchronen Job
