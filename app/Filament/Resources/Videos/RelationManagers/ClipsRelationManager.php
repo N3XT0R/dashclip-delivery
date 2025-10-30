@@ -6,6 +6,8 @@ namespace App\Filament\Resources\Videos\RelationManagers;
 
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -32,7 +34,33 @@ class ClipsRelationManager extends RelationManager
             ])
             ->headerActions([])
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->icon('heroicon-m-eye')
+                    ->schema([
+                            TextInput::make('id')
+                                ->label('Clip ID')
+                                ->disabled(),
+                            TextInput::make('video.original_name')
+                                ->label('Video Name')
+                                ->disabled(),
+                            TextInput::make('start_sec')
+                                ->label('Start Time')
+                                ->disabled(),
+                            TextInput::make('end_sec')
+                                ->label('End Time')
+                                ->disabled(),
+                            Textarea::make('note')
+                                ->label('Note')
+                                ->disabled(),
+                            TextInput::make('submitted_by')
+                                ->label('Submitted by')
+                                ->disabled(),
+                            \Filament\Forms\Components\ViewField::make('video_preview')
+                                ->label('Preview')
+                                ->view('filament.forms.components.video-preview')
+                                ->columnSpanFull(),
+                        ]
+                    ),
                 Action::make('preview')
                     ->label('Preview')
                     ->icon('heroicon-m-play')
