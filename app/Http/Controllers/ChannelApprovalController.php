@@ -10,7 +10,7 @@ class ChannelApprovalController extends Controller
 {
     public function approve(Channel $channel, string $token)
     {
-        $expected = sha1($channel->email.config('app.key'));
+        $expected = $channel->getApprovalToken();
 
         if ($token !== $expected) {
             abort(403, 'Ungültiger Bestätigungslink.');
