@@ -140,7 +140,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     protected static function booted(): void
     {
-        static::created(function (User $user) {
+        static::created(static function (User $user) {
             event(new UserCreated($user));
         });
     }
