@@ -23,7 +23,7 @@ Route::view('/impressum', 'impressum')->name('impressum');
 
 Route::view('/datenschutz', 'datenschutz')->name('datenschutz');
 Route::get('/license', function () {
-    return nl2br(Str::markdown(file_get_contents(base_path('LICENSE'))));
+    return nl2br(file_get_contents(base_path('LICENSE')));
 })->name('license');
 
 Route::get('/offer/{batch}/{channel}', [OfferController::class, 'show'])->name('offer.show');
