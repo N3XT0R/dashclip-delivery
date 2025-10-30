@@ -6,7 +6,14 @@
     "laravel",
     "framework"
   ],
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Ilya Beliaev",
+      "email": "info@php-dev.info",
+      "role": "Maintainer"
+    }
+  ],
   "require": {
     "php": "^8.4",
     "ext-intl": "*",
