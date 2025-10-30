@@ -66,6 +66,8 @@ class DropboxUploadService
 
                 $bar?->advance(strlen($chunk));
             }
+        } catch (\Throwable $e) {
+            Log::error('Dropbox-Upload: '.$e->getMessage(), ['exception' => $e]);
         } finally {
             Log::info('Dropbox-Upload completed', [
                 'path' => $targetPath,
