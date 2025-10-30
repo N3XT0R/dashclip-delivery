@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-alpha] - undefined
+## [3.0.0-alpha] - 2025-10-30
 
 ### Added
 
@@ -84,7 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       The service reads the root package version from the installed Composer metadata and supports an optional fallback
       callable for non-standard environments.  
       Added a new `Version` Facade providing simple access to the version across the application.
-  
+
 - **Channel Approval & Welcome Flow**
     - Introduced a complete opt-in workflow for newly created channels to ensure GDPR-compliant approval before video
       delivery begins.
