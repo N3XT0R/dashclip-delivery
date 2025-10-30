@@ -123,8 +123,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **UI**
     - Refined layout spacing, label hierarchy, and visual alignment for improved readability.
     - Updated Filament resources and forms to align with v4 design patterns.
+
 - **Filament v4 migration**
     - May require adjustments to custom admin pages, widgets, or themes.
+
+- **License updated:** The project license has been changed from **MIT** to **GNU Affero General Public License v3.0 or
+  later (AGPL-3.0-or-later)**  
+  to ensure that all modified or network-accessible versions of *dashclip-delivery*  
+  remain open source and contribute back to the community.  
+  This change reflects the project's evolution from a small utility  
+  to a fully featured distributed media ingestion and delivery system.
+
+  The AGPL license provides:
+    - continued freedom to use, modify, and distribute the software,
+    - mandatory publication of source code for all public or private network services,
+    - protection against proprietary re-use or commercialization without reciprocity.
+
+  For more information, see the updated [LICENSE](LICENSE) file.
 
 ### Deprecated
 
