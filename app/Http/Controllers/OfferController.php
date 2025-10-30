@@ -21,7 +21,7 @@ class OfferController extends Controller
     public function show(Request $req, Batch $batch, Channel $channel)
     {
         $this->ensureValidSignature($req);
-
+        $this->offerService->trackOfferClick($batch, $channel, $req);
         $data = $this->offerService->prepareOfferViewData($batch, $channel);
 
         return view('offer.show', $data);
