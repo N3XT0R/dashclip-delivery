@@ -8,6 +8,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -40,8 +41,9 @@ class ClipsRelationManager extends RelationManager
                             TextInput::make('id')
                                 ->label('Clip ID')
                                 ->disabled(),
-                            TextInput::make('video.original_name')
+                            TextInput::make('original_name')
                                 ->label('Video Name')
+                                ->formatStateUsing(fn($record) => $record->video?->original_name)
                                 ->disabled(),
                             TextInput::make('start_sec')
                                 ->label('Start Time')
@@ -55,7 +57,7 @@ class ClipsRelationManager extends RelationManager
                             TextInput::make('submitted_by')
                                 ->label('Submitted by')
                                 ->disabled(),
-                            \Filament\Forms\Components\ViewField::make('video_preview')
+                            ViewField::make('video_preview')
                                 ->label('Preview')
                                 ->view('filament.forms.components.video-preview')
                                 ->columnSpanFull(),
