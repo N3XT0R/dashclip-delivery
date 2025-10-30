@@ -1,4 +1,5 @@
-<!doctype html>
+@php use App\Facades\Version; @endphp
+        <!doctype html>
 <html lang="de">
 <head>
     <meta charset="utf-8">
@@ -42,7 +43,7 @@
 
 <footer>
     &copy; {{ date('Y') }} {{ config('app.name', 'App') }} - Version: <a
-            href="{{route('changelog')}}" target="_blank">{{ config('app.version', '0.0.0-dev') }}</a>
+            href="{{route('changelog')}}" target="_blank">{{ Version::getCurrentVersion() }}</a>
     - <a href="{{ route('impressum') }}" target="_blank">Impressum</a>
     - <a href="{{ route('datenschutz') }}" target="_blank">Datenschutz</a>
     - <a href="{{ route('license') }}" target="_blank">Lizenz</a>

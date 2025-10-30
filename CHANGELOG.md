@@ -78,6 +78,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fully RFC-conform handling of inbound timestamps and header parsing via `Carbon` conversion.
     - Logging of inbound mail events for traceability and debugging.
 
+- **Version Service**
+    - Introduced `LocalVersionService` implementing `VersionServiceInterface` for retrieving the current application
+      version directly via `Composer\InstalledVersions`.  
+      The service reads the root package version from the installed Composer metadata and supports an optional fallback
+      callable for non-standard environments.  
+      Added a new `Version` Facade providing simple access to the version across the application.
+
 ### Fixed
 
 - **Dropbox-Upload**
@@ -176,6 +183,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed inline CSV parsing logic tied to direct file handles (`fopen`, `fgetcsv`, etc.) — now delegated to
   stream-based workflow.
 - Removed implicit counter manipulation inside helper methods; replaced with domain-specific result updates.
+
+- **Configuration**
+    - Version information is no longer read from a static configuration file.  
+      It is now dynamically resolved from Composer metadata through the `LocalVersionService`, ensuring accurate and
+      environment-independent version reporting.
 
 ## [2.5.0] - 2025-10-10
 
