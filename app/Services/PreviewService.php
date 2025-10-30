@@ -17,7 +17,6 @@ use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Number;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 use Throwable;
 
@@ -106,94 +105,6 @@ final class PreviewService
                 $disk->path($relativePath),
                 $e
             );
-        }
-    }
-
-    /**
-     * Generate a video preview for the given time range.
-     * @param  Video  $video
-     * @param  int  $start
-     * @param  int  $end
-     * @return string|null
-     * @deprecated use generatePreviewByDisk instead
-     */
-    public function generate(Video $video, int $start, int $end): ?string
-    {
-        if (!$this->isValidRange($start, $end)) {
-            $this->warn("Invalid time range: start={$start}, end={$end}");
-
-            return null;
-        }
-
-        $duration = $end - $start;
-        /**
-         * @var string $sourceDisk
-         */
-        $sourceDisk = $video->disk ?? 'local';
-        $relPath = $this->normalizeRelative($video->path);
-
-        // Check target (cache)
-        $previewDisk = Storage::disk('public');
-        $previewPath = $this->buildPath($video, $start, $end);
-
-        if ($previewDisk->exists($previewPath)) {
-            $this->info("Preview exists in cache: {$previewPath}");
-            return $previewDisk->url($previewPath);
-        }
-
-        // Ensure destination directory exists (especially for fake disks)
-        $previewDisk->makeDirectory(dirname($previewPath));
-        Log::error(dirname($previewPath));
-
-        // Configure FFMpeg binary
-        if ($bin = Cfg::get('ffmpeg_bin', 'ffmpeg', null)) {
-            config(['laravel-ffmpeg.ffmpeg.binaries' => $bin]);
-            //config(['laravel-ffmpeg.ffprobe.binaries' => $bin]);
-        }
-
-        try {
-            $audioCodec = (string)Cfg::get('ffmpeg_audio_codec', 'ffmpeg', 'aac');
-            $videoCodec = (string)Cfg::get('ffmpeg_video_codec', 'ffmpeg', 'libx264');
-            $format = new X264($audioCodec, $videoCodec);
-            $params = $this->ffmpegParams();
-            if ($params !== []) {
-                $format->setAdditionalParameters($params);
-            }
-
-            Log::error($sourceDisk);
-            Log::error($relPath);
-            Log::error($previewPath);
-
-            FFMpeg::fromDisk($sourceDisk)
-                ->open($relPath)
-                ->addFilter(function (VideoFilters $filters) use ($start, $duration): void {
-                    $filters->clip(TimeCode::fromSeconds($start), TimeCode::fromSeconds($duration));
-                })
-                ->export()
-                ->toDisk('public')
-                ->inFormat($format)
-                ->save($previewPath);
-
-            if (!$previewDisk->exists($previewPath)) {
-                $this->error('ffmpeg failed: output missing');
-
-                return null;
-            }
-
-            try {
-                $size = $previewDisk->size($previewPath);
-            } catch (Throwable $e) {
-                $size = 0;
-            }
-            $this->info("Preview created: {$previewPath} (".Number::fileSize($size).')');
-
-            return $previewDisk->url($previewPath);
-        } catch (Throwable $e) {
-            $message = 'ffmpeg failed: '.$e->getMessage();
-            $this->error($message);
-            Log::error($message, ['exception' => $e]);
-
-            return null;
         }
     }
 
