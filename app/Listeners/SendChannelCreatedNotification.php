@@ -3,8 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\ChannelCreated;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Mail\ChannelWelcomeMail;
+use Illuminate\Support\Facades\Mail;
 
 class SendChannelCreatedNotification
 {
@@ -21,6 +21,12 @@ class SendChannelCreatedNotification
      */
     public function handle(ChannelCreated $event): void
     {
-        //
+        $channel = $event->channel;
+
+        if (!$channel->email) {
+            return;
+        }
+
+        Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
     }
 }
