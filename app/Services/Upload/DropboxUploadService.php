@@ -58,7 +58,8 @@ class DropboxUploadService
 
                 if ($transferred >= $bytes) {
                     // Last chunk
-                    $client->uploadSessionFinish($chunk, $cursor, $targetPath);
+                    $meta = $client->uploadSessionFinish($chunk, $cursor, $targetPath);
+                    Log::info('Dropbox-Upload session finished', ['meta' => $meta]);
                 } else {
                     $cursor = $client->uploadSessionAppend($chunk, $cursor);
                 }
