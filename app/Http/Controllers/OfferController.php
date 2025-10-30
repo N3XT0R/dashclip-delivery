@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\{Batch, Channel};
+use App\Services\AssignmentService;
 use App\Services\LinkService;
 use App\Services\OfferService;
 use Filament\Facades\Filament;
@@ -12,8 +13,10 @@ use Illuminate\Support\Collection;
 
 class OfferController extends Controller
 {
-    public function __construct(private readonly OfferService $offerService)
-    {
+    public function __construct(
+        private readonly OfferService $offerService,
+        private AssignmentService $assignments
+    ) {
     }
 
     public function show(Request $req, Batch $batch, Channel $channel)
