@@ -10,42 +10,12 @@ use App\Models\Clip;
 use App\Models\Video;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
 
 readonly class VideoService
 {
-    public function __construct(
-        private PreviewService $previews
-    ) {
-    }
-
     public function isDuplicate(string $hash): bool
     {
         return Video::query()->where('hash', $hash)->exists();
-    }
-
-    /**
-     * @param  string  $hash
-     * @param  string  $ext
-     * @param  int  $bytes
-     * @param  string  $absolutePath
-     * @param  string  $fileName
-     * @return Video
-     * @deprecated use createVideoBydDiskAndFileInfoDto instead
-     */
-    public function createLocal(string $hash, string $ext, int $bytes, string $absolutePath, string $fileName): Video
-    {
-        return Video::query()->create([
-            'hash' => $hash,
-            'ext' => $ext,
-            'bytes' => $bytes,
-            'path' => $this->makeStorageRelative($absolutePath),
-            'disk' => 'local',
-            'meta' => null,
-            'original_name' => $fileName,
-        ]);
     }
 
     public function createVideoBydDiskAndFileInfoDto(
@@ -66,44 +36,6 @@ readonly class VideoService
             'original_name' => $file->originalName ?? $file->basename,
         ]);
     }
-
-    /**
-     * @param  Video  $video
-     * @param  string  $sourcePath
-     * @param  OutputInterface|null  $output
-     * @param  callable|null  $log
-     * @return string|null
-     * @deprecated use PreviewService::generatePreviewByDisk instead
-     */
-    public function generatePreview(
-        Video $video,
-        string $sourcePath,
-        ?OutputInterface $output = null,
-        ?callable $log = null
-    ): ?string {
-        try {
-            $this->previews->setOutput($output);
-            $clip = $video->clips()->first();
-
-            if ($clip && $clip->start_sec !== null && $clip->end_sec !== null) {
-                return $this->previews->generateForClip($clip);
-            }
-
-            return $this->previews->generate($video, 0, 10);
-        } catch (Throwable $e) {
-            Log::warning('Preview generation failed', [
-                'file' => $sourcePath,
-                'exception' => $e->getMessage(),
-            ]);
-
-            if ($log) {
-                $log("Warnung: Preview konnte nicht erstellt werden ({$e->getMessage()})");
-            }
-
-            return null;
-        }
-    }
-
 
     /**
      * @param  string  $absolute
