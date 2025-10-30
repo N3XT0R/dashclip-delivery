@@ -24,8 +24,18 @@ class OfferLinkClick extends Model
         'clicked_at' => 'datetime',
     ];
 
-    public function assignment(): BelongsTo
+    public function batch(): BelongsTo
     {
-        return $this->belongsTo(Assignment::class);
+        return $this->belongsTo(Batch::class);
+    }
+
+    public function channel(): BelongsTo
+    {
+        return $this->belongsTo(Channel::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
