@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * @deprecated replaced by ZipController
+ */
 class AssignmentDownloadController extends Controller
 {
 
@@ -18,6 +21,12 @@ class AssignmentDownloadController extends Controller
     {
     }
 
+    /**
+     * @param  Request  $req
+     * @param  Assignment  $assignment
+     * @return StreamedResponse
+     *
+     */
     public function download(Request $req, Assignment $assignment)
     {
         // Link-Signatur prüfen
