@@ -8,6 +8,7 @@ use App\Models\User;
 use Filament\Forms;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class CreateUser extends CreateRecord
 {
@@ -37,6 +38,19 @@ class CreateUser extends CreateRecord
                     ->relationship('roles', 'name')
                     ->preload(),
             ]);
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if (empty($data['password'])) {
+            $data['plain_password'] = Str::password(12);
+            $data['password'] = bcrypt($data['plain_password']);
+        } else {
+            $data['plain_password'] = $data['password'];
+            $data['password'] = bcrypt($data['password']);
+        }
+
+        return $data;
     }
 
 
