@@ -7,6 +7,7 @@ namespace App\Services\Upload;
 use App\Facades\PathBuilder;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Log;
 use Spatie\Dropbox\Client as DropboxClient;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -65,6 +66,7 @@ class DropboxUploadService
                 $bar?->advance(strlen($chunk));
             }
         } finally {
+            Log::info('Dropbox-Upload abgeschlossen', ['path' => $targetPath]);
             fclose($read);
             $bar?->finish();
         }
