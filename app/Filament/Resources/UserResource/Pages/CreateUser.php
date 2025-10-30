@@ -31,12 +31,6 @@ class CreateUser extends CreateRecord
                     ->multiple()
                     ->relationship('roles', 'name')
                     ->preload(),
-                Forms\Components\Textarea::make('app_authentication_secret')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('app_authentication_recovery_codes')
-                    ->columnSpanFull(),
-                Forms\Components\Toggle::make('has_email_authentication')
-                    ->required(),
             ]);
     }
 
