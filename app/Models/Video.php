@@ -51,7 +51,7 @@ class Video extends Model
 
     protected static function booted(): void
     {
-        static::deleting(function (Video $video) {
+        static::deleting(static function (Video $video) {
             $path = $video->getAttribute('path');
             if (!$path) {
                 return true;
