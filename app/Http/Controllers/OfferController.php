@@ -6,7 +6,6 @@ use App\Models\{Batch, Channel};
 use App\Services\AssignmentService;
 use App\Services\LinkService;
 use App\Services\OfferService;
-use Filament\Facades\Filament;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -26,18 +25,6 @@ class OfferController extends Controller
         $data = $this->offerService->prepareOfferViewData($batch, $channel);
 
         return view('offer.show', $data);
-    }
-
-    protected function addTempUrlToAssignments(Collection $items): void
-    {
-        $isAuthenticated = Filament::auth()?->check();
-
-        foreach ($items as $assignment) {
-            $assignment->temp_url = $this->assignments->prepareDownload(
-                assignment: $assignment,
-                skipTracking: $isAuthenticated === true
-            );
-        }
     }
 
     public function showUnused(Request $req, Batch $batch, Channel $channel)
