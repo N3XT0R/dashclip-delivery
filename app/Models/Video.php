@@ -56,7 +56,7 @@ class Video extends Model
             if (!$path) {
                 return true;
             }
-            
+
             try {
                 $storageDisk = $video->getDisk();
                 $targetDisk = config('preview.default_disk', 'public');
@@ -65,11 +65,6 @@ class Video extends Model
 
                 if ($storageDisk->exists($path) && !$storageDisk->delete($path)) {
                     \Log::warning('video delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
-                    return false;
-                }
-
-                if ($previewDisk->exists($previewPath) && !$previewDisk->delete($previewPath)) {
-                    \Log::warning('preview delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
                     return false;
                 }
 
