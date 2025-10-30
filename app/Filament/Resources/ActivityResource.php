@@ -50,6 +50,7 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('event')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subject')
+                    ->formatStateUsing(fn($state) => sprintf('%s (%s)', $state['id'] ?? '-', get_class($state)))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('causer')
                     ->formatStateUsing(fn($state) => sprintf('%s (%s)', $state['name'] ?? '-', get_class($state)))
