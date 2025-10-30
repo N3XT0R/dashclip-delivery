@@ -45,8 +45,7 @@ class ProcessUploadedVideo implements ShouldQueue
         $scanner->processFile($disk, $fileInfoDto, $this->targetDisk);
 
         $video = Video::query()
-            ->where('original_name', $fileInfoDto->originalName)
-            ->orWhere('original_name', $fileInfoDto->basename)
+            ->orWhere('original_name', $fileInfoDto->originalName ?? $fileInfoDto->basename)
             ->orderByDesc('created_at')
             ->first();
 
