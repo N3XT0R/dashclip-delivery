@@ -20,10 +20,12 @@ class Channel extends Model
         'weight',
         'weekly_quota',
         'is_video_reception_paused',
+        'approved_at',
     ];
 
     protected $casts = [
         'is_video_reception_paused' => 'boolean',
+        'approved_at' => 'datetime',
     ];
 
     public function assignments(): HasMany

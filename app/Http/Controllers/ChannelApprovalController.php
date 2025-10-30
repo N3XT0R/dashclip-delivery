@@ -16,7 +16,10 @@ class ChannelApprovalController extends Controller
             abort(403, 'Ungültiger Bestätigungslink.');
         }
 
-        $channel->update(['is_video_reception_paused' => false]);
+        $channel->update([
+            'is_video_reception_paused' => false,
+            'approved_at' => now(),
+        ]);
 
         return view('channels.approved', compact('channel'));
     }
