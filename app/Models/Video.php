@@ -15,7 +15,16 @@ class Video extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['hash', 'ext', 'bytes', 'path', 'meta', 'original_name', 'disk', 'preview_url'];
+    protected $fillable = [
+        'hash',
+        'ext',
+        'bytes',
+        'path',
+        'meta',
+        'original_name',
+        'disk',
+        'preview_url'
+    ];
     protected $casts = ['meta' => 'array'];
 
     public function assignments(): HasMany
