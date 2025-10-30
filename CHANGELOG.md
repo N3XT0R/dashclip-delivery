@@ -9,13 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- **Legacy Ingest Command**
-    - Removed the old `IngestScan` Artisan command, which has been fully replaced by the new modular `IngestScanner`
-      service.
-    - The new pipeline-based architecture provides transactional safety, unified logging, and service-based
-      extensibility.
-    - All CLI ingest operations now use the centralized `IngestScanner` entrypoint, ensuring consistent behavior across
-      web and console contexts.
+- **Legacy Ingest Process & Components**
+    - Removed the deprecated `IngestScan` command and related legacy ingest components.
+    - Functionality has been fully replaced by the new modular `IngestScanner` pipeline and supporting services.
+    - The refactored ingest architecture now provides transactional safety, unified logging, and service-based
+      extensibility across all entrypoints (web and CLI).
 
 ## [3.0.0-alpha] - 2025-10-30
 
