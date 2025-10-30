@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0-alpha.2] - undefined
 
+### Changed
+
+- **Download System**
+    - The ZIP downloader now supports **single video downloads** through the unified `ZipDownloader` workflow.  
+      Instead of triggering a direct file link, the “Download Single” button now invokes the same process used  
+      for batch downloads — including the real-time progress modal, WebSocket (Echo) events, and unified logging.
+    - Consolidated logic for single and multiple downloads via the common `startDownload()` method.
+    - Added optional parameter handling for forced assignment IDs to enable clean reuse of the modal-based flow.
+    - Improved code readability and reliability:
+        - Consistent file name sanitization for both single and multi downloads.
+        - Graceful handling of missing selections or invalid assignment states.
+        - Minor structural refactoring for clarity and maintainability.
+
 ### Removed
 
 - **Legacy Ingest Process & Components**
