@@ -27,7 +27,7 @@ class LocalVersionService implements VersionServiceInterface
             $version = InstalledVersions::getPrettyVersion($package);
 
             if ($version === '1.0.0+no-version-set') {
-                $version = 'testing';
+                $version = config('app.version');
             }
 
             if (is_string($version) && $version !== '') {
