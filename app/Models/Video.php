@@ -61,7 +61,7 @@ class Video extends Model
                 $storageDisk = $video->getDisk();
                 $targetDisk = config('preview.default_disk', 'public');
                 $previewDisk = Storage::disk($targetDisk);
-                $previewPath = $this->getPreviewPath();
+                $previewPath = $video->getPreviewPath();
 
                 if ($storageDisk->exists($path) && !$storageDisk->delete($path)) {
                     \Log::warning('video delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
