@@ -101,7 +101,7 @@ class CsvServiceTest extends DatabaseTestCase
         $this->assertSame([
             'clipA.mp4',     // basename(path) because original_name is null
             'hashA',
-            '10.0',
+            '10 MB',
             '',              // start
             '',              // end
             '',              // note
@@ -118,7 +118,7 @@ class CsvServiceTest extends DatabaseTestCase
         $this->assertSame([
             'dashcam_B.mov',
             'hashB',
-            '2.0',
+            '2 MB',
             '00:05',
             '01:05',
             'first clip',
@@ -131,7 +131,7 @@ class CsvServiceTest extends DatabaseTestCase
         $this->assertSame([
             'dashcam_B.mov',
             'hashB',
-            '2.0',
+            '2 MB',
             '01:15',
             '02:10',
             'second clip',
