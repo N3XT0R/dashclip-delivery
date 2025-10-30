@@ -198,7 +198,7 @@ class ZipService
 
         if (!is_resource($stream)) {
             Log::channel('single')->warning('Dropbox readStream failed', [
-                'path' => $relativePath ?? $video->getAttribute('path'),
+                'path' => $video->getAttribute('path'),
             ]);
             return null;
         }
