@@ -32,8 +32,19 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        $panelObj = $panel
-            ->default()
+        $this->addDefaults($panel);
+        $this->addMiddlewares($panel);
+        $this->addPlugins($panel);
+        $this->addRenderHooks($panel);
+        $this->addMFA($panel);
+        $this->addWidgets($panel);
+
+        return $panel;
+    }
+
+    protected function addDefaults(Panel $panel): void
+    {
+        $panel->default()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
                 Js::make('app', app(Vite::class)->asset('resources/js/app.js')),
@@ -58,24 +69,9 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->passwordReset()
-            ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
-            ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->multiFactorAuthentication([
-                AppAuthentication::make()
-                    ->recoverable(),
-                EmailAuthentication::make(),
             ]);
-
-        $this->addMiddlewares($panelObj);
-        $this->addPlugins($panelObj);
-        $this->addRenderHooks($panelObj);
-
-        return $panelObj;
     }
 
     protected function addRenderHooks(Panel $panel): void
@@ -108,6 +104,23 @@ class AdminPanelProvider extends PanelProvider
             FilamentLogViewerPlugin::make()
                 ->navigationGroup('System')
                 ->navigationLabel('Log Viewer'),
+        ]);
+    }
+
+    protected function addMFA(Panel $panel): void
+    {
+        $panel->multiFactorAuthentication([
+            AppAuthentication::make()
+                ->recoverable(),
+            EmailAuthentication::make(),
+        ]);
+    }
+
+    protected function addWidgets(Panel $panel): void
+    {
+        $panel->widgets([
+            AccountWidget::class,
+            FilamentInfoWidget::class,
         ]);
     }
 }
