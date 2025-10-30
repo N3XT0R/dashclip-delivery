@@ -7,6 +7,7 @@ use App\Filament\Resources\Channels\Pages\CreateChannel;
 use App\Filament\Resources\Channels\Pages\EditChannel;
 use App\Filament\Resources\Channels\Pages\ListChannels;
 use App\Models\Channel;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Checkbox;
@@ -85,6 +86,8 @@ class ChannelResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->requiresConfirmation(),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
