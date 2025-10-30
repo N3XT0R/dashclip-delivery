@@ -84,6 +84,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       The service reads the root package version from the installed Composer metadata and supports an optional fallback
       callable for non-standard environments.  
       Added a new `Version` Facade providing simple access to the version across the application.
+  
+- **Channel Approval & Welcome Flow**
+    - Introduced a complete opt-in workflow for newly created channels to ensure GDPR-compliant approval before video
+      delivery begins.
+    - Added `approved_at` column to the `channels` table for timestamped consent tracking.
+    - New `ChannelApprovalController` validates approval tokens and activates channels via secure hash-based
+      confirmation links.
+    - Added `ChannelWelcomeMail` mailable:
+        - Sends personalized welcome and approval request emails using a friendly, non-formal tone (du-form).
+        - Includes a unique confirmation link (`approveUrl`) leading to a dedicated approval page.
+    - Implemented new Blade views:
+        - `emails/channel-welcome.blade.php` for the email layout.
+        - `channels/approved.blade.php` for the confirmation page shown after approval.
+    - Introduced new Artisan command `channels:send-welcome`:
+        - Allows sending approval mails manually or in bulk.
+        - Supports `--dry` mode (preview recipients without sending).
+        - Supports `--force` mode (resend even if already approved).
+    - Fully documented process with minimal data handling — no IP storage — to comply with privacy and data-minimization
+      requirements.
 
 ### Fixed
 
