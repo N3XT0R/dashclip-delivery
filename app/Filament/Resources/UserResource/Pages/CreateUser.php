@@ -60,6 +60,10 @@ class CreateUser extends CreateRecord
          * @var User $record
          */
         $record = $this->record;
-        event(new UserCreated($record, true));
+        event(new UserCreated(
+            user: $record,
+            fromBackend: true,
+            plainPassword: $record->plain_password ?? null
+        ));
     }
 }
