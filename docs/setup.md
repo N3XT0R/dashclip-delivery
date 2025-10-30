@@ -177,3 +177,9 @@ sudo supervisorctl start laravel-worker:*
 ```
 
 ## Seeder
+
+Datenbank mit Rechten und Rollen befüllen:
+
+```bash 
+php artisan db:seed
+```
