@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AssignmentDownloadController;
+use App\Http\Controllers\ChannelApprovalController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\ZipController;
@@ -40,3 +41,6 @@ Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('d
 Route::post('/zips/{batch}/{channel}', [ZipController::class, 'start'])->name('zips.start');
 Route::get('/zips/{id}/progress', [ZipController::class, 'progress'])->name('zips.progress');
 Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zips.download');
+
+Route::get('/channels/approve/{token}', [ChannelApprovalController::class, 'approve'])
+    ->name('channels.approve');
