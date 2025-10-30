@@ -44,7 +44,8 @@ class ChannelResource extends Resource
                 ->label('Weekly quota')
                 ->numeric(),
             Checkbox::make('is_video_reception_paused')
-                ->label('Pause video reception'),
+                ->label('Pause video reception')
+                ->default(1),
         ]);
     }
 
