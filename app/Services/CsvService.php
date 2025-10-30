@@ -9,6 +9,7 @@ use App\Models\Assignment;
 use App\ValueObjects\ClipImportResult;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
 
 class CsvService
 {
@@ -32,7 +33,7 @@ class CsvService
                 $rows[] = [
                     $video->original_name ?: basename($video->path),
                     $video->hash,
-                    number_format(($video->bytes ?? 0) / 1048576, 1, '.', ''),
+                    Number::fileSize($video->bytes),
                     null,
                     null,
                     null,
@@ -45,7 +46,7 @@ class CsvService
                     $rows[] = [
                         $video->original_name ?: basename($video->path),
                         $video->hash,
-                        number_format(($video->bytes ?? 0) / 1048576, 1, '.', ''),
+                        Number::fileSize($video->bytes),
                         isset($clip->start_sec) ? gmdate('i:s', (int)$clip->start_sec) : null,
                         isset($clip->end_sec) ? gmdate('i:s', (int)$clip->end_sec) : null,
                         $clip->note,
