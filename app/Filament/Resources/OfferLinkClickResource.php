@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\OfferLinkClickResource\Pages;
 use App\Models\OfferLinkClick;
 use BackedEnum;
@@ -21,10 +20,6 @@ class OfferLinkClickResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'System';
     protected static ?string $label = 'Offer Link Clicks';
 
-    public static function canAccess(): bool
-    {
-        return auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value);
-    }
 
     public static function form(Schema $schema): Schema
     {
