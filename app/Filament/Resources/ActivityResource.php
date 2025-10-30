@@ -13,6 +13,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 class ActivityResource extends Resource
@@ -50,10 +51,11 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('event')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subject')
-                    ->formatStateUsing(fn($state) => sprintf('%s (%s)', $state['id'] ?? '-', get_class($state)))
+                    ->formatStateUsing(fn(Model $state) => sprintf('%s (%s)', $state->getKey() ?? '-',
+                        get_class($state)))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('causer')
-                    ->formatStateUsing(fn($state) => sprintf('%s (%s)', $state['name'] ?? '-', get_class($state)))
+                    ->formatStateUsing(fn(Model $state) => sprintf('%s (%s)', $state['name'] ?? '-', get_class($state)))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('properties')
                     ->searchable()
