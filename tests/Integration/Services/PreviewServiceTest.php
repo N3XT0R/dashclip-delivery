@@ -7,7 +7,6 @@ namespace Tests\Integration\Services;
 use App\Exceptions\InvalidTimeRangeException;
 use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
-use App\Models\Clip;
 use App\Models\Video;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
@@ -66,24 +65,6 @@ class PreviewServiceTest extends DatabaseTestCase
         $this->assertNotNull($url);
         $this->assertTrue(Storage::disk('public')->exists($previewPath));
         $this->assertStringContainsString($previewPath, (string)$url);
-    }
-
-    public function testGenerateForClipWithMissingVideoOrInvalidRangeReturnsNull(): void
-    {
-        Storage::fake('local');
-
-        $svc = $this->previewService;
-
-        // Case 1: clip without video relation
-        $clipNoVideo = Clip::factory()->make(['video_id' => null, 'start_sec' => 0, 'end_sec' => 2]);
-        $this->assertNull($svc->generateForClip($clipNoVideo));
-
-        // Case 2: invalid range (end <= start)
-        Storage::disk('local')->put('videos/d.mp4', $this->fakeVideoContent());
-        $video = Video::factory()->create(['disk' => 'local', 'path' => 'videos/d.mp4']);
-
-        $clipBadRange = Clip::factory()->forVideo($video)->make(['start_sec' => 10, 'end_sec' => 10]);
-        $this->assertNull($svc->generateForClip($clipBadRange));
     }
 
     public function testUrlReturnsNullWhenPreviewMissingAndUrlWhenPresent(): void

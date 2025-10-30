@@ -9,7 +9,6 @@ use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
 use App\Facades\DynamicStorage;
 use App\Facades\PathBuilder;
-use App\Models\Clip;
 use App\Models\Video;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Filters\Video\VideoFilters;
@@ -31,33 +30,6 @@ final class PreviewService
     public function setOutput(?OutputStyle $outputStyle = null): void
     {
         $this->output = $outputStyle;
-    }
-
-    /**
-     * Generate a video preview for the given clip.
-     * @param  Clip  $clip
-     * @return string|null
-     * @deprecated use generatePreviewByDisk instead
-     */
-    public function generateForClip(Clip $clip): ?string
-    {
-        $video = $clip->video;
-        if (!$video) {
-            $this->warn('Clip has no associated video.');
-
-            return null;
-        }
-
-        $start = $clip->start_sec;
-        $end = $clip->end_sec;
-
-        if ($start === null || $end === null) {
-            $this->warn("Clip {$clip->getKey()} has no valid time range.");
-
-            return null;
-        }
-
-        return $this->generate($video, $start, $end);
     }
 
     /**
