@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0-alpha.2] - undefined
 
+> **Note:** This is the first production deployment of the new 3.x architecture.  
+> It represents a major structural and functional refactor compared to 2.5.0,  
+> introducing a unified ingestion pipeline, real-time ZIP download system,  
+> and a GDPR-compliant channel approval & communication flow.  
+> Existing channels and assignments remain compatible.
+
 ### Added
 
 - **Offer Link Tracking**
