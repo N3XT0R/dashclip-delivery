@@ -74,7 +74,9 @@
     <button id="openGame" class="inline-block px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-400">
         Ist dir gerade langweilig?
     </button>
+    @include('partials.footer')
 </div>
+
 
 <div class="overlay" id="gameOverlay">
     <div class="popup">
