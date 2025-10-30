@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use App\Models\Channel;
+use Illuminate\Mail\Mailables\Envelope;
 
 class ChannelWelcomeMail extends AbstractLoggedMail
 {
@@ -13,10 +14,17 @@ class ChannelWelcomeMail extends AbstractLoggedMail
     {
     }
 
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject: 'Willkommen beim wöchentlichen Video-Versand',
+        );
+    }
+
 
     protected function viewName(): string
     {
-        // TODO: Implement viewName() method.
+        return 'emails.channel-welcome';
     }
 
 }
