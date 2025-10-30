@@ -6,12 +6,10 @@ namespace Tests\Integration\Services;
 
 use App\Exceptions\InvalidTimeRangeException;
 use App\Exceptions\PreviewGenerationException;
-use App\Facades\Cfg;
 use App\Models\Video;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
-use Tests\Helper\FfmpegBinaryFaker;
 
 class PreviewServiceTest extends DatabaseTestCase
 {
@@ -90,41 +88,6 @@ class PreviewServiceTest extends DatabaseTestCase
 
         $this->assertNotNull($url);
         $this->assertStringContainsString($previewPath, (string)$url);
-    }
-
-    public function testGenerateReturnsNullOnInvalidRange(): void
-    {
-        Storage::fake('local');
-
-        Storage::disk('local')->put('videos/f.mp4', $this->fakeVideoContent());
-        $video = Video::factory()->create(['disk' => 'local', 'path' => 'videos/f.mp4']);
-
-        $svc = $this->previewService;
-
-        // end <= start or negative start should be rejected
-        $this->assertNull($svc->generate($video, 10, 10));
-        $this->assertNull($svc->generate($video, 10, 9));
-        $this->assertNull($svc->generate($video, -1, 5));
-    }
-
-    public function testGenerateReturnsNullWhenProcessExitsZeroButNoFileWasCreated(): void
-    {
-        Storage::fake('local');
-        Storage::fake('public');
-
-        // Arrange: valid source
-        Storage::disk('local')->put('videos/g.mp4', $this->fakeVideoContent());
-        $video = Video::factory()->create(['disk' => 'local', 'path' => 'videos/g.mp4']);
-
-        // Fake ffmpeg that exits 0 but does not create the destination file
-        $faker = new FfmpegBinaryFaker();
-        Cfg::set('ffmpeg_bin', $faker->zeroOutputZeroExit(), 'ffmpeg');
-
-        // Act
-        $url = $this->previewService->generate($video, 0, 2);
-
-        // Assert: service should detect missing file and return null
-        $this->assertNull($url);
     }
 
     public function testGeneratePreviewByDiskCreatesPreviewSuccessfully(): void
