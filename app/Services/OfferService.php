@@ -6,7 +6,9 @@ namespace App\Services;
 
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Repository\OfferLinkRepository;
 use Filament\Facades\Filament;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class OfferService
@@ -51,5 +53,16 @@ class OfferService
                 skipTracking: $isAuthenticated === true
             );
         }
+    }
+
+    public function trackOfferClick(Batch $batch, Channel $channel, Request $request): void
+    {
+        $offerLinks = app(OfferLinkRepository::class);
+        $offerLinks->createOfferLinkClick(
+            batch: $batch,
+            channel: $channel,
+            userAgent: (string)$request->userAgent(),
+            user: Filament::auth()?->user()
+        );
     }
 }

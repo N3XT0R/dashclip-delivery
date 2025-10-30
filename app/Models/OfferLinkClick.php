@@ -13,7 +13,8 @@ class OfferLinkClick extends Model
     use HasFactory;
 
     protected $fillable = [
-        'assignment_id',
+        'batch_id',
+        'channel_id',
         'user_id',
         'clicked_at',
         'user_agent',
