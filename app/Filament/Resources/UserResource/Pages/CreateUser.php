@@ -25,6 +25,11 @@ class CreateUser extends CreateRecord
                     ->label('Email address')
                     ->email()
                     ->required(),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->required()
+                    ->label('Passwort')
+                    ->helperText('Wenn du nichts angibst, wird ein zufälliges Passwort generiert.'),
                 Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\Select::make('roles')
                     ->label('Roles')
