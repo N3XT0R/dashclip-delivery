@@ -14,7 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'DashClip-Delivery'),
-    'version' => '3.0.0-alpha',
+    'version' => '3.0.0-alpha.2',
 
     /*
     |--------------------------------------------------------------------------
