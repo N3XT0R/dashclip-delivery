@@ -21,6 +21,7 @@ Route::get('/changelog', function () {
 })->name('changelog');
 
 Route::view('/impressum', 'impressum')->name('impressum');
+Route::view('/tos', 'tos')->name('tos');
 
 Route::view('/datenschutz', 'datenschutz')->name('datenschutz');
 Route::get('/license', function () {
