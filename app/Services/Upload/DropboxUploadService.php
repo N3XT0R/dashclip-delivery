@@ -66,7 +66,11 @@ class DropboxUploadService
                 $bar?->advance(strlen($chunk));
             }
         } finally {
-            Log::info('Dropbox-Upload abgeschlossen', ['path' => $targetPath]);
+            Log::info('Dropbox-Upload completed', [
+                'path' => $targetPath,
+                'bytes' => $bytes,
+                'relativePath' => $relativePath,
+            ]);
             fclose($read);
             $bar?->finish();
         }
