@@ -54,7 +54,14 @@ class DropboxUploadService
 
             while (!feof($read)) {
                 $chunk = fread($read, self::CHUNK_SIZE) ?: '';
-                $transferred += strlen($chunk);
+                $len = strlen($chunk);
+                $transferred += $len;
+
+                Log::debug('Dropbox chunk read', [
+                    'len' => $len,
+                    'transferred' => $transferred,
+                    'bytes' => $bytes,
+                ]);
 
                 if ($transferred >= $bytes) {
                     // Last chunk
