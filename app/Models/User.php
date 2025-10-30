@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\User\UserCreated;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
@@ -134,5 +135,13 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         return Attribute::make(
             get: static fn($value, array $attributes) => $attributes['submitted_name'] ?? $attributes['name'] ?? null,
         );
+    }
+
+
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            event(new UserCreated($user));
+        });
     }
 }
