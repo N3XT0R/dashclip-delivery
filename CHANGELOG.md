@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Fully sortable by date and searchable by channel name.
     - Tracking is only performed for valid signed links (`ensureValidSignature()`).
     - Existing download tracking remains unchanged.
-  
+
 - **User Welcome Email System**
     - Introduced a fully automated welcome email workflow for newly created users.
     - Added `UserCreated` event and corresponding `SendWelcomeMail` listener.
@@ -75,6 +75,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       driver-agnostic file access.
     - This cleanup eliminates redundant code paths, ensures better stability, and aligns all preview operations with the
       new ingest architecture.
+
+### Deprecated
+
+- **Legacy Assignment Download Controller**
+    - Marked `AssignmentDownloadController` as **deprecated** in favor of the new real-time WebSocket-based download
+      flow handled by `ZipController`.
+    - The legacy implementation previously managed direct single-file downloads via signed URLs and stream responses.
+    - All functionality has been superseded by the new zip-based asynchronous download process, which:
+        - Tracks download progress via WebSocket events.
+        - Supports batch and individual video downloads.
+        - Provides improved error handling and download verification.
+    - The old controller remains temporarily available for backward compatibility but will be removed in a future
+      release.
 
 ## [3.0.0-alpha] - 2025-10-30
 
