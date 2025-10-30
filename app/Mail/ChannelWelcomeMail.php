@@ -21,6 +21,15 @@ class ChannelWelcomeMail extends AbstractLoggedMail
         );
     }
 
+    protected function getApprovalToken(): string
+    {
+        $channel = $this->channel;
+        return route('channels.approve', [
+            'channel' => $channel->getKey(),
+            'token' => sha1($channel->email.config('app.key')),
+        ]);
+    }
+
 
     protected function viewName(): string
     {
