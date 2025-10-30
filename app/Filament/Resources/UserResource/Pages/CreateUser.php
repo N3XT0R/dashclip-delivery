@@ -52,10 +52,6 @@ class CreateUser extends CreateRecord
             $data['password'] = bcrypt($data['password']);
         }
 
-        if (empty($data['roles'])) {
-            $data['roles'] = [RoleEnum::REGULAR->value];
-        }
-
         return $data;
     }
 
@@ -66,6 +62,10 @@ class CreateUser extends CreateRecord
          * @var User $record
          */
         $record = $this->record;
+        if ($record->roles()->count() === 0) {
+            $record->assignRole(RoleEnum::REGULAR->value);
+        }
+
         event(new UserCreated(
             user: $record,
             fromBackend: true,
