@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Videos;
 
+use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\VideoResource\Pages;
 use App\Filament\Resources\Videos\Pages\ListVideos;
 use App\Filament\Resources\Videos\Pages\ViewVideo;
@@ -9,6 +10,7 @@ use App\Filament\Resources\Videos\RelationManagers\AssignmentsRelationManager;
 use App\Filament\Resources\Videos\RelationManagers\ClipsRelationManager;
 use App\Models\Video;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
@@ -103,7 +105,10 @@ class VideoResource extends Resource
                     ->label('Preview')
                     ->icon('heroicon-m-play')
                     ->url(fn(Video $video) => (string)$video->getAttribute('preview_url'))
-                    ->openUrlInNewTab()
+                    ->openUrlInNewTab(),
+                DeleteAction::make()
+                    ->visible(auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value))
+                    ->requiresConfirmation()
             ])
             ->toolbarActions([]);
     }
