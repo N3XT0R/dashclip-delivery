@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Videos\RelationManagers;
 
-use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class ClipsRelationManager extends RelationManager
@@ -31,7 +31,15 @@ class ClipsRelationManager extends RelationManager
                 TextColumn::make('created_at')->dateTime()->since(),
             ])
             ->headerActions([])
-            ->recordActions([ViewAction::make()])
+            ->recordActions([
+                ViewAction::make(),
+                Action::make('preview')
+                    ->label('Preview')
+                    ->icon('heroicon-m-play')
+                    ->url(fn($record) => (string)$record->video?->getAttribute('preview_url'))
+                    ->disabled(fn($record) => !$record->video?->getAttribute('preview_url'))
+                    ->openUrlInNewTab()
+            ])
             ->toolbarActions([]);
     }
 }
