@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panelObj = $panel
             ->default()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
@@ -62,34 +62,52 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
-            ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->plugins([
-                FilamentShieldPlugin::make(),
-                FilamentLogViewerPlugin::make()
-                    ->navigationGroup('System')
-                    ->navigationLabel('Log Viewer'),
             ])
             ->multiFactorAuthentication([
                 AppAuthentication::make()
                     ->recoverable(),
                 EmailAuthentication::make(),
-            ])
-            ->renderHook(
-                PanelsRenderHook::FOOTER,
-                fn(): string => view('partials.footer')->render()
-            );
+            ]);
+
+        $this->addMiddlewares($panelObj);
+        $this->addPlugins($panelObj);
+        $this->addRenderHooks($panelObj);
+
+        return $panelObj;
+    }
+
+    protected function addRenderHooks(Panel $panel): void
+    {
+        $panel->renderHook(
+            PanelsRenderHook::FOOTER,
+            fn(): string => view('partials.footer')->render()
+        );
+    }
+
+    protected function addMiddlewares(Panel $panel): void
+    {
+        $panel->middleware([
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            AuthenticateSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+            DisableBladeIconComponents::class,
+            DispatchServingFilamentEvent::class,
+        ]);
+    }
+
+    protected function addPlugins(Panel $panel): void
+    {
+        $panel->plugins([
+            FilamentShieldPlugin::make(),
+            FilamentLogViewerPlugin::make()
+                ->navigationGroup('System')
+                ->navigationLabel('Log Viewer'),
+        ]);
     }
 }
