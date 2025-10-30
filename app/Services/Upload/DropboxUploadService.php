@@ -46,14 +46,23 @@ class DropboxUploadService
                 return;
             }
 
-            $firstChunk = fread($read, self::CHUNK_SIZE) ?: '';
+            $chunkSize = self::CHUNK_SIZE;
+
+            if ($bytes <= $chunkSize) {
+                $content = stream_get_contents($read);
+                $meta = $client->upload($targetPath, $content);
+                Log::info('Dropbox-Upload direct finished', ['meta' => $meta]);
+                return;
+            }
+
+            $firstChunk = fread($read, $chunkSize) ?: '';
             $cursor = $client->uploadSessionStart($firstChunk);
             $bar?->advance(strlen($firstChunk));
 
             $transferred = strlen($firstChunk);
 
             while (!feof($read)) {
-                $chunk = fread($read, self::CHUNK_SIZE) ?: '';
+                $chunk = fread($read, $chunkSize) ?: '';
                 $len = strlen($chunk);
                 $transferred += $len;
 
