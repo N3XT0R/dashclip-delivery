@@ -21,11 +21,11 @@ class BuildZipJob implements ShouldQueue
     public int $timeout = 1200;       // 20 minutes for big ZIPs
 
     public function __construct(
-        private int $batchId,
-        private int $channelId,
-        private array $assignmentIds,
-        private string $ip,
-        private ?string $userAgent,
+        private readonly int $batchId,
+        private readonly int $channelId,
+        private readonly array $assignmentIds,
+        private readonly string $ip,
+        private readonly ?string $userAgent,
     ) {
     }
 
