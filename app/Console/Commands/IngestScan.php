@@ -15,7 +15,7 @@ class IngestScan extends Command
 {
     use LockJobTrait;
 
-    protected $signature = 'ingest:new-scan
+    protected $signature = 'ingest:scan
         {--inbox=/srv/ingest/pending : Root directory of uploads (recursive)}
         {--disk= : Target storage disk (e.g., dropbox|local)}
         {--wait=0 : Seconds to wait for the lock (0 = non-blocking)}
