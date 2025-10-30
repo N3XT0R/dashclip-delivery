@@ -17,6 +17,7 @@ use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -85,6 +86,10 @@ class AdminPanelProvider extends PanelProvider
                 AppAuthentication::make()
                     ->recoverable(),
                 EmailAuthentication::make(),
-            ]);
+            ])
+            ->renderHook(
+                PanelsRenderHook::FOOTER,
+                fn(): string => view('partials.footer')->render()
+            );
     }
 }
