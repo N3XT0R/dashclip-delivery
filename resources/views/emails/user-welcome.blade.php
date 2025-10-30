@@ -20,7 +20,7 @@
                 <ul style="margin:12px 0 18px 18px; padding:0;">
                     <li><strong>E-Mail:</strong> {{ $user->email }}</li>
                     @if($plainPassword)
-                        <li><strong>Passwort:</strong> {{ $plainPassword }}</li>
+                        <li><strong>Passwort:</strong> <code>{{ $plainPassword }}</code></li>
                     @endif
                 </ul>
                 <p>
