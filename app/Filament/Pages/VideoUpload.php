@@ -179,7 +179,7 @@ class VideoUpload extends Page implements HasForms
         $this->form->validate();
         $state = $this->form->getState();
         $user = Auth::user();
-        $targetDisk = Cfg::get('default_file_system', 'default', 'local');
+        $targetDisk = Cfg::get('default_file_system', 'default', 'dropbox');
 
         foreach ($state['clips'] ?? [] as $clip) {
             $file = $clip['file'] ?? '';
