@@ -21,6 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Fully sortable by date and searchable by channel name.
     - Tracking is only performed for valid signed links (`ensureValidSignature()`).
     - Existing download tracking remains unchanged.
+  
+- **User Welcome Email System**
+    - Introduced a fully automated welcome email workflow for newly created users.
+    - Added `UserCreated` event and corresponding `SendWelcomeMail` listener.
+    - Implemented `UserWelcomeMail` Mailable, supporting both self-registrations and backend-created accounts.
+    - When users are created via the Filament admin panel:
+        - A random password is automatically generated if none is provided.
+        - The plaintext password is included in the welcome email (only for backend-created users).
+    - Emails use contextual templates based on creation source:
+        - **Frontend users:** Standard welcome message.
+        - **Backend-created users:** Account access details included.
+    - Added localized subject lines and structured Blade email layout with footer links (Impressum, Datenschutz,
+      Nutzungsbedingungen, etc.).
+    - All emails are logged and sent asynchronously through Laravel’s mail queue system.
+    - Security-conscious handling ensures that plaintext passwords are **never stored** in the database — only
+      transmitted once via the initial welcome email.
 
 ### Changed
 
