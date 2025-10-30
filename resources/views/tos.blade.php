@@ -18,7 +18,7 @@
 
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Leistungsbeschreibung</h2>
-            <p>{{ config('app.name') }} stellt registrierten <strong>Kanälen</strong> Videoinhalte über eine
+            <p>{{ config('app.name') }} stellt <strong>Kanälen</strong> Videoinhalte über eine
                 geschützte Weboberfläche zur Verfügung. Ein Anspruch auf dauerhafte Verfügbarkeit oder fehlerfreien
                 Betrieb
                 des Dienstes besteht nicht. Änderungen, Erweiterungen oder Einschränkungen des Angebots können jederzeit
