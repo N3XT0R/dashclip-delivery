@@ -52,6 +52,7 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('subject')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('causer')
+                    ->formatStateUsing(fn($state) => sprintf('%s (%s)', $state['name'] ?? '-', get_class($state)))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('properties')
                     ->searchable()
