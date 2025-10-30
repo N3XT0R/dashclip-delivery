@@ -1851,16 +1851,16 @@
         },
         {
             "name": "gboquizosanchez/filament-log-viewer",
-            "version": "2.1.5",
+            "version": "2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gboquizosanchez/filament-log-viewer.git",
-                "reference": "d1ea88c68333e5ae5b9438b041eb22b28898253f"
+                "reference": "5d77f51f1a5b25af9cc3b847956e8e3e2d741b56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gboquizosanchez/filament-log-viewer/zipball/d1ea88c68333e5ae5b9438b041eb22b28898253f",
-                "reference": "d1ea88c68333e5ae5b9438b041eb22b28898253f",
+                "url": "https://api.github.com/repos/gboquizosanchez/filament-log-viewer/zipball/5d77f51f1a5b25af9cc3b847956e8e3e2d741b56",
+                "reference": "5d77f51f1a5b25af9cc3b847956e8e3e2d741b56",
                 "shasum": ""
             },
             "require": {
@@ -1908,9 +1908,9 @@
             ],
             "support": {
                 "issues": "https://github.com/gboquizosanchez/filament-log-viewer/issues",
-                "source": "https://github.com/gboquizosanchez/filament-log-viewer/tree/2.1.5"
+                "source": "https://github.com/gboquizosanchez/filament-log-viewer/tree/2.1.7"
             },
-            "time": "2025-09-04T17:11:33+00:00"
+            "time": "2025-10-26T22:35:29+00:00"
         },
         {
             "name": "graham-campbell/guzzle-factory",
