@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - The refactored ingest architecture now provides transactional safety, unified logging, and service-based
       extensibility across all entrypoints (web and CLI).
 
+- **Legacy Preview Service & FFmpeg Components**
+    - Removed all deprecated classes and helpers related to the old `PreviewService` implementation.
+    - The former preview generation logic (manual FFmpeg invocation, direct filesystem access, and inline parameter
+      handling)
+      has been fully replaced by the new **modular preview pipeline** powered by `pbmedia/laravel-ffmpeg`.
+    - Preview rendering is now configuration-driven and integrated with the `DynamicStorageService` for consistent,
+      driver-agnostic file access.
+    - This cleanup eliminates redundant code paths, ensures better stability, and aligns all preview operations with the
+      new ingest architecture.
+
 ## [3.0.0-alpha] - 2025-10-30
 
 ### Added
