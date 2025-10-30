@@ -32,7 +32,7 @@
             @endif
 
             <p>
-                <a href="{{ route('login') }}"
+                <a href="{{ route('filament.admin.auth.login') }}"
                    style="display:inline-block; background:#2563eb; color:#fff; padding:10px 18px;
                           text-decoration:none; border-radius:4px;">
                     Jetzt anmelden
