@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Services\Ingest;
+namespace Tests\Integration\Services\Ingest;
 
 use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;

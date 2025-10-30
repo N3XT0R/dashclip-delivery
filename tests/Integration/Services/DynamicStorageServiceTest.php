@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Services;
+namespace Tests\Integration\Services;
 
 use App\DTO\FileInfoDto;
 use App\Services\DynamicStorageService;
