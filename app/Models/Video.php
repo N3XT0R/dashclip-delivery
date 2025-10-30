@@ -48,7 +48,8 @@ class Video extends Model
 
             try {
                 $storageDisk = $video->getDisk();
-                $previewDisk = Storage::disk('public');
+                $targetDisk = config('preview.default_disk', 'public');
+                $previewDisk = Storage::disk($targetDisk);
                 $previewPath = $clip->getPreviewPath();
 
                 if ($storageDisk->exists($path) && !$storageDisk->delete($path)) {
