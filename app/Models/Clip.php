@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Facades\PathBuilder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,11 +38,6 @@ class Clip extends Model
         $videoId = $this->getAttribute('video')->getKey();
         $hash = md5($videoId.'_'.$this->getAttribute('start_sec').'_'.$this->getAttribute('end_sec'));
         return "previews/{$hash}.mp4";
-    }
-
-    public function getNewPreviewPath(): string
-    {
-        return PathBuilder::forPreviewByHash($this->video->hash);
     }
 
     protected function startTime(): Attribute
