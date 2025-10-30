@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('channels', function (Blueprint $table) {
+        Schema::table('channels', static function (Blueprint $table) {
             $table->timestamp('approved_at')->nullable()->after('is_video_reception_paused');
         });
     }
@@ -20,7 +20,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('channels', function (Blueprint $table) {
+        Schema::table('channels', static function (Blueprint $table) {
             $table->dropColumn('approved_at');
         });
     }
