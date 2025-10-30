@@ -36,4 +36,13 @@ class ChannelWelcomeMail extends AbstractLoggedMail
         return 'emails.channel-welcome';
     }
 
+
+    public function viewData(): array
+    {
+        return [
+            'channel' => $this->channel,
+            'approveUrl' => $this->getApprovalToken(),
+        ];
+    }
+
 }
