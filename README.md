@@ -76,4 +76,4 @@ composer test
 
 ## Lizenz
 
-MIT
+AGPL-3.0-or-later
