@@ -48,4 +48,12 @@ class Channel extends Model
         return $this->belongsToMany(Video::class, 'channel_video_blocks')
             ->withPivot('until');
     }
+
+    public function getApprovalToken(): string
+    {
+        return route('channels.approve', [
+            'channel' => $this->getKey(),
+            'token' => sha1($this->email.config('app.key')),
+        ]);
+    }
 }
