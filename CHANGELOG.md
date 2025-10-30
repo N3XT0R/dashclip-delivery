@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-alpha.2] - undefined
+
+### Removed
+
+- **Legacy Ingest Command**
+    - Removed the old `IngestScan` Artisan command, which has been fully replaced by the new modular `IngestScanner`
+      service.
+    - The new pipeline-based architecture provides transactional safety, unified logging, and service-based
+      extensibility.
+    - All CLI ingest operations now use the centralized `IngestScanner` entrypoint, ensuring consistent behavior across
+      web and console contexts.
+
 ## [3.0.0-alpha] - 2025-10-30
 
 ### Added
