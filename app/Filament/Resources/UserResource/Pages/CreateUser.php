@@ -15,6 +15,9 @@ class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
 
+    /** @var string|null */
+    private ?string $plainPassword = null;
+
 
     public function form(Schema $schema): Schema
     {
@@ -42,14 +45,14 @@ class CreateUser extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         if (empty($data['password'])) {
-            $data['plain_password'] = Str::password(12);
-            $data['password'] = bcrypt($data['plain_password']);
+            $this->plainPassword = Str::password(12);
+            $data['password'] = bcrypt($this->plainPassword);
         } else {
-            $data['plain_password'] = $data['password'];
+            $this->plainPassword = $data['password'];
             $data['password'] = bcrypt($data['password']);
         }
 
-        if (empty($data['role'])) {
+        if (empty($data['roles'])) {
             $data['roles'] = [RoleEnum::REGULAR->value];
         }
 
@@ -66,7 +69,7 @@ class CreateUser extends CreateRecord
         event(new UserCreated(
             user: $record,
             fromBackend: true,
-            plainPassword: $record->plain_password ?? null
+            plainPassword: $this->plainPassword ?? null
         ));
     }
 }
