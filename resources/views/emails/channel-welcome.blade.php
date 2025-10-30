@@ -3,7 +3,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $subject ?? 'Willkommen beim wöchentlichen Video-Versand' }}</title>
+    <title>{{ $subject ?? 'Bitte bestätige den wöchentlichen Video-Versand' }}</title>
 </head>
 <body style="margin:0; padding:0; background-color:#f8fafc; font-family:Arial, sans-serif;">
 @include('emails.partials.header')
@@ -14,21 +14,19 @@
     <tr>
         <td style="padding:24px; color:#0f172a; line-height:1.6; font-size:16px;">
             <h1 style="margin:0 0 16px 0; font-size:20px; font-weight:700;">
-                Willkommen beim wöchentlichen Video-Versand
+                Bitte bestätige den wöchentlichen Video-Versand
             </h1>
 
-            <p>
-                Hallo {{ $channel->creator_name ?: 'Liebes Team' }} ({{ $channel->name }}),
-            </p>
+            <p>Hi {{ $channel->name ?? 'Liebes Team' }},</p>
 
             <p>
-                vielen Dank für Ihre Registrierung als Kanalpartner.
-                Über diesen Service erhalten Sie regelmäßig neue Videos direkt zur Veröffentlichung bereitgestellt.
+                dein Kanal wurde in <strong>{{ config('app.name') }}</strong> eingetragen,
+                damit du regelmäßig neue Videos direkt zur Veröffentlichung bekommst.
+                Bevor der Versand startet, musst du nur kurz deine Teilnahme bestätigen.
             </p>
 
-            <p>
-                Damit wir Ihren Kanal aktivieren und in den wöchentlichen Versand aufnehmen können,
-                bestätigen Sie bitte Ihre Teilnahme über den folgenden Link:
+            <p style="margin-top:16px;">
+                Wenn du mit dem wöchentlichen Versand einverstanden bist, klick einfach hier:
             </p>
 
             <p style="text-align:center; margin:24px 0;">
@@ -40,8 +38,9 @@
             </p>
 
             <p>
-                Nach der Bestätigung wird Ihr Kanal automatisch in den wöchentlichen Verteiler aufgenommen.
-                Sie können Ihre Teilnahme jederzeit über Ihr Benutzerkonto oder per Antwort auf diese Mail widerrufen.
+                Nach der Bestätigung bekommst du automatisch die neuen Videos im gewohnten Rhythmus.
+                Wenn du das irgendwann nicht mehr möchtest, reicht eine kurze Mail an
+                <a href="mailto:{{ Cfg::get('email_admin_mail', 'email') }}">{{ Cfg::get('email_admin_mail', 'email') }}</a>.
             </p>
 
             <p style="margin:24px 0 0 0;">
