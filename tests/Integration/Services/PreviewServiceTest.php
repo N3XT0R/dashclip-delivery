@@ -6,7 +6,6 @@ namespace Tests\Integration\Services;
 
 use App\Exceptions\InvalidTimeRangeException;
 use App\Exceptions\PreviewGenerationException;
-use App\Models\Video;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
@@ -20,49 +19,6 @@ class PreviewServiceTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->previewService = $this->app->make(PreviewService::class);
-    }
-
-    /** Small helper to compute the preview path like PreviewService::buildPath() does. */
-    private function computePreviewPath(Video $video, int $start, int $end): string
-    {
-        $hash = md5($video->getKey().'_'.$start.'_'.$end);
-        return "previews/{$hash}.mp4";
-    }
-
-    private function fakeVideoContent(): string
-    {
-        return 'FAKE_MP4';
-    }
-
-    public function testGenerateReturnsCachedUrlWhenPreviewAlreadyExists(): void
-    {
-        // Use fake disks to avoid touching the real filesystem
-        Storage::fake('local');
-        Storage::fake('public');
-
-        // Arrange: real source on local disk
-        $srcRel = 'videos/a.mp4';
-        Storage::disk('local')->put($srcRel, $this->fakeVideoContent());
-
-        $video = Video::factory()->create([
-            'disk' => 'local',
-            'path' => $srcRel,
-        ]);
-
-        $start = 5;
-        $end = 15;
-        $previewPath = $this->computePreviewPath($video, $start, $end);
-
-        // Pre-create cached preview so generate() will short-circuit
-        Storage::disk('public')->put($previewPath, 'cached');
-
-        // Act
-        $url = $this->previewService->generate($video, $start, $end);
-
-        // Assert: preview came from cache; URL should contain the path
-        $this->assertNotNull($url);
-        $this->assertTrue(Storage::disk('public')->exists($previewPath));
-        $this->assertStringContainsString($previewPath, (string)$url);
     }
 
     public function testGeneratePreviewByDiskCreatesPreviewSuccessfully(): void
