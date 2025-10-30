@@ -34,7 +34,7 @@ class Video extends Model
     }
 
 
-    public function getPreviewPath(): string
+    public function getPreviewPath(): ?string
     {
         $path = PathBuilder::forPreviewByHash($this->video->hash);
         $disk = $this->getDisk();
@@ -42,7 +42,7 @@ class Video extends Model
             $clip = $this->clips()->first();
             $path = $clip?->getPreviewPath();
             if (!$disk->exists($path)) {
-                return '';
+                return null;
             }
         }
 
@@ -68,7 +68,7 @@ class Video extends Model
                     return false;
                 }
 
-                if ($previewDisk->exists($previewPath) && !$previewDisk->delete($previewPath)) {
+                if (null !== $previewPath && $previewDisk->exists($previewPath) && !$previewDisk->delete($previewPath)) {
                     \Log::warning('preview delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
                     return false;
                 }
