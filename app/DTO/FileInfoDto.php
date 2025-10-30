@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
-final class FileInfoDto
+final readonly class FileInfoDto
 {
     public function __construct(
-        public readonly string $path,
-        public readonly string $basename,
-        public readonly string $extension,
+        public string $path,
+        public string $basename,
+        public string $extension,
+        public ?string $originalName = null,
     ) {
     }
 
@@ -21,7 +22,7 @@ final class FileInfoDto
             extension: pathinfo($path, PATHINFO_EXTENSION),
         );
     }
-    
+
     public function isCsv(): bool
     {
         return $this->isOneOfExtensions(['csv', 'txt']);

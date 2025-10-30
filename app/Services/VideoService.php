@@ -63,7 +63,7 @@ readonly class VideoService
             'path' => $pathToFile,
             'disk' => $diskName,
             'meta' => null,
-            'original_name' => $file->basename,
+            'original_name' => $file->originalName ?? $file->basename,
         ]);
     }
 
