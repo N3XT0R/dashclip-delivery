@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0-alpha.2] - undefined
 
+### Added
+
+- **Offer Link Tracking**
+    - Introduced a new `offer_link_clicks` table to log when a channel views the offer overview page.
+    - Each valid (signed) request to `OfferController::show()` now creates a record including:
+        - `assignment_id` reference.
+        - Timestamp of access (`clicked_at`).
+        - Optional `ip` and `user_agent` for analytics.
+    - Multiple visits by the same channel are counted individually for accurate usage statistics.
+    - Implemented Filament admin resource *Offer Link Clicks* under **Statistics**:
+        - Lists all recorded clicks with assignment relations.
+        - Sortable by date and searchable by channel.
+    - Tracking occurs only for valid signed links (`ensureValidSignature()`).
+    - Existing download tracking remains unaffected.
+
 ### Changed
 
 - **Download System**
