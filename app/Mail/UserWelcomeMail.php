@@ -30,4 +30,12 @@ class UserWelcomeMail extends AbstractLoggedMail
         return 'emails.user-welcome';
     }
 
+    protected function viewData(): array
+    {
+        return [
+            'user' => $this->user,
+            'fromBackend' => $this->fromBackend,
+            'plainPassword' => $this->plainPassword,
+        ];
+    }
 }
