@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OfferLinkClickResource\Pages;
 use App\Models\OfferLinkClick;
 use BackedEnum;
-use Filament\Actions;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -74,12 +73,10 @@ class OfferLinkClickResource extends Resource
                     ->relationship('user', 'name'),
             ])
             ->recordActions([
-                Actions\EditAction::make(),
+
             ])
             ->toolbarActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                ]),
+
             ])
             ->defaultSort('clicked_at', 'desc');
     }
