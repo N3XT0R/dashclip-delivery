@@ -86,6 +86,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       did not trigger the session finish step.  
       Small files are now handled via a direct `upload()` call instead of a chunked session upload.
 
+- **Video Deletion**
+    - Fixed an issue where video and preview files were not reliably deleted when removing a `Video` record.  
+      Introduced a new `getPreviewPath()` method on the `Video` model to correctly resolve preview file paths,  
+      including fallback to the associated `Clip` when the primary preview is missing.  
+      The deletion logic in the model’s `booted()` method now ensures both original and preview files are  
+      properly removed across different storage disks, with improved error handling and logging.
+
 ### Changed
 
 - **Framework**
