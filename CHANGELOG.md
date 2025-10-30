@@ -35,6 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Graceful handling of missing selections or invalid assignment states.
         - Minor structural refactoring for clarity and maintainability.
 
+- **Offer Controller Refactor**
+    - Extracted all offer preparation logic (assignment fetching, temp URL generation, ZIP link creation)
+      from `OfferController` into a dedicated `OfferService`.
+    - New method `OfferService::prepareOfferViewData()` centralizes data preparation for the offer view.
+    - Controller now only handles request validation (`ensureValidSignature`) and delegates data loading to the service.
+    - Improves separation of concerns, readability, and future testability.
+
 ### Removed
 
 - **Legacy Ingest Process & Components**
