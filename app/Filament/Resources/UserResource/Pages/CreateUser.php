@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Enum\Users\RoleEnum;
 use App\Events\User\UserCreated;
 use App\Filament\Resources\UserResource;
 use App\Models\User;
@@ -46,6 +47,10 @@ class CreateUser extends CreateRecord
         } else {
             $data['plain_password'] = $data['password'];
             $data['password'] = bcrypt($data['password']);
+        }
+
+        if (empty($data['role'])) {
+            $data['roles'] = [RoleEnum::REGULAR->value];
         }
 
         return $data;
