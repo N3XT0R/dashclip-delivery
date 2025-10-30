@@ -18,7 +18,7 @@
             </h1>
 
             <p>
-                Hallo {{ $channel->name ?? 'Kollege' }},
+                Hallo {{ $channel->creator_name ?: 'Liebes Team' }} ({{ $channel->name }}),
             </p>
 
             <p>
