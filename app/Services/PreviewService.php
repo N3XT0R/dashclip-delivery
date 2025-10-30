@@ -225,6 +225,14 @@ final class PreviewService
         }
     }
 
+    /**
+     * Get the URL of an existing preview for the given time range.
+     * @param  Video  $video
+     * @param  int  $start
+     * @param  int  $end
+     * @return string|null
+     * @deprecated no replacement
+     */
     public function url(Video $video, int $start, int $end): ?string
     {
         if (!$this->isValidRange($start, $end)) {
