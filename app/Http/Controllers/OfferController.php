@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\{Batch, Channel};
-use App\Services\AssignmentService;
 use App\Services\LinkService;
+use App\Services\OfferService;
 use Filament\Facades\Filament;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 
 class OfferController extends Controller
 {
-    public function __construct(private AssignmentService $assignments)
+    public function __construct(private readonly OfferService $offerService)
     {
     }
 
@@ -20,24 +20,9 @@ class OfferController extends Controller
     {
         $this->ensureValidSignature($req);
 
-        $items = $this->assignments
-            ->fetchPending($batch, $channel)
-            ->loadMissing('video.clips');
+        $data = $this->offerService->prepareOfferViewData($batch, $channel);
 
-        $pickedUp = $this->assignments
-            ->fetchPickedUp($batch, $channel)
-            ->loadMissing('video.clips');
-
-        $this->addTempUrlToAssignments($items);
-        $this->addTempUrlToAssignments($pickedUp);
-
-        /**
-         * @var LinkService $linkService
-         */
-        $linkService = app(LinkService::class);
-        $zipPostUrl = $linkService->getZipSelectedUrl($batch, $channel, now()->addHours(6));
-
-        return view('offer.show', compact('batch', 'channel', 'items', 'zipPostUrl', 'pickedUp'));
+        return view('offer.show', $data);
     }
 
     protected function addTempUrlToAssignments(Collection $items): void
