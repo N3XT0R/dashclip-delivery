@@ -78,6 +78,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fully RFC-conform handling of inbound timestamps and header parsing via `Carbon` conversion.
     - Logging of inbound mail events for traceability and debugging.
 
+### Fixed
+
+- Fixed an issue where small files (≤ 8 MB) were not uploaded to Dropbox correctly.  
+  The upload session was started but never finished because files smaller than the configured `CHUNK_SIZE`
+  did not trigger the session finish step.  
+  Small files are now handled via a direct `upload()` call instead of a chunked session upload.
+
 ### Changed
 
 - **Framework**
