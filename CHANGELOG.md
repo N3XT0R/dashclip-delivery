@@ -58,6 +58,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Controller now only handles request validation (`ensureValidSignature`) and delegates data loading to the service.
     - Improves separation of concerns, readability, and future testability.
 
+### Deprecated
+
+- **Legacy Assignment Download Controller**
+    - Marked `AssignmentDownloadController` as **deprecated** in favor of the new real-time WebSocket-based download
+      flow handled by `ZipController`.
+    - The legacy implementation previously managed direct single-file downloads via signed URLs and stream responses.
+    - All functionality has been superseded by the new zip-based asynchronous download process, which:
+        - Tracks download progress via WebSocket events.
+        - Supports batch and individual video downloads.
+        - Provides improved error handling and download verification.
+    - The old controller remains temporarily available for backward compatibility but will be removed in a future
+      release.
+
 ### Removed
 
 - **Legacy Ingest Process & Components**
@@ -75,19 +88,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       driver-agnostic file access.
     - This cleanup eliminates redundant code paths, ensures better stability, and aligns all preview operations with the
       new ingest architecture.
-
-### Deprecated
-
-- **Legacy Assignment Download Controller**
-    - Marked `AssignmentDownloadController` as **deprecated** in favor of the new real-time WebSocket-based download
-      flow handled by `ZipController`.
-    - The legacy implementation previously managed direct single-file downloads via signed URLs and stream responses.
-    - All functionality has been superseded by the new zip-based asynchronous download process, which:
-        - Tracks download progress via WebSocket events.
-        - Supports batch and individual video downloads.
-        - Provides improved error handling and download verification.
-    - The old controller remains temporarily available for backward compatibility but will be removed in a future
-      release.
 
 ## [3.0.0-alpha] - 2025-10-30
 
