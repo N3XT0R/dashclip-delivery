@@ -39,7 +39,7 @@ class OfferLinkClickResource extends Resource
                 Tables\Columns\TextColumn::make('user.id')
                     ->label('User')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('batch.name')
+                Tables\Columns\TextColumn::make('batch.type')
                     ->label('Batch')
                     ->sortable()
                     ->searchable(),
@@ -63,7 +63,7 @@ class OfferLinkClickResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('batch_id')
                     ->label('Batch')
-                    ->relationship('batch', 'name'),
+                    ->relationship('batch', 'type'),
 
                 Tables\Filters\SelectFilter::make('channel_id')
                     ->label('Channel')
