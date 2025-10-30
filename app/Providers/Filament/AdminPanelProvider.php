@@ -42,9 +42,9 @@ class AdminPanelProvider extends PanelProvider
         return $panel;
     }
 
-    protected function addDefaults(Panel $panel): void
+    protected function addDefaults(Panel $panel): Panel
     {
-        $panel->default()
+        return $panel->default()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
                 Js::make('app', app(Vite::class)->asset('resources/js/app.js')),
@@ -74,17 +74,17 @@ class AdminPanelProvider extends PanelProvider
             ]);
     }
 
-    protected function addRenderHooks(Panel $panel): void
+    protected function addRenderHooks(Panel $panel): Panel
     {
-        $panel->renderHook(
+        return $panel->renderHook(
             PanelsRenderHook::FOOTER,
             fn(): string => view('partials.footer')->render()
         );
     }
 
-    protected function addMiddlewares(Panel $panel): void
+    protected function addMiddlewares(Panel $panel): Panel
     {
-        $panel->middleware([
+        return $panel->middleware([
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
@@ -97,9 +97,9 @@ class AdminPanelProvider extends PanelProvider
         ]);
     }
 
-    protected function addPlugins(Panel $panel): void
+    protected function addPlugins(Panel $panel): Panel
     {
-        $panel->plugins([
+        return $panel->plugins([
             FilamentShieldPlugin::make(),
             FilamentLogViewerPlugin::make()
                 ->navigationGroup('System')
@@ -107,18 +107,18 @@ class AdminPanelProvider extends PanelProvider
         ]);
     }
 
-    protected function addMFA(Panel $panel): void
+    protected function addMFA(Panel $panel): Panel
     {
-        $panel->multiFactorAuthentication([
+        return $panel->multiFactorAuthentication([
             AppAuthentication::make()
                 ->recoverable(),
             EmailAuthentication::make(),
         ]);
     }
 
-    protected function addWidgets(Panel $panel): void
+    protected function addWidgets(Panel $panel): Panel
     {
-        $panel->widgets([
+        return $panel->widgets([
             AccountWidget::class,
             FilamentInfoWidget::class,
         ]);
