@@ -12,29 +12,31 @@ use Illuminate\Support\Facades\Mail;
 class SendChannelWelcomeMailCommand extends Command
 {
     /**
-     * The name and signature of the console command.
+     * Command signature.
      *
-     * You can pass an optional channel ID or email:
-     *   php artisan channels:send-welcome
-     *   php artisan channels:send-welcome 5
-     *   php artisan channels:send-welcome test@example.com
+     * Beispiele:
+     *  php artisan channels:send-welcome
+     *  php artisan channels:send-welcome 5
+     *  php artisan channels:send-welcome test@example.com
+     *  php artisan channels:send-welcome --dry
      */
-    protected $signature = 'channels:send-welcome {channel? : Channel ID or email} {--force : Send even if already approved}';
+    protected $signature = 'channels:send-welcome
+                            {channel? : Channel ID oder E-Mail-Adresse}
+                            {--force : Sende auch, wenn bereits approved}
+                            {--dry : Zeigt nur an, wer eine Mail erhalten würde (keine Sendung)}';
 
     /**
-     * The console command description.
+     * Command description.
      */
-    protected $description = 'Send welcome/approval mail to a specific or all unapproved channels.';
+    protected $description = 'Sendet Willkommens-/Freigabe-Mails an Kanäle oder zeigt sie als Vorschau (--dry).';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(): int
     {
         $arg = $this->argument('channel');
         $force = $this->option('force');
+        $dry = $this->option('dry');
 
-        // Target selection
+        // Basisselektion
         $query = Channel::query();
 
         if ($arg) {
@@ -50,12 +52,29 @@ class SendChannelWelcomeMailCommand extends Command
         $channels = $query->get();
 
         if ($channels->isEmpty()) {
-            $this->info('No matching channels found.');
+            $this->warn('Keine passenden Kanäle gefunden.');
             return self::SUCCESS;
         }
 
-        $this->info('Sending welcome mail(s) to '.$channels->count().' channel(s)...');
+        // Vorschau anzeigen
+        if ($dry) {
+            $this->info('🧪 Dry-Run: Es würden folgende Kanäle angeschrieben werden:');
+            $this->table(
+                ['ID', 'Name', 'E-Mail', 'Approved At'],
+                $channels->map(fn($c) => [
+                    $c->id,
+                    $c->name,
+                    $c->email,
+                    $c->approved_at?->toDateTimeString() ?? '—',
+                ])
+            );
 
+            $this->comment('Gesamt: '.$channels->count().' Kanal(e)');
+            return self::SUCCESS;
+        }
+
+        // Versand durchführen
+        $this->info('📬 Sende Willkommens-Mail(s) an '.$channels->count().' Kanal(e)...');
         $bar = $this->output->createProgressBar($channels->count());
         $bar->start();
 
@@ -63,16 +82,15 @@ class SendChannelWelcomeMailCommand extends Command
             try {
                 Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
             } catch (\Throwable $e) {
-                $this->error("\nFailed to send mail to {$channel->email}: {$e->getMessage()}");
+                $this->error("\nFehler beim Versand an {$channel->email}: {$e->getMessage()}");
                 report($e);
             }
-
             $bar->advance();
         }
 
         $bar->finish();
         $this->newLine(2);
-        $this->info('Done.');
+        $this->info('Versand abgeschlossen.');
 
         return self::SUCCESS;
     }
