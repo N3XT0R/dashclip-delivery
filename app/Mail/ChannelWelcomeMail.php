@@ -32,7 +32,7 @@ class ChannelWelcomeMail extends AbstractLoggedMail
     {
         return [
             'channel' => $this->channel,
-            'approveUrl' => $this->channel->getApprovalToken(),
+            'approveUrl' => $this->channel->getApprovalUrl(),
         ];
     }
 
