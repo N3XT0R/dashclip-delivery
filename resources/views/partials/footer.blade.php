@@ -4,6 +4,7 @@
             href="{{route('changelog')}}" target="_blank">{{ Version::getCurrentVersion() }}</a>
     - <a href="{{ route('impressum') }}" target="_blank">Impressum</a>
     - <a href="{{ route('datenschutz') }}" target="_blank">Datenschutz</a>
+    - <a href="{{ route('datenschutz') }}" target="_blank">Nutzungsbedingungen</a>
     - <a href="{{ route('license') }}" target="_blank">Lizenz</a>
     - <a href="{{ url(config('app.footer.roadmap')) }}" target="_blank">Roadmap</a>
     - <a href="{{ url(config('app.footer.issues')) }}" target="_blank">Bug gefunden?</a>

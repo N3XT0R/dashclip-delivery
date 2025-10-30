@@ -1,7 +1,7 @@
 @php use App\Facades\Cfg; @endphp
 @extends('layouts.app')
 
-@section('title', 'Datenschutz')
+@section('title', 'Terms of Use')
 
 @section('content')
     <div class="panel">
