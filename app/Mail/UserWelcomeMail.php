@@ -10,20 +10,24 @@ use Illuminate\Mail\Mailables\Envelope;
 class UserWelcomeMail extends AbstractLoggedMail
 {
     public function __construct(
-        public User $user
+        public User $user,
+        public bool $fromBackend = false,
+        public ?string $plainPassword = null
     ) {
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Willkommen bei '.config('app.name'),
+            subject: $this->fromBackend
+                ? 'Dein Zugang zu '.config('app.name')
+                : 'Willkommen bei '.config('app.name')
         );
     }
 
     protected function viewName(): string
     {
-        // TODO: Implement viewName() method.
+        return 'emails.user-welcome';
     }
 
 }

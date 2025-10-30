@@ -14,7 +14,9 @@ class UserCreated
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
-        public User $user
+        public User $user,
+        public bool $fromBackend = false,
+        public ?string $plainPassword = null,
     ) {
     }
 }

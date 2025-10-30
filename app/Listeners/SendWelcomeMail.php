@@ -13,7 +13,7 @@ class SendWelcomeMail
     public function handle(UserCreated $event): void
     {
         Mail::to($event->user->email)->queue(
-            new UserWelcomeMail($event->user)
+            new UserWelcomeMail($event->user, $event->fromBackend, $event->plainPassword)
         );
     }
 }
