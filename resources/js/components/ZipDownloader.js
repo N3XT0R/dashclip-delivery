@@ -30,6 +30,14 @@ export default class ZipDownloader {
             }
         });
         this.submitBtn?.addEventListener('click', () => this.startDownload());
+        // Einzel-Download-Buttons
+        document.querySelectorAll('.single-download').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.assignmentId;
+                if (!id) return;
+                await this.startDownload([id]);
+            });
+        });
     }
 
     toggleAll(state) {
@@ -42,9 +50,9 @@ export default class ZipDownloader {
         if (this.selCountEl) this.selCountEl.textContent = `${n} ausgewählt`;
     }
 
-    async startDownload() {
+    async startDownload(forcedIds = null) {
         const boxes = Array.from(document.querySelectorAll('.pickbox:checked'));
-        const selected = boxes.map(cb => cb.value);
+        const selected = forcedIds || boxes.map(cb => cb.value);
         if (!selected.length) {
             alert('Bitte wähle mindestens ein Video aus.');
             return;

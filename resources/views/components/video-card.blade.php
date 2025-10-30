@@ -65,7 +65,11 @@
                 @if($disabled)
                     <span class="btn btn-sm disabled">Bereits geladen</span>
                 @else
-                    <a class="btn btn-sm" href="{{ $assignment->temp_url }}">Einzeln laden</a>
+                    <button type="button"
+                            class="btn btn-sm single-download"
+                            data-assignment-id="{{ $assignment->id }}">
+                        Einzeln laden
+                    </button>
                 @endif
 
                 <button type="button" class="btn btn-sm"
