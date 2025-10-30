@@ -69,7 +69,7 @@ class Video extends Model
                 }
 
                 if (null !== $previewPath && $previewDisk->exists($previewPath) && !$previewDisk->delete($previewPath)) {
-                    \Log::warning('preview delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
+                    \Log::warning('preview delete failed', ['video_id' => $video->getKey(), 'path' => $previewPath]);
                     return false;
                 }
             } catch (\Throwable $e) {
