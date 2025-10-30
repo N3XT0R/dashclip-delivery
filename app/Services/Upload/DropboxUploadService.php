@@ -48,6 +48,10 @@ class DropboxUploadService
 
             $chunkSize = self::CHUNK_SIZE;
 
+            /**
+             * IMPORTANT:
+             * upload file direct if filesize smaller than chunk-size
+             */
             if ($bytes <= $chunkSize) {
                 $content = stream_get_contents($read);
                 $meta = $client->upload($targetPath, $content);
