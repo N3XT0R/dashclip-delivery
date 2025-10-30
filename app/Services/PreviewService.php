@@ -9,7 +9,6 @@ use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
 use App\Facades\DynamicStorage;
 use App\Facades\PathBuilder;
-use App\Models\Video;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Filters\Video\VideoFilters;
 use FFMpeg\Format\Video\X264;
@@ -108,26 +107,6 @@ final class PreviewService
         }
     }
 
-    /**
-     * Get the URL of an existing preview for the given time range.
-     * @param  Video  $video
-     * @param  int  $start
-     * @param  int  $end
-     * @return string|null
-     * @deprecated no replacement
-     */
-    public function url(Video $video, int $start, int $end): ?string
-    {
-        if (!$this->isValidRange($start, $end)) {
-            return null;
-        }
-
-        $previewDisk = Storage::disk('public');
-        $previewPath = PathBuilder::forPreview($video->getKey(), $start, $end);
-
-        return $previewDisk->exists($previewPath) ? $previewDisk->url($previewPath) : null;
-    }
-
     // ───────────────────────── internal / helpers ─────────────────────────
 
     /**
@@ -154,45 +133,12 @@ final class PreviewService
         return $start >= 0 && $end > $start;
     }
 
-    /**
-     * Normalize a path to be relative (no leading slash).
-     * @param  string  $path
-     * @return string
-     * @deprecated no replacement
-     */
-    private function normalizeRelative(string $path): string
-    {
-        // Filesystem adapters expect relative paths (root is prefixed by the adapter)
-        return ltrim($path, '/');
-    }
-
-    /**
-     * Build the preview path for the given video and time range.
-     * @param  Video  $video
-     * @param  int  $start
-     * @param  int  $end
-     * @return string
-     * @deprecated use PathBuilder instead
-     */
-    private function buildPath(Video $video, int $start, int $end): string
-    {
-        $hash = md5($video->getKey().'_'.$start.'_'.$end);
-
-        return "previews/{$hash}.mp4";
-    }
-
     // ───────────────────────── logging helpers ─────────────────────────
 
     private function info(string $message): void
     {
         $this->output?->writeln("<info>{$message}</info>");
         Log::info($message, ['service' => 'PreviewService']);
-    }
-
-    private function warn(string $message): void
-    {
-        $this->output?->writeln("<comment>{$message}</comment>");
-        Log::warning($message, ['service' => 'PreviewService']);
     }
 
     private function error(string $message): void

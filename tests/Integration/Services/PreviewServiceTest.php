@@ -65,31 +65,6 @@ class PreviewServiceTest extends DatabaseTestCase
         $this->assertStringContainsString($previewPath, (string)$url);
     }
 
-    public function testUrlReturnsNullWhenPreviewMissingAndUrlWhenPresent(): void
-    {
-        Storage::fake('local');
-        Storage::fake('public');
-
-        Storage::disk('local')->put('videos/e.mp4', $this->fakeVideoContent());
-        $video = Video::factory()->create(['disk' => 'local', 'path' => 'videos/e.mp4']);
-
-        $start = 2;
-        $end = 7;
-        $previewPath = $this->computePreviewPath($video, $start, $end);
-
-        $svc = $this->previewService;
-
-        // No preview yet
-        $this->assertNull($svc->url($video, $start, $end));
-
-        // After putting the preview, url() should return a link that includes the path
-        Storage::disk('public')->put($previewPath, 'cached');
-        $url = $svc->url($video, $start, $end);
-
-        $this->assertNotNull($url);
-        $this->assertStringContainsString($previewPath, (string)$url);
-    }
-
     public function testGeneratePreviewByDiskCreatesPreviewSuccessfully(): void
     {
         // prepare input video (real fixture)
