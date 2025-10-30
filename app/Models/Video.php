@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Facades\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,22 @@ class Video extends Model
         return Storage::disk($this->getAttribute('disk'));
     }
 
+
+    public function getPreviewPath(): string
+    {
+        $path = PathBuilder::forPreviewByHash($this->video->hash);
+        $disk = $this->getDisk();
+        if (!$disk->exists($path)) {
+            $clip = $this->clips()->first();
+            $path = $clip?->getPreviewPath();
+            if (!$disk->exists($path)) {
+                return '';
+            }
+        }
+
+        return $path;
+    }
+
     protected static function booted(): void
     {
         static::deleting(function (Video $video) {
@@ -39,21 +56,20 @@ class Video extends Model
             if (!$path) {
                 return true;
             }
-
-            /**
-             * @var Clip $clip
-             *
-             */
-            $clip = $video->clips()->first();
-
+            
             try {
                 $storageDisk = $video->getDisk();
                 $targetDisk = config('preview.default_disk', 'public');
                 $previewDisk = Storage::disk($targetDisk);
-                $previewPath = $clip->getPreviewPath();
+                $previewPath = $this->getPreviewPath();
 
                 if ($storageDisk->exists($path) && !$storageDisk->delete($path)) {
                     \Log::warning('video delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
+                    return false;
+                }
+
+                if ($previewDisk->exists($previewPath) && !$previewDisk->delete($previewPath)) {
+                    \Log::warning('preview delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
                     return false;
                 }
 
