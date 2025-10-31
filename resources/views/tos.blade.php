@@ -28,9 +28,11 @@
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Zulässige Nutzung</h2>
             <p>Die bereitgestellten Inhalte dürfen ausschließlich im Rahmen der vorgesehenen Nutzung durch den
-                jeweiligen
-                Kanal verwendet werden. Eine Weitergabe an Dritte, Vervielfältigung oder öffentliche Verbreitung ohne
-                ausdrückliche Zustimmung des Betreibers ist untersagt.</p>
+                jeweiligen Kanal verwendet werden. Eine Weitergabe an Dritte, Vervielfältigung oder öffentliche
+                Verbreitung ohne ausdrückliche Zustimmung des Betreibers ist untersagt.
+                Mit dem Download der Videos über die vorgesehenen Links erhält der jeweilige Kanal das einfache, nicht
+                übertragbare Nutzungsrecht, die Videos im Rahmen seiner redaktionellen oder plattformbezogenen Tätigkeit
+                zu verwenden.</p>
         </section>
 
         <section class="mb-6">
