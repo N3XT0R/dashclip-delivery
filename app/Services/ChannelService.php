@@ -37,10 +37,10 @@ class ChannelService
         return [$channels, $rotationPool, $quota];
     }
 
-    public function approve(Channel $channel, string $token): void
+    public function approve(Channel $channel, string $approvalToken): void
     {
         $expected = $channel->getApprovalToken();
-        if ($token !== $expected) {
+        if ($approvalToken !== $expected) {
             throw new \InvalidArgumentException('Ungültiger Bestätigungslink.');
         }
 
