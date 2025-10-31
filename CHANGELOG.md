@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       handling without external dependencies.
     - Improved overall mail ingestion reliability through precise, type-safe test validation of handler logic and log
       events.
-  
+
 - **Channel Welcome Mail Refactor**
     - Introduced a fully refactored **`SendChannelWelcomeMailCommand`** with clear separation of responsibilities
       between
@@ -51,6 +51,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Ensured comprehensive mail testing using `Mail::fake()` and queue assertions to validate real send behavior.
     - Improved overall maintainability and reliability of the channel mail system through isolated, layered test
       coverage.
+
+- **Mail Handling Stability**
+    - Added comprehensive **integration tests** for the listeners  
+      `SendChannelCreatedNotification` and `SendWelcomeMail`,  
+      ensuring correct triggering and welcome mail dispatch behavior.
+    - Tests cover both direct listener invocation and automatic event registration  
+      via the Laravel event dispatcher.
+    - Includes scenarios with and without valid email addresses, verifying queue behavior  
+      (`Mail::queue` vs. `Mail::send`) for stable runtime handling.
+    - Unified use of `Mail::fake()` across all listener tests for consistent, type-safe mail verification.
+
+### Fixed
+
+- **Mail Handling Robustness**
+    - Improved `SendWelcomeMail` listener resilience by adding internal `try/catch` handling  
+      to prevent crashes when Mail queue dispatch fails.
+    - Prevented runtime exceptions during queued mail operations,  
+      ensuring graceful degradation and consistent event processing under failure conditions.
 
 ## [3.0.0-alpha.2] - 2025-10-31
 
