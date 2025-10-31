@@ -102,8 +102,7 @@ final class IngestScanTest extends DatabaseTestCase
 
         $this->assertSame(0, Batch::query()->count());
     }
-
-    /** Duplicate handling: two identical files result in 1 new, 1 dup; the duplicate source is removed. */
+    
     public function testCommandProcessesInboxAndCountsDuplicates(): void
     {
         // Arrange
