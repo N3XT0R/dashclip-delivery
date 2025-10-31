@@ -47,6 +47,39 @@ class ChannelServiceTest extends DatabaseTestCase
         $this->assertEquals([$channelA->id => 3, $channelB->id => 5], $quota);
     }
 
+    public function testPrepareChannelsAndPoolAppliesQuotaOverride(): void
+    {
+        // Clean slate
+        Channel::query()->delete();
+
+        // Arrange
+        $channelA = Channel::factory()->create([
+            'weight' => 2,
+            'weekly_quota' => 3,
+            'is_video_reception_paused' => false,
+        ]);
+
+        $channelB = Channel::factory()->create([
+            'weight' => 1,
+            'weekly_quota' => 5,
+            'is_video_reception_paused' => false,
+        ]);
+
+        $quotaOverride = 42;
+
+        // Act
+        [$channels, $rotationPool, $quota] = $this->channelService->prepareChannelsAndPool($quotaOverride);
+
+        // Assert
+        $this->assertCount(2, $channels);
+        $this->assertCount(3, $rotationPool);
+        
+        $this->assertEquals([
+            $channelA->id => $quotaOverride,
+            $channelB->id => $quotaOverride,
+        ], $quota);
+    }
+
 
     public function testApproveUpdatesChannelWhenTokenIsValid(): void
     {
