@@ -6,6 +6,7 @@ exclude_patterns = [
   "**/public/**",
   "**/app/Policies/**",
   "**/database/**",
+  "**/lang/**",
   "**/deploy_laravel_config.php"
 ]
 
@@ -31,6 +32,7 @@ exclude_patterns = [
   "**/docs/**",
   "**/public/**",
   "**/database/**",
+  "**/lang/**",
   "**/deploy_laravel_config.php"
 ]
 
@@ -44,5 +46,6 @@ exclude = [
   "public/**",
   "app/Policies/**",
   "**/database/**",
+  "**/lang/**",
   "**/deploy_laravel_config.php"
 ]
