@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Clip;
+use App\Models\User;
 use App\Models\Video;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -28,6 +29,7 @@ class ClipFactory extends Factory
             'bundle_key' => null,                                // set via state if needed
             'role' => null,                                // set via state if needed
             'submitted_by' => $this->faker->optional()->safeEmail(),
+            'user_id' => null,
         ];
     }
 
@@ -71,5 +73,10 @@ class ClipFactory extends Factory
     public function submittedBy(string $who): static
     {
         return $this->state(fn() => ['submitted_by' => $who]);
+    }
+
+    public function forUser(User $user): static
+    {
+        return $this->state(fn() => ['user_id' => $user->getKey()]);
     }
 }

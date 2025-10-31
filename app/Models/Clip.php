@@ -20,7 +20,8 @@ class Clip extends Model
         'note',
         'bundle_key',
         'role',
-        'submitted_by'
+        'submitted_by',
+        'user_id'
     ];
 
     protected $appends = [
@@ -31,6 +32,18 @@ class Clip extends Model
     public function video(): BelongsTo
     {
         return $this->belongsTo(Video::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->setAttribute('user_id', $user->getKey());
+        $this->setAttribute('submitted_by', $user->display_name);
+        return $this;
     }
 
     public function getPreviewPath(): string
