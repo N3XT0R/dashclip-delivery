@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added verification of file deletion and content-addressed video storage consistency.
     - Strengthened overall reliability and maintainability through systematic test-driven validation of ingest
       processes.
+  
+- **Mail Handling Stability**
+    - Added comprehensive **unit tests** for `InboundHandler` to ensure reliable inbound message parsing and repository
+      integration.
+    - Added coverage for subject parsing, header extraction, and duplicate-mail detection to prevent re-processing of
+      previously handled messages.
+    - Implemented mocking of Webklex IMAP message flow (`Header`, `Attribute`, and `Message` chains) to validate correct
+      handling without external dependencies.
+    - Improved overall mail ingestion reliability through precise, type-safe test validation of handler logic and log
+      events.
 
 ## [3.0.0-alpha.2] - 2025-10-31
 
