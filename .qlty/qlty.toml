@@ -4,7 +4,8 @@ exclude_patterns = [
   "**/node_modules/**",
   "**/cache/**",
   "**/public/**",
-  "**/app/Policies/**"
+  "**/app/Policies/**",
+  "**/database/**"
 ]
 
 test_patterns = ["**/tests/**"]
