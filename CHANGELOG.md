@@ -88,6 +88,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       to prevent crashes when Mail queue dispatch fails.
     - Prevented runtime exceptions during queued mail operations,  
       ensuring graceful degradation and consistent event processing under failure conditions.
+  
+- **Clip Attribution Consistency**
+    - Fixed an issue where newly created clips were not using the authenticated user’s `display_name` for the
+      `submitted_by` field.
+    - The `ProcessUploadedVideo` job now consistently delegates ownership handling to the `Clip::setUser()` method,
+      ensuring that both `user_id` and `submitted_by` are aligned.
+    - This resolves inconsistent attribution between stored clips and their actual uploader identity, improving audit
+      trail accuracy and data integrity.
 
 ## [3.0.0-alpha.2] - 2025-10-31
 
