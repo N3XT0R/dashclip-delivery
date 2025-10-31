@@ -21,18 +21,6 @@ use Tests\DatabaseTestCase;
 final class IngestScanTest extends DatabaseTestCase
 {
 
-    /** Creates a small MP4-like file under storage/app/$subdir and returns [absPath, fileName]. */
-    private function makeInboxFile(string $subdir, string $fileName, string $contents = 'abc'): array
-    {
-        $dir = storage_path('app/'.$subdir);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        $abs = $dir.'/'.$fileName;
-        file_put_contents($abs, $contents); // tiny content is enough
-        return [$abs, $fileName];
-    }
-
     /** Happy path: one new video is ingested to the local disk; batch stats and file move are correct. */
     public function testCommandMovesVideoAndCreatesBatchStats(): void
     {
@@ -99,7 +87,7 @@ final class IngestScanTest extends DatabaseTestCase
             '#^videos/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{64}\.mp4$#',
             $video->path
         );
-        
+
 
         // Assert: destination file exists on local disk and has content
         $destAbs = app('filesystem')->disk('local')->path($video->path);
