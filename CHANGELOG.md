@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Ingest System Stabilization**
+    - Added comprehensive **feature and integration tests** for the `ingest:scan` command to ensure consistent file
+      handling, duplicate detection, and batch statistics integrity.
+    - Introduced fixture-based test structure using real video samples to validate the complete ingest workflow
+      end-to-end.
+    - Improved test coverage for concurrent ingest lock handling to prevent race conditions.
+    - Added verification of file deletion and content-addressed video storage consistency.
+    - Strengthened overall reliability and maintainability through systematic test-driven validation of ingest
+      processes.
+
 ## [3.0.0-alpha.2] - 2025-10-31
 
 > **Note:** This is the first production deployment of the new 3.x architecture.  
