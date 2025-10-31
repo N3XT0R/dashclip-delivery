@@ -26,8 +26,18 @@ class OfferLinkClickFactory extends Factory
         ];
     }
 
-    public function forUser(User $user): OfferLinkClickFactory
+    public function forUser(User $user): self
     {
         return $this->state(fn() => ['user_id' => $user->getKey()]);
+    }
+
+    public function forChannel(Channel $channel): self
+    {
+        return $this->state(fn() => ['channel_id' => $channel->getKey()]);
+    }
+
+    public function forBatch(Batch $batch): self
+    {
+        return $this->state(fn() => ['batch_id' => $batch->getKey()]);
     }
 }
