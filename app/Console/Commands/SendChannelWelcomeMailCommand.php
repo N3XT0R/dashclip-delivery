@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Mail\ChannelWelcomeMail;
-use App\Models\Channel;
+use App\Services\ChannelService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
 
 class SendChannelWelcomeMailCommand extends Command
 {
@@ -30,33 +28,30 @@ class SendChannelWelcomeMailCommand extends Command
      */
     protected $description = 'Sendet Willkommens-/Freigabe-Mails an Kanäle oder zeigt sie als Vorschau (--dry).';
 
+    public function __construct(
+        private readonly ChannelService $channelService
+    ) {
+        parent::__construct();
+    }
+
+    /**
+     * Führt den Artisan-Befehl aus.
+     */
     public function handle(): int
     {
         $arg = $this->argument('channel');
         $force = $this->option('force');
         $dry = $this->option('dry');
 
-        // Basisselektion
-        $query = Channel::query();
-
-        if ($arg) {
-            if (is_numeric($arg)) {
-                $query->where('id', (int)$arg);
-            } else {
-                $query->where('email', $arg);
-            }
-        } elseif (!$force) {
-            $query->whereNull('approved_at');
-        }
-
-        $channels = $query->get();
+        // Ermittelt die passenden Kanäle über den Service
+        $channels = $this->channelService->getEligibleForWelcomeMail($arg, $force);
 
         if ($channels->isEmpty()) {
             $this->warn('Keine passenden Kanäle gefunden.');
             return self::SUCCESS;
         }
 
-        // Vorschau anzeigen
+        // Vorschau (Dry-Run)
         if ($dry) {
             $this->info('🧪 Dry-Run: Es würden folgende Kanäle angeschrieben werden:');
             $this->table(
@@ -73,24 +68,17 @@ class SendChannelWelcomeMailCommand extends Command
             return self::SUCCESS;
         }
 
-        // Versand durchführen
+        // Tatsächlicher Versand
         $this->info('📬 Sende Willkommens-Mail(s) an '.$channels->count().' Kanal(e)...');
         $bar = $this->output->createProgressBar($channels->count());
         $bar->start();
 
-        foreach ($channels as $channel) {
-            try {
-                Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
-            } catch (\Throwable $e) {
-                $this->error("\nFehler beim Versand an {$channel->email}: {$e->getMessage()}");
-                report($e);
-            }
-            $bar->advance();
-        }
+        $sent = $this->channelService->sendWelcomeMails($channels);
 
         $bar->finish();
         $this->newLine(2);
-        $this->info('Versand abgeschlossen.');
+
+        $this->info('Versand abgeschlossen. ('.count($sent).' Mail(s) gesendet)');
 
         return self::SUCCESS;
     }
