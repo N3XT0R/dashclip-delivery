@@ -1,6 +1,9 @@
 FROM php:8.4-fpm
 RUN apt-get update \
-    && apt-get install -y curl zip npm libzip-dev zlib1g-dev unzip libpng-dev libjpeg-dev libfreetype6-dev git mariadb-client libmagickwand-dev openssh-client --no-install-recommends
+    && apt-get install -y curl zip npm libzip-dev zlib1g-dev unzip libpng-dev \
+    libjpeg-dev libfreetype6-dev git mariadb-client libmagickwand-dev openssh-client \
+    ffmpeg \
+    --no-install-recommends
 # --- GPG + Git-Support für signierte Commits ---
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
