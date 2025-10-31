@@ -8,6 +8,7 @@ use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\OfferLinkClick;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class OfferLinkClickFactory extends Factory
@@ -23,5 +24,10 @@ class OfferLinkClickFactory extends Factory
             'clicked_at' => null,
             'user_agent' => $this->faker->userAgent(),
         ];
+    }
+
+    public function forUser(User $user): OfferLinkClickFactory
+    {
+        return $this->state(fn() => ['user_id' => $user->getKey()]);
     }
 }
