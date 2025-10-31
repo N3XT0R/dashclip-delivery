@@ -81,6 +81,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Implemented the migration as part of a gradual transition towards full **user-based ownership** of clips, allowing
       mixed legacy and new data during rollout.
 
+### Changed
+
+- **User Profile Uniqueness**
+    - Enforced uniqueness for both `name` and `submitted_by` fields within user profiles to prevent duplicate
+      identifiers.
+    - This change ensures a one-to-one mapping between profile names and submission identities, improving data
+      reliability across clip attribution, audit logs, and activity tracking.
+    - Existing data remains unaffected; uniqueness is applied only to new or updated records going forward.
+
 ### Fixed
 
 - **Mail Handling Robustness**
@@ -88,7 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       to prevent crashes when Mail queue dispatch fails.
     - Prevented runtime exceptions during queued mail operations,  
       ensuring graceful degradation and consistent event processing under failure conditions.
-  
+
 - **Clip Attribution Consistency**
     - Fixed an issue where newly created clips were not using the authenticated user’s `display_name` for the
       `submitted_by` field.
