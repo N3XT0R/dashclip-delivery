@@ -28,6 +28,7 @@ class EditProfile extends BaseEditProfile
         return TextInput::make('submitted_name')
             ->required()
             ->label('Einsender-Name')
+            ->unique('users')
             ->maxLength(255);
     }
 }
