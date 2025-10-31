@@ -45,7 +45,7 @@ final class IngestScanTest extends DatabaseTestCase
         // Sanity: DB should be empty
         $this->assertDatabaseCount('videos', 0);
         $this->assertNull(
-            \App\Models\Batch::query()->where('type', 'ingest')->latest('id')->first(),
+            Batch::query()->where('type', 'ingest')->latest('id')->first(),
             'Expected no existing ingest batch before test run'
         );
 
@@ -59,7 +59,7 @@ final class IngestScanTest extends DatabaseTestCase
             ->assertExitCode(Command::SUCCESS);
 
         // Assert: a new ingest batch exists with valid stats
-        $batch = \App\Models\Batch::query()
+        $batch = Batch::query()
             ->where('type', 'ingest')
             ->latest('id')
             ->first();
