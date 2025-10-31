@@ -75,7 +75,7 @@ final class IngestScanTest extends DatabaseTestCase
         $this->assertSame(0, $batch->stats['err'], 'Expected zero errors');
 
         // Assert: one video row created and moved to content-addressed path on the local disk
-        $video = \App\Models\Video::query()->latest('id')->first();
+        $video = Video::query()->latest('id')->first();
         $this->assertNotNull($video, 'Expected a video record to exist');
         $this->assertSame('local', $video->disk);
         $this->assertNotEmpty($video->hash);
