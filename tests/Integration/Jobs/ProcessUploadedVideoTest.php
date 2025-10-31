@@ -49,7 +49,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
             'local',
             0,
             10,
-            'tester',
+            $user->display_name,
             'test note',
             'bundle-1',
             'main'
