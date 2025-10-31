@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **User Model Integration Tests**
+    - Added comprehensive **integration tests** for the `User` model to ensure correct behavior of  
+      authentication- and identity-related functionality.
+    - Covered the following areas:
+        - `display_name` accessor resolution with and without `submitted_name`.
+        - Persistence and retrieval of encrypted fields  
+          (`app_authentication_secret`, `app_authentication_recovery_codes`).
+        - Toggle behavior and persistence of `has_email_authentication`.
+        - Filament panel access validation via `canAccessPanel()`.
+    - Strengthened overall reliability of user authentication logic and ensured  
+      compatibility with Filament’s multi-factor authentication system.
+
 ### Fixed
 
 - **Video Model**
