@@ -57,8 +57,89 @@ class SendChannelWelcomeMailCommandTest extends DatabaseTestCase
             ->expectsOutputToContain('Versand abgeschlossen.')
             ->assertExitCode(0);
 
-        Mail::assertSent(ChannelWelcomeMail::class, function ($mail) use ($channel) {
-            return $mail->hasTo($channel->email);
-        });
+        Mail::assertSent(
+            ChannelWelcomeMail::class,
+            static function ($mail) use ($channel) {
+                return $mail->hasTo($channel->email);
+            });
+    }
+
+    public function testDoesNotSendMailsToApprovedChannelsWithoutForce(): void
+    {
+        Mail::fake();
+
+        Channel::factory()->create([
+            'email' => 'approved@example.com',
+            'approved_at' => now(),
+        ]);
+
+        $this->artisan('channels:send-welcome')
+            ->expectsOutput('Keine passenden Kanäle gefunden.')
+            ->assertExitCode(0);
+
+        Mail::assertNothingSent();
+    }
+
+    public function testSendsMailsToApprovedChannelsWhenForceIsUsed(): void
+    {
+        Mail::fake();
+
+        $channel = Channel::factory()->create([
+            'email' => 'approved@example.com',
+            'approved_at' => now(),
+        ]);
+
+        $this->artisan('channels:send-welcome --force')
+            ->expectsOutputToContain('📬 Sende Willkommens-Mail(s) an 1 Kanal(e)...')
+            ->expectsOutputToContain('Versand abgeschlossen.')
+            ->assertExitCode(0);
+
+        Mail::assertSent(
+            ChannelWelcomeMail::class,
+            static function ($mail) use ($channel) {
+                return $mail->hasTo($channel->email);
+            });
+    }
+
+    public function testCanTargetSpecificChannelById(): void
+    {
+        Mail::fake();
+
+        $channel = Channel::factory()->create([
+            'name' => 'Targeted',
+            'email' => 'target@example.com',
+        ]);
+
+        Channel::factory()->create(); // weiterer Channel
+
+        $this->artisan('channels:send-welcome '.$channel->id)
+            ->expectsOutputToContain('📬 Sende Willkommens-Mail(s) an 1 Kanal(e)...')
+            ->assertExitCode(0);
+
+        Mail::assertSent(
+            ChannelWelcomeMail::class,
+            fn($mail) => $mail->hasTo('target@example.com')
+        );
+    }
+
+    public function testCanTargetSpecificChannelByEmail(): void
+    {
+        Mail::fake();
+
+        $channel = Channel::factory()->create([
+            'name' => 'Target by Mail',
+            'email' => 'special@example.com',
+        ]);
+
+        Channel::factory()->create(); // weiterer Channel
+
+        $this->artisan('channels:send-welcome special@example.com')
+            ->expectsOutputToContain('📬 Sende Willkommens-Mail(s) an 1 Kanal(e)...')
+            ->assertExitCode(0);
+
+        Mail::assertSent(
+            ChannelWelcomeMail::class,
+            static fn($mail) => $mail->hasTo($channel->email)
+        );
     }
 }
