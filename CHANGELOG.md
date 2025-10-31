@@ -29,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Improved overall mail ingestion reliability through precise, type-safe test validation of handler logic and log
       events.
 
+- **Mail Logging Reliability**
+    - Added a dedicated **integration test** for the `LogSentMail` listener to verify creation of `MailLog` entries
+      after
+      successful mail dispatch through Laravel’s `array` mailer.
+    - Ensures message headers, subject, recipient, and HTML content are persisted correctly in the database.
+    - Confirms automatic generation of UUID-based internal IDs and RFC-compliant message identifiers.
+    - Validated full compatibility with Laravel 12’s Mailable and Event system (no deprecated `build()` or
+      `SentMessage` usage).
+
 - **Channel Welcome Mail Refactor**
     - Introduced a fully refactored **`SendChannelWelcomeMailCommand`** with clear separation of responsibilities
       between
