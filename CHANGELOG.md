@@ -71,6 +71,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       (`Mail::queue` vs. `Mail::send`) for stable runtime handling.
     - Unified use of `Mail::fake()` across all listener tests for consistent, type-safe mail verification.
 
+- **Clip Ownership Preparation**
+    - Added a new nullable `user_id` column to the **`clips`** table to establish a future link between clips and their
+      uploaders.
+    - Extended the **`Clip`** model with a `user()` relationship and a new `setUser()` helper for consistent assignment
+      of both `user_id` and `submitted_by` attributes.
+    - Updated the **`ProcessUploadedVideo`** job to automatically associate newly created clips with the uploading user,
+      preserving backward compatibility with the existing `submitted_by` field.
+    - Implemented the migration as part of a gradual transition towards full **user-based ownership** of clips, allowing
+      mixed legacy and new data during rollout.
+
 ### Fixed
 
 - **Mail Handling Robustness**
