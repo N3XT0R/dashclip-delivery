@@ -12,7 +12,10 @@ use Mockery;
 use Tests\TestCase;
 use Webklex\IMAP\Facades\Client;
 use Webklex\PHPIMAP\Client as ClientAlias;
+use Webklex\PHPIMAP\Folder;
 use Webklex\PHPIMAP\Message;
+use Webklex\PHPIMAP\Query\WhereQuery;
+use Webklex\PHPIMAP\Support\MessageCollection;
 
 class MailReplyScannerTest extends TestCase
 {
@@ -32,19 +35,19 @@ class MailReplyScannerTest extends TestCase
         Client::shouldReceive('account')->once()->with(null)->andReturn($client);
         $client->shouldReceive('connect')->once();
 
-        $inbox = Mockery::mock(\Webklex\PHPIMAP\Folder::class);
-        $query = Mockery::mock(\Webklex\PHPIMAP\Query\WhereQuery::class);
+        $inbox = Mockery::mock(Folder::class);
+        $query = Mockery::mock(WhereQuery::class);
         $client->shouldReceive('getFolder')->with('INBOX')->andReturn($inbox);
         $inbox->shouldReceive('messages')->andReturn($query);
         $query->shouldReceive('unseen')->andReturn($query);
 
         $message = $this->createMessageMock(autoSubmitted: true);
         $message->shouldReceive('setFlag')->with('Seen')->once();
-        $query->shouldReceive('get')->andReturn(new \Webklex\PHPIMAP\Support\MessageCollection([$message]));
+        $query->shouldReceive('get')->andReturn(new MessageCollection([$message]));
 
         Log::shouldReceive('info')
             ->once()
-            ->with(Mockery::on(fn ($message) => str_contains($message, 'was ignored')));
+            ->with(Mockery::on(fn($message) => str_contains($message, 'was ignored')));
         Log::shouldReceive('error')->never();
 
         $scanner->scan();
@@ -65,15 +68,15 @@ class MailReplyScannerTest extends TestCase
         Client::shouldReceive('account')->once()->with(null)->andReturn($client);
         $client->shouldReceive('connect')->once();
 
-        $inbox = Mockery::mock(\Webklex\PHPIMAP\Folder::class);
-        $query = Mockery::mock(\Webklex\PHPIMAP\Query\WhereQuery::class);
+        $inbox = Mockery::mock(Folder::class);
+        $query = Mockery::mock(WhereQuery::class);
         $client->shouldReceive('getFolder')->with('INBOX')->andReturn($inbox);
         $inbox->shouldReceive('messages')->andReturn($query);
         $query->shouldReceive('unseen')->andReturn($query);
 
         $message = $this->createMessageMock();
         $message->shouldReceive('setFlag')->with('Seen')->once();
-        $query->shouldReceive('get')->andReturn(new \Webklex\PHPIMAP\Support\MessageCollection([$message]));
+        $query->shouldReceive('get')->andReturn(new MessageCollection([$message]));
 
         $client->shouldReceive('getFolder')->with('Processed/Test')->andReturn(null);
         $client->shouldReceive('createFolder')->once()->with('Processed/Test');
@@ -101,15 +104,15 @@ class MailReplyScannerTest extends TestCase
         Client::shouldReceive('account')->once()->with(null)->andReturn($client);
         $client->shouldReceive('connect')->once();
 
-        $inbox = Mockery::mock(\Webklex\PHPIMAP\Folder::class);
-        $query = Mockery::mock(\Webklex\PHPIMAP\Query\WhereQuery::class);
+        $inbox = Mockery::mock(Folder::class);
+        $query = Mockery::mock(WhereQuery::class);
         $client->shouldReceive('getFolder')->with('INBOX')->andReturn($inbox);
         $inbox->shouldReceive('messages')->andReturn($query);
         $query->shouldReceive('unseen')->andReturn($query);
 
         $message = $this->createMessageMock();
         $message->shouldReceive('setFlag')->with('Seen')->once();
-        $query->shouldReceive('get')->andReturn(new \Webklex\PHPIMAP\Support\MessageCollection([$message]));
+        $query->shouldReceive('get')->andReturn(new MessageCollection([$message]));
 
         $client->shouldReceive('getFolder')->with('Processed/Test')->never();
         $client->shouldReceive('createFolder')->never();
@@ -135,14 +138,14 @@ class MailReplyScannerTest extends TestCase
         Client::shouldReceive('account')->once()->with(null)->andReturn($client);
         $client->shouldReceive('connect')->once();
 
-        $inbox = Mockery::mock(\Webklex\PHPIMAP\Folder::class);
-        $query = Mockery::mock(\Webklex\PHPIMAP\Query\WhereQuery::class);
+        $inbox = Mockery::mock(Folder::class);
+        $query = Mockery::mock(WhereQuery::class);
         $client->shouldReceive('getFolder')->with('INBOX')->andReturn($inbox);
         $inbox->shouldReceive('messages')->andReturn($query);
         $query->shouldReceive('unseen')->andReturn($query);
 
         $message = $this->createMessageMock();
-        $query->shouldReceive('get')->andReturn(new \Webklex\PHPIMAP\Support\MessageCollection([$message]));
+        $query->shouldReceive('get')->andReturn(new MessageCollection([$message]));
 
         $client->shouldReceive('getFolder')->with('Processed/Test')->never();
         $client->shouldReceive('createFolder')->never();
