@@ -100,4 +100,102 @@ class ChannelRepositoryTest extends DatabaseTestCase
         // Assert
         $this->assertTrue($channels->isEmpty(), 'Should return an empty collection if all channels are paused');
     }
+
+    public function testGetPendingApprovalReturnsOnlyUnapprovedChannels(): void
+    {
+        // Clean database
+        Channel::query()->delete();
+
+        // Arrange
+        $pendingA = Channel::factory()->create(['approved_at' => null]);
+        $pendingB = Channel::factory()->create(['approved_at' => null]);
+        $approved = Channel::factory()->create(['approved_at' => now()]);
+
+        // Act
+        $result = $this->channelRepository->getPendingApproval();
+
+        // Assert
+        $this->assertCount(2, $result, 'Should return only unapproved channels');
+        $this->assertTrue($result->contains($pendingA));
+        $this->assertTrue($result->contains($pendingB));
+        $this->assertFalse($result->contains($approved));
+    }
+
+    public function testGetPendingApprovalReturnsEmptyCollectionWhenAllApproved(): void
+    {
+        // Clean database
+        Channel::query()->delete();
+
+        // Arrange
+        Channel::factory()->count(3)->create(['approved_at' => now()]);
+
+        // Act
+        $result = $this->channelRepository->getPendingApproval();
+
+        // Assert
+        $this->assertTrue($result->isEmpty(), 'Should return empty collection when all are approved');
+    }
+
+    public function testFindByIdReturnsMatchingChannel(): void
+    {
+        // Clean database
+        Channel::query()->delete();
+
+        // Arrange
+        $channel = Channel::factory()->create();
+        Channel::factory()->create(); // Another one
+
+        // Act
+        $found = $this->channelRepository->findById($channel->id);
+
+        // Assert
+        $this->assertNotNull($found, 'Should return a Channel instance for valid ID');
+        $this->assertEquals($channel->id, $found->id);
+    }
+
+    public function testFindByIdReturnsNullForNonexistentId(): void
+    {
+        // Clean database
+        Channel::query()->delete();
+
+        // Act
+        $result = $this->channelRepository->findById(9999);
+
+        // Assert
+        $this->assertNull($result, 'Should return null when no channel with given ID exists');
+    }
+
+    public function testFindByEmailReturnsMatchingChannel(): void
+    {
+        // Clean database
+        Channel::query()->delete();
+
+        // Arrange
+        $channel = Channel::factory()->create(['email' => 'match@example.com']);
+        Channel::factory()->create(['email' => 'other@example.com']);
+
+        // Act
+        $found = $this->channelRepository->findByEmail('match@example.com');
+
+        // Assert
+        $this->assertNotNull($found, 'Should return a Channel instance for matching email');
+        $this->assertEquals($channel->id, $found->id);
+        $this->assertEquals('match@example.com', $found->email);
+    }
+
+    public function testFindByEmailReturnsNullForNonexistentEmail(): void
+    {
+        // Clean database
+        Channel::query()->delete();
+
+        // Arrange
+        Channel::factory()->create(['email' => 'known@example.com']);
+
+        // Act
+        $result = $this->channelRepository->findByEmail('unknown@example.com');
+
+        // Assert
+        $this->assertNull($result, 'Should return null when no channel with given email exists');
+    }
+
 }
