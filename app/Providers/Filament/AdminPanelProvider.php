@@ -78,7 +78,13 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel->renderHook(
             PanelsRenderHook::FOOTER,
-            fn(): string => view('partials.footer')->render()
+            function (): ?string {
+                if (request()->routeIs('filament.admin.pages.video-upload')) {
+                    return null;
+                }
+
+                return view('partials.footer')->render();
+            }
         );
     }
 
