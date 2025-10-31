@@ -27,7 +27,8 @@ exclude_patterns = [
   "**/dist/**",
   "**/vendor/**",
   "**/docs/**",
-  "**/public/**"
+  "**/public/**",
+  "**/database/**"
 ]
 
 [files]
@@ -38,5 +39,6 @@ exclude = [
   "dist/**",
   "node_modules/**",
   "public/**",
-  "app/Policies/**"
+  "app/Policies/**",
+  "**/database/**"
 ]
