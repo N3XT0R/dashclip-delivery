@@ -45,7 +45,13 @@ class Video extends Model
 
     public function getPreviewPath(): ?string
     {
-        $path = PathBuilder::forPreviewByHash($this->getAttribute('hash'));
+        $hash = $this->getAttribute('hash');
+        if (empty($hash)) {
+            return null;
+        }
+
+        $path = PathBuilder::forPreviewByHash($hash);
+
         $disk = $this->getDisk();
         if (!$disk->exists($path)) {
             $clip = $this->clips()->first();
