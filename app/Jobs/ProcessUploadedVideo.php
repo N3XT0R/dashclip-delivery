@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\DTO\FileInfoDto;
+use App\Models\Clip;
 use App\Models\User;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
@@ -55,7 +56,11 @@ class ProcessUploadedVideo implements ShouldQueue
                 ->causedBy($this->user)
                 ->withProperties(['action' => 'upload', ['file' => $video->original_name]])
                 ->log('uploaded a video');
-            $video->clips()->create([
+
+            /**
+             * @var Clip $clip
+             */
+            $clip = $video->clips()->create([
                 'start_sec' => $this->start,
                 'end_sec' => $this->end,
                 'submitted_by' => $this->submittedBy,
@@ -63,6 +68,9 @@ class ProcessUploadedVideo implements ShouldQueue
                 'bundle_key' => $this->bundleKey,
                 'role' => $this->role,
             ]);
+
+            $clip?->setUser($this->user)
+                ->save();
         }
     }
 }
