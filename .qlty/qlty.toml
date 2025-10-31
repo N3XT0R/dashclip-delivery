@@ -5,7 +5,8 @@ exclude_patterns = [
   "**/cache/**",
   "**/public/**",
   "**/app/Policies/**",
-  "**/database/**"
+  "**/database/**",
+  "**/deploy_laravel_config.php"
 ]
 
 test_patterns = ["**/tests/**"]
@@ -29,7 +30,8 @@ exclude_patterns = [
   "**/vendor/**",
   "**/docs/**",
   "**/public/**",
-  "**/database/**"
+  "**/database/**",
+  "**/deploy_laravel_config.php"
 ]
 
 [files]
@@ -41,5 +43,6 @@ exclude = [
   "node_modules/**",
   "public/**",
   "app/Policies/**",
-  "**/database/**"
+  "**/database/**",
+  "**/deploy_laravel_config.php"
 ]
