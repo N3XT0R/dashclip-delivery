@@ -19,6 +19,35 @@ class ChannelServiceTest extends DatabaseTestCase
         $this->channelService = $this->app->make(ChannelService::class);
     }
 
+    public function testPrepareChannelsAndPoolBuildsExpectedStructures(): void
+    {
+        // Clean slate
+        Channel::query()->delete();
+
+        // Arrange
+        $channelA = Channel::factory()->create([
+            'weight' => 2,
+            'weekly_quota' => 3,
+            'is_video_reception_paused' => false,
+        ]);
+
+        $channelB = Channel::factory()->create([
+            'weight' => 1,
+            'weekly_quota' => 5,
+            'is_video_reception_paused' => false,
+        ]);
+
+        // Act
+        [$channels, $rotationPool, $quota] = $this->channelService->prepareChannelsAndPool(null);
+
+        // Assert
+        $this->assertCount(2, $channels);
+        $this->assertCount(3, $rotationPool);
+        $this->assertEqualsCanonicalizing([$channelA->id, $channelB->id], $channels->pluck('id')->all());
+        $this->assertEquals([$channelA->id => 3, $channelB->id => 5], $quota);
+    }
+
+
     public function testApproveUpdatesChannelWhenTokenIsValid(): void
     {
         // Arrange
