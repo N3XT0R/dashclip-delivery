@@ -75,7 +75,8 @@ class PreviewServiceTest extends DatabaseTestCase
     public function testGeneratePreviewByDiskCreatesPreviewSuccessfullyWithCustomBinary(): void
     {
         //custom config
-        Cfg::set('ffmpeg_bin', config('laravel-ffmpeg.ffmpeg.binaries'), 'ffmpeg');
+        $binary = config('laravel-ffmpeg.ffmpeg.binaries');
+        Cfg::set('ffmpeg_bin', $binary, 'ffmpeg');
 
         // prepare input video (real fixture)
         $fixtureDir = base_path('tests/Fixtures/Inbox/Videos');
@@ -111,6 +112,7 @@ class PreviewServiceTest extends DatabaseTestCase
         );
 
         // assert
+        $this->assertSame($binary, Cfg::get('ffmpeg_bin', 'ffmpeg', null));
         $this->assertIsString($url);
         $this->assertStringContainsString($expectedPath, $url, 'Preview URL does not match expected path.');
 
