@@ -13,9 +13,14 @@ class EditProfile extends BaseEditProfile
 {
     public function form(Schema $schema): Schema
     {
+        /**
+         * @var TextInput $nameComponent
+         */
+        $nameComponent = $this->getNameFormComponent();
         return $schema
             ->components([
-                $this->getNameFormComponent(),
+                $nameComponent
+                    ->unique(),
                 $this->getSubmittedNameComponent(),
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
