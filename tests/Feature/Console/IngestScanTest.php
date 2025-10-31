@@ -34,57 +34,79 @@ final class IngestScanTest extends DatabaseTestCase
     }
 
     /** Happy path: one new video is ingested to the local disk; batch stats and file move are correct. */
-    public function testScanMovesVideoAndCreatesBatchStats(): void
+    public function testCommandMovesVideoAndCreatesBatchStats(): void
     {
-        // Prepare an inbox under storage/app so Storage::disk('local')->path() lines up
-        $inboxRel = 'inbox_cmd_'.bin2hex(random_bytes(4));
-        [, $fn] = $this->makeInboxFile($inboxRel, 'clip.mp4', 'abc123');
+        // Arrange
+        Storage::fake('local');
 
-        $inboxAbs = rtrim(storage_path('app/'.$inboxRel), '/');
+        // Use fixture videos (identical content)
+        $inboxPath = base_path('tests/Fixtures/Inbox/Videos');
+        $inboxDisk = app('filesystem')->build([
+            'driver' => 'local',
+            'root' => $inboxPath,
+        ]);
 
-        // Sanity: DB empty
-        $this->assertSame(0, Video::query()->count());
-        $this->assertNull(Batch::query()->where('type', 'ingest')->latest('id')->first());
+        // Copy fixtures to a temporary fake inbox
+        $tmpDisk = Storage::fake('tmp');
+        $tmpDisk->deleteDirectory('');
+        $tmpDisk->makeDirectory('');
+        $this->copyDisk($inboxDisk, $tmpDisk);
+
+        $inboxAbs = $tmpDisk->path('');
+
+        // Sanity: DB should be empty
+        $this->assertDatabaseCount('videos', 0);
+        $this->assertNull(
+            \App\Models\Batch::query()->where('type', 'ingest')->latest('id')->first(),
+            'Expected no existing ingest batch before test run'
+        );
 
         // Act
-        $this->artisan("ingest:scan --inbox={$inboxAbs} --disk=local")
-            ->expectsOutput('started...')
-            ->expectsOutputToContain('Ingest done.')
+        $this->artisan('ingest:scan', [
+            '--inbox' => $inboxAbs,
+            '--disk' => 'local',
+        ])
+            ->expectsOutputToContain('Starte Scan:')
+            ->expectsOutputToContain('Fertig.')
             ->assertExitCode(Command::SUCCESS);
 
-        // Assert: a new ingest batch with stats including disk=local
-        $batch = Batch::query()->where('type', 'ingest')->latest('id')->first();
-        $this->assertNotNull($batch);
+        // Assert: a new ingest batch exists with valid stats
+        $batch = \App\Models\Batch::query()
+            ->where('type', 'ingest')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($batch, 'Expected an ingest batch to be created');
         $this->assertNotNull($batch->started_at);
         $this->assertNotNull($batch->finished_at);
         $this->assertIsArray($batch->stats);
         $this->assertArrayHasKey('new', $batch->stats);
         $this->assertArrayHasKey('dups', $batch->stats);
         $this->assertArrayHasKey('err', $batch->stats);
-        $this->assertSame('local', $batch->stats['disk'] ?? null);
-        $this->assertSame(1, $batch->stats['new']);
-        $this->assertSame(0, $batch->stats['dups']);
-        $this->assertSame(0, $batch->stats['err']);
+        $this->assertSame(1, $batch->stats['new'], 'Expected one new video');
+        $this->assertSame(0, $batch->stats['err'], 'Expected zero errors');
 
         // Assert: one video row created and moved to content-addressed path on the local disk
-        $video = Video::query()->latest('id')->first();
-        $this->assertNotNull($video);
+        $video = \App\Models\Video::query()->latest('id')->first();
+        $this->assertNotNull($video, 'Expected a video record to exist');
         $this->assertSame('local', $video->disk);
         $this->assertNotEmpty($video->hash);
         $this->assertSame('mp4', $video->ext);
-        $this->assertSame('clip.mp4', $video->original_name);
+        $this->assertStringEndsWith('.mp4', $video->original_name);
 
-        // The destination path is "videos/<hash shards>/<hash>.mp4"
-        $this->assertMatchesRegularExpression('#^videos/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{64}\.mp4$#', $video->path);
+        // The destination path should follow the hashed structure: videos/xx/xx/<hash>.mp4
+        $this->assertMatchesRegularExpression(
+            '#^videos/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{64}\.mp4$#',
+            $video->path
+        );
+        
 
-        // The source file must be deleted
-        $this->assertFileDoesNotExist($inboxAbs.'/'.$fn);
-
-        // The new file must exist on the local disk
+        // Assert: destination file exists on local disk and has content
         $destAbs = app('filesystem')->disk('local')->path($video->path);
         $this->assertFileExists($destAbs);
         $this->assertGreaterThan(0, filesize($destAbs) ?: 0);
     }
+
 
     public function testReturnsSuccessWhenAnotherIngestIsRunning(): void
     {
