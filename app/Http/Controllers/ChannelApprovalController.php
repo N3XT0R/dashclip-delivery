@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Channel;
+use App\Services\ChannelService;
+use Throwable;
 
 class ChannelApprovalController extends Controller
 {
+    public function __construct(private readonly ChannelService $channelService)
+    {
+    }
+
     public function approve(Channel $channel, string $token)
     {
-        $expected = $channel->getApprovalToken();
-
-        if ($token !== $expected) {
-            abort(403, 'Ungültiger Bestätigungslink.');
+        try {
+            $this->channelService->approve($channel, $token);
+        } catch (Throwable $e) {
+            abort(403, $e->getMessage());
         }
-
-        $channel->update([
-            'is_video_reception_paused' => false,
-            'approved_at' => now(),
-        ]);
-
         return view('channels.approved', compact('channel'));
     }
 }

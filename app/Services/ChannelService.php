@@ -36,4 +36,14 @@ class ChannelService
 
         return [$channels, $rotationPool, $quota];
     }
+
+    public function approve(Channel $channel, string $token): void
+    {
+        $expected = $channel->getApprovalToken();
+        if ($token !== $expected) {
+            throw new \InvalidArgumentException('Ungültiger Bestätigungslink.');
+        }
+
+        $this->channelRepository->approve($channel);
+    }
 }

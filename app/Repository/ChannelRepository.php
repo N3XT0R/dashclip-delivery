@@ -15,4 +15,12 @@ class ChannelRepository
             ->where('channels.is_video_reception_paused', false)
             ->orderBy('id')->get();
     }
+
+    public function approve(Channel $channel): bool
+    {
+        return $channel->update([
+            'is_video_reception_paused' => false,
+            'approved_at' => now(),
+        ]);
+    }
 }
