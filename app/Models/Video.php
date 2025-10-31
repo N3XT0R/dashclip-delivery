@@ -56,7 +56,7 @@ class Video extends Model
         if (!$disk->exists($path)) {
             $clip = $this->clips()->first();
             $path = $clip?->getPreviewPath();
-            if (!$disk->exists($path)) {
+            if (empty($path) || !$disk->exists($path)) {
                 return null;
             }
         }
