@@ -19,6 +19,7 @@ services:
       dockerfile: app.Dockerfile
     volumes:
       - .:/var/www/html/:consistent
+      - /run/user/1000/gnupg/S.gpg-agent:/root/.gnupg/S.gpg-agent
     networks:
       - default
     environment:
