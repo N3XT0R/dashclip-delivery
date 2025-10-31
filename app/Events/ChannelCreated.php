@@ -28,7 +28,7 @@ class ChannelCreated
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new PrivateChannel('channel.'.$this->channel->getKey()),
         ];
     }
 }
