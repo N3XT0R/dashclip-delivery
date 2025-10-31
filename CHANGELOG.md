@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added verification of file deletion and content-addressed video storage consistency.
     - Strengthened overall reliability and maintainability through systematic test-driven validation of ingest
       processes.
-  
+
 - **Mail Handling Stability**
     - Added comprehensive **unit tests** for `InboundHandler` to ensure reliable inbound message parsing and repository
       integration.
@@ -28,6 +28,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       handling without external dependencies.
     - Improved overall mail ingestion reliability through precise, type-safe test validation of handler logic and log
       events.
+  
+- **Channel Welcome Mail Refactor**
+    - Introduced a fully refactored **`SendChannelWelcomeMailCommand`** with clear separation of responsibilities
+      between
+      command, service, and repository layers.
+    - Added a new **`ChannelService`** to encapsulate all business logic related to channel approval and welcome mail
+      distribution.
+    - Introduced a dedicated **`ChannelRepository`** providing reusable data-access methods (`getActiveChannels`,
+      `getPendingApproval`, `findById`, `findByEmail`).
+    - Implemented dependency injection across command and service for cleaner, testable architecture.
+    - Retained all German CLI output to ensure backward compatibility with existing feature tests.
+
+- **Channel Command & Repository Tests**
+    - Added extensive **feature tests** for the `channels:send-welcome` command covering dry-run mode, targeted sending
+      by
+      ID or email, `--force` behavior, and mail dispatch validation.
+    - Introduced **integration tests** for the new `ChannelService`, verifying channel preparation, approval token
+      validation, eligibility selection, and mail delivery.
+    - Added **repository-level integration tests** for all query methods, ensuring correct filtering, ordering, and
+      handling of null/invalid lookups.
+    - Ensured comprehensive mail testing using `Mail::fake()` and queue assertions to validate real send behavior.
+    - Improved overall maintainability and reliability of the channel mail system through isolated, layered test
+      coverage.
 
 ## [3.0.0-alpha.2] - 2025-10-31
 
