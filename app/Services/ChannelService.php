@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Channel;
 use App\Repository\ChannelRepository;
+use InvalidArgumentException;
 
 class ChannelService
 {
@@ -41,7 +42,7 @@ class ChannelService
     {
         $expected = $channel->getApprovalToken();
         if ($approvalToken !== $expected) {
-            throw new \InvalidArgumentException('Ungültiger Bestätigungslink.');
+            throw new InvalidArgumentException('Ungültiger Bestätigungslink.');
         }
 
         $this->channelRepository->approve($channel);
