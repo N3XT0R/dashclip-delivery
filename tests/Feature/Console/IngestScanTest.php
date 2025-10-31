@@ -86,23 +86,32 @@ final class IngestScanTest extends DatabaseTestCase
         $this->assertGreaterThan(0, filesize($destAbs) ?: 0);
     }
 
-    /** When another ingest job holds the lock, the command aborts gracefully. */
     public function testReturnsSuccessWhenAnotherIngestIsRunning(): void
     {
-        $lock = cache()->lock('ingest:lock', 10);
-        $this->assertTrue($lock->get());
+        Batch::query()->delete();
 
+        // Arrange: simulate another ingest in progress via cache lock
+        $lock = cache()->lock('ingest:lock', 40);
+        $this->assertTrue($lock->get(), 'Unable to acquire initial test lock');
+
+        // Unique temporary inbox path
         $inbox = storage_path('app/inbox_'.bin2hex(random_bytes(4)));
 
-        $this->artisan("ingest:scan --inbox={$inbox} --disk=local")
+        // Act: run the command while the lock is held
+        $this->artisan('ingest:scan', [
+            '--inbox' => $inbox,
+            '--disk' => 'local',
+        ])
             ->expectsOutput('Another ingest task is running. Abort.')
             ->assertExitCode(Command::SUCCESS);
 
+        // Cleanup
         $lock->release();
 
-        $this->assertSame(0, Batch::query()->count());
+        // Assert: no batch should have been created
+        $this->assertDatabaseCount('batches', 0);
     }
-    
+
     public function testCommandProcessesInboxAndCountsDuplicates(): void
     {
         // Arrange
