@@ -19,7 +19,7 @@ services:
       dockerfile: app.Dockerfile
     volumes:
       - .:/var/www/html/:consistent
-      - /run/user/1000/gnupg/S.gpg-agent:/root/.gnupg/S.gpg-agent
+      - ./.gnupg:/root/.gnupg
     networks:
       - default
     environment:
@@ -28,6 +28,8 @@ services:
       REVERB_HOST: reverb
       REVERB_PORT: 8080
       REVERB_SCHEME: http
+      GNUPGHOME: /root/.gnupg
+      GPG_TTY: "/dev/tty"
   reverb:
     depends_on:
       - redis
