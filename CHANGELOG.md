@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Video Model**
+    - Fixed a `TypeError` in `getPreviewPath()` that occurred when no clip preview existed.  
+      Added a null check before verifying file existence on the storage disk to ensure  
+      safe and predictable behavior when preview files are missing.
+
 ## [3.0.0-alpha.3] - 2025-10-31
 
 ### Added
