@@ -57,7 +57,7 @@ class SendChannelWelcomeMailCommandTest extends DatabaseTestCase
             ->expectsOutputToContain('Versand abgeschlossen.')
             ->assertExitCode(0);
 
-        Mail::assertSent(
+        Mail::assertQueued(
             ChannelWelcomeMail::class,
             static function ($mail) use ($channel) {
                 return $mail->hasTo($channel->email);
@@ -94,7 +94,7 @@ class SendChannelWelcomeMailCommandTest extends DatabaseTestCase
             ->expectsOutputToContain('Versand abgeschlossen.')
             ->assertExitCode(0);
 
-        Mail::assertSent(
+        Mail::assertQueued(
             ChannelWelcomeMail::class,
             static function ($mail) use ($channel) {
                 return $mail->hasTo($channel->email);
@@ -116,9 +116,9 @@ class SendChannelWelcomeMailCommandTest extends DatabaseTestCase
             ->expectsOutputToContain('📬 Sende Willkommens-Mail(s) an 1 Kanal(e)...')
             ->assertExitCode(0);
 
-        Mail::assertSent(
+        Mail::assertQueued(
             ChannelWelcomeMail::class,
-            fn($mail) => $mail->hasTo('target@example.com')
+            static fn($mail) => $mail->hasTo('target@example.com')
         );
     }
 
@@ -137,7 +137,7 @@ class SendChannelWelcomeMailCommandTest extends DatabaseTestCase
             ->expectsOutputToContain('📬 Sende Willkommens-Mail(s) an 1 Kanal(e)...')
             ->assertExitCode(0);
 
-        Mail::assertSent(
+        Mail::assertQueued(
             ChannelWelcomeMail::class,
             static fn($mail) => $mail->hasTo($channel->email)
         );
