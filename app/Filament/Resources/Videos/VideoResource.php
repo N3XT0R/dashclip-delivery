@@ -66,7 +66,7 @@ class VideoResource extends Resource
                 TextColumn::make('assignments_count')
                     ->counts('assignments')
                     ->label('Assignments'),
-                TextColumn::make('clips.user')
+                TextColumn::make('clips.user.name')
                     ->sortable()
                     ->label('Einsender-Account')
                     ->default('-'),
