@@ -24,7 +24,7 @@ class UserResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     protected static string|UnitEnum|null $navigationGroup = 'System';
-    
+
     public static function getNavigationBadge(): ?string
     {
         return auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value) ? static::getModel()::count() : null;
@@ -45,8 +45,10 @@ class UserResource extends Resource
         return $schema
             ->components([
                 Forms\Components\TextInput::make('name')
+                    ->unique('users')
                     ->required(),
-                Forms\Components\TextInput::make('submitted_name'),
+                Forms\Components\TextInput::make('submitted_name')
+                    ->unique('users'),
                 Forms\Components\TextInput::make('email')
                     ->label('Email address')
                     ->email()
