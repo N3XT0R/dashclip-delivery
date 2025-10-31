@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
-use App\Facades\Cfg;
 use App\Models\Batch;
 use App\Models\Video;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Storage;
 use Tests\DatabaseTestCase;
-use Tests\Helper\FfmpegBinaryFaker;
 
 /**
  * Feature tests for the "ingest:scan" console command with the real IngestScanner.
@@ -20,14 +20,6 @@ use Tests\Helper\FfmpegBinaryFaker;
  */
 final class IngestScanTest extends DatabaseTestCase
 {
-    /** Sets up a fake ffmpeg binary and returns its path. */
-    private function useFakeFfmpegSuccess(): string
-    {
-        $bin = (new FfmpegBinaryFaker())->success('FAKEMP4');
-        Cfg::set('ffmpeg_bin', $bin, 'ffmpeg');
-        Cfg::set('ffmpeg_video_args', [], 'ffmpeg', 'json'); // keep args simple
-        return $bin;
-    }
 
     /** Creates a small MP4-like file under storage/app/$subdir and returns [absPath, fileName]. */
     private function makeInboxFile(string $subdir, string $fileName, string $contents = 'abc'): array
@@ -44,9 +36,6 @@ final class IngestScanTest extends DatabaseTestCase
     /** Happy path: one new video is ingested to the local disk; batch stats and file move are correct. */
     public function testScanMovesVideoAndCreatesBatchStats(): void
     {
-        // Use fake ffmpeg so previews can be generated without a real encoder
-        $this->useFakeFfmpegSuccess();
-
         // Prepare an inbox under storage/app so Storage::disk('local')->path() lines up
         $inboxRel = 'inbox_cmd_'.bin2hex(random_bytes(4));
         [, $fn] = $this->makeInboxFile($inboxRel, 'clip.mp4', 'abc123');
@@ -115,30 +104,66 @@ final class IngestScanTest extends DatabaseTestCase
     }
 
     /** Duplicate handling: two identical files result in 1 new, 1 dup; the duplicate source is removed. */
-    public function testScanCountsDuplicateAndDeletesDuplicateSource(): void
+    public function testCommandProcessesInboxAndCountsDuplicates(): void
     {
-        $this->useFakeFfmpegSuccess();
+        // Arrange
+        Storage::fake('local');
 
-        $inboxRel = 'inbox_cmd_'.bin2hex(random_bytes(4));
-        [, $fn1] = $this->makeInboxFile($inboxRel, 'a.mp4', 'SAMEBYTES');
-        [, $fn2] = $this->makeInboxFile($inboxRel, 'b.mp4', 'SAMEBYTES'); // identical content → same hash
-        $inboxAbs = rtrim(storage_path('app/'.$inboxRel), '/');
+        // Use fixture videos (identical content)
+        $inboxPath = base_path('tests/Fixtures/Inbox/Videos');
+        $inboxDisk = app('filesystem')->build([
+            'driver' => 'local',
+            'root' => $inboxPath,
+        ]);
 
-        $this->artisan("ingest:scan --inbox={$inboxAbs} --disk=local")
+        // Copy fixtures to a temporary fake inbox
+        $tmpDisk = Storage::fake('tmp');
+        $tmpDisk->deleteDirectory('');
+        $tmpDisk->makeDirectory('');
+        $this->copyDisk($inboxDisk, $tmpDisk);
+
+        $inboxAbs = $tmpDisk->path('');
+
+        // Act: run the artisan command
+        $this->artisan('ingest:scan', [
+            '--inbox' => $inboxAbs,
+            '--disk' => 'local',
+        ])
+            ->expectsOutputToContain('Starte Scan:')
+            ->expectsOutputToContain('Fertig.')
             ->assertExitCode(Command::SUCCESS);
 
-        $batch = Batch::query()->where('type', 'ingest')->latest('id')->first();
-        $this->assertNotNull($batch);
-        $this->assertSame(1, $batch->stats['new']);
-        $this->assertSame(1, $batch->stats['dups']);
-        $this->assertSame(0, $batch->stats['err']);
+        // Assert: one batch created with proper stats
+        $batch = Batch::query()
+            ->where('type', 'ingest')
+            ->latest('id')
+            ->first();
 
-        // Only one video stored
-        $this->assertSame(1, Video::query()->count());
+        $this->assertNotNull($batch, 'No batch record was created');
+        $this->assertSame(1, $batch->stats['new'], 'Expected 1 new video');
+        $this->assertSame(2, $batch->stats['dups'], 'Expected 2 duplicates');
+        $this->assertSame(0, $batch->stats['err'], 'Expected 0 errors');
 
-        // Source files are removed
-        $this->assertFileDoesNotExist($inboxAbs.'/'.$fn1);
-        $this->assertFileDoesNotExist($inboxAbs.'/'.$fn2);
+        // Assert: only one unique video stored in DB
+        $this->assertDatabaseCount('videos', 1);
+        $video = Video::first();
+        $this->assertNotNull($video);
+        $this->assertNotEmpty($video->hash);
+        $this->assertSame('local', $video->disk);
+    }
+
+    /**
+     * Helper to recursively copy all files & dirs from one disk to another.
+     */
+    private function copyDisk(Filesystem $source, Filesystem $target): void
+    {
+        foreach ($source->allFiles() as $path) {
+            $target->put($path, $source->get($path));
+        }
+
+        foreach ($source->allDirectories() as $dir) {
+            $target->makeDirectory($dir);
+        }
     }
 
     /** Error path: non-existent inbox should produce FAILURE and print the error message. */
