@@ -1,10 +1,15 @@
 {
-  "name": "laravel/laravel",
+  "name": "n3xt0r/dashclip-delivery",
   "type": "project",
-  "description": "The skeleton application for the Laravel framework.",
+  "description": "video distribution: ingests (local/Dropbox), SHA-256 dedupes, auto-assigns to channels (weighted quotas), delivers signed time-limited offer links for single/ZIP downloads (with info.csv), tracks downloads/returns, generates ffmpeg previews—plus real-time ZIP progress over WebSockets and a Filament admin for channels/assignments.",
   "keywords": [
     "laravel",
-    "framework"
+    "framework",
+    "ingest",
+    "ffmpeg",
+    "distribution",
+    "video",
+    "dashcam"
   ],
   "license": "AGPL-3.0-or-later",
   "authors": [
