@@ -105,6 +105,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       ensuring that both `user_id` and `submitted_by` are aligned.
     - This resolves inconsistent attribution between stored clips and their actual uploader identity, improving audit
       trail accuracy and data integrity.
+  
+- **Footer Rendering in Filament Panels**
+    - Fixed an issue where the global footer would overlap or shift upward on pages containing file upload components.
+    - The footer is now **excluded** from the Filament video upload page to prevent layout distortion caused by nested
+      scroll containers.
+    - This ensures stable layout behavior during video uploads while keeping consistent footer rendering across all
+      other admin views.
 
 ## [3.0.0-alpha.2] - 2025-10-31
 
