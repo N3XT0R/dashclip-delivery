@@ -85,3 +85,6 @@ with additional terms **prohibiting commercial use** as described in
 [`LICENSE-COMMERCIAL`](LICENSE-COMMERCIAL.md)
 
 AGPL-3.0-or-later
+
+Copyright (c) 2025 Ilya Beliaev
+This project includes code licensed under AGPL-3.0. Commercial licensing available separately.
