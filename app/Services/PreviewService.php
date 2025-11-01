@@ -116,7 +116,7 @@ final class PreviewService
     private function ffmpegParams(): array
     {
         $crf = (int)Cfg::get('ffmpeg_crf', 'ffmpeg', 28);
-        $preset = (string)Cfg::get('ffmpeg_preset', 'ffmpeg', 'veryfast');
+        $preset = (string)Cfg::get('ffmpeg_preset', 'ffmpeg', 'ultrafast');
         $extra = (array)Cfg::get('ffmpeg_video_args', 'ffmpeg', []);
 
         return array_merge(['-preset', $preset, '-crf', (string)$crf], $extra);
