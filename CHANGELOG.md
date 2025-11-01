@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [Unreleased]
+
 ### Fixed
 
 - **FFmpeg Preview Generation & Configuration**
@@ -17,8 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Improved argument handling in `PreviewService::ffmpegParams()` by introducing consistent key/value  
       normalization. Both indexed and associative parameter lists are now reliably converted into  
       valid FFmpeg CLI arguments (e.g. `-vf scale=iw/2:-1 -crf 30`), ensuring predictable encoding behavior.
-    - Enhanced overall stability of preview generation by refining CRF and preset defaults and ensuring  
-      FFmpeg parameter application remains consistent across configuration reloads.
+    - Added refined default encoding parameters (`-crf`, `-preset`, and `-vf scale`) to reduce preview  
+      video size while maintaining acceptable visual quality.  
+      This change was necessary because previously generated previews were excessively large (often 50–70 MB),  
+      causing slow load times and high disk usage on limited VPS environments.  
+      By applying controlled compression through configuration defaults, preview generation now produces  
+      efficient, lightweight files suitable for inline playback without server strain.
+    - These improvements also mitigate a related issue where oversized preview files could block  
+      Apache or PHP-FPM worker threads for extended periods during concurrent requests.  
+      The reduced file sizes significantly decrease I/O wait times and CPU load, ensuring that  
+      webserver processes remain responsive and can serve multiple users simultaneously.
 
 ## [3.0.0-beta.1] - 2025-11-01
 
