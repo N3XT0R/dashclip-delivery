@@ -56,6 +56,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       This fix guarantees stable resumable uploads and prevents incomplete session errors  
       in high-latency or multi-chunk scenarios.
 
+- **User Model – Email Authentication TypeError**
+    - Fixed a `TypeError` in `App\Models\User::hasEmailAuthentication()` where the method could return `null`  
+      instead of a strict boolean.  
+      This occurred when the `has_email_authentication` attribute was unset or `NULL` in the database, causing  
+      Filament’s Multi-Factor Authentication system to throw a type violation during profile or login operations.
+    - The method now reliably returns a boolean via a null-safe cast (`($this->has_email_authentication ?? false)`),  
+      ensuring strict type compliance with the `HasEmailAuthentication` contract and preventing runtime errors  
+      in both Filament v4 UI interactions and automated test contexts.
+    - Improves overall stability of the Filament MFA integration and guarantees deterministic behavior even for  
+      uninitialized user records created through legacy migrations or factories.
+
 ## [3.0.0-alpha.3] - 2025-10-31
 
 ### Added
