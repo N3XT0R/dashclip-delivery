@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,7 +15,7 @@ class BatchFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => $this->faker->randomElement(['notify', 'assign', 'ingest', 'zip']),
+            'type' => $this->faker->randomElement(BatchTypeEnum::values()),
             'started_at' => now(),
             'finished_at' => null,
             'stats' => [],

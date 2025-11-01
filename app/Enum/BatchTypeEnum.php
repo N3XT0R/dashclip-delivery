@@ -12,4 +12,9 @@ enum BatchTypeEnum: string
 
     case NOTIFY = 'notify';
     case REMOVE = 'remove';
+
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
 }
