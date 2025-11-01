@@ -6,6 +6,7 @@ namespace Tests\Feature\Filament\Resources;
 
 use App\Filament\Resources\OfferLinkClickResource;
 use App\Models\OfferLinkClick;
+use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
 final class OfferLinkClickResourceTest extends DatabaseTestCase
@@ -40,5 +41,16 @@ final class OfferLinkClickResourceTest extends DatabaseTestCase
     {
         $this->assertSame(OfferLinkClick::class, OfferLinkClickResource::getModel());
         $this->assertSame('Offer Link Clicks', OfferLinkClickResource::getModelLabel());
+    }
+
+    public function testTableHasExpectedColumns(): void
+    {
+        Livewire::test(OfferLinkClickResource\Pages\ListOfferLinkClicks::class)
+            ->assertTableColumnExists('id')
+            ->assertTableColumnExists('user.name')
+            ->assertTableColumnExists('batch.type')
+            ->assertTableColumnExists('channel.name')
+            ->assertTableColumnExists('clicked_at')
+            ->assertTableColumnExists('user_agent');
     }
 }
