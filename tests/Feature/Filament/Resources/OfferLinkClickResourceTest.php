@@ -6,6 +6,7 @@ namespace Tests\Feature\Filament\Resources;
 
 use App\Filament\Resources\OfferLinkClickResource;
 use App\Models\OfferLinkClick;
+use Carbon\Carbon;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
@@ -52,5 +53,27 @@ final class OfferLinkClickResourceTest extends DatabaseTestCase
             ->assertTableColumnExists('channel.name')
             ->assertTableColumnExists('clicked_at')
             ->assertTableColumnExists('user_agent');
+    }
+
+    public function testListOfferLinkClicksShowsNewestFirst(): void
+    {
+        $older = OfferLinkClick::factory()->create([
+            'clicked_at' => Carbon::parse('2024-01-02 12:00:00'),
+        ]);
+
+        $newer = OfferLinkClick::factory()->create([
+            'clicked_at' => Carbon::parse('2024-03-01 08:00:00'),
+        ]);
+
+        Livewire::test(OfferLinkClickResource\Pages\ListOfferLinkClicks::class)
+            ->assertStatus(200)
+            ->assertCanSeeTableRecords([$newer, $older])
+            ->tap(function ($livewire) use ($newer, $older) {
+                // Ensure the default sort order (clicked_at desc)
+                $this->assertSame(
+                    [$newer->getKey(), $older->getKey()],
+                    $livewire->instance()->getTableRecords()->pluck('id')->all(),
+                );
+            });
     }
 }
