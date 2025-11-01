@@ -11,7 +11,10 @@
     "video",
     "dashcam"
   ],
-  "license": "AGPL-3.0-or-later",
+  "license": [
+    "AGPL-3.0-or-later",
+    "proprietary"
+  ],
   "authors": [
     {
       "name": "Ilya Beliaev",
