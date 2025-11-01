@@ -17,8 +17,14 @@ class DropboxUploadService
     private const CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB
 
     public function __construct(
-        private AutoRefreshTokenProvider $tokenProvider
+        private AutoRefreshTokenProvider $tokenProvider,
+        private ?DropboxClient $client = null
     ) {
+    }
+
+    private function getClient(): DropboxClient
+    {
+        return $this->client ??= new DropboxClient($this->tokenProvider);
     }
 
 
@@ -38,7 +44,7 @@ class DropboxUploadService
         $root = (string)config('filesystems.disks.dropbox.root', '');
         $targetPath = PathBuilder::forDropbox($root, $targetPath);
 
-        $client = new DropboxClient($this->tokenProvider);
+        $client = $this->getClient();
         $cursor = null;
 
         try {
