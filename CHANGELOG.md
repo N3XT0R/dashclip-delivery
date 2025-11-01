@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [Unreleased]
-
 ### Fixed
 
 - **FFmpeg Preview Generation & Configuration**
@@ -18,17 +16,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       MySQL `Unknown column` errors and ensuring correct behavior with the `json` cast type.
     - Improved argument handling in `PreviewService::ffmpegParams()` by introducing consistent key/value  
       normalization. Both indexed and associative parameter lists are now reliably converted into  
-      valid FFmpeg CLI arguments (e.g. `-vf scale=iw/2:-1 -crf 30`), ensuring predictable encoding behavior.
-    - Added refined default encoding parameters (`-crf`, `-preset`, and `-vf scale`) to reduce preview  
-      video size while maintaining acceptable visual quality.  
-      This change was necessary because previously generated previews were excessively large (often 50–70 MB),  
-      causing slow load times and high disk usage on limited VPS environments.  
-      By applying controlled compression through configuration defaults, preview generation now produces  
-      efficient, lightweight files suitable for inline playback without server strain.
-    - These improvements also mitigate a related issue where oversized preview files could block  
-      Apache or PHP-FPM worker threads for extended periods during concurrent requests.  
-      The reduced file sizes significantly decrease I/O wait times and CPU load, ensuring that  
-      webserver processes remain responsive and can serve multiple users simultaneously.
+      valid FFmpeg CLI arguments (e.g. `-vf scale=trunc(iw/2)*2:trunc(ih/2)*2 -crf 30`), ensuring  
+      predictable encoding behavior across environments.
+    - Refined default encoding parameters (`-crf`, `-preset`, and `-vf scale`) to reduce preview  
+      file size while maintaining acceptable visual quality.  
+      Previous defaults produced oversized previews (up to 60–70 MB), leading to high I/O load and  
+      degraded server responsiveness during generation.  
+      Controlled compression now ensures that previews remain compact and streamable,  
+      even under constrained VPS conditions.
+    - These optimizations also resolve a systemic performance issue where oversized previews  
+      could saturate PHP-FPM or Apache worker threads, blocking concurrent requests.  
+      By lowering per-preview CPU and disk overhead, the application now sustains  
+      smooth parallel generation without increasing hardware resources.
 
 ## [3.0.0-beta.1] - 2025-11-01
 
