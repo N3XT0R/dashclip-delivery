@@ -28,6 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       Added a null check before verifying file existence on the storage disk to ensure  
       safe and predictable behavior when preview files are missing.
 
+- **Dropbox Upload Stability**
+    - Resolved `lookup_failed/incorrect_offset` errors during large file uploads to Dropbox.  
+      Ensured reliable chunked upload behavior by introducing explicit stream rewinding and  
+      byte-based end-of-file detection instead of relying on `feof()`.
+    - Improved robustness of `DropboxUploadService` by handling edge cases for empty files,  
+      accurate session completion (`uploadSessionFinish`), and safe cleanup of read streams.  
+      This fix guarantees stable resumable uploads and prevents incomplete session errors  
+      in high-latency or multi-chunk scenarios.
+
 ## [3.0.0-alpha.3] - 2025-10-31
 
 ### Added
