@@ -54,7 +54,7 @@ final class CreateUserPageTest extends DatabaseTestCase
         $this->assertNotNull($user);
         $this->assertTrue($user->hasRole(RoleEnum::REGULAR->value));
 
-        Event::assertDispatched(UserCreated::class, function (UserCreated $event) use ($user) {
+        Event::assertDispatched(UserCreated::class, static function (UserCreated $event) use ($user) {
             return $event->user->is($user)
                 && $event->fromBackend === true
                 && !empty($event->plainPassword);
