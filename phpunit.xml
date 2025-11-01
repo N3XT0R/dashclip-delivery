@@ -37,6 +37,8 @@
         <exclude>
             <file>app/Console/Commands/WeeklyRun.php</file>
             <directory>app/Policies/</directory>
+            <!-- temporary till v4 -->
+            <directory>app/Service/Ingest/Steps/</directory>
         </exclude>
     </source>
     <php>
