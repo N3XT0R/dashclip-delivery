@@ -8,33 +8,32 @@
 
 # Dashclip-Delivery
 
-## Projektbeschreibung
+## Project Description
 
-Dashclip-Delivery ist eine Laravel‑Anwendung zum Verteilen von Videomaterial an verschiedene Kanäle. Neue Videos werden
-aus
-einem Upload‑Verzeichnis oder aus Dropbox eingelesen, auf einem konfigurierten Storage gespeichert und anschließend fair
-auf Kanäle mit Quoten und Gewichtung verteilt. Die Kanäle erhalten per E‑Mail signierte Links zu einer Angebotsseite,
-auf der sie einzelne Videos oder eine ZIP‑Datei mit begleitender `info.csv` herunterladen können. Nicht benötigte Videos
-lassen sich zurückgeben, und alle Downloads werden protokolliert.
+Dashclip-Delivery is a Laravel application for distributing video material to various channels. New videos are
+ingested from an upload directory or from Dropbox, stored on a configured storage, and then fairly distributed
+to channels based on quotas and weighting. Channels receive signed links via email to an offer page,
+where they can download individual videos or a ZIP file with an accompanying `info.csv`. Unneeded videos
+can be returned, and all downloads are logged.
 
-## Funktionen
+## Features
 
-- **Ingest**: rekursives Scannen eines Upload‑Ordners (lokal oder Dropbox) mit Deduplizierung per SHA‑256.
-- **Verteilung**: Zuweisung neuer bzw. abgelaufener Videos an Kanäle (gewichtetes Round‑Robin, Wochenquota).
-- **Benachrichtigung**: Versand von E‑Mails mit temporären Download‑Links und Angebotsseiten.
-- **Angebot & Download**: Weboberfläche zur Auswahl und zum ZIP‑Download ausgewählter Videos inkl. `info.csv` und
-  Tracking der Abholungen.
-- **Vorschauen**: Generierung kurzer MP4‑Clips mit `ffmpeg`.
-- **Dropbox‑Integration**: OAuth‑Anbindung und automatisches Auffrischen von Tokens.
+- **Ingest**: recursive scanning of an upload folder (local or Dropbox) with deduplication via SHA-256.
+- **Distribution**: assignment of new or expired videos to channels (weighted round-robin, weekly quota).
+- **Notification**: sending emails with temporary download links and offer pages.
+- **Offer & Download**: web interface for selecting and ZIP-downloading selected videos including `info.csv` and
+  tracking of pickups.
+- **Previews**: generation of short MP4 clips using `ffmpeg`.
+- **Dropbox Integration**: OAuth connection and automatic token refresh.
 
-## Voraussetzungen
+## Prerequisites
 
 - PHP 8.4
 - Composer
-- Node.js & npm (für Build‑Assets)
+- Node.js & npm (for building assets)
 - ffmpeg
-- Eine von Laravel unterstützte Datenbank (z. B. SQLite)
-- Optional: Dropbox‑App mit Client‑ID und ‑Secret
+- A Laravel-supported database (e.g., SQLite)
+- Optional: Dropbox app with Client ID and Secret
 
 ## Installation
 
@@ -46,28 +45,28 @@ php artisan key:generate
 php artisan migrate
 ```
 
-## Nützliche Befehle
+## Useful Commands
 
-| Befehl                              | Beschreibung                                                                                    |
-|-------------------------------------|-------------------------------------------------------------------------------------------------|
-| `php artisan ingest:unzip`          | Entpackt ZIP-Dateien aus einem Verzeichnis.                                                     |
-| `php artisan ingest:scan`           | Durchsucht den Upload‑Ordner und speichert neue Videos.                                         |
-| `php artisan info:import`           | Importiert Clip‑Infos aus einer `info.csv`.                                                     |
-| `php artisan assign:distribute`     | Verteilt Videos auf Kanäle.                                                                     |
-| `php artisan notify:offers`         | Versendet Angebotslinks per E‑Mail.                                                             |
-| `php artisan notify:reminders`      | Benachrichtigt Kanäle vor Ablauf über offene Angebote                                           |                         
-| `php artisan assign:expire`         | Markiert abgelaufene Zuweisungen und blockiert Kanäle temporär.                                 |
-| `php artisan dropbox:refresh-token` | Aktualisiert den Dropbox Token.                                                                 |
-| `php artisan weekly:run`            | Führt Expire → Distribute → Notify hintereinander aus.                                          |
-| `php artisan video:cleanup`         | Löscht heruntergeladene Videos, deren Ablauf seit der angegebenen Wochenzahl überschritten ist. |
+| Command                             | Description                                                                            |
+|-------------------------------------|----------------------------------------------------------------------------------------|
+| `php artisan ingest:unzip`          | Extracts ZIP files from a directory.                                                   |
+| `php artisan ingest:scan`           | Scans the upload folder and stores new videos.                                         |
+| `php artisan info:import`           | Imports clip information from an `info.csv`.                                           |
+| `php artisan assign:distribute`     | Distributes videos to channels.                                                        |
+| `php artisan notify:offers`         | Sends offer links via email.                                                           |
+| `php artisan notify:reminders`      | Notifies channels about pending offers before expiration.                              |
+| `php artisan assign:expire`         | Marks expired assignments and temporarily blocks channels.                             |
+| `php artisan dropbox:refresh-token` | Refreshes the Dropbox token.                                                           |
+| `php artisan weekly:run`            | Executes Expire → Distribute → Notify in sequence.                                     |
+| `php artisan video:cleanup`         | Deletes downloaded videos whose expiration has exceeded the specified number of weeks. |
 
-## Dokumentation
+## Documentation
 
-Ausführliche Erläuterungen zu Aufbau und Nutzung finden sich im Verzeichnis [`docs`](docs):
+Detailed explanations of structure and usage can be found in the [`docs`](docs) directory:
 
-- [Übersicht](docs/README.md)
+- [Overview](docs/README.md)
 - [Setup](docs/setup.md)
-- [Werkzeuge](docs/tool.md)
+- [Tools](docs/tool.md)
 - [Workflow](docs/workflow.md)
 - [Deployment](docs/deployment.md)
 
@@ -77,14 +76,16 @@ Ausführliche Erläuterungen zu Aufbau und Nutzung finden sich im Verzeichnis [`
 composer test
 ```
 
-## Lizenz
+## License
 
-This project is licensed under the **AGPL-3.0-or-later**,  
-with additional terms **prohibiting commercial use** as described in  
-[`LICENSE`](LICENSE)
-[`LICENSE-COMMERCIAL`](LICENSE-COMMERCIAL.md)
+This project is dual-licensed:
 
-AGPL-3.0-or-later
+- **[AGPL-3.0-or-later](LICENSE)** - Free for open source use
+- **[Commercial License](LICENSE-COMMERCIAL.md)** - For proprietary use
+
+See the respective license files for details.
+
+**Contact for commercial licensing:** info@php-dev.info
 
 ## Copyright
 
