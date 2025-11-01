@@ -117,7 +117,17 @@ final class PreviewService
     {
         $crf = (int)Cfg::get('ffmpeg_crf', 'ffmpeg', 28);
         $preset = (string)Cfg::get('ffmpeg_preset', 'ffmpeg', 'ultrafast');
-        $extra = (array)Cfg::get('ffmpeg_video_args', 'ffmpeg', []);
+        $extra = collect(Cfg::get('ffmpeg_video_args', 'ffmpeg', []))
+            ->flatMap(function ($value, $key) {
+                // Wenn numerisch → direkt übernehmen
+                if (is_int($key)) {
+                    return [$value];
+                }
+                // Wenn key/value → in CLI-Argument-Paare umwandeln
+                return $value === '' ? [$key] : [$key, (string)$value];
+            })
+            ->values()
+            ->all();
 
         return array_merge(['-preset', $preset, '-crf', (string)$crf], $extra);
     }
