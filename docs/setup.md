@@ -15,7 +15,7 @@ Diese Anleitung beschreibt die Installation der Anwendung und die Einrichtung de
 
 ```bash
 XSendFile On
-XSendFilePath /home/www/<domain>/htdocs/current/public/storage/previews
+XSendFilePath /var/www/<domain>/htdocs/current/public/storage/previews
 ```
 
 ## Laravel installieren
