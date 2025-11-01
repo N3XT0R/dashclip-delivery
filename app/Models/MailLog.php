@@ -6,10 +6,13 @@ namespace App\Models;
 
 use App\Enum\MailDirection;
 use App\Enum\MailStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MailLog extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'direction',
         'message_id',
