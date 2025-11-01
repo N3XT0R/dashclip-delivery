@@ -27,7 +27,6 @@ return new class extends Migration {
 
         $bin = Cfg::get('ffmpeg_bin', 'ffmpeg', null);
         if (empty($bin)) {
-            // /usr/bin/ffmpeg ist in Ubuntu und GitHub Actions immer vorhanden
             Cfg::set('ffmpeg_bin', '/usr/bin/ffmpeg', 'ffmpeg', 'string', true);
         }
     }
