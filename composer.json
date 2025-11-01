@@ -9,7 +9,8 @@
     "ffmpeg",
     "distribution",
     "video",
-    "dashcam"
+    "dashcam",
+    "Generic Content Distribution System"
   ],
   "license": [
     "AGPL-3.0-or-later",
