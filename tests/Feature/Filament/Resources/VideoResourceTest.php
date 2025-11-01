@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources;
+namespace Tests\Feature\Filament\Resources;
 
 use App\Filament\Resources\Videos\Pages\ListVideos;
 use App\Models\User;
