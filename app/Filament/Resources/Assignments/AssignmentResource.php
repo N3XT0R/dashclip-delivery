@@ -2,24 +2,23 @@
 
 namespace App\Filament\Resources\Assignments;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Group;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\DatePicker;
-use Filament\Actions\ViewAction;
-use Filament\Actions\Action;
-use App\Filament\Resources\Assignments\Pages\ListAssignments;
-use App\Filament\Resources\Assignments\Pages\ViewAssignment;
 use App\Enum\StatusEnum;
 use App\Filament\Resources\AssignmentResource\Pages;
+use App\Filament\Resources\Assignments\Pages\ListAssignments;
+use App\Filament\Resources\Assignments\Pages\ViewAssignment;
+use App\Filament\Resources\Videos\VideoResource;
 use App\Models\Assignment;
 use App\Services\LinkService;
 use Carbon\Carbon;
-use Filament\Forms;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -29,8 +28,8 @@ class AssignmentResource extends Resource
 {
     protected static ?string $model = Assignment::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static string | \UnitEnum | null $navigationGroup = 'Media';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected static ?string $modelLabel = 'Assignment';
     protected static ?string $pluralModelLabel = 'Assignments';
     protected static bool $shouldRegisterNavigation = false;
