@@ -92,8 +92,6 @@ class ActivityResource extends Resource
     {
         return [
             'index' => Pages\ListActivities::route('/'),
-            //'create' => Pages\CreateActivity::route('/create'),
-            //'edit' => Pages\EditActivity::route('/{record}/edit'),
         ];
     }
 }
