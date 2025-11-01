@@ -67,6 +67,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Improves overall stability of the Filament MFA integration and guarantees deterministic behavior even for  
       uninitialized user records created through legacy migrations or factories.
 
+- **AssignmentRelationManager:**  
+  Fixed incorrect namespace declarations that caused autoloading and test failures within the Filament resource
+  structure.  
+  The class now resides under the correct namespace `App\Filament\Resources\Batches\RelationManagers`, fully aligned
+  with Filament v4 conventions.
+
 ## [3.0.0-alpha.3] - 2025-10-31
 
 ### Added
