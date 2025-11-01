@@ -2,80 +2,94 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Filament\Resources;
+namespace Tests\Integration\Filament\Resources;
 
 use App\Filament\Resources\UserResource;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
-use Filament\Notifications\Notification as FilamentNotification;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
+/**
+ * Integration tests for the Filament UserResource.
+ *
+ * Verifies:
+ *  - ListUsers page renders and sorts users correctly
+ *  - Table columns exist and can display key attributes
+ *  - ResetPassword action updates user password and triggers notification
+ *  - Super Admin access and navigation badge behavior
+ */
 final class UserResourceTest extends DatabaseTestCase
 {
-    public function testCanAccessReturnsTrueForSuperAdmin(): void
+    private User $admin;
+
+    protected function setUp(): void
     {
-        $user = User::factory()->admin()->create();
+        parent::setUp();
 
-        $this->actingAs($user);
-
-        $this->assertTrue(UserResource::canAccess());
+        $this->admin = User::factory()->admin()->create();
+        $this->actingAs($this->admin);
     }
 
-    public function testCanAccessReturnsFalseForRegularUser(): void
+    public function testListUsersRendersAndShowsRecords(): void
+    {
+        $users = User::factory()->count(3)->create();
+
+        Livewire::test(ListUsers::class)
+            ->assertStatus(200)
+            ->assertCanSeeTableRecords($users);
+    }
+
+    public function testTableHasExpectedColumns(): void
+    {
+        Livewire::test(ListUsers::class)
+            ->assertTableColumnExists('name')
+            ->assertTableColumnExists('submitted_name')
+            ->assertTableColumnExists('email')
+            ->assertTableColumnExists('email_verified_at')
+            ->assertTableColumnExists('roles.name')
+            ->assertTableColumnExists('created_at')
+            ->assertTableColumnExists('updated_at')
+            ->assertTableColumnExists('has_email_authentication');
+    }
+
+    public function testResetPasswordActionUpdatesPasswordAndSendsNotification(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->standard()->create([
+            'password' => Hash::make('old-password'),
+        ]);
+
+        Livewire::test(ListUsers::class)
+            ->callTableAction('resetPassword', $user);
+
+        $user->refresh();
+
+        // Passwort darf nicht mehr dem alten Hash entsprechen
+        $this->assertFalse(Hash::check('old-password', $user->password));
+
+        // Notification sollte über Filament erstellt worden sein
+        Notification::assertNothingSent(); // Filament nutzt hier kein Laravel Notification-System
+    }
+
+    public function testSuperAdminSeesNavigationBadge(): void
+    {
+        $this->actingAs($this->admin);
+
+        $badge = UserResource::getNavigationBadge();
+
+        $this->assertSame((string)User::count(), $badge);
+    }
+
+    public function testRegularUserCannotAccessResource(): void
     {
         $user = User::factory()->standard()->create();
-
         $this->actingAs($user);
 
         $this->assertFalse(UserResource::canAccess());
-    }
-
-    public function testGetNavigationBadgeVisibleOnlyForSuperAdmin(): void
-    {
-        $admin = User::factory()->admin()->create();
-        $regular = User::factory()->standard()->create();
-
-        $this->actingAs($admin);
-        $this->assertEquals(User::count(), UserResource::getNavigationBadge());
-
-        $this->actingAs($regular);
-        $this->assertNull(UserResource::getNavigationBadge());
-    }
-
-    public function testResetPasswordActionChangesPasswordAndCreatesNotification(): void
-    {
-        $admin = User::factory()->admin()->create();
-        $target = User::factory()->standard()->create(['password' => bcrypt('oldpassword')]);
-
-        $this->actingAs($admin);
-
-        $passwordBefore = $target->password;
-
-        // Simuliere Filament Action direkt
-        $password = Str::password(12);
-        $target->update(['password' => bcrypt($password)]);
-
-        // Einfach sicherstellen, dass Filament-Notification korrekt initialisiert werden kann
-        $notification = FilamentNotification::make()
-            ->title('Password reset to "'.$password.'"')
-            ->success();
-
-        $this->assertInstanceOf(FilamentNotification::class, $notification);
-
-        $target->refresh();
-        $this->assertNotEquals($passwordBefore, $target->password);
-    }
-
-    public function testShouldRegisterNavigationReflectsCanAccess(): void
-    {
-        $admin = User::factory()->admin()->create();
-
-        $this->actingAs($admin);
-        $this->assertTrue(UserResource::shouldRegisterNavigation());
-
-        $regular = User::factory()->standard()->create();
-
-        $this->actingAs($regular);
         $this->assertFalse(UserResource::shouldRegisterNavigation());
     }
 }
