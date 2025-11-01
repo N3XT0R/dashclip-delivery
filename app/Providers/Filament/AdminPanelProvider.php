@@ -45,6 +45,7 @@ class AdminPanelProvider extends PanelProvider
     protected function addDefaults(Panel $panel): Panel
     {
         return $panel->default()
+            ->favicon(asset('images/icons/favicon.ico'))
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
                 Js::make('app', app(Vite::class)->asset('resources/js/app.js')),
