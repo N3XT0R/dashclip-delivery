@@ -33,6 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       allowing reliable mocking and isolation during tests.
     - Strengthened code reliability and maintainability of the Dropbox upload workflow.
 
+- **Feature & Integration Tests for Filament Resources**
+    - Introduced comprehensive test coverage for all primary **Filament v4 resources** to ensure stability and
+      consistency across administrative interfaces.
+    - Tests leverage **Livewire assertions** (`assertCanSeeTableRecords`, `assertTableActionVisible`, etc.)  
+      to confirm correct UI behavior in Filament v4.
+    - Improves confidence in CRUD functionality and internal access control logic across the Filament admin panel.
+
 ### Fixed
 
 - **Video Model**
