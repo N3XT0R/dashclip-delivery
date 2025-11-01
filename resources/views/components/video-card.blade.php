@@ -82,7 +82,7 @@
             <div class="inline-preview hidden mt-2">
                 <video
                         class="thumb w-full rounded-lg bg-[#0e1116]"
-                        data-src="{{ $v->preview_url ?: $assignment->temp_url }}"
+                        src="{{ $v->preview_url ?: $assignment->temp_url }}"
                         preload="none"
                         controls
                         playsinline

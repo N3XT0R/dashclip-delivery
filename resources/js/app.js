@@ -7,13 +7,3 @@ document.addEventListener('DOMContentLoaded', () => {
         new ZipDownloader(form);
     }
 });
-
-document.addEventListener('click', e => {
-    const video = e.target.closest('video');
-    if (video && !video.src) {
-        video.src = video.dataset.src;
-        video.load();
-        video.play().catch(() => {
-        });
-    }
-});
