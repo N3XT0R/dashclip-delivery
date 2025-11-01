@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **FFmpeg Preview Generation & Configuration**
+    - Fixed a `PreviewGenerationException` that occurred when FFmpeg configuration parameters  
+      (`ffmpeg_video_args`) were persisted as associative arrays instead of encoded JSON.  
+      The configuration migration now serializes arrays before storage via `Cfg::set()`, preventing  
+      MySQL `Unknown column` errors and ensuring correct behavior with the `json` cast type.
+    - Improved argument handling in `PreviewService::ffmpegParams()` by introducing consistent key/value  
+      normalization. Both indexed and associative parameter lists are now reliably converted into  
+      valid FFmpeg CLI arguments (e.g. `-vf scale=iw/2:-1 -crf 30`), ensuring predictable encoding behavior.
+    - Enhanced overall stability of preview generation by refining CRF and preset defaults and ensuring  
+      FFmpeg parameter application remains consistent across configuration reloads.
+
 ## [3.0.0-beta.1] - 2025-11-01
 
 ### Added
