@@ -21,6 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Strengthened overall reliability of user authentication logic and ensured  
       compatibility with Filament’s multi-factor authentication system.
 
+- **DropboxUploadService Integration Tests & Refactoring**
+    - Added comprehensive **integration tests** for `DropboxUploadService`, enabling full offline validation  
+      of upload logic without external API calls.
+    - Covered the following scenarios:
+        - Direct upload for small files below chunk threshold.
+        - Chunked uploads with session start, multiple appends, and finalization.
+        - Progress bar interaction and proper stream handling.
+        - Error logging and exception resilience.
+    - Refactored `DropboxUploadService` to support **dependency-injected DropboxClient**,  
+      allowing reliable mocking and isolation during tests.
+    - Strengthened code reliability and maintainability of the Dropbox upload workflow.
+
 ### Fixed
 
 - **Video Model**
