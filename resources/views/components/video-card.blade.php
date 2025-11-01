@@ -81,12 +81,12 @@
             {{-- Inline Preview --}}
             <div class="inline-preview hidden mt-2">
                 <video
-                        class="thumb w-full rounded-lg bg-[#0e1116]"
-                        src="{{ $v->preview_url ?: $assignment->temp_url }}"
-                        preload="none"
                         controls
+                        preload="metadata"
                         playsinline
-                        muted>
+                        muted
+                >
+                    <source src="{{ $v->preview_url ?: $assignment->temp_url }}" type="video/mp4">
                 </video>
             </div>
         </div>
