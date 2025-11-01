@@ -33,11 +33,13 @@ class DropboxUploadService
             throw new IOException("Konnte Datei nicht lesen: {$relativePath}");
         }
 
+        rewind($read);
         $bytes = $disk->size($relativePath);
         $root = (string)config('filesystems.disks.dropbox.root', '');
         $targetPath = PathBuilder::forDropbox($root, $targetPath);
 
         $client = new DropboxClient($this->tokenProvider);
+        $cursor = null;
 
         try {
             // Edge case: empty file
@@ -67,6 +69,9 @@ class DropboxUploadService
 
             while (!feof($read)) {
                 $chunk = fread($read, $chunkSize) ?: '';
+                if ($chunk === '' || $chunk === false) {
+                    break; // safety break on empty chunk
+                }
                 $len = strlen($chunk);
                 $transferred += $len;
 
@@ -74,6 +79,7 @@ class DropboxUploadService
                     'len' => $len,
                     'transferred' => $transferred,
                     'bytes' => $bytes,
+                    'session' => $cursor->session_id,
                 ]);
 
                 if ($transferred >= $bytes) {
@@ -81,19 +87,24 @@ class DropboxUploadService
                     $meta = $client->uploadSessionFinish($chunk, $cursor, $targetPath);
                     Log::info('Dropbox-Upload session finished', ['meta' => $meta]);
                 } else {
+                    // Append with explicit offset
                     $cursor = $client->uploadSessionAppend($chunk, $cursor);
                 }
 
                 $bar?->advance(strlen($chunk));
             }
         } catch (\Throwable $e) {
-            Log::error('Dropbox-Upload: '.$e->getMessage(), ['exception' => $e]);
+            Log::error('Dropbox-Upload: '.$e->getMessage(), [
+                'session' => $cursor?->session_id,
+                'exception' => $e
+            ]);
             throw $e;
         } finally {
             Log::info('Dropbox-Upload completed', [
                 'path' => $targetPath,
                 'bytes' => $bytes,
                 'relativePath' => $relativePath,
+                'session' => $cursor?->session_id,
             ]);
             fclose($read);
             $bar?->finish();
