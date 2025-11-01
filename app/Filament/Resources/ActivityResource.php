@@ -6,7 +6,6 @@ use App\Filament\Resources\ActivityResource\Pages;
 use App\Models\Activity;
 use BackedEnum;
 use Filament\Actions;
-use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -34,9 +33,6 @@ class ActivityResource extends Resource
     {
         return $schema
             ->components([
-                Forms\Components\TextInput::make('Activity')
-                    ->required()
-                    ->maxLength(255),
             ]);
     }
 
