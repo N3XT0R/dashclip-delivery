@@ -81,6 +81,7 @@ composer test
 
 This project is licensed under the **AGPL-3.0-or-later**,  
 with additional terms **prohibiting commercial use** as described in  
-[`ADDITIONAL_TERMS`](ADDITIONAL_TERMS).
+[`LICENSE`](LICENSE)
+[`LICENSE-COMMERCIAL`](LICENSE-COMMERCIAL.md)
 
 AGPL-3.0-or-later
