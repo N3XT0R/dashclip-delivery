@@ -80,7 +80,7 @@
 
             {{-- Inline Preview --}}
             <div class="inline-preview hidden mt-2">
-                <video controls preload="metadata" class="w-full rounded-lg">
+                <video controls preload="auto" playsinline muted class="w-full rounded-lg">
                     <source src="{{ $v->preview_url ?: $assignment->temp_url }}" type="video/mp4"/>
                     Dein Browser unterstützt das Video-Tag nicht.
                 </video>
