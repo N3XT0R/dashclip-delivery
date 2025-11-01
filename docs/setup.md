@@ -9,6 +9,10 @@ Diese Anleitung beschreibt die Installation der Anwendung und die Einrichtung de
 - Datenbank (z. B. MySQL oder SQLite)
 - Git
 
+## Optional
+
+- libapache2-mod-xsendfile
+
 ## Laravel installieren
 
 - Repository klonen und ins Projektverzeichnis wechseln:
