@@ -2,10 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [ '*', 'feature/*', 'hotfix/*', 'release/*', 'refactor/*' ]
+    branches: [ '*', 'feature/*', 'hotfix/*', 'release/*', 'refactor/*', "fix/*" ]
     tags: [ '*' ]
   pull_request:
-    branches: [ '*', 'feature/*', 'hotfix/*', 'release/*', 'refactor/*'  ]
+    branches: [ '*', 'feature/*', 'hotfix/*', 'release/*', 'refactor/*', "fix/*"  ]
 
 jobs:
   ci:
