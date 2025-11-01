@@ -13,6 +13,11 @@ Diese Anleitung beschreibt die Installation der Anwendung und die Einrichtung de
 
 - libapache2-mod-xsendfile
 
+```bash
+XSendFile On
+XSendFilePath /home/www/<domain>/htdocs/current/public/storage/previews
+```
+
 ## Laravel installieren
 
 - Repository klonen und ins Projektverzeichnis wechseln:
