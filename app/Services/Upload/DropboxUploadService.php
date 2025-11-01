@@ -75,13 +75,6 @@ class DropboxUploadService
                 $len = strlen($chunk);
                 $transferred += $len;
 
-                Log::debug('Dropbox chunk read', [
-                    'len' => $len,
-                    'transferred' => $transferred,
-                    'bytes' => $bytes,
-                    'session' => $cursor->session_id,
-                ]);
-
                 if ($transferred >= $bytes) {
                     // Last chunk
                     $meta = $client->uploadSessionFinish($chunk, $cursor, $targetPath);
