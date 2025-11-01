@@ -8,8 +8,7 @@ exclude_patterns = [
   "**/database/**",
   "**/lang/**",
   "**/config/**",
-  "**/deploy_laravel_config.php",
-  "**/app/Service/Ingest/Steps/**"
+  "**/deploy_laravel_config.php"
 ]
 
 test_patterns = ["**/tests/**"]
@@ -36,8 +35,7 @@ exclude_patterns = [
   "**/database/**",
   "**/lang/**",
   "**/config/**",
-  "**/deploy_laravel_config.php",
-  "**/app/Service/Ingest/Steps/**"
+  "**/deploy_laravel_config.php"
 ]
 
 [files]
@@ -52,6 +50,5 @@ exclude = [
   "**/database/**",
   "**/lang/**",
   "**/config/**",
-  "**/deploy_laravel_config.php",
-  "**/app/Service/Ingest/Steps/**"
+  "**/deploy_laravel_config.php"
 ]
