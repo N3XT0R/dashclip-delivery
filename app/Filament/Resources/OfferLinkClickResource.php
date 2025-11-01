@@ -93,8 +93,6 @@ class OfferLinkClickResource extends Resource
     {
         return [
             'index' => Pages\ListOfferLinkClicks::route('/'),
-            //'create' => Pages\CreateOfferLinkClick::route('/create'),
-            //'edit' => Pages\EditOfferLinkClick::route('/{record}/edit'),
         ];
     }
 
