@@ -20,7 +20,7 @@ return new class extends Migration {
         $videoArgs = [
             '-movflags' => '+faststart',
             '-pix_fmt' => 'yuv420p',
-            '-vf' => 'scale=iw/2:-1',
+            '-vf' => 'scale=trunc(iw/2)*2:trunc(ih/2)*2',
         ];
 
         Cfg::set('ffmpeg_video_args', json_encode($videoArgs, JSON_UNESCAPED_SLASHES), 'ffmpeg', 'json', true);
