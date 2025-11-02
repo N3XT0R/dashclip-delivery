@@ -5,7 +5,6 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
-$email = Cfg::get('email_admin_mail', 'email', 'info@example.tld', true);
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
