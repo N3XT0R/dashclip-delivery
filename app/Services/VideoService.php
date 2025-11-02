@@ -10,6 +10,7 @@ use App\Models\Clip;
 use App\Models\Video;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 readonly class VideoService
 {
@@ -26,7 +27,7 @@ readonly class VideoService
         $hash = DynamicStorage::getHashForFileInfoDto($disk, $file);
         $pathToFile = $file->path;
 
-        return Video::query()->create([
+        $video = Video::query()->firstOrCreate([
             'hash' => $hash,
             'ext' => $file->extension,
             'bytes' => $disk->size($pathToFile),
@@ -35,6 +36,14 @@ readonly class VideoService
             'meta' => null,
             'original_name' => $file->originalName ?? $file->basename,
         ]);
+
+        if ($video->wasRecentlyCreated) {
+            Log::debug('Neues Video angelegt', ['hash' => $video->hash]);
+        } else {
+            Log::debug('Video existierte bereits', ['hash' => $video->hash]);
+        }
+
+        return $video;
     }
 
     public function finalizeUpload(Video $video, string $dstRel, string $diskName, ?string $previewUrl): void
