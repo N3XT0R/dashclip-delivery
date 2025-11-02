@@ -46,7 +46,7 @@
             input.dispatchEvent(new Event('input', {bubbles: true}));
             if (endInput) {
                 let formatted = formatDuration(duration);
-                endInput.value = formatDuration(duration);
+                endInput.value = formatDuration(formatted);
                 endInput.dispatchEvent(new Event('input', {bubbles: true}));
             }
         };
