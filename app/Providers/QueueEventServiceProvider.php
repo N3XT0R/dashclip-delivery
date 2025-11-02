@@ -14,9 +14,6 @@ class QueueEventServiceProvider extends ServiceProvider
         // Log successful jobs
         Queue::after(static function (JobProcessed $event) {
             $job = $event->job;
-            if ($job->getQueue() !== 'default') {
-                return;
-            }
             $payload = $job->payload();
 
             activity()
@@ -33,9 +30,6 @@ class QueueEventServiceProvider extends ServiceProvider
         // Log failed jobs
         Queue::failing(static function (JobFailed $event) {
             $job = $event->job;
-            if ($job->getQueue() !== 'default') {
-                return;
-            }
             $payload = $job->payload();
 
             activity()
