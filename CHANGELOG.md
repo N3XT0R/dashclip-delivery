@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - This foundation enables unified monitoring across synchronous and asynchronous workflows,  
       preparing the application for future real-time observability integrations and analytics.
 
+### Fixed
+
+- **Video Upload Time Field Behavior**
+    - Resolved an issue where the `start_sec` and `end_sec` inputs were editable before a video was uploaded,  
+      leading to inconsistent or invalid timing data.
+    - The inputs are now automatically disabled until a valid duration is detected and populated via Livewire.  
+      Once the video metadata is processed, `end_sec` is prefilled based on the actual video duration.
+    - Simplified frontend logic by removing redundant DOM manipulation for `end_sec`;  
+      updates are now handled fully through reactive Filament state changes.
+
 ## [3.0.0-beta.2] - 2025-11-01
 
 ### Fixed
