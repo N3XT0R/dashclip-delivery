@@ -5,49 +5,33 @@
             wire:model.defer="{{ $getStatePath() }}.duration"
     >
 </div>
+
 <script>
-    function formatDuration(value) {
-        const seconds = Number(value);
-
-        if (!Number.isFinite(seconds)) return "00:00";
-
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
-
     document.addEventListener('FilePond:addfile', (event) => {
-        const modelPath = '{{ $getStatePath() }}.duration';
-        const selector = `input[wire\\:model\\.defer="${modelPath}"]`;
-        const input = document.querySelector(selector);
-
-        const endSec = '{{ $getStatePath() }}.end_sec';
-        const endSelector = `input[wire\\:model="${endSec}"]`;
-        const endInput = document.querySelector(endSelector);
-
-        if (!input) {
-            return;
-        }
-
+        const modelBase = @json($getStatePath());
         const file = event.detail?.file?.file;
-        if (!file) {
-            return;
-        }
+        if (!file) return;
 
         const url = URL.createObjectURL(file);
         const video = document.createElement('video');
         video.preload = 'metadata';
         video.src = url;
-        video.onloadedmetadata = () => {
-            let duration = Math.floor(video.duration ?? 0);
-            URL.revokeObjectURL(url);
-            input.value = duration;
 
-            input.dispatchEvent(new Event('input', {bubbles: true}));
-            if (endInput) {
-                let formatted = formatDuration(duration);
-                endInput.value = formatDuration(formatted);
-                endInput.dispatchEvent(new Event('input', {bubbles: true}));
+        video.onloadedmetadata = () => {
+            const duration = Math.floor(video.duration ?? 0);
+            URL.revokeObjectURL(url);
+
+            // -> Sende an Livewire (statt manuell ins DOM zu schreiben)
+            const component = window.Livewire.find(event.target.closest('[wire\\:id]').getAttribute('wire:id'));
+            if (component) {
+                component.set(`${modelBase}.duration`, duration);
+
+                // Dauer auch als formatierten Wert für end_sec setzen
+                const mins = Math.floor(duration / 60);
+                const secs = duration % 60;
+                const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                component.set(`${modelBase}.end_sec`, formatted);
             }
         };
     });
