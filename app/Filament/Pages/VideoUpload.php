@@ -82,7 +82,8 @@ class VideoUpload extends Page implements HasForms
                                     ->values()
                                     ->all()
                             )
-                            ->trim(),
+                            ->trim()
+                            ->helperText('Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.'),
                         TextInput::make('role')->label('Rolle')
                             ->datalist([
                                 'F' => 'Front',
