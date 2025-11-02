@@ -35,5 +35,13 @@ class BuildZipJob implements ShouldQueue
         $channel = Channel::query()->whereKey($this->channelId)->firstOrFail();
         $items = $assignments->fetchForZip($batch, $channel, collect($this->assignmentIds));
         $svc->build($batch, $channel, $items, $this->ip, $this->userAgent ?? '');
+        activity()
+            ->causedBy(auth()?->user())
+            ->performedOn($channel)
+            ->withProperties([
+                'batch_id' => $this->batchId,
+                'assignments' => count($this->assignmentIds),
+            ])
+            ->log('ZIP-File created');
     }
 }
