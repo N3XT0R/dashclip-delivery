@@ -111,7 +111,16 @@ class VideoUpload extends Page implements HasForms
         return Hidden::make('duration')
             ->default(0)
             ->required()
-            ->dehydrated();
+            ->dehydrated()
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                // Falls end_sec noch leer, automatisch übernehmen
+                if (blank($get('end_sec')) && (int)$state > 0) {
+                    $minutes = floor($state / 60);
+                    $seconds = $state % 60;
+                    $set('end_sec', sprintf('%02d:%02d', $minutes, $seconds));
+                }
+            });
     }
 
     protected function timeFields(): Grid
@@ -139,7 +148,9 @@ class VideoUpload extends Page implements HasForms
                         $seconds = $state % 60;
                         $component->state(sprintf('%02d:%02d', $minutes, $seconds));
                     })
-                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state)),
+                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state))
+                    ->disabled(fn(Get $get) => (int)($get('duration') ?? 0) < 1) // << hier
+                    ->reactive(),
 
                 TextInput::make('end_sec')
                     ->label('Ende (mm:ss)')
@@ -171,7 +182,9 @@ class VideoUpload extends Page implements HasForms
                         $seconds = $state % 60;
                         $component->state(sprintf('%02d:%02d', $minutes, $seconds));
                     })
-                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state)),
+                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state))
+                    ->disabled(fn(Get $get) => (int)($get('duration') ?? 0) < 1) // << hier
+                    ->reactive(),
             ]);
     }
 
