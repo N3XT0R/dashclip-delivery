@@ -24,7 +24,7 @@ return new class extends Migration {
         // - Ensures iw/ih > 0 before dividing
         // - Falls back to original dimensions if invalid
         // ------------------------------------------------------------
-        $safeScale = "scale='if(gt(iw,0),iw/2,iw)':if(gt(ih,0),ih/2,ih)";
+        $safeScale = "scale=if(gte(iw,2),iw/2,iw):if(gte(ih,2),ih/2,ih)";
 
         $videoArgs = [
             '-movflags' => '+faststart',
