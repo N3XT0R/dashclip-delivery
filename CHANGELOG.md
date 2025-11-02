@@ -33,7 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **FFmpeg Encoding Defaults**
     - Updated `ffmpeg_video_args` to perform true downscaling instead of even-pixel rounding.  
-      The new scaling filter now halves both width and height (`scale=iw/2:ih/2`),  
+      The new scaling filter now halves both width and height (
+      `"scale=trunc((if(gte(iw\\,2)\\,iw/2\\,iw))/2)*2:trunc((if(gte(ih\\,2)\\,ih/2\\,ih))/2)*2"`),  
       resulting in approximately 4× smaller video output while maintaining visual quality.
     - Added safe conditional evaluation (`if(gt(iw,0),iw/2,iw)`) to prevent potential  
       division-by-zero errors with malformed or metadata-deficient input files.
