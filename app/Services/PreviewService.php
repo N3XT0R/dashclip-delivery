@@ -139,11 +139,11 @@ final class PreviewService
 
             // Apply additional scaling for very large videos
             $scale = $sizeMB > 300
-                ? "scale=if(gte(iw,2),iw/2,iw):if(gte(ih,2),ih/2,ih)"
+                ? 'scale=if(gte(iw,2),iw/2,iw):if(gte(ih,2),ih/2,ih)'
                 : null;
 
             // Build modified parameter list
-            $preset = (string)Cfg::get('ffmpeg_preset', 'ffmpeg', 'medium');
+            $preset = (string)Cfg::get('ffmpeg_preset', 'ffmpeg', 'ultrafast');
             $extra = collect(Cfg::get('ffmpeg_video_args', 'ffmpeg', []))
                 ->flatMap(fn($value, $key) => is_int($key) ? [$value] : [$key, (string)$value])
                 ->values()
@@ -152,8 +152,13 @@ final class PreviewService
             $params = array_merge(['-preset', $preset, '-crf', (string)$crf], $extra);
 
             if ($scale) {
-                $params[] = '-vf';
-                $params[] = $scale;
+                $vfIndex = array_search('-vf', $params, true);
+                if ($vfIndex !== false) {
+                    $params[$vfIndex + 1] = $scale;
+                } else {
+                    $params[] = '-vf';
+                    $params[] = $scale;
+                }
             }
 
             $format->setAdditionalParameters($params);
