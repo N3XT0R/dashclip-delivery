@@ -139,7 +139,7 @@ final class PreviewService
 
             // Apply additional scaling for very large videos
             $scale = $sizeMB > 300
-                ? "scale=if(gte(iw\,2)\,iw/2\,iw):if(gte(ih\,2)\,ih/2\,ih)"
+                ? "scale=trunc((if(gte(iw\\,2)\\,iw/2\\,iw))/2)*2:trunc((if(gte(ih\\,2)\\,ih/2\\,ih))/2)*2"
                 : null;
 
             // Build modified parameter list
