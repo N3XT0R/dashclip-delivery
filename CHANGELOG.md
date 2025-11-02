@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - This foundation enables unified monitoring across synchronous and asynchronous workflows,  
       preparing the application for future real-time observability integrations and analytics.
 
+- **Adaptive Video Compression**
+    - Extended the `PreviewService::generatePreviewByDisk()` method with a new optional  
+      `$autoCompression` parameter that enables automatic adjustment of FFmpeg settings  
+      based on the original file size.
+    - Introduced the internal helper method `applyAdaptiveCompression()`, which dynamically  
+      tunes compression strength (`CRF 30–36`) and applies half-scaling for large videos (> 300 MB)  
+      to significantly reduce output size while preserving visual quality.
+    - Includes detailed logging of applied CRF values and scaling behavior,  
+      providing full traceability of adaptive encoding decisions during preview generation.
+    - Maintains full backward compatibility — adaptive compression is only active  
+      when explicitly requested via the new parameter.
+
 ### Changed
 
 - **FFmpeg Encoding Defaults**
