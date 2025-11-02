@@ -89,6 +89,7 @@ class VideoUpload extends Page implements HasForms
                                 'F' => 'Front',
                                 'R' => 'Rear',
                             ])
+                            ->helperText('Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R).')
                             ->trim(),
                     ])
             ])
