@@ -56,21 +56,7 @@ class VideoUpload extends Page implements HasForms
                     ->addActionLabel('Weiteres Video hinzufügen')
                     ->defaultItems(1)
                     ->schema([
-                        FileUpload::make('file')
-                            ->label('Video')
-                            ->required()
-                            ->disk(self::SOURCE_DISK)
-                            ->directory('uploads/tmp')
-                            ->acceptedFileTypes([
-                                'video/mp4',
-                                'application/mp4',
-                                'application/octet-stream',
-                                'binary/octet-stream',
-                            ])
-                            ->storeFileNamesIn('original_name')
-                            ->mimeTypeMap([
-                                'mp4' => 'video/mp4',
-                            ]),
+                        $this->getFileComponent(),
                         Hidden::make('duration')
                             ->default(0)
                             ->required()
@@ -103,6 +89,25 @@ class VideoUpload extends Page implements HasForms
                     ])
             ])
             ->statePath('data');
+    }
+
+    protected function getFileComponent(): FileUpload
+    {
+        return FileUpload::make('file')
+            ->label('Video')
+            ->required()
+            ->disk(self::SOURCE_DISK)
+            ->directory('uploads/tmp')
+            ->acceptedFileTypes([
+                'video/mp4',
+                'application/mp4',
+                'application/octet-stream',
+                'binary/octet-stream',
+            ])
+            ->storeFileNamesIn('original_name')
+            ->mimeTypeMap([
+                'mp4' => 'video/mp4',
+            ]);
     }
 
     protected function timeFields(): Grid
