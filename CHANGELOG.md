@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - This foundation enables unified monitoring across synchronous and asynchronous workflows,  
       preparing the application for future real-time observability integrations and analytics.
 
+### Changed
+
+- **FFmpeg Encoding Defaults**
+    - Updated `ffmpeg_video_args` to perform true downscaling instead of even-pixel rounding.  
+      The new scaling filter now halves both width and height (`scale=iw/2:ih/2`),  
+      resulting in approximately 4× smaller video output while maintaining visual quality.
+    - Added safe conditional evaluation (`if(gt(iw,0),iw/2,iw)`) to prevent potential  
+      division-by-zero errors with malformed or metadata-deficient input files.
+    - Increased the default `ffmpeg_crf` value from 30 to 33 to achieve stronger compression  
+      and further reduce output size without significantly impacting playback quality.
+    - Maintained compatibility with `yuv420p` pixel format and `+faststart` flag for smooth streaming.
+
 ### Fixed
 
 - **Video Upload Time Field Behavior**
@@ -26,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       Once the video metadata is processed, `end_sec` is prefilled based on the actual video duration.
     - Simplified frontend logic by removing redundant DOM manipulation for `end_sec`;  
       updates are now handled fully through reactive Filament state changes.
-  
+
 - **Video Insert Deadlocks under Concurrent Jobs**
     - Fixed a race condition causing `Lock wait timeout exceeded` errors when multiple ingestion jobs  
       attempted to insert identical video hashes concurrently.
