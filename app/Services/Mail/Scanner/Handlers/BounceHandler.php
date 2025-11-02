@@ -17,7 +17,7 @@ class BounceHandler implements MessageStrategyInterface, MoveToFolderInterface
     public function matches(Message $message): bool
     {
         $subject = $message->getSubject()->toString() ?? '';
-        return preg_match('/(Mail Delivery Failed|Undeliverable)/i', $subject) === 1;
+        return preg_match('/(Mail Delivery Failed|Undeliverable|Undelivered)/i', $subject) === 1;
     }
 
     public function handle(Message $message): void
