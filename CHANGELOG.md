@@ -26,6 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       Once the video metadata is processed, `end_sec` is prefilled based on the actual video duration.
     - Simplified frontend logic by removing redundant DOM manipulation for `end_sec`;  
       updates are now handled fully through reactive Filament state changes.
+  
+- **Video Insert Deadlocks under Concurrent Jobs**
+    - Fixed a race condition causing `Lock wait timeout exceeded` errors when multiple ingestion jobs  
+      attempted to insert identical video hashes concurrently.
+    - The `create()` call in `VideoService::createVideoBydDiskAndFileInfoDto()` was replaced with `firstOrCreate()`,  
+      ensuring atomic inserts and eliminating database-level contention on the unique `hash` constraint.
+    - Added debug-level logging around insert operations to improve visibility into concurrent job behavior  
+      and transaction timing during high-throughput ingestion.
 
 ## [3.0.0-beta.2] - 2025-11-01
 
