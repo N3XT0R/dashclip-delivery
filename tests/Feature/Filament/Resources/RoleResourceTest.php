@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources;
+namespace Tests\Feature\Filament\Resources;
 
 use App\Filament\Resources\Roles\Pages\CreateRole;
 use App\Filament\Resources\Roles\Pages\ListRoles;
@@ -51,7 +51,7 @@ final class RoleResourceTest extends DatabaseTestCase
             ->assertTableColumnExists('updated_at')
             ->tap(function ($livewire) use ($roles) {
                 $ids = $livewire->instance()->getTableRecords()->pluck('id')->all();
-                
+
                 foreach ($roles as $role) {
                     $this->assertContains($role->getKey(), $ids);
                 }
