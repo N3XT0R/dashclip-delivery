@@ -19,12 +19,13 @@ return new class extends Migration {
         Cfg::set('ffmpeg_crf', 33, 'ffmpeg', 'int', true);
 
         // ------------------------------------------------------------
-        // Safe downscaling filter:
-        // - Halves both width and height (≈ ¼ total pixel count)
-        // - Ensures iw/ih > 0 before dividing
-        // - Falls back to original dimensions if invalid
+        // Safe downscale filter:
+        // - Halves width & height (≈ ¼ pixels)
+        // - Keeps even dimensions (divisible by 2)
+        // - Validates width/height before halving
+        // - Escaped commas fix FFmpeg filter parsing issues
         // ------------------------------------------------------------
-        $safeScale = "scale=if(gte(iw\,2)\,iw/2\,iw):if(gte(ih\,2)\,ih/2\,ih)";
+        $safeScale = "scale=trunc((if(gte(iw\\,2)\\,iw/2\\,iw))/2)*2:trunc((if(gte(ih\\,2)\\,ih/2\\,ih))/2)*2";
 
         $videoArgs = [
             '-movflags' => '+faststart',
