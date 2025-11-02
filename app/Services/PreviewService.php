@@ -44,7 +44,8 @@ final class PreviewService
         string $relativePath,
         ?int $id,
         ?int $startSec = 0,
-        ?int $endSec = null
+        ?int $endSec = null,
+        bool $autoCompression = false
     ): string {
         if ($endSec !== null && !$this->isValidRange($startSec, $endSec)) {
             throw new InvalidTimeRangeException($startSec, $endSec);
@@ -82,6 +83,10 @@ final class PreviewService
                 $format->setAdditionalParameters($params);
             }
 
+            if ($autoCompression) {
+                $this->applyAdaptiveCompression($disk, $relativePath, $format);
+            }
+
             FFMpeg::fromFilesystem($disk)
                 ->open($relativePath)
                 ->addFilter(function (VideoFilters $filters) use ($startSec, $duration): void {
@@ -108,6 +113,63 @@ final class PreviewService
     }
 
     // ───────────────────────── internal / helpers ─────────────────────────
+
+    /**
+     * Dynamically adjust FFmpeg compression parameters
+     * based on the file size.
+     *
+     * @param  Filesystem  $disk
+     * @param  string  $relativePath
+     * @param  X264  $format
+     * @return void
+     */
+    private function applyAdaptiveCompression(Filesystem $disk, string $relativePath, X264 $format): void
+    {
+        try {
+            $size = $disk->size($relativePath);
+            $sizeMB = $size / 1024 / 1024;
+
+            // Adaptive CRF scaling — larger videos get stronger compression
+            $crf = match (true) {
+                $sizeMB > 1000 => 36,
+                $sizeMB > 500 => 34,
+                $sizeMB > 200 => 32,
+                default => 30,
+            };
+
+            // Apply additional scaling for very large videos
+            $scale = $sizeMB > 300
+                ? "scale='if(gt(iw,0),iw/2,iw)':if(gt(ih,0),ih/2,ih)"
+                : null;
+
+            // Build modified parameter list
+            $preset = (string)Cfg::get('ffmpeg_preset', 'ffmpeg', 'medium');
+            $extra = collect(Cfg::get('ffmpeg_video_args', 'ffmpeg', []))
+                ->flatMap(fn($value, $key) => is_int($key) ? [$value] : [$key, (string)$value])
+                ->values()
+                ->all();
+
+            $params = array_merge(['-preset', $preset, '-crf', (string)$crf], $extra);
+
+            if ($scale) {
+                $params[] = '-vf';
+                $params[] = $scale;
+            }
+
+            $format->setAdditionalParameters($params);
+
+            $this->info(sprintf(
+                'Adaptive compression applied for %s (%.1f MB, CRF=%d%s)',
+                $relativePath,
+                $sizeMB,
+                $crf,
+                $scale ? ', scaled ½' : ''
+            ));
+        } catch (Throwable $e) {
+            $this->error('Adaptive compression failed: '.$e->getMessage());
+        }
+    }
+
 
     /**
      * Get ffmpeg parameters from config.
