@@ -32,15 +32,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **FFmpeg Encoding Defaults**
-    - Updated `ffmpeg_video_args` to perform true downscaling instead of even-pixel rounding.  
-      The new scaling filter now halves both width and height (
-      `"scale=trunc((if(gte(iw\\,2)\\,iw/2\\,iw))/2)*2:trunc((if(gte(ih\\,2)\\,ih/2\\,ih))/2)*2"`),  
-      resulting in approximately 4× smaller video output while maintaining visual quality.
-    - Added safe conditional evaluation (`if(gt(iw,0),iw/2,iw)`) to prevent potential  
-      division-by-zero errors with malformed or metadata-deficient input files.
-    - Increased the default `ffmpeg_crf` value from 30 to 33 to achieve stronger compression  
-      and further reduce output size without significantly impacting playback quality.
-    - Maintained compatibility with `yuv420p` pixel format and `+faststart` flag for smooth streaming.
+    - Updated `ffmpeg_video_args` to use a consistent and safe downscaling filter.  
+      The new filter  
+      `"scale=trunc((if(gte(iw\\,2)\\,iw/2\\,iw))/2)*2:trunc((if(gte(ih\\,2)\\,ih/2\\,ih))/2)*2"`  
+      safely halves both width and height while ensuring even output dimensions (divisible by 2).  
+      This results in roughly 4× smaller frame size and improved encoding efficiency.
+    - Added proper escaping for commas (`\\,`) to ensure FFmpeg correctly parses the filter expression.
+    - Ensured that invalid or odd frame sizes automatically fall back to the nearest valid even dimensions.
+    - Increased the default `ffmpeg_crf` value from 30 to 33 for stronger compression with minimal perceptible quality
+      loss.
+    - Maintained compatibility with `yuv420p` pixel format and `+faststart` flag for smooth progressive streaming.
 
 ### Fixed
 
