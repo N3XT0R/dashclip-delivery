@@ -16,6 +16,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
@@ -58,6 +59,12 @@ class VideoUpload extends Page implements HasForms
                     ->schema([
                         $this->getFileComponent(),
                         $this->getDurationComponent(),
+                        TextEntry::make('upload_hint')
+                            ->label('Upload-Hinweis')
+                            ->state('Die Zeitfelder werden automatisch freigeschaltet, sobald ein Video hochgeladen wurde.')
+                            ->visible(fn(Get $get): bool => (int)($get('duration') ?? 0) < 1)
+                            ->extraAttributes(['class' => 'text-sm text-gray-500 italic'])
+                            ->columnSpanFull(),
                         $this->timeFields(),
                         $this->getClipSelectorComponent(),
                         Textarea::make('note')->label('Notiz')
