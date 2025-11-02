@@ -77,7 +77,7 @@ class ZipController extends Controller
         if (!is_file($fullPath)) {
             abort(404);
         }
-        
+
         if (false === (bool)Filament::auth()?->check()) {
             $assignmentIds = $this->cache->getAssignments($id);
             if ($assignmentIds !== []) {

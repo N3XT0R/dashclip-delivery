@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Enhanced Logging & Observability**
+    - Introduced extended activity and event logging across key application components,  
+      improving traceability, auditability, and operational transparency.  
+      The new logging layer provides consistent context propagation and structured output,  
+      ensuring better insight into background processes and system-level events.
+    - This foundation enables unified monitoring across synchronous and asynchronous workflows,  
+      preparing the application for future real-time observability integrations and analytics.
+
 ## [3.0.0-beta.2] - 2025-11-01
 
 ### Fixed
