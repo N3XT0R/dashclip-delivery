@@ -57,13 +57,9 @@ class VideoUpload extends Page implements HasForms
                     ->defaultItems(1)
                     ->schema([
                         $this->getFileComponent(),
-                        Hidden::make('duration')
-                            ->default(0)
-                            ->required()
-                            ->dehydrated(),
+                        $this->getDurationComponent(),
                         $this->timeFields(),
-                        View::make('filament.forms.components.clip-selector')
-                            ->dehydrated(false),
+                        $this->getClipSelectorComponent(),
                         Textarea::make('note')->label('Notiz')
                             ->rows(5)
                             ->autosize()
@@ -108,6 +104,14 @@ class VideoUpload extends Page implements HasForms
             ->mimeTypeMap([
                 'mp4' => 'video/mp4',
             ]);
+    }
+
+    protected function getDurationComponent(): Hidden
+    {
+        return Hidden::make('duration')
+            ->default(0)
+            ->required()
+            ->dehydrated();
     }
 
     protected function timeFields(): Grid
@@ -169,6 +173,12 @@ class VideoUpload extends Page implements HasForms
                     })
                     ->dehydrateStateUsing(fn($state) => static::toSeconds($state)),
             ]);
+    }
+
+    protected function getClipSelectorComponent(): View
+    {
+        return View::make('filament.forms.components.clip-selector')
+            ->dehydrated(false);
     }
 
     protected static function toSeconds($state): int
