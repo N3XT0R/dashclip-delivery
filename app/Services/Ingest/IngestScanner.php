@@ -135,7 +135,11 @@ class IngestScanner
 
         if ($videoService->isDuplicate($hash)) {
             $inboxDisk->delete($pathToFile);
-            $this->log('Duplikat übersprungen', 'info', ['file' => $file->path, 'hash' => $hash]);
+            $this->log('Duplikat übersprungen', 'info', [
+                'file' => $file->path,
+                'hash' => $hash,
+                'path_to_file' => $pathToFile,
+            ]);
             return IngestResult::DUPS;
         }
 
