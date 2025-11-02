@@ -70,6 +70,7 @@
                             data-assignment-id="{{ $assignment->id }}">
                         Einzeln laden
                     </button>
+                    <a class="btn btn-sm" href="{{ $assignment->temp_url }}">Einzeln laden (legacy)</a>
                 @endif
 
                 <button type="button" class="btn btn-sm"
