@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Enhanced Logging & Observability**
+    - Introduced extended activity and event logging across key application components,  
+      improving traceability, auditability, and operational transparency.  
+      The new logging layer provides consistent context propagation and structured output,  
+      ensuring better insight into background processes and system-level events.
+    - This foundation enables unified monitoring across synchronous and asynchronous workflows,  
+      preparing the application for future real-time observability integrations and analytics.
+
+### Changed
+
+- **UI & Interaction Improvements**
+    - Refined overall interface consistency and spacing for a cleaner, more cohesive look.
+    - Improved form field responsiveness, dynamic state handling, and contextual hints for better user guidance.
+    - Enhanced accessibility through clearer focus states and optimized color contrast.
+    - Streamlined several micro-interactions and transitions to create a smoother, more predictable user experience.
+
 ### Fixed
 
 - **Inbound Mail Handling (Missing `to` Field)**
