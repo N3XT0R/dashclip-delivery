@@ -45,6 +45,7 @@ class InboundHandler implements MessageStrategyInterface
             return;
         }
 
+
         $this->mailRepository->create([
             'message_id' => $messageId,
             'from' => $from,
@@ -55,11 +56,27 @@ class InboundHandler implements MessageStrategyInterface
             'created_at' => $createdAt,
             'updated_at' => $createdAt,
             'meta' => [
-                'headers' => $message->getHeader()?->getAttributes(),
+                'headers' => $this->getHeadersByMessage($message),
                 'content' => $message->getRawBody(),
             ],
         ]);
 
         Log::info("Inbound mail stored", ['subject' => $subject, 'from' => $from]);
+    }
+
+    protected function getHeadersByMessage(Message $message): array
+    {
+        try {
+            $headers = [];
+            $headerArr = explode("\r\n", $message->getHeader()?->raw);
+            foreach ($headerArr as $line) {
+                $headers[] = trim($line);
+            }
+        } catch (\Throwable $e) {
+            print_r($e->getMessage());
+            $headers = $message->getHeader()?->getAttributes();
+        }
+
+        return $headers;
     }
 }
