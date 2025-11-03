@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Mockery;
 use Tests\DatabaseTestCase;
-use Webklex\PHPIMAP\Attribute;
+use Webklex\PHPIMAP\Header;
 use Webklex\PHPIMAP\Message;
 
 class ReplyHandlerTest extends DatabaseTestCase
@@ -71,7 +71,10 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn(new Attribute('to', 'receiver@example.com'));
+
+        $headers = Mockery::mock(Header::class);
+        $headers->shouldReceive('has')->with('Auto-Submitted')->andReturn(false);
+        $message->shouldReceive('getHeader')->andReturn($headers);
 
         Log::shouldReceive('info')
             ->once()
@@ -103,7 +106,10 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn(new Attribute('to', 'receiver@example.com'));
+
+        $headers = Mockery::mock(Header::class);
+        $headers->shouldReceive('has')->with('Auto-Submitted')->andReturn(false);
+        $message->shouldReceive('getHeader')->andReturn($headers);
 
         Log::shouldReceive('info')->never();
 
@@ -136,7 +142,10 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn(new Attribute('to', 'receiver@example.com'));
+
+        $headers = Mockery::mock(Header::class);
+        $headers->shouldReceive('has')->with('Auto-Submitted')->andReturn(false);
+        $message->shouldReceive('getHeader')->andReturn($headers);
 
         Log::shouldReceive('info')->never();
 

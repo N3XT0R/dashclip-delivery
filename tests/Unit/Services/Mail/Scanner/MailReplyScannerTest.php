@@ -25,36 +25,6 @@ class MailReplyScannerTest extends TestCase
         parent::tearDown();
     }
 
-    public function testItSkipsAutoSubmittedMessagesAndMarksThemSeen(): void
-    {
-        $handler = new FakeHandler();
-
-        $scanner = new MailReplyScanner([$handler]);
-
-        $client = Mockery::mock(ClientAlias::class);
-        Client::shouldReceive('account')->once()->with(null)->andReturn($client);
-        $client->shouldReceive('connect')->once();
-
-        $inbox = Mockery::mock(Folder::class);
-        $query = Mockery::mock(WhereQuery::class);
-        $client->shouldReceive('getFolder')->with('INBOX')->andReturn($inbox);
-        $inbox->shouldReceive('messages')->andReturn($query);
-        $query->shouldReceive('unseen')->andReturn($query);
-
-        $message = $this->createMessageMock(autoSubmitted: true);
-        $message->shouldReceive('setFlag')->with('Seen')->once();
-        $query->shouldReceive('get')->andReturn(new MessageCollection([$message]));
-
-        Log::shouldReceive('info')
-            ->once()
-            ->with(Mockery::on(fn($message) => str_contains($message, 'was ignored')));
-        Log::shouldReceive('error')->never();
-
-        $scanner->scan();
-
-        $this->assertSame(0, $handler->matchesCalled);
-        $this->assertSame(0, $handler->handledCalled);
-    }
 
     public function testItDispatchesMatchingHandlersMovesMessageAndCreatesFolders(): void
     {
