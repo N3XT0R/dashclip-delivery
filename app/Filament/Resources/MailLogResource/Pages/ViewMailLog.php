@@ -97,7 +97,6 @@ class ViewMailLog extends ViewRecord
                         );
                     }
 
-                    // Kein HTML → als Monospace anzeigen
                     $escaped = e($content);
                     return new HtmlString(<<<HTML
                         <pre style="
