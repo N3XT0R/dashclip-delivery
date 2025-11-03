@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Mockery;
 use Tests\DatabaseTestCase;
+use Webklex\PHPIMAP\Attribute;
 use Webklex\PHPIMAP\Message;
 
 class ReplyHandlerTest extends DatabaseTestCase
@@ -70,7 +71,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn([$from]);
+        $message->shouldReceive('getTo')->andReturn(new Attribute('to', $from));
 
         Log::shouldReceive('info')
             ->once()
@@ -102,7 +103,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn([$from]);
+        $message->shouldReceive('getTo')->andReturn(new Attribute('to', $from));
 
         Log::shouldReceive('info')->never();
 
@@ -135,7 +136,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn([$from]);
+        $message->shouldReceive('getTo')->andReturn(new Attribute('to', $from));
 
         Log::shouldReceive('info')->never();
 
