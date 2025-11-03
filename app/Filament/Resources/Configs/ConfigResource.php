@@ -63,7 +63,13 @@ class ConfigResource extends Resource
                     ->label(__('configs.labels.description')),
                 TextColumn::make('value')
                     ->limit(50)
-                    ->formatStateUsing(fn($state) => is_array($state) ? json_encode($state) : (string)$state)
+                    ->formatStateUsing(function ($state) {
+                        return match (true) {
+                            is_array($state) => json_encode($state),
+                            is_bool($state) => $state ? 'an' : 'aus',
+                            default => (string)$state,
+                        };
+                    })
                     ->searchable(),
             ])
             ->filters([
