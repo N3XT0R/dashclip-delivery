@@ -75,11 +75,9 @@ class ViewMailLog extends ViewRecord
                         return new HtmlString('<em>Kein Inhalt vorhanden</em>');
                     }
 
-                    // Prüfen, ob der Inhalt HTML enthält
                     $isHtml = str_contains($content, '<html') || preg_match('/<\/?[a-z][\s>]/i', $content);
 
                     if ($isHtml) {
-                        // HTML-Inhalt rendern
                         return new HtmlString(<<<HTML
                             <div style="
                                 background:#ffffff;
