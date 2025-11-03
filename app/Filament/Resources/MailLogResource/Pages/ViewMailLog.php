@@ -6,9 +6,11 @@ namespace App\Filament\Resources\MailLogResource\Pages;
 
 use App\Filament\Resources\MailLogResource;
 use App\Models\MailLog;
+use Filament\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class ViewMailLog extends ViewRecord
 {
@@ -56,5 +58,44 @@ class ViewMailLog extends ViewRecord
                     ->copyable()
                     ->html(),
             ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('showContent')
+                ->label('Show Email Content')
+                ->icon('heroicon-o-eye')
+                ->modalHeading('Email Content')
+                ->modalWidth('5xl')
+                ->modalContent(function (MailLog $record) {
+                    $raw = $record->meta['content'] ?? null;
+
+                    if (!$raw) {
+                        return new HtmlString('<em>Kein Inhalt vorhanden</em>');
+                    }
+
+                    // MIME-Content nicht rendern, sondern sauber formatieren
+                    $escaped = e($raw);
+
+                    return new HtmlString(<<<HTML
+                        <pre style="
+                            background:#0f172a;
+                            color:#e2e8f0;
+                            padding:16px;
+                            border-radius:8px;
+                            font-family: monospace;
+                            font-size: 13px;
+                            overflow-x:auto;
+                            white-space:pre-wrap;
+                            line-height:1.5;
+                            max-height:70vh;
+                        ">{$escaped}</pre>
+                    HTML
+                    );
+                })
+                ->visible(fn(MailLog $record) => !empty($record->meta['content']))
+                ->modalSubmitAction(false),
+        ];
     }
 }
