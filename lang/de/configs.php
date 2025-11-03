@@ -11,6 +11,7 @@ return [
         'email_admin_mail' => 'Admin-Mail-Adresse',
         'email_your_name' => 'Dein angezeigter Name',
         'email_get_bcc_notification' => 'Channel-Notification Emails als BCC empfangen',
+        'email_reminder' => 'Erinnerungsmails verschicken',
         'email_reminder_days' => 'Anzahl der Tage vor Ablauf für Erinnerungs-E-Mails',
         'faq_email' => 'FAQ-Email verschicken wenn auf noreply Nachrichten geantwortet wird?',
         'expire_after_days' => 'Assignment Gültigkeit in Tagen',
