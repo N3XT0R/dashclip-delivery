@@ -17,7 +17,7 @@ final class NotifyRemindersTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Cfg::set('email_reminder', 1, 'email');
+        Cfg::set('email_reminder', true, 'email', 'bool');
     }
 
     public function testQueuesReminderEmails(): void
