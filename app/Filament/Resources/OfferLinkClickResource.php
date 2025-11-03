@@ -17,9 +17,8 @@ class OfferLinkClickResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'System';
+    protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected static ?string $label = 'Offer Link Clicks';
-
 
     public static function form(Schema $schema): Schema
     {
