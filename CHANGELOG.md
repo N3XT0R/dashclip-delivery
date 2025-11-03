@@ -43,6 +43,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       loss.
     - Maintained compatibility with `yuv420p` pixel format and `+faststart` flag for smooth progressive streaming.
 
+- **Reminder Notification Logic**
+    - Updated the `NotifyReminders` console command to respect the new configuration flag `email_reminder` under the
+      `email` category.  
+      Reminder notifications are now only queued when this setting is explicitly enabled, allowing flexible activation
+      or deactivation  
+      of automated reminder emails via configuration.
+    - Introduced a new configuration key `email_reminder` through a dedicated database migration.  
+      This flag determines whether reminder emails are sent at all and enables centralized control via the configuration
+      system.
+    - The `--days` CLI option and the existing `email_reminder_days` configuration remain available and continue to
+      define  
+      the lead time (in days) for reminder notifications before link expiration, ensuring full backward compatibility.
+
 ### Fixed
 
 - **Video Upload Time Field Behavior**
