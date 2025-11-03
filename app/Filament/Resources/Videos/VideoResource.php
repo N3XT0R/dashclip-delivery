@@ -19,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 
 class VideoResource extends Resource
@@ -67,12 +68,18 @@ class VideoResource extends Resource
                     ->counts('assignments')
                     ->label('Assignments'),
                 TextColumn::make('clips.user.display_name')
-                    ->sortable()
                     ->label('Einsender-Account')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('clips.user', function (Builder $userQuery) use ($search) {
+                            $userQuery->where('submitted_name', 'like', "%{$search}%")
+                                ->orWhere('name', 'like', "%{$search}%");
+                        });
+                    })
                     ->default('-'),
 
                 TextColumn::make('clips.submitted_by')
                     ->sortable()
+                    ->searchable()
                     ->label('Einsender'),
 
                 TextColumn::make('created_at')
