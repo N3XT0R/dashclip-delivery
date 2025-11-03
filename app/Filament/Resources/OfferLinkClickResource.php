@@ -51,7 +51,8 @@ class OfferLinkClickResource extends Resource
 
                 Tables\Columns\TextColumn::make('clicked_at')
                     ->label('Clicked At')
-                    ->dateTime()
+                    ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('user_agent')
