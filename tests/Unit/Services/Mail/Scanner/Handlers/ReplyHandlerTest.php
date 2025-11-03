@@ -71,7 +71,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn(new Attribute('to', $from));
+        $message->shouldReceive('getTo')->andReturn(new Attribute('to', 'receiver@example.com'));
 
         Log::shouldReceive('info')
             ->once()
@@ -103,7 +103,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn(new Attribute('to', $from));
+        $message->shouldReceive('getTo')->andReturn(new Attribute('to', 'receiver@example.com'));
 
         Log::shouldReceive('info')->never();
 
@@ -136,7 +136,7 @@ class ReplyHandlerTest extends DatabaseTestCase
         $message = Mockery::mock(Message::class);
         $message->shouldReceive('getInReplyTo')->andReturn($inReplyTo);
         $message->shouldReceive('getFrom')->andReturn([$from]);
-        $message->shouldReceive('getTo')->andReturn(new Attribute('to', $from));
+        $message->shouldReceive('getTo')->andReturn(new Attribute('to', 'receiver@example.com'));
 
         Log::shouldReceive('info')->never();
 
