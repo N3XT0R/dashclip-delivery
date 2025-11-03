@@ -69,15 +69,38 @@ class ViewMailLog extends ViewRecord
                 ->modalHeading('Email Content')
                 ->modalWidth('5xl')
                 ->modalContent(function (MailLog $record) {
-                    $raw = $record->meta['content'] ?? null;
+                    $content = $record->meta['content'] ?? '';
 
-                    if (!$raw) {
+                    if (trim($content) === '') {
                         return new HtmlString('<em>Kein Inhalt vorhanden</em>');
                     }
 
-                    // MIME-Content nicht rendern, sondern sauber formatieren
-                    $escaped = e($raw);
+                    // Prüfen, ob der Inhalt HTML enthält
+                    $isHtml = str_contains($content, '<html') || preg_match('/<\/?[a-z][\s>]/i', $content);
 
+                    if ($isHtml) {
+                        // HTML-Inhalt rendern
+                        return new HtmlString(<<<HTML
+                            <div style="
+                                background:#ffffff;
+                                color:#1e293b;
+                                font-family: system-ui, sans-serif;
+                                font-size: 15px;
+                                padding:20px;
+                                border-radius:8px;
+                                overflow-y:auto;
+                                max-height:70vh;
+                                line-height:1.6;
+                                box-shadow: inset 0 0 0 1px #e2e8f0;
+                            ">
+                                {$content}
+                            </div>
+                        HTML
+                        );
+                    }
+
+                    // Kein HTML → als Monospace anzeigen
+                    $escaped = e($content);
                     return new HtmlString(<<<HTML
                         <pre style="
                             background:#0f172a;
