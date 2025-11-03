@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Inbound Mail Handling (Missing `to` Field)**
+    - Fixed an issue in the `InboundMailHandler` where the `to` field was not properly passed,  
+      causing a SQL exception and preventing inbound emails from being processed correctly.  
+      The recipient address is now consistently persisted, ensuring reliable inbound mail collection.
+
+- **Reply Handling Refactoring**
+    - Moved the `shouldIgnore` logic for detecting automatically submitted replies  
+      from the `MailReplyScanner` to the `ReplyHandler`, improving separation of concerns  
+      and overall maintainability of the mail scanning workflow.
+    - Automatic replies are now processed correctly, while auto-submitted messages  
+      are safely ignored and flagged as seen.
+
 ## [3.0.0-beta.3] - 2025-11-03
 
 ### Added
