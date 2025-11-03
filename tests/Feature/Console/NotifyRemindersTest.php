@@ -4,18 +4,26 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
-use App\Mail\ReminderMail;
-use App\Models\{Assignment, Batch, Channel, Video, Clip};
 use App\Enum\StatusEnum;
+use App\Facades\Cfg;
+use App\Mail\ReminderMail;
+use App\Models\{Assignment, Batch, Channel, Clip, Video};
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use Tests\DatabaseTestCase;
 
 final class NotifyRemindersTest extends DatabaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Cfg::set('email_reminder', 1, 'email');
+    }
+
     public function testQueuesReminderEmails(): void
     {
         Mail::fake();
+
 
         $batch = Batch::factory()->state(['type' => 'assign'])->create([
             'started_at' => now()->subDay(),
@@ -32,13 +40,13 @@ final class NotifyRemindersTest extends DatabaseTestCase
             ->for($video, 'video')
             ->create([
                 'status' => StatusEnum::NOTIFIED->value,
-                'expires_at' => now()->addDay()->setTime(12,0),
+                'expires_at' => now()->addDay()->setTime(12, 0),
             ]);
 
         $this->artisan('notify:reminders')
             ->assertExitCode(Command::SUCCESS);
 
-        Mail::assertQueued(ReminderMail::class, function(ReminderMail $m) use ($channel, $video) {
+        Mail::assertQueued(ReminderMail::class, function (ReminderMail $m) use ($channel, $video) {
             return $m->hasTo($channel->email)
                 && $m->assignments->count() === 1
                 && $m->assignments->first()->video->is($video)
@@ -94,7 +102,7 @@ final class NotifyRemindersTest extends DatabaseTestCase
             ->for($video, 'video')
             ->create([
                 'status' => StatusEnum::PICKEDUP->value,
-                'expires_at' => now()->addDay()->setTime(12,0),
+                'expires_at' => now()->addDay()->setTime(12, 0),
             ]);
 
         $this->artisan('notify:reminders')
