@@ -56,6 +56,7 @@ class InboundHandlerTest extends DatabaseTestCase
         $message->shouldReceive('getHeader')->andReturn($header);
         $message->shouldReceive('getDate->toDate')->andReturn(Carbon::parse('2025-10-31 12:00:00'));
         $message->shouldReceive('getFrom')->andReturn([(object)['mail' => 'user@example.com']]);
+        $message->shouldReceive('getTo')->andReturn([(object)['mail' => 'receiver@example.com']]);
         $message->shouldReceive('getSubject->toString')->andReturn('Test inbound mail');
         $message->shouldReceive('getMessageId->toString')->andReturn('msg-123@example.com');
         $message->shouldReceive('getRawBody')->andReturn('Raw message body');
@@ -94,6 +95,7 @@ class InboundHandlerTest extends DatabaseTestCase
 
         // Must mock all methods the handler touches
         $message->shouldReceive('getFrom')->andReturn([(object)['mail' => 'user@example.com']]);
+        $message->shouldReceive('getTo')->andReturn([(object)['mail' => 'receiver@example.com']]);
         $message->shouldReceive('getSubject->toString')->andReturn('Duplicate Mail');
         $message->shouldReceive('getMessageId->toString')->andReturn('msg-duplicate@example.com');
         $message->shouldReceive('getHeader')->andReturnNull();
