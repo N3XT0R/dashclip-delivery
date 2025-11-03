@@ -19,11 +19,6 @@ class MailReplyScanner
     {
     }
 
-    private function shouldIgnore(Message $message): bool
-    {
-        return $message->getHeader()?->has('Auto-Submitted') ?? false;
-    }
-
     private function createFolder(ClientAlias $client, string $path): void
     {
         if (!$client->getFolder($path)) {
@@ -51,12 +46,6 @@ class MailReplyScanner
 
     private function dispatch(ClientAlias $client, Message $message): void
     {
-        if ($this->shouldIgnore($message)) {
-            $message->setFlag('Seen');
-            Log::info('Message '.$message->getMessageId()->toString().' was ignored');
-            return;
-        }
-
         foreach ($this->handlers as $handler) {
             if ($handler instanceof MessageStrategyInterface && $handler->matches($message)) {
                 $handler->handle($message);

@@ -13,8 +13,6 @@ use App\Services\Dropbox\AutoRefreshTokenProvider;
 use App\Services\Ingest\Contracts\IngestPipelineInterface;
 use App\Services\Ingest\Contracts\IngestStepInterface;
 use App\Services\Ingest\IngestPipeline;
-use App\Services\Mail\Scanner\Detectors\BounceDetector;
-use App\Services\Mail\Scanner\Detectors\ReplyDetector;
 use App\Services\Mail\Scanner\Handlers\BounceHandler;
 use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;

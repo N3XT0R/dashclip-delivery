@@ -11,6 +11,14 @@ use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Webklex\PHPIMAP\Exceptions\AuthFailedException;
+use Webklex\PHPIMAP\Exceptions\ConnectionFailedException;
+use Webklex\PHPIMAP\Exceptions\EventNotFoundException;
+use Webklex\PHPIMAP\Exceptions\ImapBadRequestException;
+use Webklex\PHPIMAP\Exceptions\ImapServerErrorException;
+use Webklex\PHPIMAP\Exceptions\MessageFlagException;
+use Webklex\PHPIMAP\Exceptions\ResponseException;
+use Webklex\PHPIMAP\Exceptions\RuntimeException;
 use Webklex\PHPIMAP\Message;
 
 class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
@@ -24,8 +32,28 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
         return $message->getInReplyTo() !== null;
     }
 
+    private function shouldIgnore(Message $message): bool
+    {
+        return $message->getHeader()?->has('Auto-Submitted') ?? false;
+    }
+
+    /**
+     * @throws RuntimeException
+     * @throws MessageFlagException
+     * @throws EventNotFoundException
+     * @throws ResponseException
+     * @throws ImapBadRequestException
+     * @throws ConnectionFailedException
+     * @throws AuthFailedException
+     * @throws ImapServerErrorException
+     */
     public function handle(Message $message): void
     {
+        if ($this->shouldIgnore($message)) {
+            $message->setFlag('Seen');
+            Log::info('Message '.$message->getMessageId()->toString().' was ignored');
+            return;
+        }
         $from = $message->getFrom()[0]->mail ?? '';
         $inReplyTo = $message->getInReplyTo()->toString();
 
