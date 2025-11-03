@@ -15,7 +15,7 @@ class ScanMailReplies extends Command
 
     public function handle(MailReplyScanner $scanner): int
     {
-        if (Cfg::get('faq_email', 'email')) {
+        if (Cfg::get('faq_email', 'email', false)) {
             $scanner->scan();
         }
         return self::SUCCESS;
