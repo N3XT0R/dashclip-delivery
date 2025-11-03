@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Facades\Cfg;
 use App\Services\ReminderNotifier;
 use Illuminate\Console\Command;
 
@@ -20,8 +21,11 @@ class NotifyReminders extends Command
     public function handle(): int
     {
         $days = (int)$this->option('days');
-        $result = $this->notifier->notify($days);
-        $this->info("Reminder emails queued: {$result['sent']}");
+        if (Cfg::get('email_reminder', 'email')) {
+            $result = $this->notifier->notify($days);
+            $this->info("Reminder emails queued: {$result['sent']}");
+        }
+
         return self::SUCCESS;
     }
 }
