@@ -35,10 +35,11 @@ class InboundHandler implements MessageStrategyInterface
     public function handle(Message $message): void
     {
         $from = $message->getFrom()[0]->mail ?? '';
+        $to = $message->getTo()->toString();
         $subject = $message->getSubject()->toString() ?? '';
         $messageId = $message->getMessageId()->toString();
         $createdAt = $this->getDateByMessage($message);
-
+        
         if ($this->mailRepository->existsByMessageId($messageId)) {
             Log::info("Mail already processed: {$messageId}");
             return;
@@ -47,6 +48,7 @@ class InboundHandler implements MessageStrategyInterface
         $this->mailRepository->create([
             'message_id' => $messageId,
             'from' => $from,
+            'to' => $to,
             'subject' => $subject,
             'direction' => MailDirection::INBOUND,
             'status' => MailStatus::Received,
