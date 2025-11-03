@@ -98,6 +98,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       By lowering per-preview CPU and disk overhead, the application now sustains  
       smooth parallel generation without increasing hardware resources.
 
+- **Configuration Value Rendering**
+    - Fixed an issue where boolean configuration values were displayed inconsistently (`1` or empty) instead of readable
+      states.The rendering logic was refactored to use a `match` expression, ensuring clear and consistent output across
+      all types: arrays are now shown as JSON, booleans as `'an'` / `'aus'`, and all other values as strings.
+    - This improves both UI readability and debugging clarity when inspecting configuration data within the application.
+
 ## [3.0.0-beta.1] - 2025-11-01
 
 ### Added
