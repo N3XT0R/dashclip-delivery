@@ -82,6 +82,7 @@
             {{-- Inline Preview --}}
             <div class="inline-preview hidden mt-2">
                 <video
+                        class="w-full h-auto max-w-full rounded-base"
                         controls
                         preload="metadata"
                         playsinline
