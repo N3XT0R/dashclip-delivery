@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0]
+
 - **Enhanced Logging & Observability**
     - Introduced extended activity and event logging across key application components,  
       improving traceability, auditability, and operational transparency.  
