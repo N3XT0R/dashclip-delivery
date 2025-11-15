@@ -9,21 +9,118 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2025-11-15
 
-- **Enhanced Logging & Observability**
-    - Introduced extended activity and event logging across key application components,  
-      improving traceability, auditability, and operational transparency.  
-      The new logging layer provides consistent context propagation and structured output,  
-      ensuring better insight into background processes and system-level events.
-    - This foundation enables unified monitoring across synchronous and asynchronous workflows,  
-      preparing the application for future real-time observability integrations and analytics.
+### Added
+
+- **Modular Ingest Architecture**
+    - Fully redesigned, transaction-safe ingestion pipeline for both CLI and web.
+    - Unified file access through the new `DynamicStorageService` (local, S3, Dropbox) with stream-based hashing.
+    - New domain-specific exceptions (`InvalidTimeRangeException`, `PreviewGenerationException`) for predictable flow
+      control.
+    - Strongly typed result objects (`IngestStats`, `ClipImportResult`) replacing mutable arrays.
+    - Extensive feature and integration test coverage using real video fixtures.
+    - Dedicated `CsvService` with typed aggregation and improved error handling.
+
+- **Adaptive Preview Engine**
+    - Automatic compression with dynamic CRF values (30–36) depending on input file size.
+    - Intelligent half-scaling for large inputs (>300 MB) to minimize preview output size.
+    - Unified FFmpeg parameter handling with safe escaping and normalized CLI argument generation.
+    - Fully configurable through database-driven FFmpeg settings and integrated with `pbmedia/laravel-ffmpeg`.
+
+- **Channel Approval & Welcome Flow**
+    - GDPR-compliant approval workflow using hashed confirmation tokens.
+    - Automatic welcome emails for newly created channels and users.
+    - Secure password delivery for admin-created accounts (never stored).
+    - New `channels:send-welcome` command with dry-run and force modes.
+
+- **Inbound Mail Processing & Logging**
+    - New inbound mail handler with duplicate detection and structured metadata storage.
+    - Central mail repository for inbound/outbound messages.
+    - Integration tests for listeners, handlers, and mail log creation.
+
+- **User Authentication & MFA**
+    - Multi-factor authentication (TOTP and email codes).
+    - Email verification and change verification.
+    - Automatic role assignment for newly created users.
+    - Full Filament Shield integration for role/permission management.
+
+- **ZIP Download System**
+    - Unified ZIP-based downloader for single and multi-file downloads.
+    - Real-time progress events via WebSockets.
+    - Consistent file naming, error handling, and logging.
+
+- **Offer Link Analytics**
+    - New `offer_link_clicks` table capturing clicks and user agents.
+    - Dedicated Filament resource for statistics and analysis.
+
+- **Version Service**
+    - New `LocalVersionService` reading version information from Composer metadata.
 
 ### Changed
 
-- **UI & Interaction Improvements**
-    - Refined overall interface consistency and spacing for a cleaner, more cohesive look.
-    - Improved form field responsiveness, dynamic state handling, and contextual hints for better user guidance.
-    - Enhanced accessibility through clearer focus states and optimized color contrast.
-    - Streamlined several micro-interactions and transitions to create a smoother, more predictable user experience.
+- **Preview Generation**
+    - Updated FFmpeg defaults (CRF 33, unified scaling filter, consistent preset handling).
+    - More efficient preview generation under high-load environments.
+
+- **UI & Interaction**
+    - Improved layout spacing, focus states, accessibility, and visual consistency.
+    - Updated Filament v4 components and resources.
+
+- **Uploads**
+    - Increased maximum upload size to **1 GB** and extended upload timeout to ~25 minutes.
+    - Improved handling of large uploads with Livewire configuration refinements.
+
+- **Download System**
+    - Unified logic for single and batch downloads via the new ZIP pipeline.
+    - Cleaner controller/service split with new `OfferService`.
+
+- **Data Model Adjustments**
+    - Added `user_id` to clips to prepare for future ownership features.
+    - Enforced uniqueness for user profile display names.
+
+- **Logging & Observability**
+    - Extended event and activity logging across all major systems.
+    - More consistent context propagation for background jobs and asynchronous tasks.
+
+### Fixed
+
+- **Dropbox Upload Stability**
+    - Resolved chunked upload issues (`lookup_failed/incorrect_offset`) and added stream rewinding.
+    - Correct handling of small files (< chunk size) using direct upload.
+
+- **Mail Processing**
+    - Improved error handling in welcome mail listeners to prevent queue crashes.
+    - Correct timestamp parsing and duplicate detection for inbound mails.
+
+- **Preview Generation**
+    - Fixed failures caused by mismatched FFmpeg configuration types and invalid dimension handling.
+
+- **Video Model**
+    - Safe preview path resolution when previews are missing.
+
+- **Race Conditions**
+    - Eliminated deadlocks during concurrent video ingestion via `firstOrCreate()` on unique hashes.
+
+- **Configuration Rendering**
+    - Boolean, JSON, and array values now display in consistently readable formats.
+
+- **UI Issues**
+    - Fixed footer overlapping in Filament upload views.
+
+### Deprecated
+
+- Legacy ingest scanner and all direct file I/O operations.
+- Legacy CSV parsing logic.
+- Old Dropbox upload implementation.
+- Old single-file download controller.
+- Direct filesystem calls in preview generation.
+
+### Removed
+
+- Legacy preview service and FFmpeg components replaced by the new modular engine.
+- Old ingestion system and deprecated classes.
+- Filament v3 dependencies and components.
+- Mutable `$stats` arrays previously used in CSV import.
+- All raw `fopen`, `unlink`, and direct filesystem operations in ingest and upload processes.
 
 ### Fixed
 
