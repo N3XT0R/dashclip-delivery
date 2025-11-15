@@ -63,17 +63,30 @@
     <img src="{{ asset('images/logo.png') }}" alt="DashClip Delivery Logo" class="mx-auto mb-4 h-16 w-auto">
     <h1 class="text-3xl font-extrabold mb-4 text-indigo-600">DashClip Delivery</h1>
     <p class="mb-6 text-gray-600">
-        Diese Plattform stellt dir regelmäßig neue Videos zur Verfügung, die fair auf verschiedene Kanäle verteilt
-        werden.
-        Wenn du einen Link von uns erhalten hast, kannst du dort die angebotenen Videos einzeln oder gesammelt
-        herunterladen.
-        Alle Downloads sind zeitlich begrenzt und werden protokolliert. Nicht benötigte Videos können zurückgegeben
-        werden.
+        DashClip Delivery ist eine zentrale Plattform für Einsender, die ihre Dashcam-Clips
+        an mehrere YouTube-Kanäle verteilen möchten – ohne mehrfachen Upload, ohne
+        verschiedene Formulare und ohne den Überblick zu verlieren.
     </p>
+
+    <p class="mb-6 text-gray-600">
+        Du lädst deinen Clip einmal hoch. Die Plattform übernimmt anschließend automatisch
+        die faire, nachvollziehbare Verteilung an die angeschlossenen Kanäle. Jeder Kanal
+        erhält nur passende Angebote und kann Clips einzeln oder gesammelt herunterladen.
+    </p>
+
+    <p class="mb-6 text-gray-600">
+        DashClip Delivery löst damit ein Problem, das viele Einsender haben: ein einziger
+        Upload statt mehrere Portale. Kanäle sind reine Empfänger innerhalb dieses Systems.
+        Downloads sind zeitlich begrenzt, werden protokolliert und nicht benötigte Clips
+        können jederzeit zurückgegeben werden.
+    </p>
+
     <ul class="list-disc pl-6 space-y-1 text-gray-600 mb-6 text-left">
-        <li>Faire Verteilung neuer Videos auf alle Partnerkanäle</li>
+        <li>Zentraler Upload für mehrere YouTube-Kanäle gleichzeitig</li>
+        <li>Automatische, faire Verteilung von Clips anhand definierter Regeln</li>
         <li>Download-Links mit Vorschau und optionalem ZIP-Paket</li>
-        <li>Option zur Rückgabe nicht benötigter Inhalte</li>
+        <li>Rückgabe-Option für nicht benötigte Inhalte</li>
+        <li>Transparente Protokollierung aller Aktionen</li>
     </ul>
     <button id="openGame" class="inline-block px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-400">
         Ist dir gerade langweilig?
