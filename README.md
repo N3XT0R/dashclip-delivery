@@ -10,21 +10,52 @@
 
 ## Project Description
 
-Dashclip-Delivery is a Laravel application for distributing video material to various channels. New videos are
-ingested from an upload directory or from Dropbox, stored on a configured storage, and then fairly distributed
-to channels based on quotas and weighting. Channels receive signed links via email to an offer page,
-where they can download individual videos or a ZIP file with an accompanying `info.csv`. Unneeded videos
-can be returned, and all downloads are logged.
+**Dashclip-Delivery** is a creator-focused, platform-independent system for managing and distributing video content
+across multiple YouTube channels.  
+It solves a common problem for creators and dashcam submitters: sending the same videos to several channels while
+keeping track of what was submitted where, what was downloaded, and which offers expired.
+
+Instead of acting as an upload portal for a single channel, Dashclip-Delivery provides a **neutral, automated delivery
+workflow**:
+
+- Videos are ingested from a local upload folder or Dropbox and automatically deduplicated.
+- Ingested clips are processed, previewed, and stored on a configurable storage backend.
+- Content is then **fairly distributed** to all participating channels based on quotas, weights, or availability.
+- Channels receive signed, time-limited offer links and can download clips individually or as ZIP packages.
+- All downloads, returns, expirations, and interactions are logged for full transparency.
+
+Dashclip-Delivery is ideal for **multi-channel submitters**, **content creators**, and **channel operators** who need a
+reliable, automated, and privacy-conscious distribution pipeline.  
+A public API is planned to allow custom integrations and automated workflows.
+
+---
 
 ## Features
 
-- **Ingest**: recursive scanning of an upload folder (local or Dropbox) with deduplication via SHA-256.
-- **Distribution**: assignment of new or expired videos to channels (weighted round-robin, weekly quota).
-- **Notification**: sending emails with temporary download links and offer pages.
-- **Offer & Download**: web interface for selecting and ZIP-downloading selected videos including `info.csv` and
-  tracking of pickups.
-- **Previews**: generation of short MP4 clips using `ffmpeg`.
-- **Dropbox Integration**: OAuth connection and automatic token refresh.
+- **Ingest & Deduplication**  
+  Recursive folder scanning (local or Dropbox) with SHA-256 deduplication to prevent duplicate video entries.
+
+- **Fair Distribution Engine**  
+  Weighted round-robin distribution with optional weekly quota settings ensures balanced delivery across all channels.
+
+- **Offer & Notification System**  
+  Automatic emails with signed offer links, reminder notifications, and detailed logging of sent messages.
+
+- **Offer Page & Downloads**  
+  Channels receive a web interface to preview clips, download individual videos, or generate ZIP bundles including a
+  metadata `info.csv`.
+
+- **Preview Generation**  
+  Automatic MP4 preview clips created via FFmpeg, with configurable codec, preset, and compression settings.
+
+- **Dropbox Integration**  
+  OAuth-based connection with automatic token refresh and support for large file uploads.
+
+- **Return Workflow**  
+  Channels can decline or return videos they do not need; the system records and redistributes them accordingly.
+
+- **Full Audit Logging**  
+  Every action—ingest, distribution, downloads, returns, mail events—is tracked for complete transparency.
 
 ## Prerequisites
 
