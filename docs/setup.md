@@ -4,6 +4,7 @@ Diese Anleitung beschreibt die Installation der Anwendung und die Einrichtung de
 
 ## Voraussetzungen
 
+- nginx oder anderen Webserver
 - PHP-fpm ≥ 8.4 und Composer
 - Node.js & npm
 - Datenbank (z. B. MySQL oder SQLite)
@@ -97,58 +98,118 @@ XSendFilePath /var/www/<domain>/htdocs/current/public/storage/previews
 
 ```nginx
 server {
-    listen 80;
-    server_name example.test;
-    root /var/www/dashclip/public;
+    if ($host = <domain>) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
 
-    index index.php;
+
+    listen 80;
+    listen [::]:80;
+    server_name dashclip-delivery.net;
+
+    access_log /var/www/<domain>/logs/access.log;
+    error_log  /var/www/<domain>/logs/error.log warn;
+
+    # Redirect to HTTPS
+    include /etc/nginx/snippets/letsencrypt-global.conf;
+    location / {
+       return 301 https://$host$request_uri;
+    }
+
+
+}
+
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    listen 443 quic;
+    http2 on;
+    add_header Alt-Svc 'h3=":443"; ma=86400';
+
+    server_name <domain>;
+
+    root /var/www/<domain>/htdocs/current/public;
+    index index.php index.html;
+    client_max_body_size 1G;
+
+    access_log /var/www/<domain>/logs/access.log;
+    error_log  /var/www/<domain>/logs/error.log warn;
+    
+    # only if ssl is enabled
+    ssl_certificate /etc/letsencrypt/live/<domain>/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/<domain>/privkey.pem; # managed by Certbot
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+
+    # ===========================
+    # PHP-FPM (ber Socket)
+    # ===========================
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
+        fastcgi_index index.php;
+    }
+
+    # ===========================
+    # XSendFile-quivalent (X-Accel-Redirect)
+    # ===========================
+    # Nur innerhalb /storage/previews erlaubt
+    location /storage/previews/ {
+        internal;
+        alias /var/www/<domain>/htdocs/current/public/storage/previews/;
+    }
+
+    # ===========================
+    # MP4-Range-Support (chunked playback)
+    # ===========================
+    location ~ \.mp4$ {
+        mp4;
+        add_header Accept-Ranges bytes;
+    }
+
+    # ===========================
+    # Reverb WebSocket Proxy
+    # ===========================
+    location /reverb/ {
+        proxy_pass http://127.0.0.1:8080/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # Optional (empfohlen):
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_read_timeout 600s;
+        proxy_send_timeout 600s;
+    }
+
+    # Serve static assets directly; don't pass them to PHP
+    location ~* \.(?:ico|gif|jpe?g|png|svg|webp|mp4)$ {
+        expires 7d;
+        access_log off;
+        try_files $uri =404;
+    }
+
+    # ===========================
+    # Static file handling / Rewrite
+    # ===========================
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
-    location /reverb/ {
-        proxy_pass         http://localhost:80/;
-        proxy_http_version 1.1;
-        proxy_set_header   Upgrade $http_upgrade;
-        proxy_set_header   Connection "upgrade";
-        proxy_set_header   Host $host;
-        proxy_read_timeout 120s;
-        proxy_send_timeout 120s;
-    }
-
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
-    }
-
-    location ~ /\.ht {
+    # ===========================
+    # Sicherheit: Versteckte Dateien blocken
+    # ===========================
+    location ~ /\. {
         deny all;
     }
+
 }
-```
-
-### Apache
-
-```apache
-<VirtualHost *:80>
-    ServerName example.test
-    DocumentRoot /var/www/dashclip/public
-
-    <Directory /var/www/dashclip/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    <FilesMatch \.php$>
-        SetHandler "proxy:unix:/run/php/php8.4-fpm.sock|fcgi://localhost/"
-    </FilesMatch>
-
-    ProxyPass "/reverb/" "ws://localhost:80/"
-    ProxyPassReverse "/reverb/" "ws://localhost:80/"
-
-    ErrorLog ${APACHE_LOG_DIR}/dashclip-error.log
-    CustomLog ${APACHE_LOG_DIR}/dashclip-access.log combined
-</VirtualHost>
 ```
 
 ## Crontab
