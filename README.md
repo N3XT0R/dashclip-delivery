@@ -33,29 +33,28 @@ A public API is planned to enable external automations and custom integrations.
 ## Features
 
 - **Ingest & Deduplication**  
-  Recursive folder scanning (local or Dropbox) with SHA-256 deduplication to prevent duplicate video entries.
+  Recursive scanning (local or Dropbox) with SHA-256 hashing to prevent duplicate video entries.
 
 - **Fair Distribution Engine**  
-  Weighted round-robin distribution with optional weekly quota settings ensures balanced delivery across all channels.
+  Weighted round-robin assignment with optional weekly quotas to ensure balanced distribution across all channels.
 
 - **Offer & Notification System**  
-  Automatic emails with signed offer links, reminder notifications, and detailed logging of sent messages.
+  Automatic emails with signed offer links, reminder notifications, and detailed logging of all mail events.
 
 - **Offer Page & Downloads**  
-  Channels receive a web interface to preview clips, download individual videos, or generate ZIP bundles including a
-  metadata `info.csv`.
+  Channels can preview clips, download individual videos, or generate ZIP packages including a metadata `info.csv`.
 
 - **Preview Generation**  
-  Automatic MP4 preview clips created via FFmpeg, with configurable codec, preset, and compression settings.
+  Automatic MP4 preview creation via FFmpeg with configurable compression and scaling.
 
 - **Dropbox Integration**  
-  OAuth-based connection with automatic token refresh and support for large file uploads.
+  OAuth-based linking with automatic token refresh and support for large uploads.
 
 - **Return Workflow**  
-  Channels can decline or return videos they do not need; the system records and redistributes them accordingly.
+  Channels can decline or return unwanted clips; the system logs all decisions and redistributes clips if necessary.
 
 - **Full Audit Logging**  
-  Every action—ingest, distribution, downloads, returns, mail events—is tracked for complete transparency.
+  Every action—from ingest to distribution, downloads, returns, and mail events—is recorded for complete transparency.
 
 ## Prerequisites
 
