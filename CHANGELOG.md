@@ -108,11 +108,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
-- Legacy ingest scanner and all direct file I/O operations.
 - Legacy CSV parsing logic.
 - Old Dropbox upload implementation.
 - Old single-file download controller.
-- Direct filesystem calls in preview generation.
 
 ### Removed
 
@@ -121,6 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Filament v3 dependencies and components.
 - Mutable `$stats` arrays previously used in CSV import.
 - All raw `fopen`, `unlink`, and direct filesystem operations in ingest and upload processes.
+- Direct filesystem calls in preview generation.
+- Legacy ingest scanner and all direct file I/O operations.
 
 ### Fixed
 
