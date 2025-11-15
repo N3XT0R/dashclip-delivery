@@ -10,23 +10,23 @@
 
 ## Project Description
 
-**Dashclip-Delivery** is a creator-focused, platform-independent system for managing and distributing video content
-across multiple YouTube channels.  
-It solves a common problem for creators and dashcam submitters: sending the same videos to several channels while
-keeping track of what was submitted where, what was downloaded, and which offers expired.
+**Dashclip-Delivery** is a neutral, multi-channel submission and distribution system for dashcam and other
+user-generated video content.  
+It is designed for people who regularly submit the same videos to multiple YouTube channels and need a reliable,
+automated workflow for managing, tracking, and distributing their content.
 
-Instead of acting as an upload portal for a single channel, Dashclip-Delivery provides a **neutral, automated delivery
-workflow**:
+Instead of acting as an upload portal for a single channel, Dashclip-Delivery provides an independent,
+automated delivery pipeline that serves both submitters and channel operators:
 
-- Videos are ingested from a local upload folder or Dropbox and automatically deduplicated.
-- Ingested clips are processed, previewed, and stored on a configurable storage backend.
-- Content is then **fairly distributed** to all participating channels based on quotas, weights, or availability.
-- Channels receive signed, time-limited offer links and can download clips individually or as ZIP packages.
+- Videos are ingested from a local folder or Dropbox and automatically deduplicated.
+- All clips are processed, previewed, and stored on a configurable storage backend.
+- Content is then **fairly distributed** to participating channels based on quotas, weighting, and availability.
+- Channels receive signed, time-limited offer links and can download clips individually or as ZIP bundles.
 - All downloads, returns, expirations, and interactions are logged for full transparency.
 
-Dashclip-Delivery is ideal for **multi-channel submitters**, **content creators**, and **channel operators** who need a
-reliable, automated, and privacy-conscious distribution pipeline.  
-A public API is planned to allow custom integrations and automated workflows.
+Dashclip-Delivery is ideal for **multi-channel submitters**, **YouTube channel operators**, and anyone who needs a
+structured, automated, and privacy-conscious distribution workflow.  
+A public API is planned to enable external automations and custom integrations.
 
 ---
 
