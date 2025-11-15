@@ -81,7 +81,7 @@ XSendFilePath /var/www/<domain>/htdocs/current/public/storage/previews
    Type=simple
    User=www-data
    WorkingDirectory=/var/www/dashclip
-   ExecStart=/usr/bin/php artisan reverb:start
+   ExecStart=/usr/bin/php artisan reverb:start --port=8080 --no-interaction
    Restart=on-failure
 
    [Install]
