@@ -7,7 +7,7 @@ Diese Anleitung beschreibt die Installation der Anwendung und die Einrichtung de
 - nginx oder anderen Webserver
 - PHP-fpm ≥ 8.4 und Composer
 - Node.js & npm
-- Datenbank (z. B. MySQL oder SQLite)
+- Datenbank (z. B. MySQL/MariaDB oder SQLite)
 - Git
 
 ## Optional
