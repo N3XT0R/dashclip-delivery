@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\ChannelPoolDto;
 use App\Enum\BatchTypeEnum;
+use App\Models\Batch;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
 use App\ValueObjects\AssignmentRun;
@@ -77,7 +78,7 @@ class AssignmentDistributor
             ->all();
     }
 
-    private function collectPoolOrAbort($batch): Collection
+    private function collectPoolOrAbort(Batch $batch): Collection
     {
         $poolVideos = $this->batchService->collectVideosForAssign();
 
@@ -89,7 +90,7 @@ class AssignmentDistributor
         return $poolVideos;
     }
 
-    private function prepareChannelsOrAbort(?int $quotaOverride, $batch): ChannelPoolDto
+    private function prepareChannelsOrAbort(?int $quotaOverride, Batch $batch): ChannelPoolDto
     {
         $channelService = app(ChannelService::class);
         $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
