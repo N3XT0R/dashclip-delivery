@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enum\StatusEnum;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
 use App\Repository\BatchRepository;
@@ -84,12 +83,7 @@ class AssignmentDistributor
             }
 
             foreach ($group as $video) {
-                $assignmentRepo->create([
-                    'video_id' => $video->getKey(),
-                    'channel_id' => $target->getKey(),
-                    'batch_id' => $batch->getKey(),
-                    'status' => StatusEnum::QUEUED->value,
-                ]);
+                $assignmentRepo->createAssignment($video, $target, $batch);
 
                 // Für Folgerunden merken, dass dieses Video diesem Kanal nun zugeordnet ist
                 $assignedChannelsByVideo[$video->getKey()] = ($assignedChannelsByVideo[$video->getKey()] ?? collect())

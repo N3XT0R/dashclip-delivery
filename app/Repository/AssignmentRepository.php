@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Enum\StatusEnum;
 use App\Models\Assignment;
+use App\Models\Batch;
+use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Video;
@@ -12,9 +15,14 @@ use Illuminate\Support\Collection;
 
 class AssignmentRepository
 {
-    public function create(array $data): Assignment
+    public function createAssignment(Video $video, Channel $channel, Batch $batch): Assignment
     {
-        return Assignment::query()->create($data);
+        return Assignment::query()->create([
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel->getKey(),
+            'batch_id' => $batch->getKey(),
+            'status' => StatusEnum::QUEUED->value,
+        ]);
     }
 
 
