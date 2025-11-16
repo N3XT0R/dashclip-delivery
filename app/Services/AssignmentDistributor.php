@@ -66,13 +66,12 @@ class AssignmentDistributor
         foreach ($groups as $group) {
             // Blockierte Kanäle für diese Gruppe ermitteln (union über alle Videos der Gruppe)
             $blockedChannelIds = $this->calculateBlockedChannels($group, $blockedByVideo);
-            $quota = $channelPoolDto->quota;
 
             // B) Zielkanal bestimmen → Delegiert an ChannelService (Domain-Logic separat)
             $channel = $channelService->pickTargetChannel(
                 $group,
                 $channelPoolDto->rotationPool,
-                $quota,
+                $channelPoolDto->quota,
                 $blockedChannelIds,
                 $assignedChannelsByVideo
             );
@@ -93,12 +92,12 @@ class AssignmentDistributor
                         ->push($channelId)
                         ->unique();
 
-                --$quota[$channelId];
+                $channelPoolDto->quota[$channelId]--;
                 $assigned++;
             }
 
             // Abbruch, wenn alle Quotas aufgebraucht sind
-            if (collect($quota)->every(fn(int $q) => $q <= 0)) {
+            if ($this->allQuotasUsedUp($channelPoolDto->quota)) {
                 break;
             }
         }
@@ -116,5 +115,11 @@ class AssignmentDistributor
             ->flatMap(fn(Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
             ->unique()
             ->all();
+    }
+
+
+    private function allQuotasUsedUp(array $quota): bool
+    {
+        return collect($quota)->every(fn(int $q) => $q <= 0);
     }
 }

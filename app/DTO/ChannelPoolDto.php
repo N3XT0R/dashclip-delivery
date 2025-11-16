@@ -7,7 +7,7 @@ namespace App\DTO;
 
 use Illuminate\Support\Collection;
 
-readonly class ChannelPoolDto
+class ChannelPoolDto
 {
     public function __construct(
         public Collection $channels,
