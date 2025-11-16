@@ -17,7 +17,7 @@ use RuntimeException;
  * Service to distribute videos across channels based on quotas, weights, and blocks.
  * @todo refactor to smaller services?
  */
-class AssignmentDistributor
+readonly class AssignmentDistributor
 {
 
     public function __construct(
