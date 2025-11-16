@@ -37,13 +37,13 @@ class AssignmentDistributor
         $assignmentRepo = $this->assignmentRepository;
         $batch = $batchService->startBatch();
 
-        $lastFinished = $batchRepo->getLastFinishedAssignBatch();
+        $lastFinished = $batchService->getLastFinishedAssignBatch();
 
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
         $poolVideos = $batchService->collectPoolVideos($lastFinished);
 
         if ($poolVideos->isEmpty()) {
-            $batchRepo->markAssignedBatchAsFinished($batch, 0, 0);
+            $batchService->finishAssignBatch($batch, 0, 0);
             throw new RuntimeException('Nichts zu verteilen.');
         }
 
@@ -54,7 +54,7 @@ class AssignmentDistributor
         $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
 
         if ($channelPoolDto->channels->isEmpty()) {
-            $batchRepo->markAssignedBatchAsFinished($batch, 0, 0);
+            $batchService->finishAssignBatch($batch, 0, 0);
             throw new RuntimeException('Keine Kanäle konfiguriert.');
         }
 

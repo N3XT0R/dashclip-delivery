@@ -9,12 +9,18 @@ use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Video;
+use App\Repository\BatchRepository;
 use App\ValueObjects\IngestStats;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
 class BatchService
 {
+    public function __construct(private BatchRepository $batchRepository)
+    {
+    }
+
+
     public function getLatestAssignBatch(): Batch
     {
         $assignBatch = Batch::query()
@@ -79,11 +85,12 @@ class BatchService
 
     public function getLastFinishedAssignBatch(): ?Batch
     {
-        return Batch::query()
-            ->where('type', BatchTypeEnum::ASSIGN->value)
-            ->whereNotNull('finished_at')
-            ->orderByDesc('finished_at')
-            ->first();
+        return $this->batchRepository->getLastFinishedAssignBatch();
+    }
+
+    public function finishAssignBatch(Batch $batch, int $assigned, int $skipped): bool
+    {
+        return $this->batchRepository->markAssignedBatchAsFinished($batch, $assigned, $skipped);
     }
 
 
@@ -118,4 +125,5 @@ class BatchService
 
         return $newOrUnassigned->concat($requeueVideos)->unique('id');
     }
+
 }
