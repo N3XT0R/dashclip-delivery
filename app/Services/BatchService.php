@@ -101,7 +101,7 @@ class BatchService
         $newOrUnassigned = Video::query()
             ->whereDoesntHave('assignments')
             ->when($lastFinished, function ($q) use ($lastFinished) {
-                $q->orWhere('created_at', '>', $lastFinished->finished_at);
+                $q->orWhere('created_at', '>', $lastFinished?->finished_at);
             })
             ->orderBy('id')
             ->get();
