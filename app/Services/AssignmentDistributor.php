@@ -8,6 +8,7 @@ use App\Enum\StatusEnum;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
 use App\Repository\BatchRepository;
+use Illuminate\Support\Collection;
 use RuntimeException;
 
 /**
@@ -65,11 +66,7 @@ class AssignmentDistributor
 
         foreach ($groups as $group) {
             // Blockierte Kanäle für diese Gruppe ermitteln (union über alle Videos der Gruppe)
-            $blockedChannelIds = $group
-                ->flatMap(fn(Video $v) => $blockedByVideo[$v->getKey()] ?? collect())
-                ->unique()
-                ->all();
-
+            $blockedChannelIds = $this->calculateBlockedChannels($group, $blockedByVideo);
             $quota = $channelPoolDto->quota;
 
             $target = $channelService->pickTargetChannel(
@@ -112,5 +109,14 @@ class AssignmentDistributor
         $batchRepo->markAssignedBatchAsFinished($batch, $assigned, $skipped);
 
         return ['assigned' => $assigned, 'skipped' => $skipped];
+    }
+
+
+    private function calculateBlockedChannels(Collection $group, $blockedByVideo): array
+    {
+        return $group
+            ->flatMap(fn(Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
+            ->unique()
+            ->all();
     }
 }
