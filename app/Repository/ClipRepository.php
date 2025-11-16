@@ -27,6 +27,9 @@ class ClipRepository
             ->unique();
     }
 
+    /**
+     * @return Collection<Clip>
+     */
     public function getClipsWhereUserIdIsNull(): Collection
     {
         return Clip::query()
