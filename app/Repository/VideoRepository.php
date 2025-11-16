@@ -65,6 +65,11 @@ class VideoRepository
             ->get();
     }
 
+    public function isDuplicate(string $hash): bool
+    {
+        return Video::query()->where('hash', $hash)->exists();
+    }
+
     public function getClipForVideo(Video $video, int $startSec, int $endSec): ?Clip
     {
         return $video->clips()->where('start_sec', $startSec)->where('end_sec', $endSec)->first();
