@@ -23,12 +23,7 @@ readonly class AssignmentService
      */
     public function fetchPending(Batch $batch, Channel $channel): EloquentCollection
     {
-        return Assignment::with(['video.clips'])
-            ->where('batch_id', $batch->getKey())
-            ->where('channel_id', $channel->getKey())
-            ->whereIn('status', StatusEnum::getReadyStatus())
-            ->orderBy('id')
-            ->get();
+        return $this->assignmentRepository->fetchPending($batch, $channel);
     }
 
     /**

@@ -183,4 +183,17 @@ class AssignmentRepository
             ->whereIn('status', StatusEnum::getReadyStatus())
             ->get();
     }
+
+    /**
+     * Retrieve assignments that are ready for offering to a channel.
+     */
+    public function fetchPending(Batch $batch, Channel $channel): EloquentCollection
+    {
+        return Assignment::with(['video.clips'])
+            ->where('batch_id', $batch->getKey())
+            ->where('channel_id', $channel->getKey())
+            ->whereIn('status', StatusEnum::getReadyStatus())
+            ->orderBy('id')
+            ->get();
+    }
 }
