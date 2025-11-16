@@ -27,7 +27,7 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $result = $this->assignmentDistributor->distribute();
 
         $this->assertSame(2, $result['assigned']);
-        $assignments = Assignment::query()->whereIn('video_id', [$v1->id, $v2->id])->get();
+        $assignments = Assignment::query()->whereIn('video_id', [$v1->getKey(), $v2->getKey()])->get();
         $this->assertCount(2, $assignments);
         $this->assertSame(1, $assignments->pluck('channel_id')->unique()->count());
     }
@@ -39,6 +39,6 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $result = $this->assignmentDistributor->distribute();
 
         $this->assertSame(['assigned' => 1, 'skipped' => 0], $result);
-        $this->assertDatabaseHas('assignments', ['video_id' => $video->id]);
+        $this->assertDatabaseHas('assignments', ['video_id' => $video->getKey()]);
     }
 }
