@@ -2,8 +2,9 @@
 
 namespace Tests\Integration\Services;
 
-use App\Models\{Assignment, Clip, Video};
+use App\Models\{Assignment, Channel, Clip, Video};
 use App\Services\AssignmentDistributor;
+use RuntimeException;
 use Tests\DatabaseTestCase;
 
 class AssignmentDistributorTest extends DatabaseTestCase
@@ -40,5 +41,21 @@ class AssignmentDistributorTest extends DatabaseTestCase
 
         $this->assertSame(['assigned' => 1, 'skipped' => 0], $result);
         $this->assertDatabaseHas('assignments', ['video_id' => $video->getKey()]);
+    }
+
+    public function testPrepareChannelsOrAbortThrowsWhenNoChannelsExist(): void
+    {
+        // Arrange
+        Channel::query()->delete();
+        // One video => pool is non-empty → next step must fail at channel check
+        Video::factory()->create();
+
+        $distributor = $this->assignmentDistributor;
+
+        // Act + Assert
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Keine Kanäle konfiguriert.');
+
+        $distributor->distribute();
     }
 }
