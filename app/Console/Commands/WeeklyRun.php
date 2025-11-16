@@ -13,6 +13,7 @@ class WeeklyRun extends Command
 
     public function handle(): int
     {
+        $this->call('assign:uploader');
         $this->call('assign:expire');
         $this->call('assign:distribute');
         $this->call('notify:offers');
