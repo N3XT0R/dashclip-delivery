@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
-class AssignmentService
+readonly class AssignmentService
 {
 
     public function __construct(private AssignmentRepository $assignmentRepository)
