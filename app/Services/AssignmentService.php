@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\DTO\ChannelPoolDto;
 use App\Enum\StatusEnum;
 use App\Models\{Assignment, Batch, Channel, Download};
 use App\Repository\AssignmentRepository;
+use App\ValueObjects\AssignmentRun;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
@@ -119,36 +119,19 @@ class AssignmentService
      * Assign group To Channel Assignment
      * @param  Collection  $group
      * @param  Channel  $channel
-     * @param  Batch  $batch
-     * @param  ChannelPoolDto  $channelPoolDto
-     * @param  int  $assigned
-     * @param  array  $assignedChannelsByVideo
-     * @return array{assigned: int, assignedChannelsByVideo:array}
+     * @param  AssignmentRun  $run
+     * @return array
      */
-    public function assignGroupToChannel(
-        Collection $group,
-        Channel $channel,
-        Batch $batch,
-        ChannelPoolDto $channelPoolDto,
-        int $assigned,
-        array $assignedChannelsByVideo
-    ): array {
+    public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): array
+    {
         foreach ($group as $video) {
-            $videoId = $video->getKey();
-            $channelId = $channel->getKey();
+            $this->assignmentRepository->createAssignment($video, $channel, $run->batch);
 
-            $this->assignmentRepository->createAssignment($video, $channel, $batch);
-
-            $assignedChannelsByVideo[$videoId] =
-                ($assignedChannelsByVideo[$videoId] ?? collect())
-                    ->push($channelId)
-                    ->unique();
-
-            $channelPoolDto->quota[$channelId]--;
-            $assigned++;
+            $run->recordAssignment($video->getKey(), $channel->getKey());
+            $run->decrementQuota($channel->getKey());
         }
 
-        return [$assigned, $assignedChannelsByVideo];
+        return [$run->assignedChannelsByVideo];
     }
 }
 

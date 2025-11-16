@@ -8,6 +8,7 @@ use App\DTO\ChannelPoolDto;
 use App\Enum\BatchTypeEnum;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
+use App\ValueObjects\AssignmentRun;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
@@ -51,14 +52,17 @@ class AssignmentDistributor
         $blockedByVideo = $assignmentRepo->preloadActiveBlocks($poolVideos);
         $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($poolVideos);
 
-        // 6) Verteilung
-        [$assigned, $skipped] = $this->assignGroups(
-            $groups,
-            $channelPoolDto,
-            $blockedByVideo,
-            $assignedChannelsByVideo,
-            $batch
+        $run = new AssignmentRun(
+            groups: $groups,
+            channelPool: $channelPoolDto,
+            blockedByVideo: $blockedByVideo,
+            assignedChannelsByVideo: $assignedChannelsByVideo,
+            batch: $batch
         );
+
+
+        // 6) Verteilung
+        [$assigned, $skipped] = $this->assignGroups($run);
         $batchService->finishAssignBatch($batch, $assigned, $skipped);
 
         return ['assigned' => $assigned, 'skipped' => $skipped];
@@ -71,12 +75,6 @@ class AssignmentDistributor
             ->flatMap(fn(Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
             ->unique()
             ->all();
-    }
-
-
-    private function allQuotasUsedUp(array $quota): bool
-    {
-        return collect($quota)->every(fn(int $q) => $q <= 0);
     }
 
     private function collectPoolOrAbort($batch): Collection
@@ -104,27 +102,23 @@ class AssignmentDistributor
         return $channelPoolDto;
     }
 
-    private function assignGroups(
-        Collection $groups,
-        ChannelPoolDto $channelPoolDto,
-        array $blockedByVideo,
-        array $assignedChannelsByVideo,
-        $batch
-    ): array {
+    private function assignGroups(AssignmentRun $run): array
+    {
         $assigned = 0;
         $skipped = 0;
 
         $channelService = app(ChannelService::class);
+        $assignmentService = app(AssignmentService::class);
 
-        foreach ($groups as $group) {
-            $blockedChannelIds = $this->calculateBlockedChannels($group, $blockedByVideo);
+        foreach ($run->groups as $group) {
+            $blockedChannelIds = $this->calculateBlockedChannels($group, $run->blockedByVideo);
 
             $channel = $channelService->pickTargetChannel(
                 $group,
-                $channelPoolDto->rotationPool,
-                $channelPoolDto->quota,
+                $run->channelPool->rotationPool,
+                $run->channelPool->quota,
                 $blockedChannelIds,
-                $assignedChannelsByVideo
+                $run->assignedChannelsByVideo
             );
 
             if (!$channel) {
@@ -132,18 +126,11 @@ class AssignmentDistributor
                 continue;
             }
 
-            [$assigned, $assignedChannelsByVideo] = app(AssignmentService::class)->assignGroupToChannel(
+            [$assigned] = $assignmentService->assignGroupToChannel(
                 $group,
                 $channel,
-                $batch,
-                $channelPoolDto,
-                $assigned,
-                $assignedChannelsByVideo
+                $run
             );
-
-            if ($this->allQuotasUsedUp($channelPoolDto->quota)) {
-                break;
-            }
         }
 
         return [$assigned, $skipped];
