@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **assign:uploader Command**  
+  Added a new CLI command that automatically assigns `user_id` to clips based on the `submitted_by` field.  
+  This prepares the system for uploader-based distribution pools and improves data consistency.
+
+### Changed
+
+- **Repository Refactoring**  
+  Extracted several Eloquent query segments from service classes into their corresponding repositories  
+  (`VideoRepository`, `ClipRepository`, etc.), improving separation of concerns and maintainability.
+
 ## [3.0.0] - 2025-11-15
 
 ### Added
