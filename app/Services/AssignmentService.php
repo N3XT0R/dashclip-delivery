@@ -87,7 +87,7 @@ readonly class AssignmentService
      * @param  Collection<Video>  $group
      * @param  Channel  $channel
      * @param  AssignmentRun  $run
-     * @return array
+     * @return int
      */
     public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): int
     {
