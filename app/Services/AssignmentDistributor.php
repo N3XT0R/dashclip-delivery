@@ -99,7 +99,7 @@ class AssignmentDistributor
                     ->push($target->getKey())
                     ->unique();
 
-                $quota[$target->getKey()] = $quota[$target->getKey()] - 1;
+                $quota[$target->getKey()] -= 1;
                 $assigned++;
             }
 
