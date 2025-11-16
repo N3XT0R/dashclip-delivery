@@ -82,7 +82,7 @@ class BatchService
         return Batch::query()
             ->where('type', BatchTypeEnum::ASSIGN->value)
             ->whereNotNull('finished_at')
-            ->orderByDesc('finished_at') // semantically better than latest('id')
+            ->orderByDesc('finished_at')
             ->first();
     }
 

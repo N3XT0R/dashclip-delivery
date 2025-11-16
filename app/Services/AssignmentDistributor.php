@@ -36,7 +36,7 @@ class AssignmentDistributor
         $assignmentRepo = app(AssignmentRepository::class);
         $batch = $batchService->startBatch();
 
-        $lastFinished = $batchService->getLastFinishedAssignBatch();
+        $lastFinished = $batchRepo->getLastFinishedAssignBatch();
 
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
         $poolVideos = $batchService->collectPoolVideos($lastFinished);
