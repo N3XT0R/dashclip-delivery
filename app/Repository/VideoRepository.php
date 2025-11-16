@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Enum\StatusEnum;
+use App\Models\Clip;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -62,5 +63,10 @@ class VideoRepository
         return Video::query()
             ->whereIn('id', $ids)
             ->get();
+    }
+
+    public function getClipForVideo(Video $video, int $startSec, int $endSec): ?Clip
+    {
+        return $video->clips()->where('start_sec', $startSec)->where('end_sec', $endSec)->first();
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Models\Clip;
+use App\Models\User;
 use Illuminate\Support\Collection;
 
 class ClipRepository
@@ -33,5 +34,12 @@ class ClipRepository
             ->whereNotNull('submitted_by')
             ->where('submitted_by', '!=', '')
             ->get();
+    }
+
+
+    public function assignUserToClips(Clip $clip, User $user): bool
+    {
+        $clip->setAttribute('user_id', $user->getKey());
+        return $clip->save();
     }
 }

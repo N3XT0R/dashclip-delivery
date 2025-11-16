@@ -70,6 +70,7 @@ readonly class VideoService
 
     public function getClipForVideo(Video $video, int $startSec, int $endSec): ?Clip
     {
-        return $video->clips()->where('start_sec', $startSec)->where('end_sec', $endSec)->first();
+        return $this->videoRepository->getClipForVideo($video, $startSec, $endSec);
     }
+
 }
