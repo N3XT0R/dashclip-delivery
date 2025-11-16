@@ -10,6 +10,7 @@ use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Video;
+use App\Repository\AssignmentRepository;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
@@ -30,6 +31,7 @@ class AssignmentDistributor
     {
         $channelService = app(ChannelService::class);
         $batchService = app(BatchService::class);
+        $assignmentRepo = app(AssignmentRepository::class);
         $batch = $batchService->startBatch();
 
         $lastFinished = $batchService->getLastFinishedAssignBatch();
@@ -85,7 +87,7 @@ class AssignmentDistributor
             }
 
             foreach ($group as $video) {
-                Assignment::query()->create([
+                $assignmentRepo->create([
                     'video_id' => $video->getKey(),
                     'channel_id' => $target->getKey(),
                     'batch_id' => $batch->getKey(),
