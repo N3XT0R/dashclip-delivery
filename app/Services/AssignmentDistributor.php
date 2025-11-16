@@ -50,9 +50,9 @@ class AssignmentDistributor
         $poolVideos = $this->expandBundles($poolVideos)->values();
 
         // 3) Kanäle + Rotationspool + Quotas
-        [$channels, $rotationPool, $quota] = $channelService->prepareChannelsAndPool($quotaOverride);
+        $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
 
-        if ($channels->isEmpty()) {
+        if ($channelPoolDto->channels->isEmpty()) {
             $batchRepo->markAssignedBatchAsFinished($batch, 0, 0);
             throw new RuntimeException('Keine Kanäle konfiguriert.');
         }
@@ -77,8 +77,8 @@ class AssignmentDistributor
 
             $target = $this->pickTargetChannel(
                 $group,
-                $rotationPool,
-                $quota,
+                $channelPoolDto->rotationPool,
+                $channelPoolDto->quota,
                 $blockedChannelIds,
                 $assignedChannelsByVideo
             );

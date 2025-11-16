@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\ChannelPoolDto;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Repository\ChannelRepository;
@@ -20,9 +21,9 @@ class ChannelService
     /**
      * Prepare active channels, rotation pool, and quota mapping.
      * @param  int|null  $quotaOverride
-     * @return array
+     * @return ChannelPoolDto
      */
-    public function prepareChannelsAndPool(?int $quotaOverride): array
+    public function prepareChannelsAndPool(?int $quotaOverride): ChannelPoolDto
     {
         $channels = $this->channelRepository->getActiveChannels();
 
@@ -38,7 +39,11 @@ class ChannelService
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
 
-        return [$channels, $rotationPool, $quota];
+        return new ChannelPoolDto(
+            channels: $channels,
+            rotationPool: $rotationPool,
+            quota: $quota,
+        );
     }
 
     public function approve(Channel $channel, string $approvalToken): void
