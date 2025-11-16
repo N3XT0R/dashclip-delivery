@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\ChannelPoolDto;
 use App\Enum\BatchTypeEnum;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
@@ -37,25 +38,14 @@ class AssignmentDistributor
         $batchRepo = app(BatchRepository::class);
         $assignmentRepo = $this->assignmentRepository;
         $batch = $batchService->startBatch(BatchTypeEnum::ASSIGN);
-        
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
-        $poolVideos = $batchService->collectVideosForAssign();
-
-        if ($poolVideos->isEmpty()) {
-            $batchService->finishAssignBatch($batch, 0, 0);
-            throw new RuntimeException('Nichts zu verteilen.');
-        }
+        $poolVideos = $this->collectPoolOrAbort($batch);
 
         // 2) Bundles vollständig machen
         $poolVideos = $assignmentRepo->expandBundles($poolVideos)->values();
 
         // 3) Kanäle + Rotationspool + Quotas
-        $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
-
-        if ($channelPoolDto->channels->isEmpty()) {
-            $batchService->finishAssignBatch($batch, 0, 0);
-            throw new RuntimeException('Keine Kanäle konfiguriert.');
-        }
+        $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch);
 
         // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
         $groups = $assignmentRepo->buildGroups($poolVideos);
@@ -126,5 +116,30 @@ class AssignmentDistributor
     private function allQuotasUsedUp(array $quota): bool
     {
         return collect($quota)->every(fn(int $q) => $q <= 0);
+    }
+
+    private function collectPoolOrAbort($batch): Collection
+    {
+        $poolVideos = $this->batchService->collectVideosForAssign();
+
+        if ($poolVideos->isEmpty()) {
+            $this->batchService->finishAssignBatch($batch, 0, 0);
+            throw new RuntimeException('Nichts zu verteilen.');
+        }
+
+        return $poolVideos;
+    }
+
+    private function prepareChannelsOrAbort(?int $quotaOverride, $batch): ChannelPoolDto
+    {
+        $channelService = app(ChannelService::class);
+        $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
+
+        if ($channelPoolDto->channels->isEmpty()) {
+            $this->batchService->finishAssignBatch($batch, 0, 0);
+            throw new RuntimeException('Keine Kanäle konfiguriert.');
+        }
+
+        return $channelPoolDto;
     }
 }
