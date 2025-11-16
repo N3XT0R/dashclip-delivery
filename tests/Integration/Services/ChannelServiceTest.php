@@ -40,13 +40,13 @@ class ChannelServiceTest extends DatabaseTestCase
         ]);
 
         // Act
-        [$channels, $rotationPool, $quota] = $this->channelService->prepareChannelsAndPool(null);
+        $dto = $this->channelService->prepareChannelsAndPool(null);
 
         // Assert
-        $this->assertCount(2, $channels);
-        $this->assertCount(3, $rotationPool);
-        $this->assertEqualsCanonicalizing([$channelA->id, $channelB->id], $channels->pluck('id')->all());
-        $this->assertEquals([$channelA->id => 3, $channelB->id => 5], $quota);
+        $this->assertCount(2, $dto->channels);
+        $this->assertCount(3, $dto->rotationPool);
+        $this->assertEqualsCanonicalizing([$channelA->id, $channelB->id], $dto->channels->pluck('id')->all());
+        $this->assertEquals([$channelA->id => 3, $channelB->id => 5], $dto->quota);
     }
 
     public function testPrepareChannelsAndPoolAppliesQuotaOverride(): void
@@ -70,16 +70,16 @@ class ChannelServiceTest extends DatabaseTestCase
         $quotaOverride = 42;
 
         // Act
-        [$channels, $rotationPool, $quota] = $this->channelService->prepareChannelsAndPool($quotaOverride);
+        $dto = $this->channelService->prepareChannelsAndPool($quotaOverride);
 
         // Assert
-        $this->assertCount(2, $channels);
-        $this->assertCount(3, $rotationPool);
+        $this->assertCount(2, $dto->channels);
+        $this->assertCount(3, $dto->rotationPool);
 
         $this->assertEquals([
             $channelA->id => $quotaOverride,
             $channelB->id => $quotaOverride,
-        ], $quota);
+        ], $dto->quota);
     }
 
 
