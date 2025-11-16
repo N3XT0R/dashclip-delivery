@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Models\Assignment;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
+use App\Models\Video;
 use Illuminate\Support\Collection;
 
 class AssignmentRepository
@@ -83,5 +84,38 @@ class AssignmentRepository
         }
 
         return $groups;
+    }
+
+    /**
+     * Ensure that all videos belonging to a bundle are included whenever one of them is present in the pool.
+     * @param  Collection<Video>  $poolVideos
+     * @return Collection<Video>
+     */
+    public function expandBundles(Collection $poolVideos): Collection
+    {
+        $videoIds = $poolVideos->pluck('id');
+
+        $bundleKeys = Clip::query()
+            ->whereIn('video_id', $videoIds)
+            ->whereNotNull('bundle_key')
+            ->pluck('bundle_key')
+            ->unique();
+
+        if ($bundleKeys->isEmpty()) {
+            return $poolVideos;
+        }
+
+        $bundleVideoIds = Clip::query()
+            ->whereIn('bundle_key', $bundleKeys)
+            ->pluck('video_id')
+            ->unique();
+
+        if ($bundleVideoIds->isEmpty()) {
+            return $poolVideos;
+        }
+
+        $bundleVideos = Video::query()->whereIn('id', $bundleVideoIds)->get();
+
+        return $poolVideos->concat($bundleVideos)->unique('id');
     }
 }
