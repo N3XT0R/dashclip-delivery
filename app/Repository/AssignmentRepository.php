@@ -52,7 +52,6 @@ class AssignmentRepository
 
     public function buildGroups(Collection $poolVideos): Collection
     {
-        $handled = [];
         $groups = collect();
 
         $bundleMap = Clip::query()
@@ -62,8 +61,9 @@ class AssignmentRepository
             ->groupBy('bundle_key')
             ->map(fn(Collection $g) => $g->pluck('video_id')->unique());
 
+        $handled = [];
         foreach ($poolVideos as $video) {
-            if (in_array($video->getKey(), $handled, true)) {
+            if (array_key_exists($video->getKey(), $handled)) {
                 continue;
             }
 
@@ -71,10 +71,12 @@ class AssignmentRepository
 
             if ($bundleIds) {
                 $group = $poolVideos->whereIn('id', $bundleIds)->values();
-                $handled = array_merge($handled, $bundleIds->all());
+                foreach ($bundleIds as $id) {
+                    $handled[$id] = true;
+                }
             } else {
                 $group = collect([$video]);
-                $handled[] = $video->getKey();
+                $handled[$video->getKey()] = true;
             }
 
             $groups->push($group);
