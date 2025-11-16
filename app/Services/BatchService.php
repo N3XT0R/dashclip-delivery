@@ -126,12 +126,6 @@ class BatchService
         return $newOrUnassigned->concat($requeueVideos)->unique('id');
     }
 
-
-    public function startAssignBatch()
-    {
-        return $this->batchRepository->startBatch();
-    }
-
     public function collectVideosForAssign(): Collection
     {
         $lastFinished = $this->batchRepository->getLastFinishedAssignBatch();
