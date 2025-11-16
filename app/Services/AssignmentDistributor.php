@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enum\BatchTypeEnum;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
 use App\Repository\BatchRepository;
@@ -35,7 +36,7 @@ class AssignmentDistributor
         $batchService = $this->batchService;
         $batchRepo = app(BatchRepository::class);
         $assignmentRepo = $this->assignmentRepository;
-        $batch = $batchService->startBatch();
+        $batch = $batchService->startBatch(BatchTypeEnum::ASSIGN);
 
         $lastFinished = $batchService->getLastFinishedAssignBatch();
 

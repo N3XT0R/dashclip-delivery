@@ -75,10 +75,10 @@ class BatchService
         ]);
     }
 
-    public function startBatch(): Batch
+    public function startBatch(BatchTypeEnum $batchTypeEnum): Batch
     {
         return Batch::query()->create([
-            'type' => BatchTypeEnum::ASSIGN->value,
+            'type' => $batchTypeEnum->value,
             'started_at' => now(),
         ]);
     }
@@ -125,5 +125,18 @@ class BatchService
 
         return $newOrUnassigned->concat($requeueVideos)->unique('id');
     }
+
+
+    public function startAssignBatch()
+    {
+        return $this->batchRepository->startBatch();
+    }
+
+    public function collectVideosForAssign(): Collection
+    {
+        $lastFinished = $this->batchRepository->getLastFinishedAssignBatch();
+        return $this->collectPoolVideos($lastFinished);
+    }
+
 
 }
