@@ -8,7 +8,6 @@ use App\DTO\ChannelPoolDto;
 use App\Enum\BatchTypeEnum;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
-use App\Repository\BatchRepository;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
@@ -33,9 +32,7 @@ class AssignmentDistributor
      */
     public function distribute(?int $quotaOverride = null): array
     {
-        $channelService = app(ChannelService::class);
         $batchService = $this->batchService;
-        $batchRepo = app(BatchRepository::class);
         $assignmentRepo = $this->assignmentRepository;
         $batch = $batchService->startBatch(BatchTypeEnum::ASSIGN);
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
@@ -55,50 +52,14 @@ class AssignmentDistributor
         $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($poolVideos);
 
         // 6) Verteilung
-        $assigned = 0;
-        $skipped = 0;
-
-        foreach ($groups as $group) {
-            // Blockierte Kanäle für diese Gruppe ermitteln (union über alle Videos der Gruppe)
-            $blockedChannelIds = $this->calculateBlockedChannels($group, $blockedByVideo);
-
-            // B) Zielkanal bestimmen → Delegiert an ChannelService (Domain-Logic separat)
-            $channel = $channelService->pickTargetChannel(
-                $group,
-                $channelPoolDto->rotationPool,
-                $channelPoolDto->quota,
-                $blockedChannelIds,
-                $assignedChannelsByVideo
-            );
-
-            if (!$channel) {
-                $skipped += $group->count();
-                continue;
-            }
-
-            foreach ($group as $video) {
-                $videoId = $video->getKey();
-                $channelId = $channel->getKey();
-                $assignmentRepo->createAssignment($video, $channel, $batch);
-
-                // Für Folgerunden merken, dass dieses Video diesem Kanal nun zugeordnet ist
-                $assignedChannelsByVideo[$videoId] =
-                    ($assignedChannelsByVideo[$videoId] ?? collect())
-                        ->push($channelId)
-                        ->unique();
-
-                $channelPoolDto->quota[$channelId]--;
-                $assigned++;
-            }
-
-            // Abbruch, wenn alle Quotas aufgebraucht sind
-            if ($this->allQuotasUsedUp($channelPoolDto->quota)) {
-                break;
-            }
-        }
-
-
-        $batchRepo->markAssignedBatchAsFinished($batch, $assigned, $skipped);
+        [$assigned, $skipped] = $this->assignGroups(
+            $groups,
+            $channelPoolDto,
+            $blockedByVideo,
+            $assignedChannelsByVideo,
+            $batch
+        );
+        $batchService->finishAssignBatch($batch, $assigned, $skipped);
 
         return ['assigned' => $assigned, 'skipped' => $skipped];
     }
@@ -145,7 +106,7 @@ class AssignmentDistributor
 
     private function assignGroups(
         Collection $groups,
-        $channelPoolDto,
+        ChannelPoolDto $channelPoolDto,
         array $blockedByVideo,
         array $assignedChannelsByVideo,
         $batch

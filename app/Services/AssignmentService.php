@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\ChannelPoolDto;
 use App\Enum\StatusEnum;
 use App\Models\{Assignment, Batch, Channel, Download};
 use App\Repository\AssignmentRepository;
@@ -115,19 +116,20 @@ class AssignmentService
     }
 
     /**
+     * Assign group To Channel Assignment
      * @param  Collection  $group
-     * @param $channel
-     * @param $batch
-     * @param $channelPoolDto
+     * @param  Channel  $channel
+     * @param  Batch  $batch
+     * @param  ChannelPoolDto  $channelPoolDto
      * @param  int  $assigned
      * @param  array  $assignedChannelsByVideo
-     * @return array
+     * @return array{assigned: int, assignedChannelsByVideo:array}
      */
     public function assignGroupToChannel(
         Collection $group,
-        $channel,
-        $batch,
-        $channelPoolDto,
+        Channel $channel,
+        Batch $batch,
+        ChannelPoolDto $channelPoolDto,
         int $assigned,
         array $assignedChannelsByVideo
     ): array {
