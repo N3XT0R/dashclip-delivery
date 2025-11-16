@@ -11,6 +11,7 @@ use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
+use App\Repository\BatchRepository;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
@@ -31,6 +32,7 @@ class AssignmentDistributor
     {
         $channelService = app(ChannelService::class);
         $batchService = app(BatchService::class);
+        $batchRepo = app(BatchRepository::class);
         $assignmentRepo = app(AssignmentRepository::class);
         $batch = $batchService->startBatch();
 
@@ -109,10 +111,8 @@ class AssignmentDistributor
             }
         }
 
-        $batch->update([
-            'finished_at' => now(),
-            'stats' => ['assigned' => $assigned, 'skipped' => $skipped],
-        ]);
+
+        $batchRepo->markAssignedBatchAsFinished($batch, $assigned, $skipped);
 
         return ['assigned' => $assigned, 'skipped' => $skipped];
     }
