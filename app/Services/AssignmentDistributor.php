@@ -83,14 +83,17 @@ class AssignmentDistributor
             }
 
             foreach ($group as $video) {
+                $videoId = $video->getKey();
+                $channelId = $channel->getKey();
                 $assignmentRepo->createAssignment($video, $channel, $batch);
 
                 // Für Folgerunden merken, dass dieses Video diesem Kanal nun zugeordnet ist
-                $assignedChannelsByVideo[$video->getKey()] = ($assignedChannelsByVideo[$video->getKey()] ?? collect())
-                    ->push($channel->getKey())
-                    ->unique();
+                $assignedChannelsByVideo[$videoId] =
+                    ($assignedChannelsByVideo[$videoId] ?? collect())
+                        ->push($channelId)
+                        ->unique();
 
-                $quota[$channel->getKey()] -= 1;
+                --$quota[$channelId];
                 $assigned++;
             }
 
