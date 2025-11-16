@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enum\StatusEnum;
-use App\Models\{Assignment, Batch, Channel, Download};
+use App\Models\{Assignment, Batch, Channel, Download, Video};
 use App\Repository\AssignmentRepository;
 use App\ValueObjects\AssignmentRun;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -117,7 +117,7 @@ class AssignmentService
 
     /**
      * Assign group To Channel Assignment
-     * @param  Collection  $group
+     * @param  Collection<Video>  $group
      * @param  Channel  $channel
      * @param  AssignmentRun  $run
      * @return array
