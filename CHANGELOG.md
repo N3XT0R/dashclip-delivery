@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Repository Refactoring**  
   Extracted several Eloquent query segments from service classes into their corresponding repositories  
   (`VideoRepository`, `ClipRepository`, etc.), improving separation of concerns and maintainability.
+- **assign:distribute Refactoring**  
+  The assignment workflow has been partially refactored to reduce method complexity,  
+  delegate responsibilities to dedicated services (e.g., `AssignmentService`, `BatchService`),  
+  and prepare the distributor for upcoming uploader-based distribution logic (#121).  
+  This improves testability, structure, and future extensibility of the assignment pipeline.
 
 ## [3.0.0] - 2025-11-15
 
