@@ -6,7 +6,7 @@ use App\Models\{Assignment, Clip, Video};
 use App\Services\AssignmentDistributor;
 use Tests\DatabaseTestCase;
 
-class AssignmentDistributorBundleTest extends DatabaseTestCase
+class AssignmentDistributorTest extends DatabaseTestCase
 {
 
     protected AssignmentDistributor $assignmentDistributor;
