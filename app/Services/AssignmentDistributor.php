@@ -69,6 +69,7 @@ class AssignmentDistributor
             $blockedChannelIds = $this->calculateBlockedChannels($group, $blockedByVideo);
             $quota = $channelPoolDto->quota;
 
+            // B) Zielkanal bestimmen → Delegiert an ChannelService (Domain-Logic separat)
             $target = $channelService->pickTargetChannel(
                 $group,
                 $channelPoolDto->rotationPool,
