@@ -93,7 +93,7 @@ class BatchService
      *  - or newly added since the last completed assign batch
      *  - plus re-queueable ones (expired / returned / etc.)
      * @param  Batch|null  $lastFinished
-     * @return Collection
+     * @return Collection<Video>
      */
     public function collectPoolVideos(?Batch $lastFinished): Collection
     {
