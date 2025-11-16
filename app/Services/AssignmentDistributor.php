@@ -75,10 +75,12 @@ class AssignmentDistributor
                 ->unique()
                 ->all();
 
+            $quota = $channelPoolDto->quota;
+
             $target = $this->pickTargetChannel(
                 $group,
                 $channelPoolDto->rotationPool,
-                $channelPoolDto->quota,
+                $quota,
                 $blockedChannelIds,
                 $assignedChannelsByVideo
             );
