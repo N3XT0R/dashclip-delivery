@@ -12,6 +12,7 @@ use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Download;
 use App\Models\Video;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 
 class AssignmentRepository
@@ -155,5 +156,31 @@ class AssignmentRepository
             'user_agent' => $userAgent,
             'bytes_sent' => $assignment->getAttribute('video')?->getAttribute('bytes'),
         ]);
+    }
+
+    public function fetchPickedUp(Batch $batch, Channel $channel): EloquentCollection
+    {
+        return Assignment::with('video')
+            ->where('batch_id', $batch->getKey())
+            ->where('channel_id', $channel->getKey())
+            ->where('status', StatusEnum::PICKEDUP->value)
+            ->get();
+    }
+
+
+    /**
+     * @param  Batch  $batch
+     * @param  Channel  $channel
+     * @param  Collection  $ids
+     * @return EloquentCollection<Assignment>
+     */
+    public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
+    {
+        return Assignment::with('video.clips')
+            ->where('batch_id', $batch->getKey())
+            ->where('channel_id', $channel->getKey())
+            ->whereIn('id', $ids)
+            ->whereIn('status', StatusEnum::getReadyStatus())
+            ->get();
     }
 }

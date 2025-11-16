@@ -39,21 +39,12 @@ readonly class AssignmentService
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
     {
-        return Assignment::with('video.clips')
-            ->where('batch_id', $batch->getKey())
-            ->where('channel_id', $channel->getKey())
-            ->whereIn('id', $ids)
-            ->whereIn('status', StatusEnum::getReadyStatus())
-            ->get();
+        return $this->assignmentRepository->fetchForZip($batch, $channel, $ids);
     }
 
     public function fetchPickedUp(Batch $batch, Channel $channel): EloquentCollection
     {
-        return Assignment::with('video')
-            ->where('batch_id', $batch->getKey())
-            ->where('channel_id', $channel->getKey())
-            ->where('status', StatusEnum::PICKEDUP->value)
-            ->get();
+        return $this->assignmentRepository->fetchPickedUp($batch, $channel);
     }
 
     public function markUnused(Batch $batch, Channel $channel, Collection $ids): bool
