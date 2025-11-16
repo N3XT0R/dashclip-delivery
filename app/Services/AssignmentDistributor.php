@@ -69,7 +69,7 @@ class AssignmentDistributor
             $quota = $channelPoolDto->quota;
 
             // B) Zielkanal bestimmen → Delegiert an ChannelService (Domain-Logic separat)
-            $target = $channelService->pickTargetChannel(
+            $channel = $channelService->pickTargetChannel(
                 $group,
                 $channelPoolDto->rotationPool,
                 $quota,
@@ -77,20 +77,20 @@ class AssignmentDistributor
                 $assignedChannelsByVideo
             );
 
-            if (!$target) {
+            if (!$channel) {
                 $skipped += $group->count();
                 continue;
             }
 
             foreach ($group as $video) {
-                $assignmentRepo->createAssignment($video, $target, $batch);
+                $assignmentRepo->createAssignment($video, $channel, $batch);
 
                 // Für Folgerunden merken, dass dieses Video diesem Kanal nun zugeordnet ist
                 $assignedChannelsByVideo[$video->getKey()] = ($assignedChannelsByVideo[$video->getKey()] ?? collect())
-                    ->push($target->getKey())
+                    ->push($channel->getKey())
                     ->unique();
 
-                $quota[$target->getKey()] -= 1;
+                $quota[$channel->getKey()] -= 1;
                 $assigned++;
             }
 
