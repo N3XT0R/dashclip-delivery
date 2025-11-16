@@ -17,6 +17,12 @@ use RuntimeException;
 class AssignmentDistributor
 {
 
+    public function __construct(
+        private AssignmentRepository $assignmentRepository,
+        private BatchService $batchService
+    ) {
+    }
+
     /**
      * Distribute new and requeueable videos across channels.
      *
@@ -26,9 +32,9 @@ class AssignmentDistributor
     public function distribute(?int $quotaOverride = null): array
     {
         $channelService = app(ChannelService::class);
-        $batchService = app(BatchService::class);
+        $batchService = $this->batchService;
         $batchRepo = app(BatchRepository::class);
-        $assignmentRepo = app(AssignmentRepository::class);
+        $assignmentRepo = $this->assignmentRepository;
         $batch = $batchService->startBatch();
 
         $lastFinished = $batchRepo->getLastFinishedAssignBatch();
