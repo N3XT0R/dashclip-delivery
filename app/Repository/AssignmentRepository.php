@@ -10,6 +10,7 @@ use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
+use App\Models\Download;
 use App\Models\Video;
 use Illuminate\Support\Collection;
 
@@ -125,5 +126,34 @@ class AssignmentRepository
         $bundleVideos = Video::query()->whereIn('id', $bundleVideoIds)->get();
 
         return $poolVideos->concat($bundleVideos)->unique('id');
+    }
+
+
+    public function markUnused(Batch $batch, Channel $channel, Collection $ids): bool
+    {
+        return Assignment::query()
+                ->where('batch_id', $batch->getKey())
+                ->where('channel_id', $channel->getKey())
+                ->whereIn('id', $ids)
+                ->where('status', StatusEnum::PICKEDUP->value)
+                ->update([
+                    'status' => StatusEnum::REJECTED->value,
+                    'download_token' => null,
+                    'expires_at' => null,
+                    'last_notified_at' => null,
+                ]) > 0;
+    }
+
+    public function markDownloaded(Assignment $assignment, string $ip, ?string $userAgent): Download
+    {
+        $assignment->update(['status' => StatusEnum::PICKEDUP->value]);
+
+        return Download::query()->create([
+            'assignment_id' => $assignment->getKey(),
+            'downloaded_at' => now(),
+            'ip' => $ip,
+            'user_agent' => $userAgent,
+            'bytes_sent' => $assignment->getAttribute('video')?->getAttribute('bytes'),
+        ]);
     }
 }

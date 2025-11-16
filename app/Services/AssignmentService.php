@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enum\StatusEnum;
-use App\Models\{Assignment, Batch, Channel, Download, Video};
+use App\Models\{Assignment, Batch, Channel, Video};
 use App\Repository\AssignmentRepository;
 use App\ValueObjects\AssignmentRun;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -58,31 +58,12 @@ readonly class AssignmentService
 
     public function markUnused(Batch $batch, Channel $channel, Collection $ids): bool
     {
-        return Assignment::query()
-                ->where('batch_id', $batch->getKey())
-                ->where('channel_id', $channel->getKey())
-                ->whereIn('id', $ids)
-                ->where('status', StatusEnum::PICKEDUP->value)
-                ->update([
-                    'status' => StatusEnum::REJECTED->value,
-                    'download_token' => null,
-                    'expires_at' => null,
-                    'last_notified_at' => null,
-                ]) > 0;
+        return $this->assignmentRepository->markUnused($batch, $channel, $ids);
     }
 
-    public function markDownloaded(Assignment $assignment, string $ip, ?string $userAgent): void
+    public function markDownloaded(Assignment $assignment, string $ip, ?string $userAgent): bool
     {
-        $assignment->update(['status' => StatusEnum::PICKEDUP->value]);
-
-
-        Download::query()->create([
-            'assignment_id' => $assignment->getKey(),
-            'downloaded_at' => now(),
-            'ip' => $ip,
-            'user_agent' => $userAgent,
-            'bytes_sent' => $assignment->getAttribute('video')?->getAttribute('bytes'),
-        ]);
+        return null !== $this->assignmentRepository->markDownloaded($assignment, $ip, $userAgent);
     }
 
     /**
