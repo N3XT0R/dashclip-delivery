@@ -89,16 +89,18 @@ readonly class AssignmentService
      * @param  AssignmentRun  $run
      * @return array
      */
-    public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): array
+    public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): int
     {
+        $count = 0;
         foreach ($group as $video) {
             $this->assignmentRepository->createAssignment($video, $channel, $run->batch);
 
             $run->recordAssignment($video->getKey(), $channel->getKey());
             $run->decrementQuota($channel->getKey());
+            $count++;
         }
 
-        return [$run->assignedChannelsByVideo];
+        return $count;
     }
 }
 
