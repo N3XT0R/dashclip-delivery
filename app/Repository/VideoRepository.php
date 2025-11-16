@@ -50,4 +50,17 @@ class VideoRepository
             ->pluck('original_name')
             ->filter();
     }
+
+    public function firstOrCreate(array $data): Video
+    {
+        return Video::query()->firstOrCreate($data);
+    }
+
+
+    public function getVideosByIds(iterable $ids): Collection
+    {
+        return Video::query()
+            ->whereIn('id', $ids)
+            ->get();
+    }
 }

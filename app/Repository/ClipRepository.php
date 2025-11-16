@@ -25,4 +25,13 @@ class ClipRepository
             ->pluck('video_id')
             ->unique();
     }
+
+    public function getClipsWhereUserIdIsNull(): Collection
+    {
+        return Clip::query()
+            ->whereNull('user_id')
+            ->whereNotNull('submitted_by')
+            ->where('submitted_by', '!=', '')
+            ->get();
+    }
 }

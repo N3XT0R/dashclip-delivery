@@ -8,12 +8,18 @@ use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
+use App\Repository\VideoRepository;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
 readonly class VideoService
 {
+
+    public function __construct(private VideoRepository $videoRepository)
+    {
+    }
+
     public function isDuplicate(string $hash): bool
     {
         return Video::query()->where('hash', $hash)->exists();
@@ -26,8 +32,7 @@ readonly class VideoService
     ): Video {
         $hash = DynamicStorage::getHashForFileInfoDto($disk, $file);
         $pathToFile = $file->path;
-
-        $video = Video::query()->firstOrCreate([
+        $video = $this->videoRepository->firstOrCreate([
             'hash' => $hash,
             'ext' => $file->extension,
             'bytes' => $disk->size($pathToFile),
