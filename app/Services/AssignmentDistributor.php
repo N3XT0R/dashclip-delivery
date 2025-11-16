@@ -142,4 +142,50 @@ class AssignmentDistributor
 
         return $channelPoolDto;
     }
+
+    private function assignGroups(
+        Collection $groups,
+        $channelPoolDto,
+        array $blockedByVideo,
+        array $assignedChannelsByVideo,
+        $batch
+    ): array {
+        $assigned = 0;
+        $skipped = 0;
+
+        $channelService = app(ChannelService::class);
+
+        foreach ($groups as $group) {
+            $blockedChannelIds = $this->calculateBlockedChannels($group, $blockedByVideo);
+
+            $channel = $channelService->pickTargetChannel(
+                $group,
+                $channelPoolDto->rotationPool,
+                $channelPoolDto->quota,
+                $blockedChannelIds,
+                $assignedChannelsByVideo
+            );
+
+            if (!$channel) {
+                $skipped += $group->count();
+                continue;
+            }
+
+            [$assigned, $assignedChannelsByVideo] = app(AssignmentService::class)->assignGroupToChannel(
+                $group,
+                $channel,
+                $batch,
+                $channelPoolDto,
+                $assigned,
+                $assignedChannelsByVideo
+            );
+
+            if ($this->allQuotasUsedUp($channelPoolDto->quota)) {
+                break;
+            }
+        }
+
+        return [$assigned, $skipped];
+    }
+
 }
