@@ -55,7 +55,7 @@ class AssignmentDistributor
         }
 
         // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
-        $groups = $this->buildGroups($poolVideos);
+        $groups = $assignmentRepo->buildGroups($poolVideos);
 
         // 5) Preloads zur Minimierung von N+1
         $blockedByVideo = $assignmentRepo->preloadActiveBlocks($poolVideos);
@@ -147,43 +147,5 @@ class AssignmentDistributor
         $bundleVideos = Video::query()->whereIn('id', $bundleVideoIds)->get();
 
         return $poolVideos->concat($bundleVideos)->unique('id');
-    }
-
-    /**
-     * Gruppiert Videos so, dass Bundle-Mitglieder zusammen bleiben.
-     *
-     * @return Collection<int, Collection<int, Video>>
-     */
-    private function buildGroups(Collection $poolVideos): Collection
-    {
-        $handled = [];
-        $groups = collect();
-
-        $bundleMap = Clip::query()
-            ->whereIn('video_id', $poolVideos->pluck('id'))
-            ->whereNotNull('bundle_key')
-            ->get()
-            ->groupBy('bundle_key')
-            ->map(fn(Collection $g) => $g->pluck('video_id')->unique());
-
-        foreach ($poolVideos as $video) {
-            if (in_array($video->getKey(), $handled, true)) {
-                continue;
-            }
-
-            $bundleIds = $bundleMap->first(fn(Collection $ids) => $ids->contains($video->id));
-
-            if ($bundleIds) {
-                $group = $poolVideos->whereIn('id', $bundleIds)->values();
-                $handled = array_merge($handled, $bundleIds->all());
-            } else {
-                $group = collect([$video]);
-                $handled[] = $video->getKey();
-            }
-
-            $groups->push($group);
-        }
-
-        return $groups;
     }
 }
