@@ -127,11 +127,15 @@ readonly class AssignmentDistributor
                 continue;
             }
 
-            [$assigned] = $assignmentService->assignGroupToChannel(
+            $assigned += $assignmentService->assignGroupToChannel(
                 $group,
                 $channel,
                 $run
             );
+
+            if ($run->quotasUsedUp()) {
+                break;
+            }
         }
 
         return [$assigned, $skipped];
