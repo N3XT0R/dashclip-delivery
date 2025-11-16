@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\StatusEnum;
-use App\Models\Channel;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
@@ -75,7 +74,7 @@ class AssignmentDistributor
 
             $quota = $channelPoolDto->quota;
 
-            $target = $this->pickTargetChannel(
+            $target = $channelService->pickTargetChannel(
                 $group,
                 $channelPoolDto->rotationPool,
                 $quota,
@@ -186,56 +185,5 @@ class AssignmentDistributor
         }
 
         return $groups;
-    }
-
-    /**
-     * Wählt einen Zielkanal im Round-Robin über den gewichteten Rotationspool.
-     *
-     * @param  Collection<int,Video>  $group
-     * @param  Collection<int,Channel>  $rotationPool
-     * @param  array<int,int>  $quota  (by reference, wird nicht verändert – nur gelesen)
-     * @param  array<int,int>  $blockedChannelIds
-     * @param  array<int, Collection<int,int>>  $assignedChannelsByVideo
-     */
-    private function pickTargetChannel(
-        Collection $group,
-        Collection $rotationPool,
-        array $quota,
-        array $blockedChannelIds,
-        array $assignedChannelsByVideo
-    ): ?Channel {
-        $rotations = 0;
-        $poolCount = $rotationPool->count();
-
-        while ($rotations < $poolCount) {
-            /** @var Channel $candidate */
-            $candidate = $rotationPool->first();
-            // rotate
-            $rotationPool->push($rotationPool->shift());
-            $rotations++;
-
-            // Genügend Quota verfügbar?
-            if (($quota[$candidate->getKey()] ?? 0) < $group->count()) {
-                continue;
-            }
-
-            // Kandidat blockiert?
-            if (in_array($candidate->getKey(), $blockedChannelIds, true)) {
-                continue;
-            }
-
-            // Bereits (irgendwann) an diesen Kanal vergeben?
-            $alreadyAssignedToCandidate = $group->some(function (Video $v) use ($candidate, $assignedChannelsByVideo) {
-                $assigned = $assignedChannelsByVideo[$v->getKey()] ?? collect();
-                return $assigned->contains($candidate->getKey());
-            });
-            if ($alreadyAssignedToCandidate) {
-                continue;
-            }
-
-            return $candidate;
-        }
-
-        return null;
     }
 }
