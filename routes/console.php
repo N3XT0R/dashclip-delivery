@@ -25,6 +25,8 @@ Schedule::command('ingest:unzip', [
 Schedule::command('assign:expire')
     ->dailyAt('03:00');
 
+Schedule::command('assign:uploader')->everyTenMinutes();
+
 Schedule::command('video:cleanup', [
     '--weeks' => Cfg::get('post_expiry_retention_weeks', 'default', 1, true),
 ])
