@@ -31,4 +31,14 @@ class AssignmentDistributorBundleTest extends DatabaseTestCase
         $this->assertCount(2, $assignments);
         $this->assertSame(1, $assignments->pluck('channel_id')->unique()->count());
     }
+
+    public function testDistributorHandlesInitialRunWithoutPreviousBatch(): void
+    {
+        $video = Video::create(['hash' => 'h1', 'path' => 'p1']);
+
+        $result = $this->assignmentDistributor->distribute();
+
+        $this->assertSame(['assigned' => 1, 'skipped' => 0], $result);
+        $this->assertDatabaseHas('assignments', ['video_id' => $video->id]);
+    }
 }
