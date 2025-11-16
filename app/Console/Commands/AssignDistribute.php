@@ -11,7 +11,7 @@ use RuntimeException;
 class AssignDistribute extends Command
 {
     protected $signature = 'assign:distribute {--quota=}';
-    protected $description = 'Verteilt neue und expired Videos fair auf Kanäle (Round-Robin, gewichtet, Quota/Woche).';
+    protected $description = 'Fairly distributes new and expired videos across channels (round-robin, weighted, weekly quota).';
 
     public function __construct(private AssignmentDistributor $distributor)
     {
