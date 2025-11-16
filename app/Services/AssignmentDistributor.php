@@ -42,7 +42,7 @@ class AssignmentDistributor
         $poolVideos = $batchService->collectPoolVideos($lastFinished);
 
         if ($poolVideos->isEmpty()) {
-            $batch->update(['finished_at' => now(), 'stats' => ['assigned' => 0, 'skipped' => 0]]);
+            $batchRepo->markAssignedBatchAsFinished($batch, 0, 0);
             throw new RuntimeException('Nichts zu verteilen.');
         }
 
@@ -53,7 +53,7 @@ class AssignmentDistributor
         [$channels, $rotationPool, $quota] = $channelService->prepareChannelsAndPool($quotaOverride);
 
         if ($channels->isEmpty()) {
-            $batch->update(['finished_at' => now(), 'stats' => ['assigned' => 0, 'skipped' => 0]]);
+            $batchRepo->markAssignedBatchAsFinished($batch, 0, 0);
             throw new RuntimeException('Keine Kanäle konfiguriert.');
         }
 
