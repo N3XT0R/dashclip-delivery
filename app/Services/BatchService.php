@@ -83,11 +83,6 @@ class BatchService
         ]);
     }
 
-    public function getLastFinishedAssignBatch(): ?Batch
-    {
-        return $this->batchRepository->getLastFinishedAssignBatch();
-    }
-
     public function finishAssignBatch(Batch $batch, int $assigned, int $skipped): bool
     {
         return $this->batchRepository->markAssignedBatchAsFinished($batch, $assigned, $skipped);
