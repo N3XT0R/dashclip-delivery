@@ -96,32 +96,6 @@ class AssignmentRepository
         return $groups;
     }
 
-    /**
-     * Ensure that all videos belonging to a bundle are included whenever one of them is present in the pool.
-     * @param  Collection<Video>  $poolVideos
-     * @return Collection<Video>
-     */
-    public function expandBundles(Collection $poolVideos): Collection
-    {
-        $clipRepository = app(ClipRepository::class);
-        $videoIds = $poolVideos->pluck('id');
-
-        $bundleKeys = $clipRepository->getBundleKeysForVideos($videoIds);
-        if ($bundleKeys->isEmpty()) {
-            return $poolVideos;
-        }
-
-        $bundleVideoIds = $clipRepository->getVideoIdsForBundleKeys($bundleKeys);
-
-        if ($bundleVideoIds->isEmpty()) {
-            return $poolVideos;
-        }
-
-        $bundleVideos = app(VideoRepository::class)->getVideosByIds($bundleVideoIds);
-
-        return $poolVideos->concat($bundleVideos)->unique('id');
-    }
-
 
     public function markUnused(Batch $batch, Channel $channel, Collection $ids): bool
     {

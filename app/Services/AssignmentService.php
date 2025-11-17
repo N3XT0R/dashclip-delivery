@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Enum\StatusEnum;
 use App\Models\{Assignment, Batch, Channel, Video};
 use App\Repository\AssignmentRepository;
+use App\Repository\ClipRepository;
+use App\Repository\VideoRepository;
 use App\ValueObjects\AssignmentRun;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
@@ -101,6 +103,32 @@ readonly class AssignmentService
         }
 
         return $count;
+    }
+
+    /**
+     * Ensure that all videos belonging to a bundle are included whenever one of them is present in the pool.
+     * @param  Collection<Video>  $poolVideos
+     * @return Collection<Video>
+     */
+    public function expandBundles(Collection $poolVideos): Collection
+    {
+        $clipRepository = app(ClipRepository::class);
+        $videoIds = $poolVideos->pluck('id');
+
+        $bundleKeys = $clipRepository->getBundleKeysForVideos($videoIds);
+        if ($bundleKeys->isEmpty()) {
+            return $poolVideos;
+        }
+
+        $bundleVideoIds = $clipRepository->getVideoIdsForBundleKeys($bundleKeys);
+
+        if ($bundleVideoIds->isEmpty()) {
+            return $poolVideos;
+        }
+
+        $bundleVideos = app(VideoRepository::class)->getVideosByIds($bundleVideoIds);
+
+        return $poolVideos->concat($bundleVideos)->unique('id');
     }
 }
 

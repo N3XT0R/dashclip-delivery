@@ -22,6 +22,7 @@ readonly class AssignmentDistributor
 
     public function __construct(
         private AssignmentRepository $assignmentRepository,
+        private AssignmentService $assignmentService,
         private BatchService $batchService
     ) {
     }
@@ -36,12 +37,13 @@ readonly class AssignmentDistributor
     {
         $batchService = $this->batchService;
         $assignmentRepo = $this->assignmentRepository;
+        $assignmentService = $this->assignmentService;
         $batch = $batchService->startBatch(BatchTypeEnum::ASSIGN);
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
         $poolVideos = $this->collectPoolOrAbort($batch);
 
         // 2) Bundles vollständig machen
-        $poolVideos = $assignmentRepo->expandBundles($poolVideos)->values();
+        $poolVideos = $assignmentService->expandBundles($poolVideos)->values();
 
         // 3) Kanäle + Rotationspool + Quotas
         $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch);
