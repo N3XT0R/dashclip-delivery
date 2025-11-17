@@ -103,28 +103,21 @@ class AssignmentRepository
      */
     public function expandBundles(Collection $poolVideos): Collection
     {
+        $clipRepository = app(ClipRepository::class);
         $videoIds = $poolVideos->pluck('id');
 
-        $bundleKeys = Clip::query()
-            ->whereIn('video_id', $videoIds)
-            ->whereNotNull('bundle_key')
-            ->pluck('bundle_key')
-            ->unique();
-
+        $bundleKeys = $clipRepository->getBundleKeysForVideos($videoIds);
         if ($bundleKeys->isEmpty()) {
             return $poolVideos;
         }
 
-        $bundleVideoIds = Clip::query()
-            ->whereIn('bundle_key', $bundleKeys)
-            ->pluck('video_id')
-            ->unique();
+        $bundleVideoIds = $clipRepository->getVideoIdsForBundleKeys($bundleKeys);
 
         if ($bundleVideoIds->isEmpty()) {
             return $poolVideos;
         }
 
-        $bundleVideos = Video::query()->whereIn('id', $bundleVideoIds)->get();
+        $bundleVideos = app(VideoRepository::class)->getVideosByIds($bundleVideoIds);
 
         return $poolVideos->concat($bundleVideos)->unique('id');
     }

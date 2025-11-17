@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Models\Clip;
-use App\Models\User;
 use Illuminate\Support\Collection;
 
 class ClipRepository
@@ -40,9 +39,22 @@ class ClipRepository
     }
 
 
-    public function assignUserToClips(Clip $clip, User $user): bool
+    public function getBundleKeysForVideos(iterable $videoIds): Collection
     {
-        $clip->setAttribute('user_id', $user->getKey());
-        return $clip->save();
+        return Clip::query()
+            ->whereIn('video_id', $videoIds)
+            ->whereNotNull('bundle_key')
+            ->pluck('bundle_key')
+            ->unique()
+            ->values();
+    }
+
+    public function getVideoIdsForBundleKeys(iterable $bundleKeys): Collection
+    {
+        return Clip::query()
+            ->whereIn('bundle_key', $bundleKeys)
+            ->pluck('video_id')
+            ->unique()
+            ->values();
     }
 }
