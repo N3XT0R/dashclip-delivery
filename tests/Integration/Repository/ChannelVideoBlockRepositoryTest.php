@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Repository;
 
+use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Video;
 use App\Repository\ChannelVideoBlockRepository;
@@ -18,112 +19,144 @@ class ChannelVideoBlockRepositoryTest extends DatabaseTestCase
     {
         parent::setUp();
         $this->repository = $this->app->make(ChannelVideoBlockRepository::class);
+        Channel::query()->delete();
+
         Carbon::setTestNow('2025-01-01 12:00:00');
     }
 
-    public function testPreloadActiveBlocksHandlesAllCombinations(): void
+    private function createChannel(): Channel
     {
-        /**
-         * Pool Videos
-         */
-        $v1 = Video::factory()->create(); // has active blocks
-        $v2 = Video::factory()->create(); // only expired blocks
-        $v3 = Video::factory()->create(); // no blocks
-        $v4 = Video::factory()->create(); // mixed active + expired
-        $v5 = Video::factory()->create(); // duplicates -> uniq
+        return Channel::factory()->create([
+            'weekly_quota' => 10,
+            'weight' => 1,
+        ]);
+    }
 
-        // not in pool
-        $otherVideo = Video::factory()->create();
+    public function testLoadsActiveBlocksForVideosInPool(): void
+    {
+        $video = Video::factory()->create();
+        $channel = $this->createChannel();
+        $pool = collect([$video]);
 
-        $pool = collect([$v1, $v2, $v3, $v4, $v5]);
-
-        /**
-         * --- Blocks ---
-         */
-
-        // v1: active blocks only
         ChannelVideoBlock::factory()->create([
-            'video_id' => $v1->id,
-            'channel_id' => 10,
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel->getKey(),
             'until' => now()->addHour(),
         ]);
+
+        $result = $this->repository->preloadActiveBlocks($pool);
+
+        $this->assertArrayHasKey($video->getKey(), $result);
+        $this->assertEquals(
+            [$channel->getKey()],
+            $result[$video->getKey()]->values()->all()
+        );
+    }
+
+    public function testIgnoresExpiredBlocks(): void
+    {
+        $video = Video::factory()->create();
+        $channel = $this->createChannel();
+        $pool = collect([$video]);
+
         ChannelVideoBlock::factory()->create([
-            'video_id' => $v1->id,
-            'channel_id' => 20,
-            'until' => now()->addMinutes(30),
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel->getKey(),
+            'until' => now()->subHour(),
         ]);
 
-        // v2: expired only -> must not appear
-        ChannelVideoBlock::factory()->create([
-            'video_id' => $v2->id,
-            'channel_id' => 30,
-            'until' => now()->subMinute(),
-        ]);
+        $result = $this->repository->preloadActiveBlocks($pool);
 
-        // v3: no blocks -> must not appear
+        $this->assertArrayNotHasKey($video->getKey(), $result);
+    }
 
-        // v4: mixed -> only active
+    public function testIgnoresVideosWithoutBlocks(): void
+    {
+        $video = Video::factory()->create();
+        $pool = collect([$video]);
+
+        $result = $this->repository->preloadActiveBlocks($pool);
+
+        $this->assertArrayNotHasKey($video->getKey(), $result);
+    }
+
+    public function testLoadsOnlyActiveBlocksWhenMixed(): void
+    {
+        $video = Video::factory()->create();
+        $pool = collect([$video]);
+
+        $activeChannel = $this->createChannel();
+        $expiredChannel = $this->createChannel();
+
         ChannelVideoBlock::factory()->create([
-            'video_id' => $v4->id,
-            'channel_id' => 40,
+            'video_id' => $video->getKey(),
+            'channel_id' => $activeChannel->getKey(),
             'until' => now()->addMinutes(10),
         ]);
+
         ChannelVideoBlock::factory()->create([
-            'video_id' => $v4->id,
-            'channel_id' => 41,
+            'video_id' => $video->getKey(),
+            'channel_id' => $expiredChannel->getKey(),
             'until' => now()->subMinute(),
         ]);
 
-        // v5: duplicates
+        $result = $this->repository->preloadActiveBlocks($pool);
+
+        $this->assertArrayHasKey($video->getKey(), $result);
+        $this->assertEquals(
+            [$activeChannel->getKey()],
+            $result[$video->getKey()]->values()->all()
+        );
+    }
+
+    public function testCollapsesDuplicateChannelIds(): void
+    {
+        $video = Video::factory()->create();
+        $pool = collect([$video]);
+
+        $channel1 = $this->createChannel();
+        $channel2 = $this->createChannel();
+
+        // Zwei Blocks: andere channel_id, gleiche video_id
         ChannelVideoBlock::factory()->create([
-            'video_id' => $v5->id,
-            'channel_id' => 55,
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel1->getKey(),
             'until' => now()->addHour(),
         ]);
+
         ChannelVideoBlock::factory()->create([
-            'video_id' => $v5->id,
-            'channel_id' => 55,
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel2->getKey(),
             'until' => now()->addMinutes(5),
         ]);
 
-        // not in pool: must be ignored
+        $result = $this->repository->preloadActiveBlocks($pool);
+
+        $this->assertArrayHasKey($video->getKey(), $result);
+
+        $this->assertEqualsCanonicalizing(
+            [$channel1->getKey(), $channel2->getKey()],
+            $result[$video->getKey()]->values()->all()
+        );
+    }
+
+
+    public function testIgnoresBlocksForVideosNotInPool(): void
+    {
+        $videoInPool = Video::factory()->create();
+        $videoOther = Video::factory()->create();
+        $pool = collect([$videoInPool]);
+
+        $channel = $this->createChannel();
+
         ChannelVideoBlock::factory()->create([
-            'video_id' => $otherVideo->id,
-            'channel_id' => 99,
+            'video_id' => $videoOther->getKey(),
+            'channel_id' => $channel->getKey(),
             'until' => now()->addHour(),
         ]);
 
-        /**
-         * Act
-         */
         $result = $this->repository->preloadActiveBlocks($pool);
 
-        /**
-         * Assertions
-         */
-
-        // v1: two active
-        $this->assertArrayHasKey($v1->id, $result);
-        $this->assertEqualsCanonicalizing(
-            [10, 20],
-            $result[$v1->id]->all()
-        );
-
-        // v2: expired only -> no entry
-        $this->assertArrayNotHasKey($v2->id, $result);
-
-        // v3: no blocks -> no entry
-        $this->assertArrayNotHasKey($v3->id, $result);
-
-        // v4: mixed -> only active (channel 40)
-        $this->assertArrayHasKey($v4->id, $result);
-        $this->assertEquals([40], $result[$v4->id]->values()->all());
-
-        // v5: duplicates -> must collapse to one
-        $this->assertArrayHasKey($v5->id, $result);
-        $this->assertEquals([55], $result[$v5->id]->values()->all());
-
-        // not in pool -> must not appear
-        $this->assertArrayNotHasKey($otherVideo->id, $result);
+        $this->assertArrayNotHasKey($videoOther->getKey(), $result);
     }
 }
