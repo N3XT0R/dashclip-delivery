@@ -12,8 +12,14 @@ class ChannelVideoBlock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['channel_id', 'video_id', 'until'];
-    protected $casts = ['until' => 'datetime'];
+    protected $fillable = [
+        'channel_id',
+        'video_id',
+        'until'
+    ];
+    protected $casts = [
+        'until' => 'datetime'
+    ];
 
     public function channel(): BelongsTo
     {
@@ -25,7 +31,6 @@ class ChannelVideoBlock extends Model
         return $this->belongsTo(Video::class);
     }
 
-    // optionales Helper-Scope
     public function scopeActive($query)
     {
         return $query->where('until', '>', now());
