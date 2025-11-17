@@ -63,13 +63,13 @@ class ClipRepository
     }
 
     /**
-     * @param  Collection  $poolVideos
+     * @param  iterable  $poolVideosIds
      * @return Collection
      */
-    public function getBundleVideoMap(Collection $poolVideos): Collection
+    public function getBundleVideoMap(iterable $poolVideosIds): Collection
     {
         return Clip::query()
-            ->whereIn('video_id', $poolVideos->pluck('id'))
+            ->whereIn('video_id', $poolVideosIds)
             ->whereNotNull('bundle_key')
             ->get()
             ->groupBy('bundle_key')

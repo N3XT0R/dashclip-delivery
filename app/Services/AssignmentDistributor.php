@@ -161,7 +161,7 @@ readonly class AssignmentDistributor
         $videoRepository = app(VideoRepository::class);
         $groups = collect();
 
-        $bundleMap = $clipRepository->getBundleVideoMap($poolVideos);
+        $bundleMap = $clipRepository->getBundleVideoMap($poolVideos->pluck('id'));
 
         $handled = [];
         foreach ($poolVideos as $video) {
