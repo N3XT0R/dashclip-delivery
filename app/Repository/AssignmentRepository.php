@@ -8,7 +8,6 @@ use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
-use App\Models\Clip;
 use App\Models\Download;
 use App\Models\Video;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -44,16 +43,16 @@ class AssignmentRepository
     }
 
 
+    /**
+     * @param  Collection<Video>  $poolVideos
+     * @return Collection
+     */
     public function buildGroups(Collection $poolVideos): Collection
     {
+        $clipRepository = app(ClipRepository::class);
         $groups = collect();
 
-        $bundleMap = Clip::query()
-            ->whereIn('video_id', $poolVideos->pluck('id'))
-            ->whereNotNull('bundle_key')
-            ->get()
-            ->groupBy('bundle_key')
-            ->map(fn(Collection $g) => $g->pluck('video_id')->unique());
+        $bundleMap = $clipRepository->getBundleVideoMap($poolVideos);
 
         $handled = [];
         foreach ($poolVideos as $video) {
@@ -61,7 +60,7 @@ class AssignmentRepository
                 continue;
             }
 
-            $bundleIds = $bundleMap->first(fn(Collection $ids) => $ids->contains($video->id));
+            $bundleIds = $bundleMap->first(fn(Collection $ids) => $ids->contains($video->getKey()));
 
             if ($bundleIds) {
                 $group = $poolVideos->whereIn('id', $bundleIds)->values();

@@ -49,6 +49,10 @@ class ClipRepository
             ->values();
     }
 
+    /**
+     * @param  iterable  $bundleKeys
+     * @return Collection
+     */
     public function getVideoIdsForBundleKeys(iterable $bundleKeys): Collection
     {
         return Clip::query()
@@ -56,5 +60,22 @@ class ClipRepository
             ->pluck('video_id')
             ->unique()
             ->values();
+    }
+
+    /**
+     * @param  Collection  $poolVideos
+     * @return array
+     */
+    public function getBundleVideoMap(Collection $poolVideos): array
+    {
+        return Clip::query()
+            ->whereIn('video_id', $poolVideos->pluck('id'))
+            ->whereNotNull('bundle_key')
+            ->get()
+            ->groupBy('bundle_key')
+            ->map(
+                fn(Collection $group) => $group->pluck('video_id')->unique()->values()
+            )
+            ->all();
     }
 }
