@@ -9,6 +9,7 @@ use App\Facades\Cfg;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Models\Clip;
 use App\Models\Download;
 use App\Models\Video;
 use App\Services\AssignmentService;
@@ -260,4 +261,110 @@ class AssignmentServiceTest extends DatabaseTestCase
         $this->assertTrue($assignment->fresh()->expires_at->equalTo($existingExpiry));
         $this->assertSame(hash('sha256', $qs['t']), $assignment->fresh()->download_token);
     }
+
+    public function testExpandBundlesReturnsPoolUnchangedWhenNoBundlesArePresent(): void
+    {
+        $service = $this->app->make(AssignmentService::class);
+
+        $v1 = Video::factory()->create();
+        $v2 = Video::factory()->create();
+        $pool = collect([$v1, $v2]);
+
+        $result = $service->expandBundles($pool);
+
+        $this->assertCount(2, $result);
+        $this->assertSame(
+            [$v1->getKey(), $v2->getKey()],
+            $result->pluck('id')->sort()->values()->all()
+        );
+    }
+
+
+    public function testExpandBundlesAddsAllVideosBelongingToABundle(): void
+    {
+        $service = $this->app->make(AssignmentService::class);
+
+        $v1 = Video::factory()->create();
+        $v2 = Video::factory()->create();
+        $v3 = Video::factory()->create(); // not in bundle
+
+        // bundle "B-A" includes v1 + v2
+        Clip::factory()->forVideo($v1)->create(['bundle_key' => 'B-A']);
+        Clip::factory()->forVideo($v2)->create(['bundle_key' => 'B-A']);
+
+        $pool = collect([$v1]);
+
+        $result = $service->expandBundles($pool);
+
+        $this->assertCount(2, $result);
+        $this->assertTrue($result->pluck('id')->contains($v1->getKey()));
+        $this->assertTrue($result->pluck('id')->contains($v2->getKey()));
+    }
+
+    public function testExpandBundlesExpandsMultipleBundleGroups(): void
+    {
+        $service = $this->app->make(AssignmentService::class);
+
+        $v1 = Video::factory()->create();
+        $v2 = Video::factory()->create();
+        $v3 = Video::factory()->create();
+        $v4 = Video::factory()->create();
+
+        // bundle-1: v1 + v2
+        Clip::factory()->forVideo($v1)->create(['bundle_key' => 'X']);
+        Clip::factory()->forVideo($v2)->create(['bundle_key' => 'X']);
+
+        // bundle-2: v3 + v4
+        Clip::factory()->forVideo($v3)->create(['bundle_key' => 'Y']);
+        Clip::factory()->forVideo($v4)->create(['bundle_key' => 'Y']);
+
+        $pool = collect([$v1, $v3]);
+
+        $result = $service->expandBundles($pool);
+
+        $this->assertCount(4, $result);
+        $this->assertSame(
+            [$v1->id, $v2->id, $v3->id, $v4->id],
+            $result->pluck('id')->sort()->values()->all()
+        );
+    }
+
+    public function testExpandBundlesKeepsPoolWhenBundleHasNoAdditionalVideos(): void
+    {
+        $service = $this->app->make(AssignmentService::class);
+
+        $v1 = Video::factory()->create();
+
+        // bundle only contains v1
+        Clip::factory()->forVideo($v1)->create(['bundle_key' => 'ONLY']);
+
+        $pool = collect([$v1]);
+
+        $result = $service->expandBundles($pool);
+
+        $this->assertCount(1, $result);
+        $this->assertSame($v1->getKey(), $result->first()->getKey());
+    }
+
+    public function testExpandBundlesDoesNotDuplicateVideosWhenBundleAlreadyFullyPresent(): void
+    {
+        $service = $this->app->make(AssignmentService::class);
+
+        $v1 = Video::factory()->create();
+        $v2 = Video::factory()->create();
+
+        Clip::factory()->forVideo($v1)->create(['bundle_key' => 'B']);
+        Clip::factory()->forVideo($v2)->create(['bundle_key' => 'B']);
+
+        $pool = collect([$v2, $v1]); // intentionally reversed
+
+        $result = $service->expandBundles($pool);
+
+        $this->assertCount(2, $result);
+        $this->assertSame(
+            [$v1->id, $v2->id],
+            $result->pluck('id')->sort()->values()->all()
+        );
+    }
+
 }
