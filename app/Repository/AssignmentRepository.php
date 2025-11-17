@@ -50,6 +50,7 @@ class AssignmentRepository
     public function buildGroups(Collection $poolVideos): Collection
     {
         $clipRepository = app(ClipRepository::class);
+        $videoRepository = app(VideoRepository::class);
         $groups = collect();
 
         $bundleMap = $clipRepository->getBundleVideoMap($poolVideos);
@@ -63,7 +64,7 @@ class AssignmentRepository
             $bundleIds = $bundleMap->first(fn(Collection $ids) => $ids->contains($video->getKey()));
 
             if ($bundleIds) {
-                $group = $poolVideos->whereIn('id', $bundleIds)->values();
+                $group = $videoRepository->getVideosByIdsFromPool($poolVideos, $bundleIds);
                 foreach ($bundleIds as $id) {
                     $handled[$id] = true;
                 }

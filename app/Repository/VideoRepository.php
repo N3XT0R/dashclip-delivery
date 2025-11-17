@@ -74,4 +74,17 @@ class VideoRepository
     {
         return $video->clips()->where('start_sec', $startSec)->where('end_sec', $endSec)->first();
     }
+
+    /**
+     * @param  Collection<Video>  $pool
+     * @param  iterable  $ids
+     * @return Collection
+     */
+    public function getVideosByIdsFromPool(Collection $pool, iterable $ids): Collection
+    {
+        $idLookup = collect($ids)->flip(); // O(1) lookup
+        return $pool
+            ->filter(fn(Video $video) => $idLookup->has($video->getKey()))
+            ->values();
+    }
 }
