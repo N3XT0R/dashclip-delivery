@@ -96,7 +96,6 @@ class AssignmentRepository
         return $groups;
     }
 
-
     public function markUnused(Batch $batch, Channel $channel, Collection $ids): bool
     {
         return Assignment::query()
