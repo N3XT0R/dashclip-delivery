@@ -8,7 +8,6 @@ use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
-use App\Models\ChannelVideoBlock;
 use App\Models\Clip;
 use App\Models\Download;
 use App\Models\Video;
@@ -27,22 +26,6 @@ class AssignmentRepository
         ]);
     }
 
-
-    /**
-     * Lade alle aktiven Blocks (bis "until" in der Zukunft) für den gesamten Pool vor.
-     *
-     * @return array<int, Collection<int,int>> video_id => collection(channel_id)
-     */
-    public function preloadActiveBlocks(Collection $poolVideos): array
-    {
-        return ChannelVideoBlock::query()
-            ->whereIn('video_id', $poolVideos->pluck('id'))
-            ->where('until', '>', now())
-            ->get()
-            ->groupBy('video_id')
-            ->map(fn(Collection $rows) => $rows->pluck('channel_id')->unique())
-            ->all();
-    }
 
     /**
      * Lade alle bereits (irgendwann) zugewiesenen Kanäle je Video vor,
