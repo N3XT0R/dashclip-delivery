@@ -21,6 +21,8 @@ use Tests\DatabaseTestCase;
 
 class AssignmentServiceTest extends DatabaseTestCase
 {
+    protected AssignmentService $service;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -28,6 +30,7 @@ class AssignmentServiceTest extends DatabaseTestCase
         // Register a fake route so URL::temporarySignedRoute() can generate a URL.
         Route::get('/assignments/{assignment}/download', fn() => 'ok')
             ->name('assignments.download');
+        $this->service = $this->app->make(AssignmentService::class);
     }
 
     public function testFetchPendingReturnsReadyAssignmentsForChannelOrderedById(): void
@@ -53,7 +56,7 @@ class AssignmentServiceTest extends DatabaseTestCase
         Assignment::factory()->for($batch, 'batch')->for($channel, 'channel')->for(Video::factory(), 'video')
             ->create(['status' => StatusEnum::PICKEDUP->value]);
 
-        $items = app(AssignmentService::class)->fetchPending($batch, $channel);
+        $items = $this->service->fetchPending($batch, $channel);
 
         // Ordered by id ASC: a1 then a2
         $this->assertCount(2, $items);
@@ -81,7 +84,7 @@ class AssignmentServiceTest extends DatabaseTestCase
 
         // Include all three ids; only a1 and a2 should be returned
         $ids = collect([$a1->id, $a2->id, $a3->id]);
-        $items = app(AssignmentService::class)->fetchForZip($batch, $channel, $ids);
+        $items = $this->service->fetchForZip($batch, $channel, $ids);
 
         $this->assertEqualsCanonicalizing([$a1->id, $a2->id], $items->pluck('id')->all());
         $this->assertTrue($items[0]->relationLoaded('video'));
@@ -136,7 +139,7 @@ class AssignmentServiceTest extends DatabaseTestCase
                 'last_notified_at' => now()->subHour(),
             ]);
 
-        $updated = app(AssignmentService::class)->markUnused($batch, $channel, collect([$picked1->id, $notPicked->id]));
+        $updated = $this->service->markUnused($batch, $channel, collect([$picked1->id, $notPicked->id]));
 
         $this->assertTrue($updated);
 
@@ -158,7 +161,7 @@ class AssignmentServiceTest extends DatabaseTestCase
         $a = Assignment::factory()->for($batch, 'batch')->for($channel, 'channel')->for(Video::factory(), 'video')
             ->create(['status' => StatusEnum::NOTIFIED->value]);
 
-        $this->assertFalse(app(AssignmentService::class)->markUnused($batch, $channel, collect([$a->id])));
+        $this->assertFalse($this->service->markUnused($batch, $channel, collect([$a->id])));
     }
 
     public function testMarkDownloadedSetsPickedUpAndCreatesDownloadRow(): void
@@ -169,7 +172,7 @@ class AssignmentServiceTest extends DatabaseTestCase
             ->for(Video::factory(), 'video')
             ->create(['status' => StatusEnum::NOTIFIED->value]);
 
-        app(AssignmentService::class)->markDownloaded($assignment, '203.0.113.10', 'UA/1.0');
+        $this->service->markDownloaded($assignment, '203.0.113.10', 'UA/1.0');
 
         $fresh = $assignment->fresh();
         $this->assertSame(StatusEnum::PICKEDUP->value, $fresh->status);
@@ -201,7 +204,7 @@ class AssignmentServiceTest extends DatabaseTestCase
         $ttlDays = Cfg::get('expire_after_days', 'default', 6);
 
         // Act: prepare for download with TTL = 24 hours
-        $url = app(AssignmentService::class)->prepareDownload($assignment, $ttlDays);
+        $url = $this->service->prepareDownload($assignment, $ttlDays);
 
         // Parse the signed URL into path + query components
         $parts = parse_url($url);
@@ -248,7 +251,7 @@ class AssignmentServiceTest extends DatabaseTestCase
                 'expires_at' => $existingExpiry,
             ]);
 
-        $url = app(AssignmentService::class)->prepareDownload($assignment);
+        $url = $this->service->prepareDownload($assignment);
 
         $parts = parse_url($url);
         parse_str($parts['query'] ?? '', $qs);
@@ -264,13 +267,11 @@ class AssignmentServiceTest extends DatabaseTestCase
 
     public function testExpandBundlesReturnsPoolUnchangedWhenNoBundlesArePresent(): void
     {
-        $service = $this->app->make(AssignmentService::class);
-
         $v1 = Video::factory()->create();
         $v2 = Video::factory()->create();
         $pool = collect([$v1, $v2]);
 
-        $result = $service->expandBundles($pool);
+        $result = $this->service->expandBundles($pool);
 
         $this->assertCount(2, $result);
         $this->assertSame(
@@ -282,8 +283,6 @@ class AssignmentServiceTest extends DatabaseTestCase
 
     public function testExpandBundlesAddsAllVideosBelongingToABundle(): void
     {
-        $service = $this->app->make(AssignmentService::class);
-
         $v1 = Video::factory()->create();
         $v2 = Video::factory()->create();
         $v3 = Video::factory()->create(); // not in bundle
@@ -294,7 +293,7 @@ class AssignmentServiceTest extends DatabaseTestCase
 
         $pool = collect([$v1]);
 
-        $result = $service->expandBundles($pool);
+        $result = $this->service->expandBundles($pool);
 
         $this->assertCount(2, $result);
         $this->assertTrue($result->pluck('id')->contains($v1->getKey()));
@@ -303,8 +302,6 @@ class AssignmentServiceTest extends DatabaseTestCase
 
     public function testExpandBundlesExpandsMultipleBundleGroups(): void
     {
-        $service = $this->app->make(AssignmentService::class);
-
         $v1 = Video::factory()->create();
         $v2 = Video::factory()->create();
         $v3 = Video::factory()->create();
@@ -320,7 +317,7 @@ class AssignmentServiceTest extends DatabaseTestCase
 
         $pool = collect([$v1, $v3]);
 
-        $result = $service->expandBundles($pool);
+        $result = $this->service->expandBundles($pool);
 
         $this->assertCount(4, $result);
         $this->assertSame(
@@ -331,8 +328,6 @@ class AssignmentServiceTest extends DatabaseTestCase
 
     public function testExpandBundlesKeepsPoolWhenBundleHasNoAdditionalVideos(): void
     {
-        $service = $this->app->make(AssignmentService::class);
-
         $v1 = Video::factory()->create();
 
         // bundle only contains v1
@@ -340,7 +335,7 @@ class AssignmentServiceTest extends DatabaseTestCase
 
         $pool = collect([$v1]);
 
-        $result = $service->expandBundles($pool);
+        $result = $this->service->expandBundles($pool);
 
         $this->assertCount(1, $result);
         $this->assertSame($v1->getKey(), $result->first()->getKey());
@@ -348,8 +343,6 @@ class AssignmentServiceTest extends DatabaseTestCase
 
     public function testExpandBundlesDoesNotDuplicateVideosWhenBundleAlreadyFullyPresent(): void
     {
-        $service = $this->app->make(AssignmentService::class);
-
         $v1 = Video::factory()->create();
         $v2 = Video::factory()->create();
 
@@ -358,7 +351,7 @@ class AssignmentServiceTest extends DatabaseTestCase
 
         $pool = collect([$v2, $v1]); // intentionally reversed
 
-        $result = $service->expandBundles($pool);
+        $result = $this->service->expandBundles($pool);
 
         $this->assertCount(2, $result);
         $this->assertSame(
