@@ -42,43 +42,6 @@ class AssignmentRepository
             ->all();
     }
 
-
-    /**
-     * @param  Collection<Video>  $poolVideos
-     * @return Collection
-     */
-    public function buildGroups(Collection $poolVideos): Collection
-    {
-        $clipRepository = app(ClipRepository::class);
-        $videoRepository = app(VideoRepository::class);
-        $groups = collect();
-
-        $bundleMap = $clipRepository->getBundleVideoMap($poolVideos);
-
-        $handled = [];
-        foreach ($poolVideos as $video) {
-            if (array_key_exists($video->getKey(), $handled)) {
-                continue;
-            }
-
-            $bundleIds = $bundleMap->first(fn(Collection $ids) => $ids->contains($video->getKey()));
-
-            if ($bundleIds) {
-                $group = $videoRepository->getVideosByIdsFromPool($poolVideos, $bundleIds);
-                foreach ($bundleIds as $id) {
-                    $handled[$id] = true;
-                }
-            } else {
-                $group = collect([$video]);
-                $handled[$video->getKey()] = true;
-            }
-
-            $groups->push($group);
-        }
-
-        return $groups;
-    }
-
     public function markUnused(Batch $batch, Channel $channel, Collection $ids): bool
     {
         return Assignment::query()
