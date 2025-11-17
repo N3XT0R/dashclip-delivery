@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Repository\ClipRepository;
 use App\Repository\UserRepository;
 
-class ClipService
+readonly class ClipService
 {
     public function __construct(private ClipRepository $clipRepository)
     {
