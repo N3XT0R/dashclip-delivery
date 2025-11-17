@@ -64,9 +64,9 @@ class ClipRepository
 
     /**
      * @param  Collection  $poolVideos
-     * @return array
+     * @return Collection
      */
-    public function getBundleVideoMap(Collection $poolVideos): array
+    public function getBundleVideoMap(Collection $poolVideos): Collection
     {
         return Clip::query()
             ->whereIn('video_id', $poolVideos->pluck('id'))
@@ -75,7 +75,6 @@ class ClipRepository
             ->groupBy('bundle_key')
             ->map(
                 fn(Collection $group) => $group->pluck('video_id')->unique()->values()
-            )
-            ->all();
+            );
     }
 }

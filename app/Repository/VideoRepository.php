@@ -82,7 +82,10 @@ class VideoRepository
      */
     public function getVideosByIdsFromPool(Collection $pool, iterable $ids): Collection
     {
-        $idLookup = collect($ids)->flip(); // O(1) lookup
+        $idLookup = collect($ids)
+            ->map(fn($id) => (int)$id)   // <--- WICHTIG!
+            ->flip();                    // O(1) lookup
+
         return $pool
             ->filter(fn(Video $video) => $idLookup->has($video->getKey()))
             ->values();
