@@ -9,6 +9,7 @@ use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
+use App\Repository\ChannelVideoBlockRepository;
 use App\ValueObjects\AssignmentRun;
 use Illuminate\Support\Collection;
 use RuntimeException;
@@ -23,6 +24,7 @@ readonly class AssignmentDistributor
     public function __construct(
         private AssignmentRepository $assignmentRepository,
         private AssignmentService $assignmentService,
+        private ChannelVideoBlockRepository $channelVideoBlockRepository,
         private BatchService $batchService
     ) {
     }
@@ -38,6 +40,9 @@ readonly class AssignmentDistributor
         $batchService = $this->batchService;
         $assignmentRepo = $this->assignmentRepository;
         $assignmentService = $this->assignmentService;
+        $channelVideoBlockRepository = $this->channelVideoBlockRepository;
+
+        
         $batch = $batchService->startBatch(BatchTypeEnum::ASSIGN);
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
         $poolVideos = $this->collectPoolOrAbort($batch);
@@ -52,7 +57,7 @@ readonly class AssignmentDistributor
         $groups = $assignmentRepo->buildGroups($poolVideos);
 
         // 5) Preloads zur Minimierung von N+1
-        $blockedByVideo = $assignmentRepo->preloadActiveBlocks($poolVideos);
+        $blockedByVideo = $channelVideoBlockRepository->preloadActiveBlocks($poolVideos);
         $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($poolVideos);
 
         $run = new AssignmentRun(
