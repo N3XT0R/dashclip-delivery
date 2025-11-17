@@ -79,7 +79,7 @@ readonly class AssignmentDistributor
     }
 
 
-    private function calculateBlockedChannels(Collection $group, $blockedByVideo): array
+    public function calculateBlockedChannels(Collection $group, $blockedByVideo): array
     {
         return $group
             ->flatMap(fn(Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
@@ -87,7 +87,7 @@ readonly class AssignmentDistributor
             ->all();
     }
 
-    private function collectPoolOrAbort(Batch $batch): Collection
+    public function collectPoolOrAbort(Batch $batch): Collection
     {
         $poolVideos = $this->batchService->collectVideosForAssign();
 
@@ -99,7 +99,7 @@ readonly class AssignmentDistributor
         return $poolVideos;
     }
 
-    private function prepareChannelsOrAbort(?int $quotaOverride, Batch $batch): ChannelPoolDto
+    public function prepareChannelsOrAbort(?int $quotaOverride, Batch $batch): ChannelPoolDto
     {
         $channelService = app(ChannelService::class);
         $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
@@ -112,7 +112,7 @@ readonly class AssignmentDistributor
         return $channelPoolDto;
     }
 
-    private function assignGroups(AssignmentRun $run): array
+    public function assignGroups(AssignmentRun $run): array
     {
         $assigned = 0;
         $skipped = 0;
