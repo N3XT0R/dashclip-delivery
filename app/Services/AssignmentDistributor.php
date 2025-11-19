@@ -61,7 +61,7 @@ readonly class AssignmentDistributor
             }
 
             // 2) Bundles vollständig machen
-            $poolVideos = $assignmentService->expandBundles($videosOfUploader)->values();
+            $videosOfUploader = $assignmentService->expandBundles($videosOfUploader)->values();
 
             // 3) Kanäle + Rotationspool + Quotas
             $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch);
