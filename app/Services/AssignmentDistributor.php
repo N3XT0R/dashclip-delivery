@@ -49,33 +49,50 @@ readonly class AssignmentDistributor
         // 1) Kandidaten einsammeln (neu, unzugewiesen, requeue)
         $poolVideos = $this->collectPoolOrAbort($batch);
 
-        // 2) Bundles vollständig machen
-        $poolVideos = $assignmentService->expandBundles($poolVideos)->values();
+        $videoRepo = app(VideoRepository::class);
+        $uploaderPools = $videoRepo->partitionByUploader($poolVideos);
 
-        // 3) Kanäle + Rotationspool + Quotas
-        $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch);
+        $totalAssigned = 0;
+        $totalSkipped = 0;
 
-        // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
-        $groups = $this->buildGroups($poolVideos);
+        foreach ($uploaderPools as $uploaderId => $videosOfUploader) {
+            if ($videosOfUploader->isEmpty()) {
+                continue;
+            }
 
-        // 5) Preloads zur Minimierung von N+1
-        $blockedByVideo = $channelVideoBlockRepository->preloadActiveBlocks($poolVideos);
-        $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($poolVideos);
+            // 2) Bundles vollständig machen
+            $poolVideos = $assignmentService->expandBundles($videosOfUploader)->values();
 
-        $run = new AssignmentRun(
-            groups: $groups,
-            channelPool: $channelPoolDto,
-            blockedByVideo: $blockedByVideo,
-            assignedChannelsByVideo: $assignedChannelsByVideo,
-            batch: $batch
-        );
+            // 3) Kanäle + Rotationspool + Quotas
+            $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch);
 
+            // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
+            $groups = $this->buildGroups($videosOfUploader);
 
-        // 6) Verteilung
-        [$assigned, $skipped] = $this->assignGroups($run);
-        $batchService->finishAssignBatch($batch, $assigned, $skipped);
+            // 5) Preloads zur Minimierung von N+1
+            $blockedByVideo = $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader);
+            $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($videosOfUploader);
 
-        return ['assigned' => $assigned, 'skipped' => $skipped];
+            // 6) ValueObject
+            $run = new AssignmentRun(
+                groups: $groups,
+                channelPool: $channelPoolDto,
+                blockedByVideo: $blockedByVideo,
+                assignedChannelsByVideo: $assignedChannelsByVideo,
+                batch: $batch,
+                uploaderId: $uploaderId
+            );
+
+            // 7) Verteilung
+            [$assigned, $skipped] = $this->assignGroups($run);
+
+            $totalAssigned += $assigned;
+            $totalSkipped += $skipped;
+        }
+
+        $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped);
+
+        return ['assigned' => $totalAssigned, 'skipped' => $totalSkipped];
     }
 
 

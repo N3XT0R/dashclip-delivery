@@ -90,4 +90,11 @@ class VideoRepository
             ->filter(fn(Video $video) => $idLookup->has($video->getKey()))
             ->values();
     }
+
+    public function partitionByUploader(Collection $videos): array
+    {
+        return $videos
+            ->groupBy(fn(Video $video) => $video->clips()->first()?->user_id ?? 0) // 0 = "unknown uploader"
+            ->all();
+    }
 }
