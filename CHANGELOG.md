@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   delegate responsibilities to dedicated services (e.g., `AssignmentService`, `BatchService`),  
   and prepare the distributor for upcoming uploader-based distribution logic (#121).  
   This improves testability, structure, and future extensibility of the assignment pipeline.
+- **VideoRepository: Uploader-Based Partitioning**
+  Implemented `partitionByUploader()` to split video pools by the uploader of their associated clips.  
+  This establishes the foundation for uploader-isolated assignment pools and ensures that  
+  upcoming quota and distribution logic can operate per uploader instead of globally.  
+  Includes full integration test coverage with real uploader entities.
 
 ## [3.0.0] - 2025-11-15
 
