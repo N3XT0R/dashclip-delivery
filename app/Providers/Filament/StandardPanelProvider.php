@@ -47,7 +47,7 @@ class StandardPanelProvider extends PanelProvider
             ->emailChangeVerification()
             ->profile(EditProfile::class, false)
             ->colors([
-                'primary' => Color::Sky,
+                'primary' => Color::Slate,
             ])
             ->favicon(asset('images/icons/favicon.ico'))
             ->viteTheme('resources/css/filament/admin/theme.css')
