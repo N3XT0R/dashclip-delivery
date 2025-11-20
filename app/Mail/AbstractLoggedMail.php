@@ -37,7 +37,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
 
         if (app()->environment('local', 'testing')) {
             $envelope->subject = sprintf('[%s] %s', config('app.env'), $envelope->subject);
-            $envelope->to(config('mail.from.address'));
+            $this->to = [config('mail.from.address')];
         }
 
         return $envelope;
