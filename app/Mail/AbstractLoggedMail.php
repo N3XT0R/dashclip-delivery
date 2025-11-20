@@ -48,7 +48,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
      */
     private function rewriteEnvelope(Envelope $envelope): Envelope
     {
-        if (!defined('IS_TESTING') && app()->environment('local', 'testing')) {
+        if (!defined('IS_TESTING') && app()->environment('local', 'testing', 'staging')) {
             $envelope->subject = sprintf('[%s] %s', config('app.env'), $envelope->subject);
             if ($catchAll = config('mail.catch_all')) {
                 $envelope->to = [$catchAll];
