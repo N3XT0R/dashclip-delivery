@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **assign:uploader Command**  
   Added a new CLI command that automatically assigns `user_id` to clips based on the `submitted_by` field.  
   This prepares the system for uploader-based distribution pools and improves data consistency.
+- **Configurable Mail Catch-All for Local/Testing Environments**  
+  Introduced an optional mail "catch-all" mechanism for non-production environments (`local`, `testing`).  
+  When `MAIL_CATCH_ALL` is defined in the environment configuration, all outgoing mails are automatically  
+  redirected to this address and the subject is prefixed with the current application environment.  
+  This prevents unintended delivery to real recipients during development or automated testing while keeping  
+  the core codebase environment-agnostic and fully open-source compatible.
 
 ### Changed
 
