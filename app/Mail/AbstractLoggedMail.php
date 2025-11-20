@@ -50,7 +50,9 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
     {
         if (!defined('IS_TESTING') && app()->environment('local', 'testing')) {
             $envelope->subject = sprintf('[%s] %s', config('app.env'), $envelope->subject);
-            $envelope->to = [config('mail.catch_all')];
+            if ($catchAll = config('mail.catch_all')) {
+                $envelope->to = [$catchAll];
+            }
         }
 
         return $envelope;
