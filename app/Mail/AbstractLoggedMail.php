@@ -35,7 +35,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
             subject: $this->subjectLine,
         );
 
-        if (!defined('PHPUNIT_COMPOSER_INSTALL') && app()->environment('local', 'testing')) {
+        if (!defined('IS_TESTING') && app()->environment('local', 'testing')) {
             $this->rewriteEnvelope($envelope);
         }
 

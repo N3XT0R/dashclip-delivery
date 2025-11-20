@@ -54,5 +54,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <const name="IS_TESTING" value="1"/>
     </php>
 </phpunit>
