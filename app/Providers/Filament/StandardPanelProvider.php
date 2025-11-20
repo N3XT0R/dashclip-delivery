@@ -35,8 +35,11 @@ class StandardPanelProvider extends PanelProvider
         $panel
             ->id('standard')
             ->path('standard')
+            ->login()
+            ->emailVerification()
+            ->emailChangeVerification()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Sky,
             ])
             ->favicon(asset('images/icons/favicon.ico'))
             ->viteTheme('resources/css/filament/admin/theme.css')
