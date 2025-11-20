@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\EditProfile;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -13,8 +15,8 @@ use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -28,6 +30,10 @@ class StandardPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         $this->addDefaults($panel);
+        $this->addMiddlewares($panel);
+        $this->addRenderHooks($panel);
+        $this->addMFA($panel);
+        $this->addWidgets($panel);
         return $panel;
     }
 
@@ -52,21 +58,6 @@ class StandardPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
-            ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
-            ])
-            ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
             ->discoverWidgets(in: app_path('Filament/Standard/Widgets'), for: 'App\Filament\Standard\Widgets')
             ->discoverResources(in: app_path('Filament/Standard/Resources'), for: 'App\Filament\Standard\Resources')
             ->discoverPages(in: app_path('Filament/Standard/Pages'), for: 'App\Filament\Standard\Pages')
@@ -75,5 +66,50 @@ class StandardPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
         return $panel;
+    }
+
+    protected function addRenderHooks(Panel $panel): Panel
+    {
+        return $panel->renderHook(
+            PanelsRenderHook::FOOTER,
+            function (): ?string {
+                if (request()->routeIs('filament.admin.pages.video-upload')) {
+                    return null;
+                }
+
+                return view('partials.footer')->render();
+            }
+        );
+    }
+
+    protected function addMiddlewares(Panel $panel): Panel
+    {
+        return $panel->middleware([
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            AuthenticateSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+            DisableBladeIconComponents::class,
+            DispatchServingFilamentEvent::class,
+        ]);
+    }
+
+    protected function addMFA(Panel $panel): Panel
+    {
+        return $panel->multiFactorAuthentication([
+            AppAuthentication::make()
+                ->recoverable(),
+            EmailAuthentication::make(),
+        ]);
+    }
+
+    protected function addWidgets(Panel $panel): Panel
+    {
+        return $panel->widgets([
+            AccountWidget::class,
+        ]);
     }
 }
