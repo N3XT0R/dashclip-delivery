@@ -34,13 +34,14 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
         $envelope = new Envelope(
             subject: $this->subjectLine,
         );
-        
+
         $this->rewriteEnvelope($envelope);
 
         return $envelope;
     }
 
     /**
+     * Rewrite subject and recipient for local/testing environments.
      * @codeCoverageIgnore
      * @param  Envelope  $envelope
      * @return Envelope
