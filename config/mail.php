@@ -118,4 +118,6 @@ return [
         'email' => env('MAIL_ADMIN', ''),
         'name' => env('MAIL_YOUR_NAME', ''),
     ],
+
+    'catch_all' => env('MAIL_CATCH_ALL', config('mail.from.address')),
 ];
