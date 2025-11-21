@@ -17,6 +17,12 @@ return new class extends Migration {
                     ->nullable()
                     ->constrained('teams')
                     ->nullOnDelete();
+            } else {
+                $table->bigInteger('team_id')->nullable()->change();
+                $table->foreign('team_id')
+                    ->references('id')
+                    ->on('teams')
+                    ->nullOnDelete();
             }
         });
 
@@ -27,6 +33,12 @@ return new class extends Migration {
                     ->after('role_id')
                     ->constrained('teams')
                     ->nullOnDelete();
+            } else {
+                $table->bigInteger('team_id')->nullable()->change();
+                $table->foreign('team_id')
+                    ->references('id')
+                    ->on('teams')
+                    ->nullOnDelete();
             }
         });
 
@@ -36,6 +48,12 @@ return new class extends Migration {
                     ->nullable()
                     ->after('permission_id')
                     ->constrained('teams')
+                    ->nullOnDelete();
+            } else {
+                $table->bigInteger('team_id')->nullable()->change();
+                $table->foreign('team_id')
+                    ->references('id')
+                    ->on('teams')
                     ->nullOnDelete();
             }
         });
