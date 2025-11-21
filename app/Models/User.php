@@ -11,6 +11,7 @@ use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -140,5 +141,13 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         return Attribute::make(
             get: static fn($value, array $attributes) => $attributes['submitted_name'] ?? $attributes['name'] ?? null,
         );
+    }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Team::class,
+            'entity_user'
+        )->withTimestamps();
     }
 }
