@@ -30,10 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   configuration requirements, and provides a stable foundation for user-facing  
   tenant resources and future integrations.
 - **Team-Based Multi-Tenancy Foundation**  
-  Added the initial multi-tenancy infrastructure using a user–team  
-  many-to-many relationship.  
-  This enables tenant-scoped resources, user-specific data isolation,  
-  and prepares the system for future collaboration features and paid tiers.
+  Introduced foundational multi-tenancy support via a user–team many-to-many relationship.
+  This establishes the structural basis for tenant-scoped resources and prepares the system
+  for future collaboration features, role-based access control, and paid tiers.
+  Note: Teams are currently scaffolded but not yet query-scoped or permission-enforced.
+  Full multi-tenancy isolation and access control will be implemented later after
+  the role/permission architecture across multiple Filament panels is finalized.
 - **Automatic Team Initialization (TeamSeeder)**  
   Added a seeder that creates a default personal team for all users who are not  
   assigned to any team.  
