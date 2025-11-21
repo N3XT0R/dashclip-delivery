@@ -18,6 +18,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   redirected to this address and the subject is prefixed with the current application environment.  
   This prevents unintended delivery to real recipients during development or automated testing while keeping  
   the core codebase environment-agnostic and fully open-source compatible.
+- **Standard-Filament-Panel (`/standard`)**  
+  Introduced a second Filament Panel dedicated to end users.  
+  The new panel provides a clean, reduced self-service interface for managing  
+  user-owned data, integrations, and future tenant-level settings.  
+  This establishes the foundation for fully isolated tenant environments.
+- **Path-Based Tenant Routing (`/standard/*`)**  
+  Implemented tenant scoping based on a static path prefix (`/standard`) instead of  
+  subdomain- or domain-based tenancy.  
+  This ensures predictable URLs, simplifies local development, avoids DNS  
+  configuration requirements, and provides a stable foundation for user-facing  
+  tenant resources and future integrations.
+- **Team-Based Multi-Tenancy Foundation**  
+  Added the initial multi-tenancy infrastructure using a user–team  
+  many-to-many relationship.  
+  This enables tenant-scoped resources, user-specific data isolation,  
+  and prepares the system for future collaboration features and paid tiers.
+- **Automatic Team Initialization (TeamSeeder)**  
+  Added a seeder that creates a default personal team for all users who are not  
+  assigned to any team.  
+  Ensures every user has a valid tenant context for the `/standard` panel.
+- **TeamRepository & UserRepository Enhancements**  
+  Added new repository helpers (`getAllUsersWithoutTeam()`,  
+  `createOwnTeamForUser()`, etc.) to manage team membership and  
+  bootstrap team structures in a domain-driven, testable manner.
+- **PanelUserPanelProvider**  
+  Introduced a dedicated provider for the new `/standard` panel, including branding,  
+  custom middleware, user authentication, and tenant bootstrapping logic.  
+  Separates internal admin workflows from end-user functionality.
 
 ### Changed
 
@@ -34,6 +62,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This establishes the foundation for uploader-isolated assignment pools and ensures that  
   upcoming quota and distribution logic can operate per uploader instead of globally.  
   Includes full integration test coverage with real uploader entities.
+- **Tenancy Activation & Role Resource Adjustments**  
+  Updated Filament’s RoleResource configuration to disable tenant ownership for  
+  global system-level roles.  
+  This prevents Filament from enforcing tenant constraints on resources that  
+  must remain globally scoped across all teams.
+- **User–Team Relationship Standardization**  
+  Consolidated the user–team architecture into a consistent many-to-many model  
+  (`users ↔ teams` via pivot).  
+  Prepares the system for features like multi-team membership,  
+  team switching, invitations, and per-team access levels.
+- **Filament Panel Structure Updated for Multi-Tenancy**  
+  Enhanced panel configuration to correctly bootstrap tenant-aware routing,  
+  resource discovery, and UI behavior across both `/admin` and `/standard` panels.  
+  Ensures proper isolation of end-user data and clean separation of concerns.
 
 ## [3.0.0] - 2025-11-15
 
