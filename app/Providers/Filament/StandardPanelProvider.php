@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Standard\Pages\Auth\Register;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -43,6 +44,7 @@ class StandardPanelProvider extends PanelProvider
             ->id('standard')
             ->path('standard')
             ->login()
+            ->registration(Register::class)
             ->emailVerification()
             ->emailChangeVerification()
             ->profile(EditProfile::class, false)
