@@ -17,6 +17,13 @@ class UserObserver extends BaseObserver
         $this->assignDefaultRole($model);
     }
 
+    public function retrieved(User|Model $model): void
+    {
+        if ($model->teams()->isOwnTeam($model)->doesntExist()) {
+            $this->createOwnTeamForUser($model);
+        }
+    }
+
 
     private function assignDefaultRole(User $user): void
     {
