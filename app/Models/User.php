@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\Users\RoleEnum;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
@@ -67,7 +68,10 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        if ($this->hasRole(RoleEnum::SUPER_ADMIN->value)) {
+            return true;
+        }
+        return $this->roles()->where('name', $panel->getId())->exists();
     }
 
     public function getAppAuthenticationSecret(): ?string
