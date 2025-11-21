@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\User;
 use App\Observers\UserObserver;
 use App\Repository\Contracts\ConfigRepositoryInterface;
 use App\Repository\EloquentConfigRepository;
@@ -20,6 +20,7 @@ use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
+use Filament\Resources\Resource;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
@@ -124,5 +125,6 @@ class AppServiceProvider extends ServiceProvider
     protected function bootObserver(): void
     {
         User::observe(UserObserver::class);
+        Resource::scopeToTenant(false);
     }
 }

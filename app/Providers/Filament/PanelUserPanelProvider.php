@@ -48,6 +48,7 @@ class PanelUserPanelProvider extends PanelProvider
         $panel
             ->id('panel_user')
             ->path('standard')
+            ->homeUrl('dashboard')
             ->tenant(Team::class)
             ->tenantMenu(false)
             ->login()
