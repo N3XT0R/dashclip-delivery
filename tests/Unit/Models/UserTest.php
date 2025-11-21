@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Models;
 
 use App\Models\User;
-use Filament\Panel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Tests\DatabaseTestCase;
+use Tests\TestCase;
 
 /**
  * Unit tests for the App\Models\User model.
@@ -21,7 +19,7 @@ use Tests\DatabaseTestCase;
  *  - datetime cast for email_verified_at
  *  - Filament contract canAccessPanel() returns true
  */
-final class UserTest extends DatabaseTestCase
+final class UserTest extends TestCase
 {
     public function testFactoryCreatesUserWithHashedPasswordAndFillableAttributes(): void
     {
@@ -68,15 +66,6 @@ final class UserTest extends DatabaseTestCase
         $this->assertTrue($user->email_verified_at->equalTo(Carbon::parse($ts)));
     }
 
-    public function testCanAccessPanelAlwaysReturnsTrue(): void
-    {
-        $user = User::factory()->admin()->make();
-
-        // We don't care about Panel internals; the method ignores its argument.
-        $panel = Mockery::mock(Panel::class);
-
-        $this->assertTrue($user->canAccessPanel($panel));
-    }
 
     public static function submittedNameDataProvider(): array
     {
