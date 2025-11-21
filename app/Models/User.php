@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enum\Users\RoleEnum;
+use App\Models\Pivots\ModelHasRoleTeam;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -172,6 +174,17 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function getTenants(Panel $panel): Collection
     {
         return $this->teams()->get();
+    }
+
+    public function teamRoles(): MorphToMany|BelongsToMany
+    {
+        return $this->morphToMany(
+            \Spatie\Permission\Models\Role::class,
+            'model',
+            'model_has_roles'
+        )
+            ->using(ModelHasRoleTeam::class)
+            ->withPivot('team_id');
     }
 
     public function canAccessTenant(Model $tenant): bool
