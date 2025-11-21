@@ -90,7 +90,7 @@ final class UserTest extends DatabaseTestCase
         $user = User::factory()->admin()->make();
 
         // We don't care about Panel internals; the method ignores its argument.
-        $panel = \Mockery::mock(Panel::class);
+        $panel = $this->createMock(Panel::class);
 
         $this->assertTrue($user->canAccessPanel($panel));
     }
