@@ -49,7 +49,10 @@ class PanelUserPanelProvider extends PanelProvider
             ->id('panel_user')
             ->path('standard')
             ->homeUrl('dashboard')
-            ->tenant(Team::class)
+            ->tenant(
+                model: Team::class,
+                ownershipRelationship: 'teams'
+            )
             ->tenantMenu(false)
             ->login()
             ->registration(Register::class)
