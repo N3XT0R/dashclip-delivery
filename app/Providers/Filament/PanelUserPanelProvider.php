@@ -6,6 +6,7 @@ use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Standard\Pages\Auth\Register;
 use App\Models\Team;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -38,6 +39,7 @@ class PanelUserPanelProvider extends PanelProvider
         $this->addRenderHooks($panel);
         $this->addMFA($panel);
         $this->addWidgets($panel);
+        $this->addTenantMiddlewares($panel);
         return $panel;
     }
 
@@ -101,6 +103,13 @@ class PanelUserPanelProvider extends PanelProvider
             DisableBladeIconComponents::class,
             DispatchServingFilamentEvent::class,
         ]);
+    }
+
+    protected function addTenantMiddlewares(Panel $panel): Panel
+    {
+        return $panel->tenantMiddleware([
+            SyncShieldTenant::class,
+        ], isPersistent: true);
     }
 
     protected function addMFA(Panel $panel): Panel
