@@ -21,4 +21,9 @@ class UserRepository
     {
         return User::all();
     }
+
+    public function getAllUsersWithoutTeam(): Collection
+    {
+        return User::doesntHave('teams')->get();
+    }
 }

@@ -13,7 +13,7 @@ class TeamSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = app(UserRepository::class)->getAllUsers();
+        $users = app(UserRepository::class)->getAllUsersWithoutTeam();
         foreach ($users as $user) {
             app(TeamRepository::class)->createOwnTeamForUser($user);
         }
