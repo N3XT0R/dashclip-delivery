@@ -85,7 +85,7 @@ final class UserTest extends DatabaseTestCase
         $this->assertTrue($user->canAccessPanel($mockPanel));
     }
 
-    public function testCanAccessPanelAlwaysReturnsTrue(): void
+    public function testAdminCanAccessPanelAlwaysReturnsTrue(): void
     {
         $user = User::factory()->admin()->make();
 
