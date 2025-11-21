@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 
 /**
  * Unit tests for the App\Models\User model.
@@ -21,7 +21,7 @@ use Tests\TestCase;
  *  - datetime cast for email_verified_at
  *  - Filament contract canAccessPanel() returns true
  */
-final class UserTest extends TestCase
+final class UserTest extends DatabaseTestCase
 {
     public function testFactoryCreatesUserWithHashedPasswordAndFillableAttributes(): void
     {
