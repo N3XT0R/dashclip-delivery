@@ -7,13 +7,14 @@ namespace App\Observers;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Repository\TeamRepository;
+use Illuminate\Database\Eloquent\Model;
 
-class UserObserver
+class UserObserver extends BaseObserver
 {
-    public function created(User $user): void
+    public function created(User|Model $model): void
     {
-        $this->createOwnTeamForUser($user);
-        $this->assignDefaultRole($user);
+        $this->createOwnTeamForUser($model);
+        $this->assignDefaultRole($model);
     }
 
 
