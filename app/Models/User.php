@@ -71,6 +71,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         if ($this->hasRole(RoleEnum::SUPER_ADMIN->value)) {
             return true;
         }
+        
         return $this->roles()->where('name', $panel->getId())->exists();
     }
 
