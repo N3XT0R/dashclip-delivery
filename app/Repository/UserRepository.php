@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository
 {
@@ -14,5 +15,10 @@ class UserRepository
             ->where('users.submitted_name', $displayName)
             ->orWhere('users.name', $displayName)
             ->first();
+    }
+
+    public function getAllUsers(): Collection
+    {
+        return User::all();
     }
 }
