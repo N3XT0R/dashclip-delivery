@@ -79,7 +79,7 @@ final class UserTest extends DatabaseTestCase
 
     public function testAllowsFilamentPanelAccess(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $mockPanel = $this->createMock(Panel::class);
 
         $this->assertTrue($user->canAccessPanel($mockPanel));
