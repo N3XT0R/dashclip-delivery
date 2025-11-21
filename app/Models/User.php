@@ -7,6 +7,7 @@ use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -15,13 +16,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery,
-                                              HasEmailAuthentication, MustVerifyEmail, HasTenants
+                                              HasEmailAuthentication, MustVerifyEmail, HasTenants, HasDefaultTenant
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -54,6 +56,13 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     protected $appends = [
         'display_name',
     ];
+
+    protected function scopeIsOwnTeam(Builder $query): Builder
+    {
+        return $query->whereHas('teams', function ($q) {
+            $q->where('owner_id', $this->getKey());
+        });
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -168,5 +177,24 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function canAccessTenant(Model $tenant): bool
     {
         return true;
+    }
+
+    public function getDefaultTenant(Panel $panel): ?Model
+    {
+        return $this->teams()->where('owner_id', $this->getKey())->first();
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            if (!$user->isOwnTeam()->exists()) {
+                $team = Team::create([
+                    'name' => $user->name."'s Team",
+                    'owner_id' => $user->getKey(),
+                ]);
+
+                $user->team()->associate($team)->save();
+            }
+        });
     }
 }

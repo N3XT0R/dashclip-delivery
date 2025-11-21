@@ -18,7 +18,7 @@ return new class extends Migration {
                     ->constrained('teams')
                     ->nullOnDelete();
             } else {
-                $table->bigInteger('team_id')->nullable()->change();
+                $table->unsignedBigInteger('team_id')->nullable()->change();
                 $table->foreign('team_id')
                     ->references('id')
                     ->on('teams')
@@ -34,7 +34,7 @@ return new class extends Migration {
                     ->constrained('teams')
                     ->nullOnDelete();
             } else {
-                $table->bigInteger('team_id')->nullable()->change();
+                $table->unsignedBigInteger('team_id')->nullable()->change();
                 $table->foreign('team_id')
                     ->references('id')
                     ->on('teams')
@@ -50,7 +50,7 @@ return new class extends Migration {
                     ->constrained('teams')
                     ->nullOnDelete();
             } else {
-                $table->bigInteger('team_id')->nullable()->change();
+                $table->unsignedBigInteger('team_id')->nullable()->change();
                 $table->foreign('team_id')
                     ->references('id')
                     ->on('teams')
@@ -64,28 +64,22 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('model_has_permissions', static function (Blueprint $table) {
-            if (Schema::hasColumn('model_has_permissions', 'team_id')) {
-                if (Schema::hasIndex('model_has_permissions', 'model_has_permissions_team_id_foreign')) {
-                    $table->dropForeign('model_has_permissions_team_id_foreign');
-                }
+        $this->dropForeignKeysWithColumn('model_has_permissions', 'team_id');
+        $this->dropForeignKeysWithColumn('model_has_roles', 'team_id');
+        $this->dropForeignKeysWithColumn('roles', 'team_id');
+    }
 
-                $table->dropColumn('team_id');
-            }
-        });
+    private function dropForeignKeysWithColumn(string $table, string $column): void
+    {
+        $foreignKeys = Schema::getForeignKeys($table);
 
-        Schema::table('model_has_roles', static function (Blueprint $table) {
-            if (Schema::hasIndex('model_has_roles', 'model_has_roles_team_id_foreign')) {
-                $table->dropForeign('model_has_roles_team_id_foreign');
+        foreach ($foreignKeys as $fk) {
+            if (in_array($column, $fk['columns'], true)) {
+                Schema::table($table, static function (Blueprint $table) use ($fk, $column) {
+                    $table->dropForeign($fk['name']);
+                    $table->dropColumn($column);
+                });
             }
-            $table->dropColumn('team_id');
-        });
-
-        Schema::table('roles', static function (Blueprint $table) {
-            if (Schema::hasIndex('roles', 'roles_team_id_foreign')) {
-                $table->dropForeign('roles_team_id_foreign');
-            }
-            $table->dropColumn('team_id');
-        });
+        }
     }
 };
