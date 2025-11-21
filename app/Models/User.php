@@ -151,7 +151,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         return $this->belongsToMany(
             Team::class,
-            'entity_user'
+            'team_user'
         )->withTimestamps();
     }
 
