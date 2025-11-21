@@ -183,18 +183,4 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         return $this->teams()->where('owner_id', $this->getKey())->first();
     }
-
-    protected static function booted(): void
-    {
-        static::created(function (User $user) {
-            if (!$user->isOwnTeam()->exists()) {
-                $team = Team::create([
-                    'name' => $user->name."'s Team",
-                    'owner_id' => $user->getKey(),
-                ]);
-
-                $user->team()->associate($team)->save();
-            }
-        });
-    }
 }
