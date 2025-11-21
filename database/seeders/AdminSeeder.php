@@ -43,6 +43,7 @@ class AdminSeeder extends Seeder
             foreach ($rolePlusPermissions as $rolePlusPermission) {
                 $role = $roleModel::firstOrCreate([
                     'name' => $rolePlusPermission['name'],
+                    'team_id' => null,
                     'guard_name' => $rolePlusPermission['guard_name'],
                 ]);
 

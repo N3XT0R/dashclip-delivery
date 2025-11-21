@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::table('roles', static function (Blueprint $table) {
             if (!Schema::hasColumn('roles', 'team_id')) {
                 $table->foreignId('team_id')
+                    ->after('id')
                     ->nullable()
                     ->constrained('teams')
                     ->nullOnDelete();
@@ -26,7 +27,10 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('roles', static function (Blueprint $table) {
-            $table->dropConstrainedForeignId('team_id');
+            if (Schema::hasIndex('roles', 'roles_team_id_foreign')) {
+                $table->dropForeign('roles_team_id_foreign');
+            }
+            $table->dropColumn('team_id');
         });
     }
 };
