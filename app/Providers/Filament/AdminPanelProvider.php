@@ -108,7 +108,10 @@ class AdminPanelProvider extends PanelProvider
     protected function addPlugins(Panel $panel): Panel
     {
         return $panel->plugins([
-            FilamentShieldPlugin::make(),
+            FilamentShieldPlugin::make()
+                ->scopeToTenant(false)
+                ->tenantRelationshipName('teams')
+                ->tenantOwnershipRelationshipName('owner'),
             FilamentLogViewerPlugin::make()
                 ->navigationGroup('System')
                 ->navigationLabel('Log Viewer'),

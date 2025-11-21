@@ -26,4 +26,9 @@ class Team extends Model
             'team_user'
         )->withTimestamps();
     }
+
+    public function owner(): BelongsToMany
+    {
+        return $this->users()->wherePivot('is_owner', true);
+    }
 }
