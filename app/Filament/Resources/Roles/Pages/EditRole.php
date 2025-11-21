@@ -8,6 +8,7 @@ use App\Filament\Resources\Roles\RoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -24,15 +25,26 @@ class EditRole extends EditRecord
         ];
     }
 
+    public function form(Schema $schema): Schema
+    {
+        $form = parent::form($schema);
+        $form->getComponent('name')?->disabled();
+        $form->getComponent('guard_name')?->disabled();
+
+        return $form;
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $this->permissions = collect($data)
-            ->filter(fn (mixed $permission, string $key): bool => ! in_array($key, ['name', 'guard_name', 'select_all', Utils::getTenantModelForeignKey()]))
+            ->filter(fn(mixed $permission, string $key): bool => !in_array($key,
+                ['name', 'guard_name', 'select_all', Utils::getTenantModelForeignKey()], true))
             ->values()
             ->flatten()
             ->unique();
 
-        if (Utils::isTenancyEnabled() && Arr::has($data, Utils::getTenantModelForeignKey()) && filled($data[Utils::getTenantModelForeignKey()])) {
+        if (Utils::isTenancyEnabled() && Arr::has($data,
+                Utils::getTenantModelForeignKey()) && filled($data[Utils::getTenantModelForeignKey()])) {
             return Arr::only($data, ['name', 'guard_name', Utils::getTenantModelForeignKey()]);
         }
 
