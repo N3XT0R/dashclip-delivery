@@ -70,7 +70,7 @@ class RoleResource extends Resource
                                         ignoreRecord: true, /** @phpstan-ignore-next-line */
                                         modifyRuleUsing: fn(Unique $rule
                                         ): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(),
-                                            Filament::getTenant()?->id) : $rule
+                                            Filament::getTenant()?->getKey()) : $rule
                                     )
                                     ->required()
                                     ->maxLength(255),
@@ -85,7 +85,7 @@ class RoleResource extends Resource
                                     ->label(__('filament-shield::filament-shield.field.team'))
                                     ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
                                     /** @phpstan-ignore-next-line */
-                                    ->default(Filament::getTenant()?->id)
+                                    ->default(Filament::getTenant()?->getKey())
                                     ->options(fn(): array => in_array(Utils::getTenantModel(), [null, '', '0'],
                                         true) ? [] : Utils::getTenantModel()::pluck('name', 'id')->toArray())
                                     ->visible(fn(

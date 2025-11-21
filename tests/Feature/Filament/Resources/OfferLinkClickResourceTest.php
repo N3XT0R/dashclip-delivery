@@ -6,12 +6,21 @@ namespace Tests\Feature\Filament\Resources;
 
 use App\Filament\Resources\OfferLinkClickResource;
 use App\Models\OfferLinkClick;
+use App\Models\User;
 use Carbon\Carbon;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
 final class OfferLinkClickResourceTest extends DatabaseTestCase
 {
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::factory()->admin()->create());
+    }
+
     public function testCanCreateReturnsFalse(): void
     {
         $this->assertFalse(OfferLinkClickResource::canCreate());
