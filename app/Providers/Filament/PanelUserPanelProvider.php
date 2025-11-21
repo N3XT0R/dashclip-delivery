@@ -49,6 +49,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->id('panel_user')
             ->path('standard')
             ->tenant(Team::class)
+            ->tenantMenu(false)
             ->login()
             ->registration(Register::class)
             ->emailVerification()
