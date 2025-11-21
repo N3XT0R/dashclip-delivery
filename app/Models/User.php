@@ -68,10 +68,10 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if ($this->hasRole(RoleEnum::SUPER_ADMIN->value)) {
+        if (RoleEnum::canAccessEverything($this)) {
             return true;
         }
-        
+
         return $this->roles()->where('name', $panel->getId())->exists();
     }
 
