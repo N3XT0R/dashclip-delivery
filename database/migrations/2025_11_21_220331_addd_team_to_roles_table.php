@@ -19,6 +19,26 @@ return new class extends Migration {
                     ->nullOnDelete();
             }
         });
+
+        Schema::table('model_has_roles', static function (Blueprint $table) {
+            if (!Schema::hasColumn('model_has_roles', 'team_id')) {
+                $table->foreignId('team_id')
+                    ->nullable()
+                    ->after('role_id')
+                    ->constrained('teams')
+                    ->nullOnDelete();
+            }
+        });
+
+        Schema::table('model_has_permissions', static function (Blueprint $table) {
+            if (!Schema::hasColumn('model_has_permissions', 'team_id')) {
+                $table->foreignId('team_id')
+                    ->nullable()
+                    ->after('permission_id')
+                    ->constrained('teams')
+                    ->nullOnDelete();
+            }
+        });
     }
 
     /**
@@ -26,6 +46,23 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::table('model_has_permissions', static function (Blueprint $table) {
+            if (Schema::hasColumn('model_has_permissions', 'team_id')) {
+                if (Schema::hasIndex('model_has_permissions', 'model_has_permissions_team_id_foreign')) {
+                    $table->dropForeign('model_has_permissions_team_id_foreign');
+                }
+
+                $table->dropColumn('team_id');
+            }
+        });
+
+        Schema::table('model_has_roles', static function (Blueprint $table) {
+            if (Schema::hasIndex('model_has_roles', 'model_has_roles_team_id_foreign')) {
+                $table->dropForeign('model_has_roles_team_id_foreign');
+            }
+            $table->dropColumn('team_id');
+        });
+
         Schema::table('roles', static function (Blueprint $table) {
             if (Schema::hasIndex('roles', 'roles_team_id_foreign')) {
                 $table->dropForeign('roles_team_id_foreign');
