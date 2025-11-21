@@ -77,9 +77,9 @@ final class UserTest extends DatabaseTestCase
         $this->assertSame('tester@example.com', $user->getAppAuthenticationHolderName());
     }
 
-    public function testAllowsFilamentPanelAccess(): void
+    public function testRegularCanAccessPanelReturnsTrue(): void
     {
-        $user = User::factory()->admin()->create();
+        $user = User::factory()->standard()->create();
         $mockPanel = $this->createMock(Panel::class);
 
         $this->assertTrue($user->canAccessPanel($mockPanel));
