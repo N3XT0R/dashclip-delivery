@@ -41,7 +41,7 @@ class StandardPanelProvider extends PanelProvider
     protected function addDefaults(Panel $panel): Panel
     {
         $panel
-            ->id('standard')
+            ->id('panel_user')
             ->path('standard')
             ->login()
             ->registration(Register::class)

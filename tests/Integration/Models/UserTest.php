@@ -80,17 +80,28 @@ final class UserTest extends DatabaseTestCase
     public function testRegularCanAccessPanelReturnsTrue(): void
     {
         $user = User::factory()->standard()->create();
-        $mockPanel = $this->createMock(Panel::class);
+        $panel = Panel::make()
+            ->id('panel_user');
 
-        $this->assertTrue($user->canAccessPanel($mockPanel));
+        $this->assertTrue($user->canAccessPanel($panel));
+    }
+
+    public function testRegularCanAccessPanelAdminReturnsFalse(): void
+    {
+        $user = User::factory()->standard()->create();
+
+        $panel = Panel::make()
+            ->id('admin');
+
+        $this->assertFalse($user->canAccessPanel($panel));
     }
 
     public function testAdminCanAccessPanelAlwaysReturnsTrue(): void
     {
-        $user = User::factory()->admin()->make();
+        $user = User::factory()->admin()->create();
 
-        // We don't care about Panel internals; the method ignores its argument.
-        $panel = $this->createMock(Panel::class);
+        $panel = Panel::make()
+            ->id('irgendwas');
 
         $this->assertTrue($user->canAccessPanel($panel));
     }
