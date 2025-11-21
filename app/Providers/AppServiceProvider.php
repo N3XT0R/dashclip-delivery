@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Observers\UserObserver;
 use App\Repository\Contracts\ConfigRepositoryInterface;
 use App\Repository\EloquentConfigRepository;
@@ -103,6 +105,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        app(\Spatie\Permission\PermissionRegistrar::class)
+            ->setPermissionClass(Permission::class)
+            ->setRoleClass(Role::class);
+
         Storage::extend('dropbox', function ($app, $config) {
             $client = new DropboxClient(app(AutoRefreshTokenProvider::class));
             $root = trim((string)($config['root'] ?? ''), '/');

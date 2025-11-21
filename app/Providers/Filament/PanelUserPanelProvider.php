@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Standard\Pages\Auth\Register;
 use App\Models\Team;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
@@ -27,12 +28,13 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class StandardPanelProvider extends PanelProvider
+class PanelUserPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         $this->addDefaults($panel);
         $this->addMiddlewares($panel);
+        $this->addPlugins($panel);
         $this->addRenderHooks($panel);
         $this->addMFA($panel);
         $this->addWidgets($panel);
@@ -114,6 +116,13 @@ class StandardPanelProvider extends PanelProvider
     {
         return $panel->widgets([
             AccountWidget::class,
+        ]);
+    }
+
+    protected function addPlugins(Panel $panel): Panel
+    {
+        return $panel->plugins([
+            FilamentShieldPlugin::make(),
         ]);
     }
 }
