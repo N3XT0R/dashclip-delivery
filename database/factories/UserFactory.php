@@ -65,7 +65,7 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) use ($roleName) {
             $role = Role::firstOrCreate(['name' => $roleName]);
-            $user->assignRole($role);
+            $user->syncRoles([$role]);
         });
     }
 }
