@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Enum\Guard\GuardEnum;
+use App\Enum\PanelEnum;
 use App\Filament\Pages\Auth\EditProfile;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
@@ -53,9 +55,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('75px')
-            ->id('admin')
-            ->path('admin')
-            ->authGuard('web')
+            ->id(PanelEnum::ADMIN->value)
+            ->path(PanelEnum::ADMIN->value)
+            ->authGuard(GuardEnum::DEFAULT->value)
             ->tenant(null)
             ->login()
             ->emailVerification()

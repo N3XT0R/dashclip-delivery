@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Models;
 
+use App\Enum\PanelEnum;
 use App\Models\User;
 use Filament\Panel;
 use Tests\DatabaseTestCase;
@@ -81,7 +82,7 @@ final class UserTest extends DatabaseTestCase
     {
         $user = User::factory()->standard('web')->create();
         $panel = Panel::make()
-            ->id('standard');
+            ->id(PanelEnum::STANDARD->value);
 
         $this->assertTrue($user->canAccessPanel($panel));
     }
@@ -91,7 +92,7 @@ final class UserTest extends DatabaseTestCase
         $user = User::factory()->standard()->create();
 
         $panel = Panel::make()
-            ->id('admin');
+            ->id(PanelEnum::ADMIN->value);
 
         $this->assertFalse($user->canAccessPanel($panel));
     }

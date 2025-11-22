@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Enum\PanelEnum;
 use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\VideoUpload;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
@@ -48,10 +49,10 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addDefaults(Panel $panel): Panel
     {
         $panel
-            ->id('standard')
-            ->path('standard')
+            ->id(PanelEnum::STANDARD->value)
+            ->path(PanelEnum::STANDARD->value)
             ->homeUrl('dashboard')
-            ->authGuard('standard')
+            ->authGuard(PanelEnum::STANDARD->value)
             ->tenant(
                 model: Team::class,
                 slugAttribute: 'slug',
@@ -59,7 +60,7 @@ class PanelUserPanelProvider extends PanelProvider
             )
             ->tenantMenu(false)
             ->tenantProfile(EditTenantProfile::class)
-            ->profile(EditProfile::class, isSimple: true)
+            ->profile(EditProfile::class)
             ->login()
             ->registration(Register::class)
             ->emailVerification()
