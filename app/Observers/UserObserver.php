@@ -6,6 +6,7 @@ namespace App\Observers;
 
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
+use App\Repository\RoleRepository;
 use App\Repository\TeamRepository;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,7 +22,8 @@ class UserObserver extends BaseObserver
     private function assignDefaultRole(User $user): void
     {
         if (!$user->hasAnyRole()) {
-            $user->assignRole(RoleEnum::REGULAR->value);
+            $repository = app(RoleRepository::class);
+            $user->assignRole($repository->getRoleByRoleEnum(RoleEnum::REGULAR));
         }
     }
 

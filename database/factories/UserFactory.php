@@ -64,11 +64,12 @@ class UserFactory extends Factory
     public function withRole(RoleEnum $roleName, ?string $guard = null): static
     {
         return $this->afterCreating(function (User $user) use ($roleName, $guard) {
-            $role = Role::firstOrCreate(['name' => $roleName->value]);
+            $data = ['name' => $roleName->value];
             if ($guard) {
-                $role->guard_name = $guard;
-                $role->save();
+                $data['guard_name'] = $guard;
             }
+            $role = Role::firstOrCreate($data);
+
             $user->syncRoles([$role]);
         });
     }
