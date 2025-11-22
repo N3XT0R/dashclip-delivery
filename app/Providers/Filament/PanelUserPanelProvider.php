@@ -93,7 +93,7 @@ class PanelUserPanelProvider extends PanelProvider
         return $panel->renderHook(
             PanelsRenderHook::FOOTER,
             function (): ?string {
-                if (request()->routeIs('filament.admin.pages.video-upload')) {
+                if (request()->routeIs('filament.standard.pages.video-upload')) {
                     return null;
                 }
 
