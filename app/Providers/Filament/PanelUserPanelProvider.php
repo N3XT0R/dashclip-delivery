@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Standard\Pages\Auth\Register;
+use App\Http\Middleware\ApplyTenantScopes;
 use App\Models\Team;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
@@ -114,6 +115,7 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addTenantMiddlewares(Panel $panel): Panel
     {
         return $panel->tenantMiddleware([
+            ApplyTenantScopes::class,
             SyncShieldTenant::class,
         ], isPersistent: true);
     }
