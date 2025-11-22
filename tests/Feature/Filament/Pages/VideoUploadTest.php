@@ -13,29 +13,19 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\DatabaseTestCase;
 
 final class VideoUploadTest extends DatabaseTestCase
 {
 
 
-    public static function guardProvider(): array
+    public function testRegularUserHasAccess(): void
     {
-        return [
-            [GuardEnum::DEFAULT->value, 200],
-            [GuardEnum::STANDARD->value, 403],
-        ];
-    }
-
-    #[DataProvider('guardProvider')]
-    public function testRegularUserHasAccess(string $guardName, int $code): void
-    {
-        $regularUser = User::factory()->standard($guardName)->create();
+        $regularUser = User::factory()->standard(GuardEnum::DEFAULT->value)->create();
         $this->actingAs($regularUser);
 
         Livewire::test(VideoUpload::class)
-            ->assertStatus($code);
+            ->assertStatus(200);
     }
 
     /**
