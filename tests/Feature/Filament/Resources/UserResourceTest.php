@@ -30,7 +30,7 @@ final class UserResourceTest extends DatabaseTestCase
         parent::setUp();
 
         $this->admin = User::factory()->admin()->create();
-        $this->actingAs($this->admin);
+        $this->actingAs($this->admin, 'web');
     }
 
     public function testListUsersRendersAndShowsRecords(): void
