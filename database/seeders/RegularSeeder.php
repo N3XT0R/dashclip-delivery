@@ -29,6 +29,7 @@ class RegularSeeder extends Seeder
 
         $role = Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => 'web']);
         $role->syncPermissions($filteredPermissions);
+        $role = Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => 'panel_user']);
         $this->command->info('panel_user seeded with all permissions except Config.');
     }
 
