@@ -25,7 +25,7 @@ class RoleRepository
     {
         return Role::query()
             ->where('name', $roleEnum->value)
-            ->where('guard_name', $guard ?? config('auth.defaults.guard', 'web'))
+            ->where('guard_name', $guard ?? config('auth.defaults.guard', GuardEnum::DEFAULT->value))
             ->firstOrFail();
     }
 
