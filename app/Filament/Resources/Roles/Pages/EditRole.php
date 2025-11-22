@@ -7,8 +7,6 @@ namespace App\Filament\Resources\Roles\Pages;
 use App\Filament\Resources\Roles\RoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Actions\DeleteAction;
-use Filament\Facades\Filament;
-use Filament\Panel;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Arr;
@@ -25,15 +23,6 @@ class EditRole extends EditRecord
         return [
             DeleteAction::make(),
         ];
-    }
-
-    public static function getPanelNames(): array
-    {
-        return collect(Filament::getPanels())
-            ->mapWithKeys(fn(Panel $panel) => [
-                $panel->getId() => ucfirst($panel->getId()),
-            ])
-            ->toArray();
     }
 
     public function form(Schema $schema): Schema
