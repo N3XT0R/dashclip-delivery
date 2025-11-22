@@ -75,11 +75,11 @@ class RoleResource extends Resource
                                     ->required()
                                     ->maxLength(255),
 
-                                TextInput::make('guard_name')
+                                Select::make('guard_name')
                                     ->label(__('filament-shield::filament-shield.field.guard_name'))
+                                    ->options(self::getGuardOptions())
                                     ->default(Utils::getFilamentAuthGuard())
-                                    ->nullable()
-                                    ->maxLength(255),
+                                    ->nullable(),
 
                                 Select::make(config('permission.column_names.team_foreign_key'))
                                     ->label(__('filament-shield::filament-shield.field.team'))
@@ -162,6 +162,14 @@ class RoleResource extends Resource
             'view' => ViewRole::route('/{record}'),
             'edit' => EditRole::route('/{record}/edit'),
         ];
+    }
+
+    public static function getGuardOptions(): array
+    {
+        return collect(config('auth.guards'))
+            ->keys()
+            ->mapWithKeys(fn($guard) => [$guard => ucfirst($guard)])
+            ->toArray();
     }
 
     public static function getModel(): string
