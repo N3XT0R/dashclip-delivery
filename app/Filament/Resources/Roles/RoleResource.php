@@ -69,9 +69,15 @@ class RoleResource extends Resource
                                     ->label(__('filament-shield::filament-shield.field.name'))
                                     ->unique(
                                         ignoreRecord: true, /** @phpstan-ignore-next-line */
-                                        modifyRuleUsing: fn(Unique $rule
-                                        ): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(),
-                                            Filament::getTenant()?->getKey()) : $rule
+                                        modifyRuleUsing: function (Unique $rule, callable $get) {
+                                            return $rule
+                                                ->where('guard_name', $get('guard_name'))
+                                                ->where(fn($query) => Utils::isTenancyEnabled()
+                                                    ? $query->where(Utils::getTenantModelForeignKey(),
+                                                        Filament::getTenant()?->getKey())
+                                                    : $query
+                                                );
+                                        }
                                     )
                                     ->required()
                                     ->maxLength(255),
