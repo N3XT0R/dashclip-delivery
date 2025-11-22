@@ -48,7 +48,7 @@ class RoleResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value);
+        return auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value, 'web');
     }
 
     public static function shouldRegisterNavigation(): bool
