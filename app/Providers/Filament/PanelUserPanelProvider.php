@@ -3,8 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
-use App\Http\Middleware\ApplyTenantScopes;
 use App\Models\Team;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
@@ -56,11 +56,12 @@ class PanelUserPanelProvider extends PanelProvider
                 slugAttribute: 'slug',
             )
             ->tenantMenu(false)
+            ->tenantProfile(EditTenantProfile::class)
+            ->profile(EditProfile::class, isSimple: true)
             ->login()
             ->registration(Register::class)
             ->emailVerification()
             ->emailChangeVerification()
-            ->profile(EditProfile::class, false)
             ->colors([
                 'primary' => Color::Slate,
             ])
@@ -115,7 +116,6 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addTenantMiddlewares(Panel $panel): Panel
     {
         return $panel->tenantMiddleware([
-            ApplyTenantScopes::class,
             SyncShieldTenant::class,
         ], isPersistent: true);
     }

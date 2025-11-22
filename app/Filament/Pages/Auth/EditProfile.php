@@ -11,6 +11,9 @@ use Filament\Schemas\Schema;
 
 class EditProfile extends BaseEditProfile
 {
+    protected static bool $isScopedToTenant = false;
+    
+
     public function form(Schema $schema): Schema
     {
         /**
