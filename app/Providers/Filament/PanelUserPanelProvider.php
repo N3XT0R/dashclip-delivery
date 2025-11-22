@@ -52,7 +52,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->authGuard('standard')
             ->tenant(
                 model: Team::class,
-                ownershipRelationship: 'teams'
+                slugAttribute: 'slug',
             )
             ->tenantMenu(false)
             ->login()
