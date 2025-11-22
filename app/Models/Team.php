@@ -15,6 +15,10 @@ class Team extends Model
         'owner_id',
     ];
 
+    protected $defaults = [
+        'slug' => null,
+    ];
+
     protected function scopeIsOwnTeam(Builder $query, User $user): Builder
     {
         return $query->where('owner_id', $user->getKey());

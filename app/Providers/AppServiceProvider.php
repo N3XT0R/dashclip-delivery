@@ -4,8 +4,6 @@ namespace App\Providers;
 
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\User;
-use App\Observers\UserObserver;
 use App\Repository\Contracts\ConfigRepositoryInterface;
 use App\Repository\EloquentConfigRepository;
 use App\Services\ConfigService;
@@ -20,7 +18,6 @@ use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
-use Filament\Resources\Resource;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
@@ -29,6 +26,7 @@ use Illuminate\Support\ServiceProvider;
 use League\Flysystem\Filesystem;
 use Spatie\Dropbox\Client as DropboxClient;
 use Spatie\FlysystemDropbox\DropboxAdapter;
+use Spatie\Permission\PermissionRegistrar;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -106,11 +104,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        app(\Spatie\Permission\PermissionRegistrar::class)
+        app(PermissionRegistrar::class)
             ->setPermissionClass(Permission::class)
             ->setRoleClass(Role::class);
 
-        Storage::extend('dropbox', function ($app, $config) {
+        Storage::extend('dropbox', static function ($app, $config) {
             $client = new DropboxClient(app(AutoRefreshTokenProvider::class));
             $root = trim((string)($config['root'] ?? ''), '/');
             $adapter = new DropboxAdapter($client, $root);
@@ -118,13 +116,5 @@ class AppServiceProvider extends ServiceProvider
             $filesystem = new Filesystem($adapter);
             return new FilesystemAdapter($filesystem, $adapter, $config);
         });
-
-        $this->bootObserver();
-    }
-
-    protected function bootObserver(): void
-    {
-        User::observe(UserObserver::class);
-        Resource::scopeToTenant(false);
     }
 }
