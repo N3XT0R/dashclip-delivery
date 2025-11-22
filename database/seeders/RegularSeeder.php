@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enum\Guard\GuardEnum;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -34,19 +36,19 @@ class RegularSeeder extends Seeder
         $filteredPermissions = array_filter($allPermissions, function ($perm) use ($excludedResources) {
             return array_all($excludedResources, fn($excluded) => !str_contains($perm, $excluded));
         });
-        $role = Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => 'web']);
+        $role = Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => GuardEnum::DEFAULT->value]);
         $role->syncPermissions($filteredPermissions);
     }
 
     protected function syncPermissionsForStandardPanel(): void
     {
-        $guardName = 'standard';
+        $guardName = GuardEnum::STANDARD->value;
         $patterns = [
             '%VideoUpload%',
         ];
 
         $permissions = Permission::query()
-            ->where('guard_name', 'web')
+            ->where('guard_name', GuardEnum::DEFAULT->value)
             ->where(function ($query) use ($patterns) {
                 foreach ($patterns as $pattern) {
                     $query->orWhere('name', 'like', $pattern);
@@ -66,6 +68,12 @@ class RegularSeeder extends Seeder
         }
 
         $role->syncPermissions($permissions->pluck('name'));
+
+        //give admin users access to standard panel as well
+        $adminUsers = User::role('super_admin', GuardEnum::DEFAULT->value)->get();
+        foreach ($adminUsers as $user) {
+            $user->assignRole($role);
+        }
     }
 
 }
