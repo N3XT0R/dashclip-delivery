@@ -27,11 +27,7 @@ final class VideoUploadTest extends DatabaseTestCase
         Livewire::test(VideoUpload::class)
             ->assertStatus(200);
     }
-
-    /**
-     * @return void
-     * @todo refactor this test to not be skipped
-     */
+    
     public function testSubmitDispatchesJobForEachClip(): void
     {
         Bus::fake();
