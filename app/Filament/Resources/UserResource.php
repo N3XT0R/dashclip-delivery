@@ -15,6 +15,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 use UnitEnum;
 
 class UserResource extends Resource
@@ -61,7 +62,10 @@ class UserResource extends Resource
                     ->label('Roles')
                     ->multiple()
                     ->relationship('roles', 'name')
-                    ->preload(),
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(
+                        fn(Role $record): string => "{$record->name} ({$record->guard_name})"
+                    ),
                 Forms\Components\Textarea::make('app_authentication_secret')
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('app_authentication_recovery_codes')
