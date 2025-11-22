@@ -29,6 +29,7 @@ class UserObserver extends BaseObserver
 
     private function createOwnTeamForUser(User $user): void
     {
-        app(TeamRepository::class)->createOwnTeamForUser($user);
+        $teamRepository = app(TeamRepository::class);
+        $teamRepository->createOwnTeamForUser($user);
     }
 }

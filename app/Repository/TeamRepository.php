@@ -9,7 +9,7 @@ use App\Models\User;
 
 class TeamRepository
 {
-    public function createOwnTeamForUser(User $user): void
+    public function createOwnTeamForUser(User $user): Team
     {
         $team = Team::create([
             'name' => $user->name."'s Team",
@@ -17,5 +17,7 @@ class TeamRepository
         ]);
 
         $user->teams()->attach($team);
+
+        return $team;
     }
 }
