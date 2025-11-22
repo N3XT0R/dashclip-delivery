@@ -144,8 +144,8 @@ class PanelUserPanelProvider extends PanelProvider
     {
         return $panel->plugins([
             FilamentShieldPlugin::make()
-                ->scopeToTenant(false)
-                ->localizePermissionLabels(),
+                ->localizePermissionLabels()
+                ->scopeToTenant(false),
         ]);
     }
 }

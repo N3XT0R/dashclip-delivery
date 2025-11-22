@@ -18,6 +18,7 @@ use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
+use Filament\Resources\Resource;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
@@ -104,6 +105,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Resource::scopeToTenant(false);
         app(PermissionRegistrar::class)
             ->setPermissionClass(Permission::class)
             ->setRoleClass(Role::class);

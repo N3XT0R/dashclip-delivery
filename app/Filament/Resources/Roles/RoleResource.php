@@ -40,6 +40,8 @@ class RoleResource extends Resource
     use Essentials\HasNavigation;
     use HasShieldFormComponents;
 
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationGroup(): ?string

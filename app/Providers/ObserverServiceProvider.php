@@ -8,7 +8,6 @@ use App\Models\Team;
 use App\Models\User;
 use App\Observers\TeamObserver;
 use App\Observers\UserObserver;
-use Filament\Resources\Resource;
 use Illuminate\Support\ServiceProvider;
 
 class ObserverServiceProvider extends ServiceProvider
@@ -23,6 +22,5 @@ class ObserverServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
         Team::observe(TeamObserver::class);
-        Resource::scopeToTenant(false);
     }
 }
