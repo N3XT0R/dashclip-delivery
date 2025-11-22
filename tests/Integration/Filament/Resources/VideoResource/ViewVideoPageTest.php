@@ -29,7 +29,7 @@ final class ViewVideoPageTest extends DatabaseTestCase
         parent::setUp();
 
         $this->admin = User::factory()->admin()->create();
-        $this->regular = User::factory()->standard()->create();
+        $this->regular = User::factory()->standard('web')->create();
     }
 
     public function testAdminUserCanSeePreviewAction(): void
@@ -77,7 +77,7 @@ final class ViewVideoPageTest extends DatabaseTestCase
         $component = Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
             ->assertStatus(200)
             ->assertActionVisible('preview');
-        
+
         $this->assertNull(
             $component->instance()->getAction('delete'),
             'Delete-Action sollte auf der ViewVideo-Seite nicht existieren.'
