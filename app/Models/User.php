@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enum\Users\RoleEnum;
 use App\Models\Pivots\ModelHasRoleTeam;
+use App\Repository\RoleRepository;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
@@ -84,7 +84,8 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if (RoleEnum::canAccessEverything($this)) {
+        $roleRepository = app(RoleRepository::class);
+        if ($roleRepository->canAccessEverything($this)) {
             return true;
         }
 
