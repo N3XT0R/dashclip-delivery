@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Pages;
 
+use App\Enum\Guard\GuardEnum;
 use App\Facades\Cfg;
 use App\Filament\Pages\VideoUpload;
 use App\Jobs\ProcessUploadedVideo;
@@ -12,14 +13,25 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\DatabaseTestCase;
 
 final class VideoUploadTest extends DatabaseTestCase
 {
 
-    public function testRegularUserHasAccess(): void
+
+    public static function guardProvider(): array
     {
-        $regularUser = User::factory()->standard('web')->create();
+        return [
+            [GuardEnum::DEFAULT->value],
+            [GuardEnum::STANDARD->value],
+        ];
+    }
+
+    #[DataProvider('guardProvider')]
+    public function testRegularUserHasAccess(string $guardName): void
+    {
+        $regularUser = User::factory()->standard($guardName)->create();
         $this->actingAs($regularUser);
 
         Livewire::test(VideoUpload::class)

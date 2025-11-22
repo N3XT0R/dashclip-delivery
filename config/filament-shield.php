@@ -36,7 +36,7 @@ return [
     |
     */
 
-    'tenant_model' => 'App\Models\Team',
+    'tenant_model' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -120,8 +120,17 @@ return [
         'merge' => true,
         'generate' => true,
         'methods' => [
-            'viewAny', 'view', 'create', 'update', 'delete', 'restore',
-            'forceDelete', 'forceDeleteAny', 'restoreAny', 'replicate', 'reorder',
+            'viewAny',
+            'view',
+            'create',
+            'update',
+            'delete',
+            'restore',
+            'forceDelete',
+            'forceDeleteAny',
+            'restoreAny',
+            'replicate',
+            'reorder',
         ],
         'single_parameter_methods' => [
             'viewAny',
