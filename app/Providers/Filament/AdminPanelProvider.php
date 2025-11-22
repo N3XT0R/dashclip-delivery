@@ -55,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('75px')
             ->id('admin')
             ->path('admin')
+            ->authGuard('web')
             ->tenant(null)
             ->login()
             ->emailVerification()
