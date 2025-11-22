@@ -48,23 +48,27 @@ class UserFactory extends Factory
     /**
      * Default state for Admin-User
      */
-    public function admin(): static
+    public function admin(?string $guard = null): static
     {
-        return $this->withRole(RoleEnum::SUPER_ADMIN->value);
+        return $this->withRole(RoleEnum::SUPER_ADMIN, $guard);
     }
 
     /**
      * Default state for Standard-User
      */
-    public function standard(): static
+    public function standard(?string $guard = 'standard'): static
     {
-        return $this->withRole(RoleEnum::REGULAR->value);
+        return $this->withRole(RoleEnum::REGULAR, $guard);
     }
 
-    public function withRole(string $roleName): static
+    public function withRole(RoleEnum $roleName, ?string $guard = null): static
     {
-        return $this->afterCreating(function (User $user) use ($roleName) {
-            $role = Role::firstOrCreate(['name' => $roleName]);
+        return $this->afterCreating(function (User $user) use ($roleName, $guard) {
+            $role = Role::firstOrCreate(['name' => $roleName->value]);
+            if ($guard) {
+                $role->guard_name = $guard;
+                $role->save();
+            }
             $user->syncRoles([$role]);
         });
     }
