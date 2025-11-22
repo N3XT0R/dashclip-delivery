@@ -20,4 +20,10 @@ class TeamRepository
 
         return $team;
     }
+
+
+    public function getDefaultTeamForUser(User $user): ?Team
+    {
+        return $user->teams()->isOwnTeam($user)->first();
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Pivots\ModelHasRoleTeam;
 use App\Repository\RoleRepository;
+use App\Repository\TeamRepository;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
@@ -190,6 +191,6 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function getDefaultTenant(Panel $panel): ?Model
     {
-        return $this->teams()->where('owner_id', $this->getKey())->first();
+        return app(TeamRepository::class)->getDefaultTeamForUser($this);
     }
 }
