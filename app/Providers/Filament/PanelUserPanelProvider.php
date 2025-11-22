@@ -55,6 +55,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->tenant(
                 model: Team::class,
                 slugAttribute: 'slug',
+                ownershipRelationship: 'teams',
             )
             ->tenantMenu(false)
             ->tenantProfile(EditTenantProfile::class)
