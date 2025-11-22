@@ -7,6 +7,9 @@ namespace App\Filament\Resources\Roles\Pages;
 use App\Filament\Resources\Roles\RoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Actions\DeleteAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
+use Filament\Panel;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Arr;
@@ -25,12 +28,29 @@ class EditRole extends EditRecord
         ];
     }
 
+    public static function getPanelNames(): array
+    {
+        return collect(Filament::getPanels())
+            ->mapWithKeys(fn(Panel $panel) => [
+                $panel->getId() => ucfirst($panel->getId()),
+            ])
+            ->toArray();
+    }
+
     public function form(Schema $schema): Schema
     {
         $form = parent::form($schema);
         $form->getComponent('name')?->disabled();
         $form->getComponent('guard_name')?->disabled();
-
+        $form->schema([
+            Select::make('panelSwitcher')
+                ->label('Panel wählen')
+                ->options(static::getPanelNames())
+                ->default(fn($record) => $record->panel ?? null)
+                ->reactive()
+                ->dehydrated(false),
+            ...parent::form($form)->getComponents(),
+        ]);
         return $form;
     }
 

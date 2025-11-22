@@ -88,7 +88,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             return true;
         }
 
-        return $this->roles()->where('name', $panel->getId())->exists();
+        return $this->roles()->where('guard_name', $panel->getAuthGuard())->exists();
     }
 
     public function getAppAuthenticationSecret(): ?string
