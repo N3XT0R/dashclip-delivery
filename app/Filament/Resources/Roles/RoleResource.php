@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Roles;
 
+use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\Roles\Pages\CreateRole;
 use App\Filament\Resources\Roles\Pages\EditRole;
@@ -48,7 +49,7 @@ class RoleResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value, 'web');
+        return auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value, GuardEnum::DEFAULT->value);
     }
 
     public static function shouldRegisterNavigation(): bool
