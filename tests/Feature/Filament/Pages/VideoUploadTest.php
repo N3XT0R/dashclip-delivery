@@ -23,19 +23,19 @@ final class VideoUploadTest extends DatabaseTestCase
     public static function guardProvider(): array
     {
         return [
-            [GuardEnum::DEFAULT->value],
-            [GuardEnum::STANDARD->value],
+            [GuardEnum::DEFAULT->value, 200],
+            [GuardEnum::STANDARD->value, 403],
         ];
     }
 
     #[DataProvider('guardProvider')]
-    public function testRegularUserHasAccess(string $guardName): void
+    public function testRegularUserHasAccess(string $guardName, int $code): void
     {
         $regularUser = User::factory()->standard($guardName)->create();
         $this->actingAs($regularUser);
 
         Livewire::test(VideoUpload::class)
-            ->assertStatus(200);
+            ->assertStatus($code);
     }
 
     /**
