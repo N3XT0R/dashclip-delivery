@@ -48,7 +48,7 @@ class UserFactory extends Factory
     /**
      * Default state for Admin-User
      */
-    public function admin(?string $guard = null): static
+    public function admin(string $guard = 'web'): static
     {
         return $this->withRole(RoleEnum::SUPER_ADMIN, $guard);
     }
@@ -56,7 +56,7 @@ class UserFactory extends Factory
     /**
      * Default state for Standard-User
      */
-    public function standard(?string $guard = 'standard'): static
+    public function standard(string $guard = 'standard'): static
     {
         return $this->withRole(RoleEnum::REGULAR, $guard);
     }
