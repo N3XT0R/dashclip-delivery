@@ -79,9 +79,9 @@ final class UserTest extends DatabaseTestCase
 
     public function testRegularCanAccessPanelReturnsTrue(): void
     {
-        $user = User::factory()->standard()->create();
+        $user = User::factory()->standard('web')->create();
         $panel = Panel::make()
-            ->id('panel_user');
+            ->id('standard');
 
         $this->assertTrue($user->canAccessPanel($panel));
     }
