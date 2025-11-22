@@ -40,8 +40,26 @@ class RegularSeeder extends Seeder
 
     protected function syncPermissionsForStandardPanel(): void
     {
-        $role = Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => 'standard']);
-        $role->syncPermissions();
+        $patterns = [
+            '%VideoUpload%',
+        ];
+
+        $permissions = Permission::query()
+            ->where('guard_name', 'web')
+            ->where(function ($query) use ($patterns) {
+                foreach ($patterns as $pattern) {
+                    $query->orWhere('name', 'like', $pattern);
+                }
+            })
+            ->pluck('name')
+            ->toArray();
+
+        $role = Role::firstOrCreate([
+            'name' => 'panel_user',
+            'guard_name' => 'standard',
+        ]);
+
+        $role->syncPermissions($permissions);
     }
 
 }
