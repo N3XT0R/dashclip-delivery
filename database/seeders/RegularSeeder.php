@@ -40,6 +40,7 @@ class RegularSeeder extends Seeder
 
     protected function syncPermissionsForStandardPanel(): void
     {
+        $guardName = 'standard';
         $patterns = [
             '%VideoUpload%',
         ];
@@ -50,16 +51,21 @@ class RegularSeeder extends Seeder
                 foreach ($patterns as $pattern) {
                     $query->orWhere('name', 'like', $pattern);
                 }
-            })
-            ->pluck('name')
-            ->toArray();
+            })->get();
 
         $role = Role::firstOrCreate([
             'name' => 'panel_user',
-            'guard_name' => 'standard',
+            'guard_name' => $guardName,
         ]);
 
-        $role->syncPermissions($permissions);
+        foreach ($permissions as $perm) {
+            Permission::firstOrCreate([
+                'name' => $perm->name,
+                'guard_name' => $guardName,
+            ]);
+        }
+
+        $role->syncPermissions($permissions->pluck('name'));
     }
 
 }
