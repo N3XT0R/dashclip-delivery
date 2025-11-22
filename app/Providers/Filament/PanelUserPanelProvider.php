@@ -47,7 +47,7 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addDefaults(Panel $panel): Panel
     {
         $panel
-            ->id('panel_user')
+            ->id('standard')
             ->path('standard')
             ->homeUrl('dashboard')
             ->authGuard('standard')
