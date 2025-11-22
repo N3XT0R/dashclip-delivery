@@ -184,9 +184,9 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             ->withPivot('team_id');
     }
 
-    public function canAccessTenant(Model $tenant): bool
+    public function canAccessTenant(Team|Model $tenant): bool
     {
-        return true;
+        return app(TeamRepository::class)->canAccessTeam($this, $tenant);
     }
 
     public function getDefaultTenant(Panel $panel): ?Model

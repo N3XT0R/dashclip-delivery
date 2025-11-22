@@ -26,4 +26,9 @@ class TeamRepository
     {
         return $user->teams()->isOwnTeam($user)->first();
     }
+
+    public function canAccessTeam(User $user, Team $team): bool
+    {
+        return $user->teams()->where('teams.id', $team->getKey())->exists();
+    }
 }
