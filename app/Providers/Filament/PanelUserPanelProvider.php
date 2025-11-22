@@ -143,7 +143,9 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addPlugins(Panel $panel): Panel
     {
         return $panel->plugins([
-            FilamentShieldPlugin::make(),
+            FilamentShieldPlugin::make()
+                ->scopeToTenant(false)
+                ->localizePermissionLabels(),
         ]);
     }
 }
