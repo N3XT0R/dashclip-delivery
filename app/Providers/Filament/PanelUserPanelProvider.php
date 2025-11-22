@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Pages\VideoUpload;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
 use App\Models\Team;
@@ -72,6 +73,7 @@ class PanelUserPanelProvider extends PanelProvider
                 Css::make('app', app(Vite::class)->asset('resources/css/app.css')),
             ])
             ->pages([
+                VideoUpload::class,
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Standard/Widgets'), for: 'App\Filament\Standard\Widgets')
