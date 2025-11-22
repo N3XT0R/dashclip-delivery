@@ -19,7 +19,7 @@ final class VideoUploadTest extends DatabaseTestCase
 
     public function testRegularUserHasAccess(): void
     {
-        $regularUser = User::factory()->standard()->create();
+        $regularUser = User::factory()->standard('web')->create();
         $this->actingAs($regularUser);
 
         Livewire::test(VideoUpload::class)

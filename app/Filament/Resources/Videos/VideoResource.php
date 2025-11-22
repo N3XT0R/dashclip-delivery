@@ -31,6 +31,8 @@ class VideoResource extends Resource
     protected static ?string $modelLabel = 'Video';
     protected static ?string $pluralModelLabel = 'Videos';
 
+    protected static bool $isScopedToTenant = false;
+
     public static function form(Schema $schema): Schema
     {
         return $schema

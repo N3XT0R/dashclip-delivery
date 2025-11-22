@@ -30,7 +30,7 @@ final class VideoResourceTest extends DatabaseTestCase
         parent::setUp();
 
         $this->admin = User::factory()->admin()->create();
-        $this->regular = User::factory()->standard()->create();
+        $this->regular = User::factory()->standard('web')->create();
     }
 
     public function testListVideosRendersTableWithExpectedColumns(): void
