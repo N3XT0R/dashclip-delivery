@@ -84,12 +84,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function canAccessPanel(Panel $panel): bool
     {
-        $roleRepository = app(RoleRepository::class);
-        if ($roleRepository->canAccessEverything($this)) {
-            return true;
-        }
-
-        return $this->roles()->where('guard_name', $panel->getAuthGuard())->exists();
+        return app(RoleRepository::class)->canAccessPanel($this, $panel);
     }
 
     public function getAppAuthenticationSecret(): ?string

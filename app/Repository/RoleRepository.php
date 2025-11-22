@@ -9,6 +9,7 @@ use App\Enum\Users\RoleEnum;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
+use Filament\Panel;
 
 
 class RoleRepository
@@ -33,5 +34,14 @@ class RoleRepository
         return $user->hasAllRoles([
             RoleEnum::SUPER_ADMIN
         ], GuardEnum::DEFAULT->value);
+    }
+
+    public function canAccessPanel(User $user, Panel $panel): bool
+    {
+        if ($this->canAccessEverything($user)) {
+            return true;
+        }
+
+        return $user->roles()->where('guard_name', $panel->getAuthGuard())->exists();
     }
 }
