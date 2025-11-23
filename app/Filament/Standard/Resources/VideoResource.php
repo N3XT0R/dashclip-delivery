@@ -17,7 +17,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class VideoResource extends Resource
 {
@@ -200,21 +199,6 @@ class VideoResource extends Resource
                     StatusEnum::EXPIRED->value),
                 'assignments as assignments_count',
             ]);
-    }
-
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return false;
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return false;
     }
 
     private static function formatDuration(?int $duration): string
