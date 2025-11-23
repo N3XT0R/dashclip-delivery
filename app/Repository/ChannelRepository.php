@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Models\Channel;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
 class ChannelRepository
 {
@@ -72,5 +74,10 @@ class ChannelRepository
         return Channel::query()
             ->where('email', $email)
             ->first();
+    }
+
+    public function getUserAssignedChannels(User $user): SupportCollection
+    {
+        return $user->assignedChannels()->get();
     }
 }
