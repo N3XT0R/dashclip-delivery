@@ -1,4 +1,4 @@
-<x-filament::modal id="onboarding-wizard" width="3xl">
+<x-filament::modal id="onboarding-wizard" width="3xl" alignment="center">
     <x-slot name="heading">
         Willkommen! Lass uns dein Profil einrichten.
     </x-slot>
