@@ -85,6 +85,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                     )
                     ->openUrlInNewTab()
                     ->limit(40),
+                TextColumn::make('quota')->label('Quota'),
             ])
             ->recordActions([
                 DetachAction::make()
