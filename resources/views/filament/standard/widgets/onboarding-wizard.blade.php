@@ -13,7 +13,7 @@
             </button>
         </x-slot>
         <x-slot name="heading">
-            Willkommen! Lass uns dein Profil einrichten.
+            Willkommen! So funktioniert DashClip:
         </x-slot>
 
         <form wire:submit.prevent="submit">
