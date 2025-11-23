@@ -129,4 +129,11 @@ class AssignmentRepository
             ->where('status', StatusEnum::EXPIRED->value)
             ->count();
     }
+
+    public function getPickedUpOffersCountForUser(User $user): int
+    {
+        return Assignment::query()->hasUsersClips($user)
+            ->where('status', StatusEnum::PICKEDUP->value)
+            ->count();
+    }
 }

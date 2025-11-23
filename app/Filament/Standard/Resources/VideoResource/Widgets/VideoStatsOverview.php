@@ -6,40 +6,71 @@ use App\Models\User;
 use App\Repository\AssignmentRepository;
 use App\Repository\VideoRepository;
 use Filament\Facades\Filament;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class VideoStatsOverview extends BaseWidget
 {
 
-    
+
     protected function getStats(): array
     {
-        $videoRepository = app()->get(VideoRepository::class);
-        $assignmentRepository = app()->get(AssignmentRepository::class);
         /**
          * @var User $user
          */
         $user = Filament::auth()->user();
-        $videoCount = $videoRepository->getVideoCountForUser($user);
-        $availableOffers = $assignmentRepository->getAvailableOffersCountForUser($user);
-        $expiredOffers = $assignmentRepository->getExpiredOffersCountForUser($user);
 
         return [
-            Stat::make('Videos', number_format($videoCount))
-                ->description('Videos insgesamt')
-                ->color('primary')
-                ->icon('heroicon-m-film'),
-
-            Stat::make('Verfügbare Offers', number_format($availableOffers))
-                ->description('bereit zum Versenden')
-                ->color('success')
-                ->icon('heroicon-m-sparkles'),
-
-            Stat::make('Abgelaufene Offers', number_format($expiredOffers))
-                ->description('nicht mehr aktiv')
-                ->color('gray')
-                ->icon('heroicon-m-clock'),
+            $this->getVideoStats($user),
+            $this->getDownloadedVideoStats($user),
+            $this->getAvailableOffersStats($user),
+            $this->getExpiredOffersStats($user),
         ];
+    }
+
+    protected function getVideoStats(User $user): Stat
+    {
+        $videoRepository = app()->get(VideoRepository::class);
+        $videoCount = $videoRepository->getVideoCountForUser($user);
+
+        return Stat::make('Videos', number_format($videoCount))
+            ->description('Videos insgesamt')
+            ->color('primary')
+            ->icon('heroicon-m-film');
+    }
+
+    protected function getDownloadedVideoStats(User $user): Stat
+    {
+        $assignmentRepository = app()->get(AssignmentRepository::class);
+        $pickedUpOffers = $assignmentRepository->getPickedUpOffersCountForUser($user);
+
+        return Stat::make('Heruntergeladene Videos', number_format($pickedUpOffers))
+            ->description('Videos insgesamt')
+            ->color('primary')
+            ->icon(Heroicon::OutlinedArrowDownTray);
+    }
+
+
+    protected function getAvailableOffersStats(User $user): Stat
+    {
+        $assignmentRepository = app()->get(AssignmentRepository::class);
+        $availableOffers = $assignmentRepository->getAvailableOffersCountForUser($user);
+
+        return Stat::make('Verfügbare Offers', number_format($availableOffers))
+            ->description('bereit zum Versenden')
+            ->color('success')
+            ->icon('heroicon-m-sparkles');
+    }
+
+    protected function getExpiredOffersStats(User $user): Stat
+    {
+        $assignmentRepository = app()->get(AssignmentRepository::class);
+        $expiredOffers = $assignmentRepository->getExpiredOffersCountForUser($user);
+
+        return Stat::make('Abgelaufene Offers', number_format($expiredOffers))
+            ->description('nicht mehr aktiv')
+            ->color('gray')
+            ->icon('heroicon-m-clock');
     }
 }
