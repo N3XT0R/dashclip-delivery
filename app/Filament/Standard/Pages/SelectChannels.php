@@ -5,6 +5,7 @@ namespace App\Filament\Standard\Pages;
 use App\Models\Channel;
 use App\Models\Team;
 use App\Repository\ChannelRepository;
+use App\Repository\TeamRepository;
 use BackedEnum;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
@@ -43,10 +44,12 @@ class SelectChannels extends Page implements HasForms, HasTable
 
     public function getHeaderActions(): array
     {
+        $teamRepository = app(TeamRepository::class);
         /**
          * @var Team $tenant
          */
         $tenant = Filament::getTenant();
+        $isOwner = $teamRepository->isUserOwnerOfTeam(auth()->user(), $tenant);
         $availableChannels = $this->getChannelRepository()
             ->getActiveChannels()
             ->whereNotIn('id', $tenant->assignedChannels()->pluck('channels.id'));
@@ -65,16 +68,19 @@ class SelectChannels extends Page implements HasForms, HasTable
                 ])
                 ->action(function (array $data) use ($tenant) {
                     $tenant->assignedChannels()->attach($data['recordId']);
-                }),
+                })
+                ->visible($isOwner),
         ];
     }
 
     public function table(Table $table): Table
     {
+        $teamRepository = app(TeamRepository::class);
         /**
          * @var Team $tenant
          */
         $tenant = Filament::getTenant();
+        $isOwner = $teamRepository->isUserOwnerOfTeam(auth()->user(), $tenant);
 
         return $table
             ->recordTitle('Kanal')
@@ -108,6 +114,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                                         'quota' => $data['quota'],
                                     ]);
                             })
+                            ->visible($isOwner)
                     )
             ])
             ->recordActions([
@@ -115,7 +122,8 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->label('Entfernen')
                     ->action(function (Channel $record) use ($tenant) {
                         $tenant->assignedChannels()->detach($record->getKey());
-                    }),
+                    })
+                    ->visible($isOwner),
             ]);
     }
 

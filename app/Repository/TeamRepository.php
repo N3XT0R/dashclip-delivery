@@ -31,4 +31,10 @@ class TeamRepository
     {
         return $user->teams()->where('teams.id', $team->getKey())->exists();
     }
+
+    public function isUserOwnerOfTeam(User $user, Team $team): bool
+    {
+        return $team->owner_id === $user->getKey();
+    }
+    
 }
