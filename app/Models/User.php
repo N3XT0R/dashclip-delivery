@@ -40,6 +40,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         'submitted_name',
         'email',
         'password',
+        'onboarding_completed',
     ];
 
     /**
@@ -80,6 +81,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             'app_authentication_secret' => 'encrypted',
             'app_authentication_recovery_codes' => 'encrypted:array',
             'has_email_authentication' => 'boolean',
+            'onboarding_completed' => 'boolean',
         ];
     }
 
