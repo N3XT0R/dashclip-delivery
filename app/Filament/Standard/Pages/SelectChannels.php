@@ -38,13 +38,17 @@ class SelectChannels extends Page implements HasForms, HasTable
 
     public function getHeaderActions(): array
     {
+        $availableChannels = $this->getChannelRepository()
+            ->getActiveChannels()
+            ->whereNotIn('id', auth()->user()->assignedChannels()->pluck('channels.id'));
+
         return [
             AttachAction::make()
                 ->label('Kanäle hinzufügen')
                 ->schema([
                     Select::make('recordId')
                         ->label('Channel')
-                        ->options($this->getChannelRepository()->getActiveChannels()->pluck('name', 'id'))
+                        ->options($availableChannels->pluck('name', 'id'))
                         ->searchable()
                         ->multiple()
                         ->preload()
