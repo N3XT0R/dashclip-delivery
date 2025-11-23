@@ -9,6 +9,7 @@ use Filament\Facades\Filament;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Number;
 
 class VideoStatsOverview extends BaseWidget
 {
@@ -45,7 +46,7 @@ class VideoStatsOverview extends BaseWidget
         $assignmentRepository = app()->get(AssignmentRepository::class);
         $pickedUpOffers = $assignmentRepository->getPickedUpOffersCountForUser($user);
 
-        return Stat::make('Heruntergeladene Videos', number_format($pickedUpOffers))
+        return Stat::make('Heruntergeladene Videos', Number::format($pickedUpOffers))
             ->description('Videos insgesamt')
             ->color('primary')
             ->icon(Heroicon::OutlinedArrowDownTray);
@@ -57,7 +58,7 @@ class VideoStatsOverview extends BaseWidget
         $assignmentRepository = app()->get(AssignmentRepository::class);
         $availableOffers = $assignmentRepository->getAvailableOffersCountForUser($user);
 
-        return Stat::make('Verfügbare Offers', number_format($availableOffers))
+        return Stat::make('Verfügbare Offers', Number::format($availableOffers))
             ->description('bereit zum Versenden')
             ->color('success')
             ->icon('heroicon-m-sparkles');
@@ -68,7 +69,7 @@ class VideoStatsOverview extends BaseWidget
         $assignmentRepository = app()->get(AssignmentRepository::class);
         $expiredOffers = $assignmentRepository->getExpiredOffersCountForUser($user);
 
-        return Stat::make('Abgelaufene Offers', number_format($expiredOffers))
+        return Stat::make('Abgelaufene Offers', Number::format($expiredOffers))
             ->description('nicht mehr aktiv')
             ->color('gray')
             ->icon('heroicon-m-clock');
