@@ -13,6 +13,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -25,7 +26,7 @@ class VideoResource extends Resource
 
     protected static ?string $modelLabel = 'Video';
     protected static ?string $pluralModelLabel = 'Videos';
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-film';
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedFilm;
     protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected static ?string $recordTitleAttribute = 'original_name';
 
