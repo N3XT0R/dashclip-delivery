@@ -36,6 +36,7 @@ class Team extends Model
     public function assignedChannels(): BelongsToMany
     {
         return $this->belongsToMany(Channel::class)
+            ->withPivot(['quota'])
             ->isActive()
             ->withTimestamps();
     }
