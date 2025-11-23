@@ -201,8 +201,9 @@ class VideoResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->join('clips', 'videos.id', '=', 'clips.video_id')
-            ->where('clips.user_id', Filament::auth()->id())
+            ->whereHas('clips', function (Builder $query) {
+                $query->where('clips.user_id', Filament::auth()->id());
+            })
             ->select('videos.*')
             ->withCount([
                 'assignments as available_assignments_count' => function (Builder $query) {
