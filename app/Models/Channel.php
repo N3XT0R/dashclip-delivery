@@ -61,4 +61,11 @@ class Channel extends Model
             'token' => $this->getApprovalToken(),
         ]);
     }
+
+    public function assignedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->withTimestamps();
+    }
+
 }
