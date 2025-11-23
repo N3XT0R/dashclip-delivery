@@ -27,6 +27,7 @@ class Clip extends Model
     protected $appends = [
         'start_time',
         'end_time',
+        'duration',
     ];
 
     public function video(): BelongsTo
@@ -58,6 +59,15 @@ class Clip extends Model
         return Attribute::get(
             fn() => $this->start_sec !== null
                 ? gmdate('i:s', (int)$this->start_sec)
+                : null,
+        );
+    }
+
+    protected function duration(): Attribute
+    {
+        return Attribute::get(
+            fn() => ($this->start_sec !== null && $this->end_sec !== null)
+                ? $this->end_sec - $this->start_sec
                 : null,
         );
     }

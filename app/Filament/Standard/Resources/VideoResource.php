@@ -57,8 +57,9 @@ class VideoResource extends Resource
                                     ->extraAttributes(['class' => 'text-lg font-semibold']),
                                 TextEntry::make('duration')
                                     ->label('Dauer')
-                                    ->state(fn(Video $record
-                                    ) => self::formatDuration($record->getAttribute('duration'))),
+                                    ->state(function (Video $record) {
+                                        return self::formatDuration($record->clips()?->first()?->getAttribute('duration'));
+                                    }),
                                 TextEntry::make('created_at')
                                     ->label('Upload am')
                                     ->dateTime('d.m.Y, H:i'),
@@ -100,7 +101,8 @@ class VideoResource extends Resource
 
                 TextColumn::make('duration')
                     ->label('Dauer')
-                    ->state(fn(Video $record) => self::formatDuration($record->getAttribute('duration')))
+                    ->state(fn(Video $record
+                    ) => self::formatDuration($record->clips()?->first()?->getAttribute('duration')))
                     ->tooltip('Gesamtlänge des Videos')
                     ->sortable(),
 
