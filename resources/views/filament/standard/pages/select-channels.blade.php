@@ -1,7 +1,15 @@
 <x-filament-panels::page>
-    {{ $this->form }}
+    <div class="space-y-6">
 
-    <x-filament::button wire:click="save" class="mt-4">
-        Speichern
-    </x-filament::button>
+        {{ $this->form }}
+
+        <x-filament::button wire:click="save">
+            Speichern
+        </x-filament::button>
+
+        <hr class="my-6">
+
+        {{ $this->table }}
+
+    </div>
 </x-filament-panels::page>
