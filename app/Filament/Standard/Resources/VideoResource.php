@@ -139,6 +139,7 @@ class VideoResource extends Resource
                 SelectFilter::make('assignment_state')
                     ->label('Offer-Status')
                     ->options([
+                        'downloaded' => 'Heruntergeladene Offers',
                         'active' => 'Nur aktive Offers',
                         'expired' => 'Abgelaufene Offers',
                         'all' => 'Alle',
@@ -155,6 +156,9 @@ class VideoResource extends Resource
                                             ->orWhere('expires_at', '>', now());
                                     });
                             }),
+                            'downloaded' => $query->whereHas('assignments',
+                                fn(Builder $assignmentQuery) => $assignmentQuery->where('status',
+                                    StatusEnum::PICKEDUP->value)),
                             'expired' => $query->whereHas('assignments',
                                 fn(Builder $assignmentQuery) => $assignmentQuery->where('status',
                                     StatusEnum::EXPIRED->value)),
@@ -205,6 +209,8 @@ class VideoResource extends Resource
                 },
                 'assignments as expired_assignments_count' => fn(Builder $query) => $query->where('status',
                     StatusEnum::EXPIRED->value),
+                'assignments as downloaded_assignments_count' => fn(Builder $query) => $query->where('status',
+                    StatusEnum::PICKEDUP->value),
                 'assignments as assignments_count',
             ]);
     }
@@ -226,8 +232,10 @@ class VideoResource extends Resource
         $available = (int)$video->getAttribute('available_assignments_count');
         $expired = (int)$video->getAttribute('expired_assignments_count');
         $total = (int)$video->getAttribute('assignments_count');
+        $downloaded = (int)$video->getAttribute('downloaded_assignments_count');
 
         return match (true) {
+            $downloaded > 0 => 'Heruntergeladen',
             $available > 0 => 'Verfügbar',
             $expired > 0 => 'Abgelaufen',
             $total > 0 && $available === 0 => 'Alle verteilt',
