@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
             $table->foreignId('channel_id')->constrained('channels')->cascadeOnDelete();
-            $table->bigInteger('quota')->default(10);
+            $table->bigInteger('quota')->default(5);
             $table->timestamps();
             $table->unique(['team_id', 'channel_id']);
         });
