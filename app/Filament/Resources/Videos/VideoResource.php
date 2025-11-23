@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Videos;
 
 use App\Enum\Users\RoleEnum;
-use App\Filament\Resources\VideoResource\Pages;
 use App\Filament\Resources\Videos\Pages\ListVideos;
 use App\Filament\Resources\Videos\Pages\ViewVideo;
 use App\Filament\Resources\Videos\RelationManagers\AssignmentsRelationManager;
