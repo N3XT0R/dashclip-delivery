@@ -78,11 +78,12 @@ class SelectChannels extends Page implements HasForms, HasTable
                 TextColumn::make('name')->label('Name'),
                 TextColumn::make('youtube_name')
                     ->label('Youtube-Kanal')
-                    ->formatStateUsing(function (?string $state) {
-                        return $state
-                            ? 'https://www.youtube.com/@'.$state
-                            : '-';
-                    })
+                    ->formatStateUsing(fn($state) => $state ? '@'.$state : 'n.a')
+                    ->url(fn($record) => $record->youtube_name
+                        ? 'https://www.youtube.com/@'.$record->youtube_name
+                        : null
+                    )
+                    ->openUrlInNewTab()
                     ->limit(40),
             ])
             ->recordActions([
