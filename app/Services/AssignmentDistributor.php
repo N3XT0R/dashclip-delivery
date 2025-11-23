@@ -61,6 +61,9 @@ readonly class AssignmentDistributor
             }
 
             // 2) Bundles vollständig machen
+            /**
+             * @var Collection<Video> $videosOfUploader
+             */
             $videosOfUploader = $assignmentService->expandBundles($videosOfUploader)->values();
 
             // 3) Kanäle + Rotationspool + Quotas
