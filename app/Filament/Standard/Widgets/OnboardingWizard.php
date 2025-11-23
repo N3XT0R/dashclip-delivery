@@ -18,7 +18,7 @@ class OnboardingWizard extends Widget
     protected string $view = 'filament.standard.widgets.onboarding-wizard';
     protected static bool $isLazy = false;
 
-    public static function shouldRegister(): bool
+    public static function canView(): bool
     {
         return auth()->user()?->onboarding_completed === false;
     }
