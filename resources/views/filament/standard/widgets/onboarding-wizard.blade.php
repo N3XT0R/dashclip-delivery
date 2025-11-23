@@ -1,14 +1,17 @@
 <x-filament-widgets::widget>
-    <div class="text-red-500 font-bold">
-        MODAL VIEW LOADED
-    </div>
-    <x-filament::modal id="onboarding-wizard" width="3xl" alignment="center">
+    <x-filament::modal id="onboarding-wizard" visible="{{ true }}" alignment="center" width="3xl">
+        <x-slot name="trigger">
+            <button
+                    x-data
+                    x-init="$nextTick(() => $el.click())"
+                    class="hidden"
+                    type="button"
+            >
+                Auto-open
+            </button>
+        </x-slot>
         <x-slot name="heading">
             Willkommen! Lass uns dein Profil einrichten.
-        </x-slot>
-
-        <x-slot name="description">
-            Bitte führe die folgenden Schritte durch, um dein Konto vollständig zu aktivieren.
         </x-slot>
 
         <form wire:submit.prevent="submit">
@@ -16,7 +19,7 @@
         </form>
 
         <x-slot name="footer">
-            <x-filament::button type="submit" color="primary">
+            <x-filament::button type="submit">
                 Abschließen
             </x-filament::button>
         </x-slot>
