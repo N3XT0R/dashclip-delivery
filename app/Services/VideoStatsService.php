@@ -32,7 +32,7 @@ readonly class VideoStatsService
     {
         return Stat::make('Heruntergeladene Videos',
             Number::format($this->assignmentRepository->getPickedUpOffersCountForUser($user)))
-            ->description('Videos insgesamt')
+            ->description('Videos heruntergeladen')
             ->color('primary')
             ->icon(Heroicon::OutlinedArrowDownTray);
     }
