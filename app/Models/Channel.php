@@ -68,7 +68,7 @@ class Channel extends Model
         ]);
     }
 
-    public function assignedUsers(): BelongsToMany
+    public function assignedTeams(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
             ->withTimestamps();

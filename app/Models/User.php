@@ -163,6 +163,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         )->withTimestamps();
     }
 
+    public function ownTeam(): BelongsToMany
+    {
+        return $this->teams()->wherePivot('is_owner', true);
+    }
+
     public function getTenants(Panel $panel): Collection
     {
         return $this->teams()->get();
@@ -187,12 +192,5 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function getDefaultTenant(Panel $panel): ?Model
     {
         return app(TeamRepository::class)->getDefaultTeamForUser($this);
-    }
-
-    public function assignedChannels(): BelongsToMany
-    {
-        return $this->belongsToMany(Channel::class)
-            ->isActive()
-            ->withTimestamps();
     }
 }

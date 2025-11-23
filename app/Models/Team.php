@@ -32,4 +32,11 @@ class Team extends Model
     {
         return $this->users()->wherePivot('is_owner', true);
     }
+
+    public function assignedChannels(): BelongsToMany
+    {
+        return $this->belongsToMany(Channel::class)
+            ->isActive()
+            ->withTimestamps();
+    }
 }

@@ -3,10 +3,12 @@
 namespace App\Filament\Standard\Pages;
 
 use App\Models\Channel;
+use App\Models\Team;
 use App\Repository\ChannelRepository;
 use BackedEnum;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -38,9 +40,13 @@ class SelectChannels extends Page implements HasForms, HasTable
 
     public function getHeaderActions(): array
     {
+        /**
+         * @var Team $tenant
+         */
+        $tenant = Filament::getTenant();
         $availableChannels = $this->getChannelRepository()
             ->getActiveChannels()
-            ->whereNotIn('id', auth()->user()->assignedChannels()->pluck('channels.id'));
+            ->whereNotIn('id', $tenant->assignedChannels()->pluck('channels.id'));
 
         return [
             AttachAction::make()
@@ -54,14 +60,19 @@ class SelectChannels extends Page implements HasForms, HasTable
                         ->preload()
                         ->required(),
                 ])
-                ->action(function (array $data) {
-                    auth()->user()->assignedChannels()->attach($data['recordId']);
+                ->action(function (array $data) use ($tenant) {
+                    $tenant->assignedChannels()->attach($data['recordId']);
                 }),
         ];
     }
 
     public function table(Table $table): Table
     {
+        /**
+         * @var Team $tenant
+         */
+        $tenant = Filament::getTenant();
+
         return $table
             ->columns([
                 TextColumn::make('name')->label('Name'),
@@ -72,15 +83,20 @@ class SelectChannels extends Page implements HasForms, HasTable
             ->recordActions([
                 DetachAction::make()
                     ->label('Entfernen')
-                    ->action(function (Channel $record) {
-                        auth()->user()->assignedChannels()->detach($record->getKey());
+                    ->action(function (Channel $record) use ($tenant) {
+                        $tenant->assignedChannels()->detach($record->getKey());
                     }),
             ]);
     }
 
     protected function getTableQuery(): Builder
     {
-        return auth()->user()
+        /**
+         * @var Team $tenant
+         */
+        $tenant = Filament::getTenant();
+        
+        return $tenant
             ->assignedChannels()
             ->getQuery();
     }
