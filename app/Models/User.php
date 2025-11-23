@@ -192,6 +192,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function assignedChannels(): BelongsToMany
     {
         return $this->belongsToMany(Channel::class)
+            ->isActive()
             ->withTimestamps();
     }
 }

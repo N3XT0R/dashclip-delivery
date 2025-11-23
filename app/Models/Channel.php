@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,6 +28,11 @@ class Channel extends Model
         'is_video_reception_paused' => 'boolean',
         'approved_at' => 'datetime',
     ];
+
+    public function scopeIsActive(Builder $query): Builder
+    {
+        return $query->where('is_video_reception_paused', false);
+    }
 
     public function assignments(): HasMany
     {
