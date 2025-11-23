@@ -173,7 +173,7 @@ class VideoResource extends Resource
                     ->icon('heroicon-m-eye')
                     ->button()
                     ->modal()
-                    ->modalHeading('Video Details')
+                    ->modalHeading('Details ansehen')
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Schließen')
                     ->schema(fn(Schema $schema) => static::infolist($schema)),
