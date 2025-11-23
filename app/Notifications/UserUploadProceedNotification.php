@@ -32,16 +32,18 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
     }
 
 
-    public function toDatabase($notifiable): void
+    public function toDatabase($notifiable): array
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")
             ->body("Die Datei **{$this->filename}** wurde erfolgreich bearbeitet.".($this->note ? "\n\n{$this->note}" : ''))
             ->success()
             ->sendToDatabase($notifiable);
+
+        return $this->toArray($notifiable);
     }
 
-    public function toArray($notifiable): array
+    public function toArray(object $notifiable): array
     {
         return [
             'filename' => $this->filename,
