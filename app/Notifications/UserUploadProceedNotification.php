@@ -5,7 +5,9 @@ namespace App\Notifications;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 
 class UserUploadProceedNotification extends Notification implements ShouldQueue
@@ -18,12 +20,20 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
     ) {
     }
 
-    public function via($notifiable): array
+    /**
+     * @param  Notifiable&Model  $notifiable
+     * @return array
+     */
+    public function via(Model $notifiable): array
     {
         return ['mail', 'database'];
     }
 
-    public function toMail($notifiable): MailMessage
+    /**
+     * @param  Notifiable&Model  $notifiable
+     * @return MailMessage
+     */
+    public function toMail(Model $notifiable): MailMessage
     {
         return (new MailMessage)
             ->subject("Upload verarbeitet: {$this->filename}")
@@ -32,7 +42,11 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
     }
 
 
-    public function toDatabase($notifiable): array
+    /**
+     * @param  Notifiable&Model  $notifiable
+     * @return array
+     */
+    public function toDatabase(Model $notifiable): array
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")
@@ -43,7 +57,11 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
         return $this->toArray($notifiable);
     }
 
-    public function toArray(object $notifiable): array
+    /**
+     * @param  Notifiable&Model  $notifiable
+     * @return array
+     */
+    public function toArray(Model $notifiable): array
     {
         return [
             'filename' => $this->filename,

@@ -4,7 +4,9 @@ namespace App\Notifications;
 
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 
 class UserUploadDuplicatedNotification extends Notification
@@ -24,17 +26,19 @@ class UserUploadDuplicatedNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @param  Notifiable&Model  $notifiable
      * @return array<int, string>
      */
-    public function via($notifiable): array
+    public function via(Model $notifiable): array
     {
         return ['mail', 'database'];
     }
 
     /**
-     * Get the mail representation of the notification.
+     * @param  Notifiable&Model  $notifiable
+     * @return MailMessage
      */
-    public function toMail($notifiable): MailMessage
+    public function toMail(Model $notifiable): MailMessage
     {
         return (new MailMessage)
             ->subject("Upload verarbeitet: {$this->filename}")
@@ -42,7 +46,11 @@ class UserUploadDuplicatedNotification extends Notification
             ->lineIf($this->note, $this->note);
     }
 
-    public function toDatabase($notifiable): array
+    /**
+     * @param  Notifiable&Model  $notifiable
+     * @return array
+     */
+    public function toDatabase(Model $notifiable): array
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")
@@ -56,9 +64,10 @@ class UserUploadDuplicatedNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
+     * @param  Notifiable&Model  $notifiable
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
+    public function toArray(Model $notifiable): array
     {
         return [
             'filename' => $this->filename,
