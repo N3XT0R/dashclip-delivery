@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\DTO\FileInfoDto;
 use App\Models\Clip;
+use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
@@ -30,6 +31,7 @@ class ProcessUploadedVideo implements ShouldQueue
         public ?string $note = null,
         public ?string $bundleKey = null,
         public ?string $role = null,
+        public ?Team $team = null,
     ) {
     }
 
@@ -71,6 +73,11 @@ class ProcessUploadedVideo implements ShouldQueue
 
             $clip?->setUser($this->user)
                 ->save();
+
+            if ($this->team) {
+                $video->setAttribute('team_id', $this->team->getKey());
+                $video->save();
+            }
         }
     }
 }

@@ -227,6 +227,8 @@ class VideoUpload extends Page implements HasForms
                 $clip['original_name'] ?? null,
             );
 
+            $team = null;
+
             ProcessUploadedVideo::dispatch(
                 user: $user,
                 fileInfoDto: $fileInfoDto,
@@ -238,6 +240,7 @@ class VideoUpload extends Page implements HasForms
                 note: $clip['note'] ?? null,
                 bundleKey: $clip['bundle_key'] ?? null,
                 role: $clip['role'] ?? null,
+                team: $team
             );
         }
 

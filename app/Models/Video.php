@@ -24,9 +24,12 @@ class Video extends Model
         'meta',
         'original_name',
         'disk',
-        'preview_url'
+        'preview_url',
+        'team_id'
     ];
-    protected $casts = ['meta' => 'array'];
+    protected $casts = [
+        'meta' => 'array'
+    ];
 
 
     public function scopeHasUsersClips(Builder $query, User $user): Builder
