@@ -2,9 +2,6 @@
     <x-filament::modal
             id="onboarding-wizard" visible="{{ true }}" alignment="center" width="3xl"
             footerActionsAlignment="right"
-            closeButton="false"
-            closeByClickingAway="false"
-            closeByEscaping="false"
     >
         <x-slot name="trigger">
             <button
@@ -25,9 +22,11 @@
         </form>
 
         <x-slot name="footer">
-            <x-filament::button type="submit" wire:click="submit" color="primary">
-                Abschließen
-            </x-filament::button>
+            <div style="text-align: center;">
+                <x-filament::button type="submit" wire:click="submit" color="primary">
+                    Abschließen
+                </x-filament::button>
+            </div>
         </x-slot>
     </x-filament::modal>
 </x-filament-widgets::widget>
