@@ -76,8 +76,13 @@ class SelectChannels extends Page implements HasForms, HasTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('Name'),
-                TextColumn::make('description')
-                    ->label('Beschreibung')
+                TextColumn::make('youtube_name')
+                    ->label('Youtube-Kanal')
+                    ->formatStateUsing(function (?string $state) {
+                        return $state
+                            ? 'https://www.youtube.com/@'.$state
+                            : '-';
+                    })
                     ->limit(40),
             ])
             ->recordActions([
@@ -95,7 +100,7 @@ class SelectChannels extends Page implements HasForms, HasTable
          * @var Team $tenant
          */
         $tenant = Filament::getTenant();
-        
+
         return $tenant
             ->assignedChannels()
             ->getQuery();

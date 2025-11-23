@@ -18,6 +18,7 @@ class Channel extends Model
         'name',
         'creator_name',
         'email',
+        'youtube_name',
         'weight',
         'weekly_quota',
         'is_video_reception_paused',

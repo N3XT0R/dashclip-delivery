@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('channels', static function (Blueprint $table) {
-            $table->string('youtube_link')->nullable()->after('email');
+            $table->string('youtube_name')->nullable()->after('email');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('channels', static function (Blueprint $table) {
-            $table->dropColumn('youtube_link');
+            $table->dropColumn('youtube_name');
         });
     }
 };

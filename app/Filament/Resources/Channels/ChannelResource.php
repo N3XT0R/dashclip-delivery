@@ -39,6 +39,9 @@ class ChannelResource extends Resource
             TextInput::make('email')
                 ->email()
                 ->maxLength(255),
+            TextInput::make('youtube_name')
+                ->maxLength(255)
+                ->required(),
             TextInput::make('weight')
                 ->numeric(),
             TextInput::make('weekly_quota')
@@ -62,6 +65,9 @@ class ChannelResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('email')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('youtube_name')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('weight')
