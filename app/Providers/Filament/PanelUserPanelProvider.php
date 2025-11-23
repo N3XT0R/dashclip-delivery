@@ -51,6 +51,9 @@ class PanelUserPanelProvider extends PanelProvider
         $panel
             ->id(PanelEnum::STANDARD->value)
             ->path(PanelEnum::STANDARD->value)
+            ->favicon(asset('images/icons/favicon.ico'))
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('75px')
             ->homeUrl('dashboard')
             ->authGuard(PanelEnum::STANDARD->value)
             ->tenant(
