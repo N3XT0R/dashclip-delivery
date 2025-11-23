@@ -88,8 +88,8 @@ class VideoResource extends Resource
                     ->label('Vorschau')
                     ->imageSize(48)
                     ->circular()
-                    ->visible(fn(Video $record) => filled($record->getAttribute('preview_url')))
-                    ->getStateUsing(fn(Video $record) => (string)$record->getAttribute('preview_url')),
+                    ->visible(fn(?Video $record) => filled($record?->getAttribute('preview_url')))
+                    ->getStateUsing(fn(?Video $record) => (string)$record?->getAttribute('preview_url')),
 
                 TextColumn::make('original_name')
                     ->label('Video-Titel')
