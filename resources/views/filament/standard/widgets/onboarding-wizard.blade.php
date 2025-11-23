@@ -1,7 +1,6 @@
 <x-filament-widgets::widget>
     <x-filament::modal
             id="onboarding-wizard" visible="{{ true }}" alignment="center" width="3xl"
-            footerActionsAlignment="right"
     >
         <x-slot name="trigger">
             <button
