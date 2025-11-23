@@ -7,6 +7,7 @@ use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
 use App\Models\Video;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -184,7 +185,8 @@ class VideoResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('user_id', auth()->id())
+            ->join('clips', 'videos.id', '=', 'clips.video_id')
+            ->where('clips.user_id', Filament::auth()->id())
             ->withCount([
                 'assignments as available_assignments_count' => function (Builder $query) {
                     $query
