@@ -44,11 +44,14 @@ class SelectChannels extends Page implements HasForms, HasTable
                 ->schema([
                     Select::make('recordId')
                         ->label('Channel')
-                        ->options($this->getChannelRepository()->getActiveChannels())
+                        ->options($this->getChannelRepository()->getActiveChannels()->pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->required(),
-                ]),
+                ])
+                ->action(function (array $data) {
+                    auth()->user()->assignedChannels()->attach($data['recordId']);
+                }),
         ];
     }
 
