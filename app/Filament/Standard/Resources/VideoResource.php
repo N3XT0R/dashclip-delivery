@@ -24,11 +24,9 @@ class VideoResource extends Resource
     protected static ?string $model = Video::class;
 
     protected static ?string $modelLabel = 'Video';
-
     protected static ?string $pluralModelLabel = 'Videos';
-
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-film';
-
+    protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected static ?string $recordTitleAttribute = 'original_name';
 
     public static function form(Schema $schema): Schema
