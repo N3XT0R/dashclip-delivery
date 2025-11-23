@@ -208,7 +208,7 @@ class IngestScanner
     }
 
 
-    protected function notifyUserUploadComplete(User $user, FileInfoDto $file): void
+    private function notifyUserUploadComplete(User $user, FileInfoDto $file): void
     {
         $user->notify(new UserUploadProceedNotification(
             filename: $file->originalName ?? $file->basename,
