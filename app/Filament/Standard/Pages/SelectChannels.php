@@ -34,23 +34,28 @@ class SelectChannels extends Page implements HasForms, HasTable
 
     public ?array $channels = [];
 
+
+    protected function getChannelRepository(): ChannelRepository
+    {
+        return app(ChannelRepository::class);
+    }
+
     public function mount(ChannelRepository $channelRepository): void
     {
         /**
          * @var User $user
          */
         $user = Filament::auth()->user();
-        $this->channels = $channelRepository->getUserAssignedChannels($user)->pluck('channel_id')->toArray();
+        $this->channels = $this->getChannelRepository()->getUserAssignedChannels($user)->pluck('channel_id')->toArray();
     }
 
     public function form(Schema $schema): Schema
     {
-        $repository = app(ChannelRepository::class);
         return $schema
             ->schema([
                 Select::make('channels')
                     ->label('Verfügbare Kanäle')
-                    ->options($repository->getActiveChannels()->pluck('name', 'id'))
+                    ->options($this->getChannelRepository()->getActiveChannels()->pluck('name', 'id'))
                     ->multiple()
                     ->searchable()
                     ->preload()
