@@ -16,16 +16,12 @@
             <h1 style="margin:0 0 16px 0; font-size:20px; font-weight:700;">
                 {{ $subject ?? 'Automatische Antwort – bitte nicht direkt antworten' }}
             </h1>
-            
+
             <div style="margin:0 auto; text-align:left;">
                 <x-page slug="email_faq"/>
             </div>
 
-            <p style="margin:24px 0 0 0;">
-                Viele Grüße<br>
-                {{ config('app.name') }}
-                {{ Cfg::has('email_your_name', 'email') ? '/' . Cfg::get('email_your_name', 'email', '') : '' }}
-            </p>
+            <p style="margin:24px 0 0 0;">Viele Grüße<br>Dein {{ config('app.name') }}-Team</p>
         </td>
     </tr>
 </table>

@@ -1,5 +1,5 @@
 @php use App\Facades\Cfg; @endphp
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -36,15 +36,14 @@
                         @php($video = $a->video)
                         @php($note = optional($video->clips->first())->note)
                         <li>
-                            {{ $video->original_name ?: basename($video->path) }}@if($note) - {{ $note }}@endif
+                            {{ $video->original_name ?: basename($video->path) }}@if($note)
+                                - {{ $note }}
+                            @endif
                         </li>
                     @endforeach
                 </ul>
             @endif
-            <p style="margin:0 0 24px 0;">
-                Viele Grüße<br>
-                {{ config('app.name') }} {{ Cfg::has('email_your_name','email') ? '/'.Cfg::get('email_your_name','email','') : '' }}
-            </p>
+            <p style="margin:0 0 24px 0;">Viele Grüße<br>Dein {{ config('app.name') }}-Team</p>
         </td>
     </tr>
 </table>

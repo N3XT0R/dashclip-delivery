@@ -44,9 +44,7 @@
             </p>
 
             <p style="margin:24px 0 0 0;">
-                Viele Grüße<br>
-                {{ config('app.name') }}
-                {{ Cfg::has('email_your_name', 'email') ? '/' . Cfg::get('email_your_name', 'email', '') : '' }}
+                Viele Grüße<br>Dein {{ config('app.name') }}-Team
             </p>
         </td>
     </tr>
