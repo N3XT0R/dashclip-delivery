@@ -11,6 +11,8 @@ use App\Exceptions\InvalidTimeRangeException;
 use App\Exceptions\PreviewGenerationException;
 use App\Facades\DynamicStorage;
 use App\Facades\PathBuilder;
+use App\Models\User;
+use App\Notifications\UserUploadProceedNotification;
 use App\Services\BatchService;
 use App\Services\CsvService;
 use App\Services\PreviewService;
@@ -120,11 +122,16 @@ class IngestScanner
      * @param  Filesystem  $inboxDisk
      * @param  FileInfoDto  $file
      * @param  string  $diskName
+     * @param  User|null  $user
      * @return IngestResult
      * @throws Throwable
      */
-    public function processFile(Filesystem $inboxDisk, FileInfoDto $file, string $diskName): IngestResult
-    {
+    public function processFile(
+        Filesystem $inboxDisk,
+        FileInfoDto $file,
+        string $diskName,
+        ?User $user = null
+    ): IngestResult {
         $hash = DynamicStorage::getHashForFileInfoDto($inboxDisk, $file);
         $pathToFile = $file->path;
         $ext = $file->extension;
@@ -176,6 +183,9 @@ class IngestScanner
                 'original_file' => $file->path,
                 'video_id' => $video->getKey(),
             ]);
+            if ($user) {
+                $this->notifyUserUploadComplete($user, $file);
+            }
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
             DB::rollBack();
             $this->log($e->getMessage(), 'error', $e->context());
@@ -195,6 +205,15 @@ class IngestScanner
 
 
         return IngestResult::NEW;
+    }
+
+
+    protected function notifyUserUploadComplete(User $user, FileInfoDto $file): void
+    {
+        $user->notify(new UserUploadProceedNotification(
+            filename: $file->originalName ?? $file->basename,
+            note: 'Alles erfolgreich abgeschlossen.'
+        ));
     }
 
 }

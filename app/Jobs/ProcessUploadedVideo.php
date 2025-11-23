@@ -44,8 +44,9 @@ class ProcessUploadedVideo implements ShouldQueue
     public function handle(IngestScanner $scanner): void
     {
         $fileInfoDto = $this->fileInfoDto;
+        $user = $this->user;
         $disk = \Storage::disk($this->sourceDisk);
-        $scanner->processFile($disk, $fileInfoDto, $this->targetDisk);
+        $scanner->processFile($disk, $fileInfoDto, $this->targetDisk, $user);
 
         $video = Video::query()
             ->orWhere('original_name', $fileInfoDto->originalName ?? $fileInfoDto->basename)
