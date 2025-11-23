@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       This enables users to track their video distribution across channels in real-time  
       and provides full transparency into which channels have accepted or declined their content.
 - **End-User Channel Management (`/standard` Panel)**  
-  Introduced a new self-service interface that allows users to manage  
+  Introduced a new self-service interface that allows teams to manage  
   which channels they want to distribute their videos to.  
   Users can now select from all active channels and maintain their own  
   personal distribution pool.  
