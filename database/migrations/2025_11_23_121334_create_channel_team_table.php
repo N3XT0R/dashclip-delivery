@@ -10,12 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('channel_user', static function (Blueprint $table) {
+        Schema::create('channel_team', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
             $table->foreignId('channel_id')->constrained('channels')->cascadeOnDelete();
             $table->timestamps();
-            $table->unique(['user_id', 'channel_id']);
+            $table->unique(['team_id', 'channel_id']);
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('channel_user');
+        Schema::dropIfExists('channel_team');
     }
 };
