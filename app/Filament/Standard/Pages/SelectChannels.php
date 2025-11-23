@@ -3,18 +3,14 @@
 namespace App\Filament\Standard\Pages;
 
 use App\Models\Channel;
-use App\Models\User;
 use App\Repository\ChannelRepository;
 use BackedEnum;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -40,40 +36,6 @@ class SelectChannels extends Page implements HasForms, HasTable
         return app(ChannelRepository::class);
     }
 
-    public function mount(ChannelRepository $channelRepository): void
-    {
-        /**
-         * @var User $user
-         */
-        $user = Filament::auth()->user();
-        $this->channels = $this->getChannelRepository()->getUserAssignedChannels($user)->pluck('channel_id')->toArray();
-    }
-
-    public function form(Schema $schema): Schema
-    {
-        return $schema
-            ->schema([
-                Select::make('channels')
-                    ->label('Verfügbare Kanäle')
-                    ->options($this->getChannelRepository()->getActiveChannels()->pluck('name', 'id'))
-                    ->multiple()
-                    ->searchable()
-                    ->preload()
-                    ->native(false),
-            ])
-            ->statePath('channels');
-    }
-
-    public function save(): void
-    {
-        auth()->user()->assignedChannels()->sync($this->channels ?? []);
-
-        Notification::make()
-            ->title('Kanäle gespeichert')
-            ->success()
-            ->send();
-    }
-
     public function getHeaderActions(): array
     {
         return [
@@ -82,7 +44,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                 ->schema([
                     Select::make('recordId')
                         ->label('Channel')
-                        ->options(Channel::pluck('name', 'id'))
+                        ->options($this->getChannelRepository()->getActiveChannels())
                         ->searchable()
                         ->preload()
                         ->required(),
