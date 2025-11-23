@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('videos', static function (Blueprint $table) {
-            $table->dropColumn('team_id');
+            $table->dropConstrainedForeignId('team_id');
         });
     }
 };
