@@ -9,6 +9,7 @@ use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\Download;
+use App\Models\User;
 use App\Models\Video;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
@@ -107,5 +108,25 @@ class AssignmentRepository
             ->whereIn('status', StatusEnum::getReadyStatus())
             ->orderBy('id')
             ->get();
+    }
+
+
+    public function getAvailableOffersCountForUser(User $user): int
+    {
+        return Assignment::query()->hasUsersClips($user)
+            ->whereIn('status', StatusEnum::getReadyStatus())
+            ->where(function ($query) {
+                $query
+                    ->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->count();
+    }
+
+    public function getExpiredOffersCountForUser(User $user): int
+    {
+        return Assignment::query()->hasUsersClips($user)
+            ->where('status', StatusEnum::EXPIRED->value)
+            ->count();
     }
 }

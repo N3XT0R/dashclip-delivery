@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Enum\StatusEnum;
 use App\Models\Clip;
+use App\Models\User;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -96,5 +97,11 @@ class VideoRepository
         return $videos
             ->groupBy(fn(Video $video) => $video->clips()->first()?->user_id ?? 0) // 0 = "unknown uploader"
             ->all();
+    }
+
+
+    public function getVideoCountForUser(User $user): int
+    {
+        return Video::query()->hasUsersClips($user)->count();
     }
 }
