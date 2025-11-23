@@ -6,7 +6,7 @@ use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
 use App\Models\Video;
-use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -167,10 +167,15 @@ class VideoResource extends Resource
                     }),
             ])
             ->recordActions([
-                ViewAction::make('view-details')
+                Action::make('view-details')
                     ->label('Details ansehen')
                     ->icon('heroicon-m-eye')
-                    ->button(),
+                    ->button()
+                    ->modal()
+                    ->modalHeading('Video Details')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Schließen')
+                    ->schema(fn(Schema $schema) => static::infolist($schema)),
             ])
             ->toolbarActions([])
             ->emptyStateHeading('Keine Videos gefunden')
