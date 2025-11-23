@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - A dedicated *Select Channels* page
     - A table showing currently assigned channels
     - Attach/Detach actions for adding or removing channels
-    - Automatic pivot synchronization (`channel_user`)  
+    - Automatic pivot synchronization (`channel_team`)  
       This completes the foundation for user-driven distribution pipelines in the  
       upcoming distribution engine.
 
