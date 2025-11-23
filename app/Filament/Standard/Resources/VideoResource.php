@@ -100,6 +100,7 @@ class VideoResource extends Resource
                     ->limit(60),
                 TextColumn::make('role')
                     ->label('Ansicht')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable()
                     ->getStateUsing(fn(?Video $record) => $record->clips()?->first()?->getAttribute('role')),
