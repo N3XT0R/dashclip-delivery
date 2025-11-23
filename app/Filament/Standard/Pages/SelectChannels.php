@@ -88,6 +88,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                 TextColumn::make('name')->label('Name'),
                 TextColumn::make('youtube_name')
                     ->label('Youtube-Kanal')
+                    ->inline()
                     ->formatStateUsing(fn($state) => $state ? '@'.$state : '-')
                     ->url(fn($record) => $record->youtube_name
                         ? 'https://www.youtube.com/@'.$record->youtube_name
@@ -97,6 +98,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->limit(40),
                 TextColumn::make('quota')
                     ->label('Quota (Videos/Woche)')
+                    ->inline()
                     ->action(
                         EditAction::make('editQuota')
                             ->label('Quota bearbeiten')
