@@ -16,7 +16,7 @@ class AssignmentRun
         public readonly array $blockedByVideo,
         public array $assignedChannelsByVideo,
         public readonly Batch $batch,
-        public readonly int $uploaderId
+        public readonly string|int $uploaderId
     ) {
     }
 

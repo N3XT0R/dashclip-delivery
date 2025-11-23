@@ -82,11 +82,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   delegate responsibilities to dedicated services (e.g., `AssignmentService`, `BatchService`),  
   and prepare the distributor for upcoming uploader-based distribution logic (#121).  
   This improves testability, structure, and future extensibility of the assignment pipeline.
-- **VideoRepository: Uploader-Based Partitioning**
-  Implemented `partitionByUploader()` to split video pools by the uploader of their associated clips.  
-  This establishes the foundation for uploader-isolated assignment pools and ensures that  
-  upcoming quota and distribution logic can operate per uploader instead of globally.  
-  Includes full integration test coverage with real uploader entities.
+- **VideoRepository: Team- and Uploader-Based Partitioning**  
+  Introduced the new `partitionByTeamOrUploader()` method, which groups videos  
+  primarily by their associated team's slug and falls back to the uploader of  
+  the first clip when no team assignment exists.  
+  This establishes a flexible and tenant-aware distribution structure, enabling  
+  the upcoming quota, routing, and assignment logic to operate on a team level  
+  while still correctly isolating uploader-specific content in non-team scenarios.  
+  Includes full integration test coverage across both team-bound and uploader-only  
+  video scenarios.
 - **Tenancy Activation & Role Resource Adjustments**  
   Updated Filament’s RoleResource configuration to disable tenant ownership for  
   global system-level roles.  
