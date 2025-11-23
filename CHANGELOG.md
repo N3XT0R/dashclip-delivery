@@ -48,6 +48,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Introduced a dedicated provider for the new `/standard` panel, including branding,  
   custom middleware, user authentication, and tenant bootstrapping logic.  
   Separates internal admin workflows from end-user functionality.
+- **Video Detail View & Assignment Tracking**  
+  Introduced a comprehensive detail page for end-user video management in the `/standard` panel.  
+  Users can now view individual video metadata (title, duration, upload date, status),  
+  preview thumbnails, and a complete assignment history for each video.  
+  A new **AssignmentRelationManager** displays all channels receiving the video, including:
+    - Channel name and description
+    - Assignment status (notified, picked_up, expired, returned)
+    - Offer expiration date
+    - Download status with precise timestamps (e.g., "Downloaded on 03.11.2025 09:07")  
+      This enables users to track their video distribution across channels in real-time  
+      and provides full transparency into which channels have accepted or declined their content.
 
 ### Changed
 
