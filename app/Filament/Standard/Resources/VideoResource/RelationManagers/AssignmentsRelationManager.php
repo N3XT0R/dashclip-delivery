@@ -14,8 +14,8 @@ use Illuminate\Support\Carbon;
 class AssignmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'assignments';
-
     protected static ?string $title = 'Assignments';
+
 
     public function table(Table $table): Table
     {
@@ -80,7 +80,7 @@ class AssignmentsRelationManager extends RelationManager
         }
 
         if ($latestDownload?->downloaded_at) {
-            return 'Heruntergeladen am ' . Carbon::parse($latestDownload->downloaded_at)->isoFormat('DD.MM.YYYY HH:mm');
+            return 'Heruntergeladen am '.Carbon::parse($latestDownload?->downloaded_at)->isoFormat('DD.MM.YYYY HH:mm');
         }
 
         return 'Noch nicht heruntergeladen';
