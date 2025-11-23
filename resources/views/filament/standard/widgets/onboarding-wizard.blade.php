@@ -22,11 +22,9 @@
         </form>
 
         <x-slot name="footer">
-            <div style="text-align: center;">
-                <x-filament::button type="submit" wire:click="submit" color="primary">
-                    Abschließen
-                </x-filament::button>
-            </div>
+            <x-filament::button type="submit" wire:click="submit" color="primary">
+                Abschließen
+            </x-filament::button>
         </x-slot>
     </x-filament::modal>
 </x-filament-widgets::widget>
