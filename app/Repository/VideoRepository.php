@@ -92,10 +92,43 @@ class VideoRepository
             ->values();
     }
 
+    /**
+     * Partitions videos by uploader (Clip → user_id).
+     * Videos without uploader are grouped under key "0".
+     *
+     * @param  Collection<Video>  $videos
+     * @return array<int, Collection<Video>>
+     */
     public function partitionByUploader(Collection $videos): array
     {
         return $videos
             ->groupBy(fn(Video $video) => $video->clips()->first()?->user_id ?? 0) // 0 = "unknown uploader"
+            ->all();
+    }
+
+    /**
+     * Partitions videos by team slug, or by uploader (Clip → user_id) if no team is assigned.
+     * Videos without team and uploader are grouped under key "0".
+     *
+     * @param  Collection<Video>  $videos
+     * @return array<string|int, Collection<Video>>
+     */
+    public function partitionByTeamOrUploader(Collection $videos): array
+    {
+        return $videos
+            ->groupBy(function (Video $video) {
+                $video->loadMissing(['team', 'clips']);
+                if ($video->team && $video->team->slug) {
+                    return $video->team->slug;
+                }
+
+                // Fallback: Uploader (Clip → user_id)
+                $uploaderId = $video->clips->first()?->user_id;
+                if ($uploaderId) {
+                    return $uploaderId;
+                }
+                return 0;
+            })
             ->all();
     }
 
