@@ -204,7 +204,6 @@ class VideoResource extends Resource
             ->whereHas('clips', function (Builder $query) {
                 $query->where('clips.user_id', Filament::auth()->id());
             })
-            ->select('videos.*')
             ->withCount([
                 'assignments as available_assignments_count' => function (Builder $query) {
                     $query
