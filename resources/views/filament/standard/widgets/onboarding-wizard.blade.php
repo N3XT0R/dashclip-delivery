@@ -21,8 +21,8 @@
         </form>
 
         <x-slot name="footer">
-            <x-filament::button type="submit" wire:click="submit" color="primary">
-                Abschließen
+            <x-filament::button type="submit" wire:click="submit" color="primary" size="xs">
+                Nicht mehr anzeigen und abschließen
             </x-filament::button>
         </x-slot>
     </x-filament::modal>
