@@ -8,11 +8,14 @@ use App\Repository\ChannelRepository;
 use BackedEnum;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
+use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
+use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -74,6 +77,7 @@ class SelectChannels extends Page implements HasForms, HasTable
         $tenant = Filament::getTenant();
 
         return $table
+            ->recordTitle('Kanal')
             ->columns([
                 TextColumn::make('name')->label('Name'),
                 TextColumn::make('youtube_name')
@@ -85,7 +89,26 @@ class SelectChannels extends Page implements HasForms, HasTable
                     )
                     ->openUrlInNewTab()
                     ->limit(40),
-                TextColumn::make('quota')->label('Quota'),
+                TextColumn::make('quota')
+                    ->label('Quota (Videos/Woche)')
+                    ->icon('heroicon-m-pencil-square')
+                    ->iconPosition(IconPosition::After)
+                    ->action(
+                        EditAction::make('editQuota')
+                            ->label('Quota bearbeiten')
+                            ->schema([
+                                TextInput::make('quota')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->required(),
+                            ])
+                            ->action(function (Channel $record, array $data) use ($tenant) {
+                                $tenant->assignedChannels()
+                                    ->updateExistingPivot($record->getKey(), [
+                                        'quota' => $data['quota'],
+                                    ]);
+                            })
+                    )
             ])
             ->recordActions([
                 DetachAction::make()
