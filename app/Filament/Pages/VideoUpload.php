@@ -9,6 +9,7 @@ use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\CarbonInterval;
 use Closure;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -227,7 +228,6 @@ class VideoUpload extends Page implements HasForms
                 $clip['original_name'] ?? null,
             );
 
-            $team = null;
 
             ProcessUploadedVideo::dispatch(
                 user: $user,
@@ -240,7 +240,7 @@ class VideoUpload extends Page implements HasForms
                 note: $clip['note'] ?? null,
                 bundleKey: $clip['bundle_key'] ?? null,
                 role: $clip['role'] ?? null,
-                team: $team
+                team: Filament::getTenant()
             );
         }
 
