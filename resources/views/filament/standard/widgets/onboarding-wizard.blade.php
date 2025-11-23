@@ -8,7 +8,6 @@
     </x-slot>
 
     <form wire:submit.prevent="submit">
-        {{-- Hier dein Wizard oder Schema/Form --}}
         {{ $this->schema ?? $this->form }}
     </form>
 
