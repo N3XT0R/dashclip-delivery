@@ -147,6 +147,10 @@ class IngestScanner
                 'hash' => $hash,
                 'path_to_file' => $pathToFile,
             ]);
+
+            if ($user) {
+                $this->notifyUserUploadIsDuplicate($user, $file);
+            }
             return IngestResult::DUPS;
         }
 
@@ -213,6 +217,14 @@ class IngestScanner
         $user->notify(new UserUploadProceedNotification(
             filename: $file->originalName ?? $file->basename,
             note: 'Alles erfolgreich abgeschlossen.'
+        ));
+    }
+
+    private function notifyUserUploadIsDuplicate(User $user, FileInfoDto $file): void
+    {
+        $user->notify(new UserUploadProceedNotification(
+            filename: $file->originalName ?? $file->basename,
+            note: 'Die Datei wurde als Duplikat erkannt und nicht erneut hochgeladen.'
         ));
     }
 
