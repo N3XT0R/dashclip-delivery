@@ -2,21 +2,29 @@
 
 namespace App\Filament\Standard\Widgets;
 
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\Widget;
 
-class OnboardingWizard extends Widget
+class OnboardingWizard extends Widget implements HasForms
 {
     use InteractsWithForms;
 
     protected static ?string $modalId = 'onboarding-wizard';
     protected string $view = 'filament.standard.widgets.onboarding-wizard';
     protected static bool $isLazy = false;
+
+    public function mount(): void
+    {
+        if (static::canView()) {
+            $this->dispatch('open-modal', id: static::$modalId);
+        }
+    }
 
     public static function canView(): bool
     {
@@ -35,7 +43,9 @@ class OnboardingWizard extends Widget
 
                 Wizard\Step::make('Willkommen')
                     ->schema([
-                        MarkdownEditor::make('intro')->content('So funktioniert DashClip ...'),
+                        TextColumn::make('intro')
+                            ->markdown()
+                            ->state('So funktioniert DashClip ...'),
                     ]),
 
                 Wizard\Step::make('Video-Upload')
