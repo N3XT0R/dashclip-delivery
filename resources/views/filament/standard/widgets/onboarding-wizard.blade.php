@@ -20,7 +20,7 @@
 
         <x-slot name="footer">
             <div class="flex justify-end w-full">
-                <x-filament::button type="submit" form="onboarding-form">
+                <x-filament::button type="submit" wire:click="submit" color="primary">
                     Abschließen
                 </x-filament::button>
             </div>
