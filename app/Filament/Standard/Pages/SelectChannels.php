@@ -97,8 +97,8 @@ class SelectChannels extends Page implements HasForms, HasTable
             ->recordActions([
                 DetachAction::make()
                     ->label('Entfernen')
-                    ->action(function ($record) {
-                        auth()->user()->assignedChannels()->detach($record->id);
+                    ->action(function (Channel $record) {
+                        auth()->user()->assignedChannels()->detach($record->getKey());
                     }),
             ]);
     }
