@@ -85,7 +85,9 @@ class SelectChannels extends Page implements HasForms, HasTable
         return $table
             ->recordTitle('Kanal')
             ->columns([
-                TextColumn::make('name')->label('Name'),
+                TextColumn::make('name')
+                    ->label('Name')
+                    ->sortable(),
                 TextColumn::make('youtube_name')
                     ->label('Youtube-Kanal')
                     ->inline()
@@ -98,6 +100,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->limit(40),
                 TextColumn::make('quota')
                     ->label('Quota (Videos/Woche)')
+                    ->sortable()
                     ->inline()
                     ->action(
                         EditAction::make('editQuota')
@@ -119,7 +122,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                             ->icon('heroicon-m-pencil-square')
                             ->iconPosition(IconPosition::After)
                             ->iconButton()
-                    )
+                    ),
             ])
             ->recordActions([
                 DetachAction::make()
