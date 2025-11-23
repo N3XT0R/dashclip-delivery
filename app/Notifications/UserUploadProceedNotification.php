@@ -32,7 +32,7 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
     }
 
 
-    public function toDatabase($notifiable): array
+    public function toDatabase($notifiable): void
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")

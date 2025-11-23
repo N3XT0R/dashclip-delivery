@@ -42,7 +42,7 @@ class UserUploadDuplicatedNotification extends Notification
             ->lineIf($this->note, $this->note);
     }
 
-    public function toDatabase($notifiable): array
+    public function toDatabase($notifiable): void
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")
