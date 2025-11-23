@@ -98,7 +98,11 @@ class VideoResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(60),
-
+                TextColumn::make('role')
+                    ->label('Ansicht')
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(fn(?Video $record) => $record->clips()?->first()?->getAttribute('role')),
                 TextColumn::make('duration')
                     ->label('Dauer')
                     ->state(fn(Video $record
