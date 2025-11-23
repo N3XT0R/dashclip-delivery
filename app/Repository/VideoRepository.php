@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Enum\StatusEnum;
 use App\Models\Clip;
+use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
@@ -136,5 +137,10 @@ class VideoRepository
     public function getVideoCountForUser(User $user): int
     {
         return Video::query()->hasUsersClips($user)->count();
+    }
+
+    public function getVideosCountForTeam(Team $team): int
+    {
+        return Video::query()->where('team_id', $team->getKey())->count();
     }
 }
