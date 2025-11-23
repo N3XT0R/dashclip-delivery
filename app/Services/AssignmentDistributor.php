@@ -50,7 +50,7 @@ readonly class AssignmentDistributor
         $poolVideos = $this->collectPoolOrAbort($batch);
 
         $videoRepo = app(VideoRepository::class);
-        $uploaderPools = $videoRepo->partitionByUploader($poolVideos);
+        $uploaderPools = $videoRepo->partitionByTeamOrUploader($poolVideos);
 
         $totalAssigned = 0;
         $totalSkipped = 0;
