@@ -1,4 +1,4 @@
-<x-filament::modal id="onboarding-wizard" width="3xl" alignment="center" open-event-name="">
+<x-filament::modal id="onboarding-wizard" width="3xl" alignment="center">
     <x-slot name="heading">
         Willkommen! Lass uns dein Profil einrichten.
     </x-slot>
@@ -12,7 +12,7 @@
     </form>
 
     <x-slot name="footer">
-        <x-filament::button type="submit" form="your-form-id">
+        <x-filament::button type="submit" color="primary">
             Abschließen
         </x-filament::button>
     </x-slot>
