@@ -19,9 +19,11 @@
         </form>
 
         <x-slot name="footer">
-            <x-filament::button type="submit">
-                Abschließen
-            </x-filament::button>
+            <div class="flex justify-end w-full">
+                <x-filament::button type="submit" form="onboarding-form">
+                    Abschließen
+                </x-filament::button>
+            </div>
         </x-slot>
     </x-filament::modal>
 </x-filament-widgets::widget>
