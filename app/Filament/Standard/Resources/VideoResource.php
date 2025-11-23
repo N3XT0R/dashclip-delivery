@@ -6,13 +6,12 @@ use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
 use App\Models\Video;
-use Filament\Infolists\Components\Grid;
+use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -38,9 +37,9 @@ class VideoResource extends Resource
             ->components([]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Grid::make()
                     ->columns([
@@ -59,7 +58,8 @@ class VideoResource extends Resource
                                     ->extraAttributes(['class' => 'text-lg font-semibold']),
                                 TextEntry::make('duration')
                                     ->label('Dauer')
-                                    ->state(fn(Video $record) => self::formatDuration($record->getAttribute('duration'))),
+                                    ->state(fn(Video $record
+                                    ) => self::formatDuration($record->getAttribute('duration'))),
                                 TextEntry::make('created_at')
                                     ->label('Upload am')
                                     ->dateTime('d.m.Y, H:i'),
@@ -87,10 +87,10 @@ class VideoResource extends Resource
             ->columns([
                 ImageColumn::make('preview_url')
                     ->label('Vorschau')
-                    ->size(48)
+                    ->imageSize(48)
                     ->circular()
                     ->visible(fn(Video $record) => filled($record->getAttribute('preview_url')))
-                    ->getStateUsing(fn(Video $record) => (string) $record->getAttribute('preview_url')),
+                    ->getStateUsing(fn(Video $record) => (string)$record->getAttribute('preview_url')),
 
                 TextColumn::make('original_name')
                     ->label('Video-Titel')
@@ -116,7 +116,10 @@ class VideoResource extends Resource
                     ->state(fn(Video $record) => self::determineStatusLabel($record))
                     ->color(fn(Video $record) => self::statusColor(self::determineStatusLabel($record)))
                     ->icon(fn(Video $record) => self::statusIcon(self::determineStatusLabel($record)))
-                    ->sortable(query: fn(Builder $query, string $direction) => $query->orderBy('available_assignments_count', $direction)),
+                    ->sortable(query: fn(
+                        Builder $query,
+                        string $direction
+                    ) => $query->orderBy('available_assignments_count', $direction)),
 
                 TextColumn::make('available_assignments_count')
                     ->label('Verfügbare Offers')
@@ -146,7 +149,9 @@ class VideoResource extends Resource
                                             ->orWhere('expires_at', '>', now());
                                     });
                             }),
-                            'expired' => $query->whereHas('assignments', fn(Builder $assignmentQuery) => $assignmentQuery->where('status', StatusEnum::EXPIRED->value)),
+                            'expired' => $query->whereHas('assignments',
+                                fn(Builder $assignmentQuery) => $assignmentQuery->where('status',
+                                    StatusEnum::EXPIRED->value)),
                             default => $query,
                         };
                     }),
@@ -191,7 +196,8 @@ class VideoResource extends Resource
                                 ->orWhere('expires_at', '>', now());
                         });
                 },
-                'assignments as expired_assignments_count' => fn(Builder $query) => $query->where('status', StatusEnum::EXPIRED->value),
+                'assignments as expired_assignments_count' => fn(Builder $query) => $query->where('status',
+                    StatusEnum::EXPIRED->value),
                 'assignments as assignments_count',
             ]);
     }
@@ -225,9 +231,9 @@ class VideoResource extends Resource
 
     private static function determineStatusLabel(Video $video): string
     {
-        $available = (int) $video->getAttribute('available_assignments_count');
-        $expired = (int) $video->getAttribute('expired_assignments_count');
-        $total = (int) $video->getAttribute('assignments_count');
+        $available = (int)$video->getAttribute('available_assignments_count');
+        $expired = (int)$video->getAttribute('expired_assignments_count');
+        $total = (int)$video->getAttribute('assignments_count');
 
         return match (true) {
             $available > 0 => 'Verfügbar',
