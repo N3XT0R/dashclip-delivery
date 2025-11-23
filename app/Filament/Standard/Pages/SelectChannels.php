@@ -40,12 +40,13 @@ class SelectChannels extends Page implements HasForms, HasTable
     {
         return [
             AttachAction::make()
-                ->label('Kanal hinzufügen')
+                ->label('Kanäle hinzufügen')
                 ->schema([
                     Select::make('recordId')
                         ->label('Channel')
                         ->options($this->getChannelRepository()->getActiveChannels()->pluck('name', 'id'))
                         ->searchable()
+                        ->multiple()
                         ->preload()
                         ->required(),
                 ])
