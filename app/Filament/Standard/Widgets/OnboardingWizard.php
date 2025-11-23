@@ -31,11 +31,6 @@ class OnboardingWizard extends Widget implements HasForms
         return auth()->user()?->onboarding_completed === false;
     }
 
-    protected function heading(): string
-    {
-        return 'Willkommen! Lass uns dein Profil einrichten';
-    }
-
     public function form(Schema $schema): Schema
     {
         return $schema->components([
