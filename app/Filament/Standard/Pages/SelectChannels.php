@@ -97,8 +97,6 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->limit(40),
                 TextColumn::make('quota')
                     ->label('Quota (Videos/Woche)')
-                    ->icon('heroicon-m-pencil-square')
-                    ->iconPosition(IconPosition::After)
                     ->action(
                         EditAction::make('editQuota')
                             ->label('Quota bearbeiten')
@@ -115,6 +113,10 @@ class SelectChannels extends Page implements HasForms, HasTable
                                     ]);
                             })
                             ->visible($isOwner)
+                            ->modalIcon('heroicon-m-pencil-square')
+                            ->icon('heroicon-m-pencil-square')
+                            ->iconPosition(IconPosition::After)
+                            ->iconButton()
                     )
             ])
             ->recordActions([
