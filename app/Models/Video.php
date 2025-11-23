@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Facades\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,6 +27,14 @@ class Video extends Model
         'preview_url'
     ];
     protected $casts = ['meta' => 'array'];
+
+
+    public function scopeHasUsersClips(Builder $query, User $user): Builder
+    {
+        return $query->whereHas('clips', function ($q) use ($user) {
+            $q->where('user_id', $user->getKey());
+        });
+    }
 
     public function assignments(): HasMany
     {

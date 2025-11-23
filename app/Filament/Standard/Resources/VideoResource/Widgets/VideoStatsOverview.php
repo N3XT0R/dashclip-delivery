@@ -4,7 +4,9 @@ namespace App\Filament\Standard\Resources\VideoResource\Widgets;
 
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
+use App\Models\User;
 use App\Models\Video;
+use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -12,10 +14,13 @@ class VideoStatsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $userId = auth()->id();
+        /**
+         * @var User $user
+         */
+        $user = Filament::auth()->user();
 
-        $videoQuery = Video::query()->where('user_id', $userId);
-        $assignmentQuery = Assignment::query()->whereHas('video', fn($query) => $query->where('user_id', $userId));
+        $videoQuery = Video::query()->hasUsersClips($user);
+        $assignmentQuery = Assignment::query()->hasUsersClips($user);
 
         $videoCount = $videoQuery->count();
         $availableOffers = (clone $assignmentQuery)
