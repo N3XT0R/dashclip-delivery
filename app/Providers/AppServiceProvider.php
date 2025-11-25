@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Facades\Cfg;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Repository\Contracts\ConfigRepositoryInterface;
@@ -57,11 +58,16 @@ class AppServiceProvider extends ServiceProvider
     protected function registerMail(): void
     {
         $this->app->singleton(MailReplyScanner::class, function () {
-            return new MailReplyScanner([
+            $handlers = [
                 $this->app->get(BounceHandler::class),
                 $this->app->get(InboundHandler::class),
-                $this->app->get(ReplyHandler::class),
-            ]);
+            ];
+
+            if (Cfg::get('faq_email', 'email', false)) {
+                $handlers[] = $this->app->get(ReplyHandler::class);
+            }
+
+            return new MailReplyScanner($handlers);
         });
     }
 
