@@ -40,7 +40,7 @@ class ChannelServiceTest extends DatabaseTestCase
         ]);
 
         // Act
-        $dto = $this->channelService->prepareChannelsAndPool(null);
+        $dto = $this->channelService->prepareChannelsAndPool(null, 'user', 0);
 
         // Assert
         $this->assertCount(2, $dto->channels);
@@ -70,7 +70,7 @@ class ChannelServiceTest extends DatabaseTestCase
         $quotaOverride = 42;
 
         // Act
-        $dto = $this->channelService->prepareChannelsAndPool($quotaOverride);
+        $dto = $this->channelService->prepareChannelsAndPool($quotaOverride, 'user', 0);
 
         // Assert
         $this->assertCount(2, $dto->channels);

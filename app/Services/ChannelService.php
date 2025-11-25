@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DTO\ChannelPoolDto;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
+use App\Models\Team;
 use App\Models\Video;
 use App\Repository\ChannelRepository;
 use Illuminate\Support\Collection;
@@ -22,9 +23,15 @@ class ChannelService
     /**
      * Prepare active channels, rotation pool, and quota mapping.
      * @param  int|null  $quotaOverride
+     * @param  string  $uploaderType
+     * @param  string|int  $uploaderId
      * @return ChannelPoolDto
      */
-    public function prepareChannelsAndPool(?int $quotaOverride): ChannelPoolDto
+    public function prepareChannelsAndPool(
+        ?int $quotaOverride,
+        string $uploaderType,
+        string|int $uploaderId,
+    ): ChannelPoolDto
     {
         $channels = $this->channelRepository->getActiveChannels();
 
@@ -39,6 +46,22 @@ class ChannelService
         $quota = $channels
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
+
+        if ($uploaderType === 'team') {
+            $team = Team::query()->where('slug', $uploaderId)->first();
+
+            if ($team) {
+                $teamChannels = $team->assignedChannels()->get();
+
+                $teamQuotas = $teamChannels
+                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot->quota])
+                    ->all();
+
+                foreach ($teamQuotas as $channelId => $teamQuota) {
+                    $quota[$channelId] = $teamQuota;
+                }
+            }
+        }
 
         return new ChannelPoolDto(
             channels: $channels,

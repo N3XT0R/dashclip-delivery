@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\DTO\ChannelPoolDto;
+use App\DTO\UploaderPoolInfo;
 use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
 use App\Models\Video;
@@ -55,8 +56,9 @@ readonly class AssignmentDistributor
         $totalAssigned = 0;
         $totalSkipped = 0;
 
-        foreach ($uploaderPools as $uploaderId => $videosOfUploader) {
-            if ($videosOfUploader->isEmpty()) {
+        /** @var UploaderPoolInfo $uploaderPool */
+        foreach ($uploaderPools as $uploaderPool) {
+            if ($uploaderPool->videos->isEmpty()) {
                 continue;
             }
 
@@ -64,10 +66,18 @@ readonly class AssignmentDistributor
             /**
              * @var Collection<Video> $videosOfUploader
              */
-            $videosOfUploader = $assignmentService->expandBundles($videosOfUploader)->values();
+            $videosOfUploader = $assignmentService->expandBundles($uploaderPool->videos)->values();
+
+            $uploaderType = $uploaderPool->type;
+            $uploaderId = $uploaderPool->id;
 
             // 3) Kanäle + Rotationspool + Quotas
-            $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch);
+            $channelPoolDto = $this->prepareChannelsOrAbort(
+                $quotaOverride,
+                $batch,
+                $uploaderType,
+                $uploaderId
+            );
 
             // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
             $groups = $this->buildGroups($videosOfUploader);
@@ -83,6 +93,7 @@ readonly class AssignmentDistributor
                 blockedByVideo: $blockedByVideo,
                 assignedChannelsByVideo: $assignedChannelsByVideo,
                 batch: $batch,
+                uploaderType: $uploaderType,
                 uploaderId: $uploaderId
             );
 
@@ -119,10 +130,19 @@ readonly class AssignmentDistributor
         return $poolVideos;
     }
 
-    public function prepareChannelsOrAbort(?int $quotaOverride, Batch $batch): ChannelPoolDto
+    public function prepareChannelsOrAbort(
+        ?int $quotaOverride,
+        Batch $batch,
+        string $uploaderType,
+        string|int $uploaderId
+    ): ChannelPoolDto
     {
         $channelService = app(ChannelService::class);
-        $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
+        $channelPoolDto = $channelService->prepareChannelsAndPool(
+            $quotaOverride,
+            $uploaderType,
+            $uploaderId
+        );
 
         if ($channelPoolDto->channels->isEmpty()) {
             $this->batchService->finishAssignBatch($batch, 0, 0);
