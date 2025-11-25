@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\DTO\UploaderPoolInfo;
 use App\Enum\StatusEnum;
 use App\Models\Clip;
 use App\Models\Team;
@@ -109,27 +110,37 @@ class VideoRepository
 
     /**
      * Partitions videos by team slug, or by uploader (Clip → user_id) if no team is assigned.
-     * Videos without team and uploader are grouped under key "0".
+     * Videos without team and uploader are grouped under key "user:0".
      *
      * @param  Collection<Video>  $videos
-     * @return array<string|int, Collection<Video>>
+     * @return array<int, UploaderPoolInfo>
      */
     public function partitionByTeamOrUploader(Collection $videos): array
     {
-        return $videos
+        /** @var Collection<string, Collection<Video>> $grouped */
+        $grouped = $videos
             ->groupBy(function (Video $video) {
                 $video->loadMissing(['team', 'clips']);
                 if ($video->team && $video->team->slug) {
-                    return $video->team->slug;
+                    return 'team:'.$video->team->slug;
                 }
 
                 // Fallback: Uploader (Clip → user_id)
                 $uploaderId = $video->clips->first()?->user_id;
                 if ($uploaderId) {
-                    return $uploaderId;
+                    return 'user:'.$uploaderId;
                 }
-                return 0;
+                return 'user:0';
+            });
+
+        return $grouped
+            ->map(function (Collection $videosOfUploader, string $key) {
+                [$type, $id] = explode(':', $key, 2);
+                $id = $type === 'user' && is_numeric($id) ? (int)$id : $id;
+
+                return new UploaderPoolInfo($type, $id, $videosOfUploader);
             })
+            ->values()
             ->all();
     }
 
