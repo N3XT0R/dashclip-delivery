@@ -13,6 +13,8 @@ class Notification extends Model
 {
     use HasFactory;
 
+    protected $table = 'custom_notifications';
+
     protected $fillable = [
         'channel_id',
         'type',

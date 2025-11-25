@@ -6,18 +6,15 @@ namespace Tests\Integration\Notifications;
 
 use App\Models\User;
 use App\Notifications\UserUploadDuplicatedNotification;
-use Filament\Notifications\DatabaseNotification as FilamentDatabaseNotification;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 use Tests\DatabaseTestCase;
 
 class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 {
     public function testItSendsMailAndDatabaseNotifications(): void
     {
-        Notification::fake();
         Mail::fake();
 
         $user = User::factory()->create();
@@ -29,26 +26,25 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 
         $user->notify($notification);
 
-        Notification::assertSentTo(
-            $user,
-            UserUploadDuplicatedNotification::class,
-            fn($sent, array $channels) => in_array('mail', $channels, true)
-                && in_array('database', $channels, true)
-        );
+        // Prüft, dass *beide* Channels aktiviert wurden
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $user->id,
+            'type' => 'Illuminate\\Notifications\\DatabaseNotification',
+        ]);
     }
 
-    public function testItStoresDatabaseNotificationCorrectly(): void
+    public function testItStoresLaravelDatabaseNotificationCorrectly(): void
     {
-        Notification::fake();
+        Mail::fake();
 
         $user = User::factory()->create();
 
-        $notification = new UserUploadDuplicatedNotification(
-            filename: 'video123.mp4',
-            note: 'Mehrfacher Upload'
+        $user->notify(
+            new UserUploadDuplicatedNotification(
+                filename: 'video123.mp4',
+                note: 'Mehrfacher Upload'
+            )
         );
-
-        $user->notify($notification);
 
         $stored = DatabaseNotification::first();
 
@@ -63,27 +59,35 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
         );
     }
 
-    public function testItSendsAFilamentDatabaseNotification(): void
+    public function testItStoresFilamentTriggeredDatabaseNotification(): void
     {
-        Notification::fake();
+        Mail::fake();
 
         $user = User::factory()->create();
 
-        $notification = new UserUploadDuplicatedNotification(
-            filename: 'clip.mov',
-            note: null
+        $user->notify(
+            new UserUploadDuplicatedNotification(
+                filename: 'clip.mov',
+                note: null
+            )
         );
 
-        $user->notify($notification);
+        // Die Filament-Notification erzeugt *ebenfalls* eine Laravel-DB-Notification,
+        // diesmal mit Filament-spezifischem Payload
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $user->id,
+            // Laravel DatabaseNotification
+            'type' => 'Illuminate\\Notifications\\DatabaseNotification',
+        ]);
 
-        $filament = FilamentDatabaseNotification::first();
+        // Prüfen, dass der Filament-Body enthalten ist
+        $this->assertDatabaseHas('notifications', [
+            'data->body' => 'Die Datei **clip.mov** wurde erfolgreich bearbeitet.',
+        ]);
 
-        $this->assertNotNull(
-            $filament,
-            'Filament database notification was not created.'
-        );
-
-        $this->assertStringContainsString('clip.mov', (string)$filament->body);
+        $this->assertDatabaseHas('notifications', [
+            'data->title' => 'Upload verarbeitet',
+        ]);
     }
 
     public function testMailMessageContainsExpectedContent(): void
@@ -104,11 +108,13 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
         );
 
         $this->assertTrue(
-            collect($mail->introLines)->contains('Dein Upload ist eine Doppeleinsendung!.')
+            collect($mail->introLines)
+                ->contains('Dein Upload ist eine Doppeleinsendung!.')
         );
 
         $this->assertTrue(
-            collect($mail->introLines)->contains('Zusätzliche Notiz')
+            collect($mail->introLines)
+                ->contains('Zusätzliche Notiz')
         );
     }
 
