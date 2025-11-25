@@ -26,10 +26,16 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 
         $user->notify($notification);
 
-        // Prüft, dass *beide* Channels aktiviert wurden
+        // Erwartete Notification 1: Laravel-Standardnotification
         $this->assertDatabaseHas('notifications', [
             'notifiable_id' => $user->id,
-            'type' => 'Illuminate\\Notifications\\DatabaseNotification',
+            'type' => UserUploadDuplicatedNotification::class,
+        ]);
+
+        // Erwartete Notification 2: Filament-Notification
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $user->id,
+            'type' => \Filament\Notifications\DatabaseNotification::class,
         ]);
     }
 
@@ -46,9 +52,10 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
             )
         );
 
-        $stored = DatabaseNotification::first();
+        // Finde Laravel-Notification, nicht die Filament-Notification
+        $stored = DatabaseNotification::where('type', UserUploadDuplicatedNotification::class)->first();
 
-        $this->assertNotNull($stored, 'Database notification was not stored.');
+        $this->assertNotNull($stored);
 
         $this->assertEquals(
             [
@@ -72,21 +79,17 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
             )
         );
 
-        // Die Filament-Notification erzeugt *ebenfalls* eine Laravel-DB-Notification,
-        // diesmal mit Filament-spezifischem Payload
         $this->assertDatabaseHas('notifications', [
+            'type' => \Filament\Notifications\DatabaseNotification::class,
             'notifiable_id' => $user->id,
-            // Laravel DatabaseNotification
-            'type' => 'Illuminate\\Notifications\\DatabaseNotification',
-        ]);
-
-        // Prüfen, dass der Filament-Body enthalten ist
-        $this->assertDatabaseHas('notifications', [
-            'data->body' => 'Die Datei **clip.mov** wurde erfolgreich bearbeitet.',
         ]);
 
         $this->assertDatabaseHas('notifications', [
             'data->title' => 'Upload verarbeitet',
+        ]);
+
+        $this->assertDatabaseHas('notifications', [
+            'data->body' => 'Die Datei **clip.mov** wurde erfolgreich bearbeitet.',
         ]);
     }
 
