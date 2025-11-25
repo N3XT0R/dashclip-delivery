@@ -9,6 +9,7 @@ services:
       - MYSQL_DATABASE=laravel
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
   sharing:
+    user: "${UID:-1000}:${GID:-1000}"
     depends_on:
       - db_sharing
       - redis
@@ -29,6 +30,7 @@ services:
       GNUPGHOME: /root/.gnupg
       GPG_TTY: "/dev/tty"
   reverb:
+    user: "${UID:-1000}:${GID:-1000}"
     depends_on:
       - redis
     build:

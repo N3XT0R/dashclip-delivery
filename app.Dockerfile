@@ -30,3 +30,10 @@ COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/conf.d/php.ini     /usr/local/etc/php/conf.d/php.ini
 COPY docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 
+ARG UID=1000
+ARG GID=1000
+
+RUN addgroup --gid $GID appgroup \
+    && adduser --uid $UID --gid $GID --disabled-password appuser
+
+USER appuser
