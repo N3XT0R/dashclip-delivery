@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   db_sharing:
     image: mysql:8.0
