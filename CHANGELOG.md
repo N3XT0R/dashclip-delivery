@@ -105,6 +105,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Enhanced panel configuration to correctly bootstrap tenant-aware routing,  
   resource discovery, and UI behavior across both `/admin` and `/standard` panels.  
   Ensures proper isolation of end-user data and clean separation of concerns.
+- **Team-Based Channel Quota Overrides**  
+  Added support for channel-specific quota overrides defined at the team level  
+  via the `team_channel` pivot table.  
+  When videos originate from a team, per-channel pivot quotas now take precedence  
+  over the global `weekly_quota`, enabling contract- or partner-specific delivery  
+  limits.  
+  Uploader-only pools (non-team videos) continue to use the global quota  
+  unchanged, ensuring full backward compatibility with existing behavior and  
+  preserving all current test expectations.
 
 ## [3.0.0] - 2025-11-15
 
