@@ -34,6 +34,6 @@ ARG UID=1000
 ARG GID=1000
 
 RUN addgroup --gid $GID appgroup \
-    && adduser --uid $UID --gid $GID --disabled-password appuser
+    && adduser --uid $UID --gid $GID --disabled-password --gecos "" appuser
 
 USER appuser
