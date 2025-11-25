@@ -7,7 +7,6 @@ namespace Tests\Integration\Notifications;
 use App\Models\User;
 use App\Notifications\UserUploadDuplicatedNotification;
 use Filament\Notifications\DatabaseNotification as FilamentDatabaseNotification;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Mail;
@@ -16,8 +15,6 @@ use Tests\DatabaseTestCase;
 
 class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 {
-    use RefreshDatabase;
-
     public function testItSendsMailAndDatabaseNotifications(): void
     {
         Notification::fake();
