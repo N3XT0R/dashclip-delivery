@@ -16,9 +16,19 @@ class AssignmentRun
         public readonly array $blockedByVideo,
         public array $assignedChannelsByVideo,
         public readonly Batch $batch,
-        public readonly string|int $uploaderId
+        public readonly string|int $uploaderId,
+        public array $assignedByUploader = [],
+        public array $skippedByBlock = []
     ) {
+        $this->channelQuota =& $this->channelPool->channelQuota;
+        $this->uploaderQuota =& $this->channelPool->uploaderQuotaMatrix;
     }
+
+    /** @var array<int,int> */
+    public array $channelQuota;
+
+    /** @var array<int,array<int|string,int>> */
+    public array $uploaderQuota;
 
     public function recordAssignment(int $videoId, int $channelId): void
     {
@@ -28,14 +38,52 @@ class AssignmentRun
                 ->unique();
     }
 
-    public function decrementQuota(int $channelId): void
+    public function decrementChannelQuota(int $channelId): void
     {
-        $this->channelPool->quota[$channelId]--;
+        if (array_key_exists($channelId, $this->channelQuota)) {
+            $this->channelQuota[$channelId]--;
+        }
+    }
+
+    public function decrementUploaderQuota(int $channelId, int|string $uploaderId): void
+    {
+        if (isset($this->uploaderQuota[$channelId][$uploaderId])) {
+            $this->uploaderQuota[$channelId][$uploaderId]--;
+        }
+    }
+
+    public function uploaderQuotaUsedUpForChannel(int $channelId, int|string $uploaderId): bool
+    {
+        return ($this->uploaderQuota[$channelId][$uploaderId] ?? 0) <= 0;
+    }
+
+    public function recordAssignmentStats(int $channelId, int|string $uploaderId, int $count): void
+    {
+        $this->assignedByUploader[$channelId][$uploaderId] =
+            ($this->assignedByUploader[$channelId][$uploaderId] ?? 0) + $count;
+    }
+
+    public function recordSkippedByBlock(array $blockedChannelIds, int $count): void
+    {
+        foreach ($blockedChannelIds as $channelId) {
+            $this->skippedByBlock[$channelId][$this->uploaderId] =
+                ($this->skippedByBlock[$channelId][$this->uploaderId] ?? 0) + $count;
+        }
     }
 
     public function quotasUsedUp(): bool
     {
-        return collect($this->channelPool->quota)
-            ->every(fn(int $q) => $q <= 0);
+        foreach ($this->channelQuota as $channelId => $quota) {
+            if ($quota <= 0) {
+                continue;
+            }
+
+            $remainingUploaderQuota = $this->uploaderQuota[$channelId][$this->uploaderId] ?? 0;
+            if ($remainingUploaderQuota > 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

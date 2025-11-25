@@ -22,9 +22,10 @@ class ChannelService
     /**
      * Prepare active channels, rotation pool, and quota mapping.
      * @param  int|null  $quotaOverride
+     * @param  array<int|string>  $uploaderIds
      * @return ChannelPoolDto
      */
-    public function prepareChannelsAndPool(?int $quotaOverride): ChannelPoolDto
+    public function prepareChannelsAndPool(?int $quotaOverride, array $uploaderIds = []): ChannelPoolDto
     {
         $channels = $this->channelRepository->getActiveChannels();
 
@@ -40,10 +41,25 @@ class ChannelService
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
 
+        $uploaderQuotaMatrix = [];
+        $uploaderCount = count($uploaderIds);
+        foreach ($quota as $channelId => $channelQuota) {
+            if (0 === $uploaderCount) {
+                $uploaderQuotaMatrix[$channelId] = [];
+                continue;
+            }
+
+            $perUploaderQuota = (int)ceil($channelQuota / $uploaderCount);
+            foreach ($uploaderIds as $uploaderId) {
+                $uploaderQuotaMatrix[$channelId][$uploaderId] = $perUploaderQuota;
+            }
+        }
+
         return new ChannelPoolDto(
             channels: $channels,
             rotationPool: $rotationPool,
-            quota: $quota,
+            channelQuota: $quota,
+            uploaderQuotaMatrix: $uploaderQuotaMatrix,
         );
     }
 
@@ -118,16 +134,20 @@ class ChannelService
      *
      * @param  Collection<int,Video>  $group
      * @param  Collection<int,Channel>  $rotationPool
-     * @param  array<int,int>  $quota  (by reference, wird nicht verändert – nur gelesen)
+     * @param  array<int,int>  $channelQuota  (by reference, wird nicht verändert – nur gelesen)
+     * @param  array<int,array<int|string,int>>  $uploaderQuota
      * @param  array<int,int>  $blockedChannelIds
      * @param  array<int, Collection<int,int>>  $assignedChannelsByVideo
+     * @param  int|string  $uploaderId
      */
     public function pickTargetChannel(
         Collection $group,
         Collection $rotationPool,
-        array $quota,
+        array $channelQuota,
+        array $uploaderQuota,
         array $blockedChannelIds,
-        array $assignedChannelsByVideo
+        array $assignedChannelsByVideo,
+        int|string $uploaderId
     ): ?Channel {
         $rotations = 0;
         $poolCount = $rotationPool->count();
@@ -140,7 +160,12 @@ class ChannelService
             $rotations++;
 
             // Genügend Quota verfügbar?
-            if (($quota[$candidate->getKey()] ?? 0) < $group->count()) {
+            if (($channelQuota[$candidate->getKey()] ?? 0) < $group->count()) {
+                continue;
+            }
+
+            $uploaderQuotaForChannel = $uploaderQuota[$candidate->getKey()][$uploaderId] ?? 0;
+            if ($uploaderQuotaForChannel < $group->count()) {
                 continue;
             }
 

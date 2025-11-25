@@ -54,6 +54,10 @@ readonly class AssignmentDistributor
 
         $totalAssigned = 0;
         $totalSkipped = 0;
+        $assignedByUploader = [];
+        $skippedByBlock = [];
+
+        $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch, array_keys($uploaderPools));
 
         foreach ($uploaderPools as $uploaderId => $videosOfUploader) {
             if ($videosOfUploader->isEmpty()) {
@@ -65,9 +69,6 @@ readonly class AssignmentDistributor
              * @var Collection<Video> $videosOfUploader
              */
             $videosOfUploader = $assignmentService->expandBundles($videosOfUploader)->values();
-
-            // 3) Kanäle + Rotationspool + Quotas
-            $channelPoolDto = $this->prepareChannelsOrAbort($quotaOverride, $batch);
 
             // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
             $groups = $this->buildGroups($videosOfUploader);
@@ -89,11 +90,14 @@ readonly class AssignmentDistributor
             // 7) Verteilung
             [$assigned, $skipped] = $this->assignGroups($run);
 
+            $assignedByUploader = $this->mergeNestedCounts($assignedByUploader, $run->assignedByUploader);
+            $skippedByBlock = $this->mergeNestedCounts($skippedByBlock, $run->skippedByBlock);
+
             $totalAssigned += $assigned;
             $totalSkipped += $skipped;
         }
 
-        $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped);
+        $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped, $assignedByUploader, $skippedByBlock);
 
         return ['assigned' => $totalAssigned, 'skipped' => $totalSkipped];
     }
@@ -119,10 +123,10 @@ readonly class AssignmentDistributor
         return $poolVideos;
     }
 
-    public function prepareChannelsOrAbort(?int $quotaOverride, Batch $batch): ChannelPoolDto
+    public function prepareChannelsOrAbort(?int $quotaOverride, Batch $batch, array $uploaderIds = []): ChannelPoolDto
     {
         $channelService = app(ChannelService::class);
-        $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride);
+        $channelPoolDto = $channelService->prepareChannelsAndPool($quotaOverride, $uploaderIds);
 
         if ($channelPoolDto->channels->isEmpty()) {
             $this->batchService->finishAssignBatch($batch, 0, 0);
@@ -146,13 +150,18 @@ readonly class AssignmentDistributor
             $channel = $channelService->pickTargetChannel(
                 $group,
                 $run->channelPool->rotationPool,
-                $run->channelPool->quota,
+                $run->channelQuota,
+                $run->uploaderQuota,
                 $blockedChannelIds,
-                $run->assignedChannelsByVideo
+                $run->assignedChannelsByVideo,
+                $run->uploaderId
             );
 
             if (!$channel) {
                 $skipped += $group->count();
+                if (!empty($blockedChannelIds)) {
+                    $run->recordSkippedByBlock($blockedChannelIds, $group->count());
+                }
                 continue;
             }
 
@@ -205,6 +214,17 @@ readonly class AssignmentDistributor
         }
 
         return $groups;
+    }
+
+    private function mergeNestedCounts(array $target, array $delta): array
+    {
+        foreach ($delta as $channelId => $uploaderData) {
+            foreach ($uploaderData as $uploaderId => $count) {
+                $target[$channelId][$uploaderId] = ($target[$channelId][$uploaderId] ?? 0) + $count;
+            }
+        }
+
+        return $target;
     }
 
 }

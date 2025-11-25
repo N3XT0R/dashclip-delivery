@@ -13,7 +13,9 @@ class ChannelPoolDto
         public Collection $channels,
         public Collection $rotationPool,
         /** @var array<int,int> channel_id => quota */
-        public array $quota,
+        public array $channelQuota,
+        /** @var array<int,array<int|string,int>> channel_id => [uploader_id => quota] */
+        public array $uploaderQuotaMatrix,
     ) {
     }
 }

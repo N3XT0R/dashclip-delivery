@@ -94,11 +94,17 @@ readonly class AssignmentService
     public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): int
     {
         $count = 0;
+        $firstVideo = $group->first();
+        $uploaderId = $firstVideo?->clips->first()?->user_id ?? $run->uploaderId;
+        $groupCount = $group->count();
+        $run->recordAssignmentStats($channel->getKey(), $uploaderId, $groupCount);
+
         foreach ($group as $video) {
             $this->assignmentRepository->createAssignment($video, $channel, $run->batch);
 
             $run->recordAssignment($video->getKey(), $channel->getKey());
-            $run->decrementQuota($channel->getKey());
+            $run->decrementUploaderQuota($channel->getKey(), $uploaderId);
+            $run->decrementChannelQuota($channel->getKey());
             $count++;
         }
 

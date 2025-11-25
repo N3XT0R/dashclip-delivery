@@ -9,13 +9,20 @@ use App\Models\Batch;
 
 class BatchRepository
 {
-    public function markAssignedBatchAsFinished(Batch $batch, int $assigned, int $skipped): bool
-    {
+    public function markAssignedBatchAsFinished(
+        Batch $batch,
+        int $assigned,
+        int $skipped,
+        array $assignedByUploader = [],
+        array $skippedByBlock = []
+    ): bool {
         return $batch->update([
             'finished_at' => now(),
             'stats' => [
                 'assigned' => $assigned,
                 'skipped' => $skipped,
+                'assigned_by_uploader' => $assignedByUploader,
+                'skipped_by_block' => $skippedByBlock,
             ],
         ]);
     }

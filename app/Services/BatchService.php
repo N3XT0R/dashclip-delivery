@@ -83,9 +83,20 @@ class BatchService
         ]);
     }
 
-    public function finishAssignBatch(Batch $batch, int $assigned, int $skipped): bool
-    {
-        return $this->batchRepository->markAssignedBatchAsFinished($batch, $assigned, $skipped);
+    public function finishAssignBatch(
+        Batch $batch,
+        int $assigned,
+        int $skipped,
+        array $assignedByUploader = [],
+        array $skippedByBlock = []
+    ): bool {
+        return $this->batchRepository->markAssignedBatchAsFinished(
+            $batch,
+            $assigned,
+            $skipped,
+            $assignedByUploader,
+            $skippedByBlock
+        );
     }
 
 
