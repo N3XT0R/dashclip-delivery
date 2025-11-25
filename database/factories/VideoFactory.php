@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Clip;
+use App\Models\User;
 use App\Models\Video;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -55,4 +57,18 @@ class VideoFactory extends Factory
     {
         return $this->state(fn() => ['bytes' => $this->faker->numberBetween(500_000_000, 2_000_000_000)]);
     }
+
+    public function withClips(int $count = 1, ?User $user = null): static
+    {
+        return $this->afterCreating(function (Video $video) use ($count, $user) {
+            Clip::factory()
+                ->count($count)
+                ->for($video, 'video')
+                ->state(fn() => [
+                    'user_id' => $user?->getKey() ?? User::factory(),
+                ])
+                ->create();
+        });
+    }
+
 }
