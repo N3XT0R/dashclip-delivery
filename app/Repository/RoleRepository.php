@@ -7,20 +7,12 @@ namespace App\Repository;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\Role;
-use App\Models\Team;
 use App\Models\User;
 use Filament\Panel;
 
 
 class RoleRepository
 {
-    public function assignTeamRole(User $user, Role $role, Team $team): void
-    {
-        $user->teamRoles()->attach($role->getKey(), [
-            'team_id' => $team->getKey(),
-        ]);
-    }
-
     public function getRoleByRoleEnum(RoleEnum $roleEnum, ?string $guard = null): Role
     {
         return Role::query()
