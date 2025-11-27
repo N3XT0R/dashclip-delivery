@@ -36,7 +36,7 @@ class TeamRepositoryTest extends DatabaseTestCase
         $user = User::factory()
             ->create();
 
-        $this->assertNull($this->teamRepository->getDefaultTeamForUser($user)->getKey());
+        $this->assertNull($this->teamRepository->getDefaultTeamForUser($user));
     }
 
     public function testIsUserOwnerOfTeamReturnsTrue(): void
