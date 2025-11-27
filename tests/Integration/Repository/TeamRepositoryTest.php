@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Repository;
 
+use App\Models\Team;
 use App\Models\User;
 use App\Repository\TeamRepository;
 use Tests\DatabaseTestCase;
@@ -36,5 +37,22 @@ class TeamRepositoryTest extends DatabaseTestCase
             ->create();
 
         $this->assertNull($this->teamRepository->getDefaultTeamForUser($user));
+    }
+
+    public function testIsUserOwnerOfTeamReturnsTrue(): void
+    {
+        $user = User::factory()
+            ->withOwnTeam()
+            ->create();
+        $team = $user->teams()->first();
+        $this->assertTrue($this->teamRepository->isUserOwnerOfTeam($user, $team));
+    }
+
+    public function testIsUserOwnerOfTeamReturnsFalse(): void
+    {
+        $user = User::factory()
+            ->create();
+        $team = Team::factory()->create();
+        $this->assertFalse($this->teamRepository->isUserOwnerOfTeam($user, $team));
     }
 }
