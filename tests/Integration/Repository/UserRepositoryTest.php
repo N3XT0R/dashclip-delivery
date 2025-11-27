@@ -96,4 +96,12 @@ class UserRepositoryTest extends DatabaseTestCase
 
         $this->assertNull($found);
     }
+
+    public function testGetAllReturnsAll(): void
+    {
+        $all = $this->userRepository->getAllUsers();
+        $count = $all->count();
+
+        $this->assertDatabaseCount('users', $count);
+    }
 }
