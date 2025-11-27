@@ -141,4 +141,16 @@ final class UserTest extends DatabaseTestCase
             $user->getDefaultTenant($panel)->getKey()
         );
     }
+
+    public function testGetDefaultTenantReturnsNull(): void
+    {
+        User::unsetEventDispatcher();
+        $user = User::factory()
+            ->create();
+
+        $panel = Panel::make()
+            ->id(PanelEnum::STANDARD->value);
+
+        $this->assertNull($user->getDefaultTenant($panel));
+    }
 }
