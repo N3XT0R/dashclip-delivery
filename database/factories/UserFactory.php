@@ -73,4 +73,15 @@ class UserFactory extends Factory
             $user->syncRoles([$role]);
         });
     }
+
+    public function withOwnTeam(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->teams()->create([
+                'name' => $user->name."'s Team",
+                'slug' => Str::uuid(),
+                'owner_id' => $user->getKey(),
+            ]);
+        });
+    }
 }

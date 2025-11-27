@@ -13,12 +13,12 @@ use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
@@ -163,11 +163,6 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             Team::class,
             'team_user'
         )->withTimestamps();
-    }
-
-    public function ownTeam(): BelongsToMany
-    {
-        return $this->teams()->wherePivot('is_owner', true);
     }
 
     public function getTenants(Panel $panel): Collection

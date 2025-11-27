@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration\Models;
 
 use App\Enum\PanelEnum;
+use App\Models\Team;
 use App\Models\User;
 use Filament\Panel;
 use Tests\DatabaseTestCase;
@@ -105,5 +106,23 @@ final class UserTest extends DatabaseTestCase
             ->id('irgendwas');
 
         $this->assertTrue($user->canAccessPanel($panel));
+    }
+
+    public function testCanAccessTenantReturnsTrue(): void
+    {
+        $user = User::factory()
+            ->withOwnTeam()
+            ->create();
+
+        $this->assertTrue($user->canAccessTenant($user->teams()->first()));
+    }
+
+    public function testCanAccessTenantReturnsFalse(): void
+    {
+        $user = User::factory()
+            ->create();
+        $team = Team::factory()->create();
+
+        $this->assertFalse($user->canAccessTenant($team));
     }
 }
