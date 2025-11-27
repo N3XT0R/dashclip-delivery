@@ -6,8 +6,10 @@ namespace App\Providers;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Models\Video;
 use App\Observers\TeamObserver;
 use App\Observers\UserObserver;
+use App\Observers\VideoObserver;
 use Illuminate\Support\ServiceProvider;
 
 class ObserverServiceProvider extends ServiceProvider
@@ -22,5 +24,6 @@ class ObserverServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
         Team::observe(TeamObserver::class);
+        Video::observe(VideoObserver::class);
     }
 }

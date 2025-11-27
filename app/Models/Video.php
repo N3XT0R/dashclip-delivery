@@ -82,37 +82,4 @@ class Video extends Model
 
         return $path;
     }
-
-    protected static function booted(): void
-    {
-        static::deleting(static function (Video $video) {
-            $path = $video->getAttribute('path');
-            if (!$path) {
-                return true;
-            }
-
-            try {
-                $storageDisk = $video->getDisk();
-                $targetDisk = config('preview.default_disk', 'public');
-                $previewDisk = Storage::disk($targetDisk);
-                $previewPath = $video->getPreviewPath();
-
-                if ($storageDisk->exists($path) && !$storageDisk->delete($path)) {
-                    \Log::warning('video delete failed', ['video_id' => $video->getKey(), 'path' => $path]);
-                    return false;
-                }
-
-                if (null !== $previewPath && $previewDisk->exists($previewPath) && !$previewDisk->delete($previewPath)) {
-                    \Log::warning('preview delete failed', ['video_id' => $video->getKey(), 'path' => $previewPath]);
-                    return false;
-                }
-            } catch (\Throwable $e) {
-                \Log::error('File delete threw',
-                    ['video_id' => $video->getKey(), 'path' => $path, 'err' => $e->getMessage(), 'exception' => $e]);
-                return false;
-            }
-
-            return true;
-        });
-    }
 }

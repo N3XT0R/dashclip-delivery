@@ -37,7 +37,7 @@ abstract class BaseObserver
     {
     }
 
-    public function deleting(Model $model): void
+    public function deleting(Model $model)
     {
     }
 
