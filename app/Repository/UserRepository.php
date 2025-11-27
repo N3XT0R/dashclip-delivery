@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -28,8 +27,4 @@ class UserRepository
         return User::doesntHave('teams')->get();
     }
 
-    public function getOwnTeam(User $user): Team
-    {
-        return $user->teams()->isOwnTeam($user)->firstOrFail();
-    }
 }
