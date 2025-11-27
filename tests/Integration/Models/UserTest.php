@@ -125,4 +125,20 @@ final class UserTest extends DatabaseTestCase
 
         $this->assertFalse($user->canAccessTenant($team));
     }
+
+
+    public function testGetDefaultTenantReturnsOwnTeam(): void
+    {
+        $user = User::factory()
+            ->withOwnTeam()
+            ->create();
+
+        $panel = Panel::make()
+            ->id(PanelEnum::STANDARD->value);
+
+        $this->assertSame(
+            $user->teams()->first()->getKey(),
+            $user->getDefaultTenant($panel)->getKey()
+        );
+    }
 }
