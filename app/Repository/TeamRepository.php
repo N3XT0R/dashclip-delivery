@@ -11,7 +11,7 @@ class TeamRepository
 {
     public function createOwnTeamForUser(User $user): Team
     {
-        $team = Team::create([
+        $team = Team::query()->create([
             'name' => $user->name."'s Team",
             'owner_id' => $user->getKey(),
         ]);
@@ -36,5 +36,5 @@ class TeamRepository
     {
         return $team->owner_id === $user->getKey();
     }
-    
+
 }

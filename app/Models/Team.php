@@ -19,6 +19,10 @@ class Team extends Model
         'owner_id',
     ];
 
+    protected $casts = [
+        'owner_id' => 'int',
+    ];
+
     protected function scopeIsOwnTeam(Builder $query, User $user): Builder
     {
         return $query->where('owner_id', $user->getKey());

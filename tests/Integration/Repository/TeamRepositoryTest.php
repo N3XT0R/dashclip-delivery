@@ -55,4 +55,17 @@ class TeamRepositoryTest extends DatabaseTestCase
         $team = Team::factory()->create();
         $this->assertFalse($this->teamRepository->isUserOwnerOfTeam($user, $team));
     }
+
+    public function testCreateOwnTeamReturnsCorrectTeam(): void
+    {
+        $user = User::withoutEvents(static function () {
+            return User::factory()
+                ->create();
+        });
+        $newTeam = $this->teamRepository->createOwnTeamForUser($user);
+        $this->assertTrue($newTeam->exists);
+        $team = $user->teams()->latest()->first();
+
+        $this->assertSame($team->getKey(), $newTeam->getKey());
+    }
 }

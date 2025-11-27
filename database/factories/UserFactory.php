@@ -79,7 +79,7 @@ class UserFactory extends Factory
         return $this->afterCreating(function (User $user) {
             $user->teams()->create([
                 'name' => $user->name."'s Team",
-                'slug' => Str::uuid(),
+                'slug' => Str::uuid()->toString(),
                 'owner_id' => $user->getKey(),
             ]);
         });
