@@ -25,7 +25,7 @@ class RoleRepository
     {
         return $user->hasAllRoles([
             RoleEnum::SUPER_ADMIN
-        ], GuardEnum::DEFAULT->value);
+        ]);
     }
 
     public function canAccessPanel(User $user, Panel $panel): bool
