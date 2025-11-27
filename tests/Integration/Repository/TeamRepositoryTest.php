@@ -27,7 +27,7 @@ class TeamRepositoryTest extends DatabaseTestCase
             ->create();
         $team = $user->teams()->first();
 
-        $this->assertSame($team->getKey(), $this->teamRepository->getDefaultTeamForUser($user));
+        $this->assertSame($team->getKey(), $this->teamRepository->getDefaultTeamForUser($user)->getKey());
     }
 
     public function testGetDefaultTeamForUserReturnsNull(): void
@@ -36,7 +36,7 @@ class TeamRepositoryTest extends DatabaseTestCase
         $user = User::factory()
             ->create();
 
-        $this->assertNull($this->teamRepository->getDefaultTeamForUser($user));
+        $this->assertNull($this->teamRepository->getDefaultTeamForUser($user)->getKey());
     }
 
     public function testIsUserOwnerOfTeamReturnsTrue(): void
