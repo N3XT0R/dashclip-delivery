@@ -60,11 +60,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         'display_name',
     ];
 
-    protected function scopeIsOwnTeam(Builder $query): Builder
+    protected function scopeIsOwnTeam(Builder $query, ?self $user = null): Builder
     {
         return $query->whereHas(
             'teams',
-            fn($q) => $q->where('owner_id', $this->getKey())
+            fn($q) => $q->where('owner_id', $user->getKey() ?? $this->getKey())
         );
     }
 

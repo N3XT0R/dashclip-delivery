@@ -153,4 +153,19 @@ final class UserTest extends DatabaseTestCase
 
         $this->assertNull($user->getDefaultTenant($panel));
     }
+
+
+    public function testScopeReturnsOwnTeam(): void
+    {
+        User::unsetEventDispatcher();
+        $user = User::factory()
+            ->withOwnTeam()
+            ->create();
+        $user->refresh();
+        $team = $user->teams()->first();
+
+        $gotTeam = User::query()->isOwnTeam($user)->first();
+
+        $this->assertSame($team->getKey(), $gotTeam->getKey());
+    }
 }
