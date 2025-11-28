@@ -5,9 +5,11 @@ namespace App\Policies;
 use App\Models\Team;
 use App\Models\User;
 use App\Repository\TeamRepository;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TeamPolicy
 {
+    use HandlesAuthorization;
 
     public function __construct(private TeamRepository $teamRepository)
     {
@@ -18,7 +20,7 @@ class TeamPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('ViewAny:Team');
     }
 
     /**
@@ -34,7 +36,7 @@ class TeamPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->can('Create:Team');
     }
 
     /**
@@ -50,7 +52,7 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team): bool
     {
-        return false;
+        return $user->can('Delete:Team');
     }
 
     /**
@@ -58,7 +60,22 @@ class TeamPolicy
      */
     public function restore(User $user, Team $team): bool
     {
-        return false;
+        return $user->can('Restore:Team');
+    }
+
+    public function restoreAny(User $authUser): bool
+    {
+        return $authUser->can('RestoreAny:Team');
+    }
+
+    public function replicate(User $authUser, Team $channel): bool
+    {
+        return $authUser->can('Replicate:Team');
+    }
+
+    public function reorder(User $authUser): bool
+    {
+        return $authUser->can('Reorder:Team');
     }
 
     /**
@@ -66,7 +83,12 @@ class TeamPolicy
      */
     public function forceDelete(User $user, Team $team): bool
     {
-        return false;
+        return $user->can('ForceDelete:Team');
+    }
+
+    public function forceDeleteAny(User $authUser): bool
+    {
+        return $authUser->can('ForceDeleteAny:Team');
     }
 
     public function manageChannels(User $user, ?Team $team): bool
