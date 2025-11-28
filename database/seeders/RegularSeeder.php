@@ -33,11 +33,24 @@ class RegularSeeder extends Seeder
             'Activity'
         ];
 
+        $role = Role::firstOrCreate([
+            'name' => 'panel_user',
+            'guard_name' => GuardEnum::DEFAULT->value,
+        ]);
+
         $filteredPermissions = array_filter($allPermissions, function ($perm) use ($excludedResources) {
             return array_all($excludedResources, fn($excluded) => !str_contains($perm, $excluded));
         });
-        $role = Role::firstOrCreate(['name' => 'panel_user', 'guard_name' => GuardEnum::DEFAULT->value]);
+
+        foreach ($filteredPermissions as $permissionName) {
+            Permission::firstOrCreate([
+                'name' => $permissionName,
+                'guard_name' => $role->guard_name,
+            ]);
+        }
+
         $role->syncPermissions($filteredPermissions);
+        $role->save();
     }
 
     protected function syncPermissionsForStandardPanel(): void
