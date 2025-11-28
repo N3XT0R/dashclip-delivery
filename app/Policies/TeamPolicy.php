@@ -8,12 +8,17 @@ use App\Repository\TeamRepository;
 
 class TeamPolicy
 {
+
+    public function __construct(private TeamRepository $teamRepository)
+    {
+    }
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +26,7 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
-        return false;
+        return $this->teamRepository->isMemberOfTeam($user, $team);
     }
 
     /**
@@ -37,7 +42,7 @@ class TeamPolicy
      */
     public function update(User $user, Team $team): bool
     {
-        return false;
+        return $this->teamRepository->isUserOwnerOfTeam($user, $team);
     }
 
     /**
@@ -70,6 +75,6 @@ class TeamPolicy
             return true;
         }
 
-        return app(TeamRepository::class)->isUserOwnerOfTeam($user, $team);
+        return $this->teamRepository->isUserOwnerOfTeam($user, $team);
     }
 }

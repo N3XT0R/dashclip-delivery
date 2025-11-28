@@ -37,4 +37,9 @@ class TeamRepository
         return $team->owner_id === $user->getKey();
     }
 
+    public function isMemberOfTeam(User $user, Team $team): bool
+    {
+        return $team->users()->has($user)->exists();
+    }
+
 }
