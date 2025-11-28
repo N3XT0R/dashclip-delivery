@@ -5,7 +5,6 @@ namespace App\Filament\Standard\Pages;
 use App\Models\Channel;
 use App\Models\Team;
 use App\Repository\ChannelRepository;
-use App\Repository\TeamRepository;
 use BackedEnum;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
@@ -44,12 +43,12 @@ class SelectChannels extends Page implements HasForms, HasTable
 
     public function getHeaderActions(): array
     {
-        $teamRepository = app(TeamRepository::class);
         /**
          * @var Team $tenant
          */
         $tenant = Filament::getTenant();
-        $isOwner = $teamRepository->isUserOwnerOfTeam(auth()->user(), $tenant);
+        $isOwner = auth()->user()->can('manageChannels', $tenant);
+
         $availableChannels = $this->getChannelRepository()
             ->getActiveChannels()
             ->whereNotIn('id', $tenant->assignedChannels()->pluck('channels.id'));
@@ -75,12 +74,11 @@ class SelectChannels extends Page implements HasForms, HasTable
 
     public function table(Table $table): Table
     {
-        $teamRepository = app(TeamRepository::class);
         /**
          * @var Team $tenant
          */
         $tenant = Filament::getTenant();
-        $isOwner = $teamRepository->isUserOwnerOfTeam(auth()->user(), $tenant);
+        $isOwner = auth()->user()->can('manageChannels', $tenant);
 
         return $table
             ->recordTitle('Kanal')
