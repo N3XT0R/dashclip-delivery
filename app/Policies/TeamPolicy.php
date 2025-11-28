@@ -64,8 +64,12 @@ class TeamPolicy
         return false;
     }
 
-    public function manageChannels(User $user, Team $team): bool
+    public function manageChannels(User $user, ?Team $team): bool
     {
+        if (!$team) {
+            return true;
+        }
+
         return app(TeamRepository::class)->isUserOwnerOfTeam($user, $team);
     }
 }
