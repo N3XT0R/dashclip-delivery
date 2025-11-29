@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Roles;
 
 use App\Enum\Guard\GuardEnum;
+use App\Enum\PanelEnum;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\Roles\Pages\CreateRole;
 use App\Filament\Resources\Roles\Pages\EditRole;
@@ -56,7 +57,7 @@ class RoleResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canAccess();
+        return PanelEnum::ADMIN->value === Filament::getId() && static::canAccess();
     }
 
     public static function form(Schema $schema): Schema
