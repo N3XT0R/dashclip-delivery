@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Repository;
+namespace Tests\Integration\Repository;
 
 use App\Models\Team;
 use App\Models\User;

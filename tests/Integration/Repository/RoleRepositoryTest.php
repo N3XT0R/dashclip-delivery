@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Repository;
+namespace Tests\Integration\Repository;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
