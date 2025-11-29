@@ -144,4 +144,40 @@ final class ClipTest extends DatabaseTestCase
 
         $this->assertNull($clip->duration);
     }
+
+    public function testEndTimeFormatsEndSecToMinutesAndSeconds(): void
+    {
+        $clip = new Clip([
+            'end_sec' => 125, // 02:05
+        ]);
+
+        $this->assertSame('02:05', $clip->end_time);
+    }
+
+    public function testEndTimeFormatsZeroSeconds(): void
+    {
+        $clip = new Clip([
+            'end_sec' => 0,
+        ]);
+
+        $this->assertSame('00:00', $clip->end_time);
+    }
+
+    public function testEndTimeReturnsNullWhenEndSecIsNull(): void
+    {
+        $clip = new Clip([
+            'end_sec' => null,
+        ]);
+
+        $this->assertNull($clip->end_time);
+    }
+
+    public function testEndTimeHandlesStringNumbers(): void
+    {
+        $clip = new Clip([
+            'end_sec' => '75',
+        ]);
+
+        $this->assertSame('01:15', $clip->end_time);
+    }
 }
