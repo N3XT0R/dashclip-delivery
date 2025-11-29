@@ -30,7 +30,9 @@ class RegularSeeder extends Seeder
             'Page',
             'User',
             'Dropbox',
-            'Activity'
+            'Activity',
+            'Onboarding',
+            'Team',
         ];
 
         $role = Role::firstOrCreate([
@@ -58,6 +60,8 @@ class RegularSeeder extends Seeder
         $guardName = GuardEnum::STANDARD->value;
         $patterns = [
             '%VideoUpload%',
+            '%Onboarding%',
+            '%Team%',
         ];
 
         $permissions = Permission::query()
