@@ -7,6 +7,7 @@ namespace Tests\Feature\Filament\Standard\Pages;
 use App\Enum\Guard\GuardEnum;
 use App\Filament\Standard\Pages\SelectChannels;
 use App\Models\Channel;
+use App\Models\Team;
 use App\Models\User;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
@@ -75,6 +76,22 @@ class SelectChannelsTest extends DatabaseTestCase
                 'channel_id' => $channel->id,
             ]);
         }
+    }
+
+    public function testNonOwnerCannotSeeAttachAction(): void
+    {
+        $user = User::factory()
+            ->standard()
+            ->withOwnTeam()
+            ->create();
+
+        $tenant = Team::factory()->create();
+
+        Filament::setTenant($tenant, true);
+        $this->actingAs($user, GuardEnum::STANDARD->value);
+
+        Livewire::test(SelectChannels::class)
+            ->assertActionHidden('attach');
     }
 
 }
