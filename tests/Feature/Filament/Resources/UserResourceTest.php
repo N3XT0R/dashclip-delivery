@@ -68,11 +68,9 @@ final class UserResourceTest extends DatabaseTestCase
 
         $user->refresh();
 
-        // Passwort darf nicht mehr dem alten Hash entsprechen
         $this->assertFalse(Hash::check('old-password', $user->password));
 
-        // Notification sollte über Filament erstellt worden sein
-        Notification::assertNothingSent(); // Filament nutzt hier kein Laravel Notification-System
+        Notification::assertNothingSent();
     }
 
     public function testSuperAdminSeesNavigationBadge(): void
