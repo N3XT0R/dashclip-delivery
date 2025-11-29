@@ -48,7 +48,6 @@ class SelectChannelsTest extends DatabaseTestCase
 
     public function testOwnerCanAttachChannels(): void
     {
-        // Arrange
         $user = User::factory()
             ->standard()
             ->withOwnTeam()
