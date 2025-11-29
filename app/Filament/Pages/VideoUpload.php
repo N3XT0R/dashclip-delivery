@@ -235,7 +235,7 @@ class VideoUpload extends Page implements HasForms
         );
 
         Notification::make()
-            ->title('Videos werden verarbeitet')
+            ->title('Video wird verarbeitet')
             ->success()
             ->send();
 
