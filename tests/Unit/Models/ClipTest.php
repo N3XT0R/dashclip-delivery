@@ -87,4 +87,61 @@ final class ClipTest extends DatabaseTestCase
         $this->assertSame('R', $fresh->role);
         $this->assertSame('bob', $fresh->submitted_by);
     }
+
+    public function testStartTimeFormatsSecondsToMinutesAndSeconds(): void
+    {
+        $clip = new Clip([
+            'start_sec' => 125, // 2:05
+        ]);
+
+        $this->assertSame('02:05', $clip->start_time);
+    }
+
+    public function testStartTimeFormatsZeroSeconds(): void
+    {
+        $clip = new Clip([
+            'start_sec' => 0,
+        ]);
+
+        $this->assertSame('00:00', $clip->start_time);
+    }
+
+    public function testStartTimeReturnsNullWhenStartSecIsNull(): void
+    {
+        $clip = new Clip([
+            'start_sec' => null,
+        ]);
+
+        $this->assertNull($clip->start_time);
+    }
+
+    public function testDurationCalculatesDurationCorrectly(): void
+    {
+        $clip = new Clip([
+            'start_sec' => 10,
+            'end_sec' => 25,
+        ]);
+
+        $this->assertSame(15, $clip->duration);
+    }
+
+    public function testDurationReturnsNullWhenStartSecIsNull(): void
+    {
+        $clip = new Clip([
+            'start_sec' => null,
+            'end_sec' => 100,
+        ]);
+
+        $this->assertNull($clip->duration);
+    }
+
+    public function testDurationReturnsNullWhenEndSecIsNull(): void
+    {
+        $clip = new Clip([
+            'start_sec' => 10,
+            'end_sec' => null,
+        ]);
+
+        $this->assertNull($clip->duration);
+    }
 }
