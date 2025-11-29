@@ -6,6 +6,7 @@ namespace Tests\Feature\Filament\Standard\Pages;
 
 use App\Enum\Guard\GuardEnum;
 use App\Filament\Standard\Pages\SelectChannels;
+use App\Models\Channel;
 use App\Models\User;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
@@ -43,4 +44,39 @@ class SelectChannelsTest extends DatabaseTestCase
             ->assertTableColumnExists('youtube_name')
             ->assertTableColumnExists('quota');
     }
+
+    public function testOwnerCanAttachChannels(): void
+    {
+        // Arrange
+        $user = User::factory()
+            ->standard()
+            ->withOwnTeam()
+            ->standard()
+            ->create();
+
+        $tenant = app(TeamRepository::class)->getDefaultTeamForUser($user);
+
+        Filament::setTenant($tenant, true);
+        $this->actingAs($user, GuardEnum::STANDARD->value);
+
+        $user->givePermissionTo('manageChannels', $tenant);
+
+        $channels = Channel::factory()->count(3)->create();
+
+        $component = Livewire::test(SelectChannels::class);
+
+        $component->assertActionVisible('attach');
+
+        $component->callAction('attach', [
+            'recordId' => $channels->pluck('id')->toArray(),
+        ]);
+
+        foreach ($channels as $channel) {
+            $this->assertDatabaseHas('team_channel', [
+                'team_id' => $tenant->id,
+                'channel_id' => $channel->id,
+            ]);
+        }
+    }
+
 }
