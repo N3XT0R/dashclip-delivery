@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeamResource\Pages;
 use App\Models\Team;
+use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -33,9 +35,13 @@ class TeamResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required(),
-                Forms\Components\TextInput::make('owner_id')
-                    ->required()
-                    ->numeric(),
+                Select::make('owner_id')
+                    ->label('Owner')
+                    ->options(User::all())
+                    ->searchable()
+                    ->multiple()
+                    ->preload()
+                    ->required(),
             ]);
     }
 
