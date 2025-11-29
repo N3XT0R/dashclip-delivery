@@ -12,12 +12,15 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class TeamResource extends Resource
 {
     protected static ?string $model = Team::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static string|UnitEnum|null $navigationGroup = 'System';
 
     protected static ?string $recordTitleAttribute = 'Team';
     protected static ?string $pluralModelLabel = 'Teams';
@@ -41,11 +44,10 @@ class TeamResource extends Resource
         return $table
             ->recordTitleAttribute('Team')
             ->columns([
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('team.owner')
+                Tables\Columns\TextColumn::make('owner.name')
+                    ->label('Owner')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
