@@ -5,6 +5,7 @@ namespace Tests\Integration\Services;
 use App\Models\{Assignment, Channel, Clip, Video};
 use App\Services\AssignmentDistributor;
 use RuntimeException;
+use Services\Stubs\FakeDistributorDependencies;
 use Tests\DatabaseTestCase;
 
 class AssignmentDistributorTest extends DatabaseTestCase
@@ -57,5 +58,89 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->expectExceptionMessage('Keine Kanäle konfiguriert.');
 
         $distributor->distribute();
+    }
+
+    public function testDistributorUsesTeamSlugForPartitioning(): void
+    {
+        $teamVideo = Video::factory()->create(['team_id' => FakeDistributorDependencies::createTeam()->getKey()]);
+
+        [$distributor, $stubs] = FakeDistributorDependencies::make($this->app);
+
+        $stubs->videoRepository
+            ->shouldReceive('partitionByTeamOrUploader')
+            ->once()
+            ->andReturn($stubs->uploaderPoolsForTeam($teamVideo));
+
+        $stubs->prepareBatchWithPool(collect([$teamVideo]));
+
+        $distributor->distribute();
+
+        $this->assertCount(1, $distributor->prepareChannelCalls);
+        $prepareCall = $distributor->prepareChannelCalls->first();
+        $this->assertSame('team', $prepareCall['uploaderType']);
+        $this->assertSame($stubs->team->slug, $prepareCall['uploaderId']);
+
+        $this->assertCount(1, $distributor->assignGroupRuns);
+        $run = $distributor->assignGroupRuns->first();
+        $this->assertSame('team', $run->uploaderType);
+        $this->assertSame($stubs->team->slug, $run->uploaderId);
+
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0);
+    }
+
+    public function testDistributorFallsBackToUploaderWhenUserIdIsPresent(): void
+    {
+        $userVideo = Video::factory()->create();
+        Clip::factory()->for($userVideo)->create(['user_id' => FakeDistributorDependencies::createUser()->getKey()]);
+
+        [$distributor, $stubs] = FakeDistributorDependencies::make($this->app);
+
+        $stubs->videoRepository
+            ->shouldReceive('partitionByTeamOrUploader')
+            ->once()
+            ->andReturn($stubs->uploaderPoolsForUser($userVideo, $stubs->user->getKey()));
+
+        $stubs->prepareBatchWithPool(collect([$userVideo]));
+
+        $distributor->distribute();
+
+        $this->assertCount(1, $distributor->prepareChannelCalls);
+        $prepareCall = $distributor->prepareChannelCalls->first();
+        $this->assertSame('user', $prepareCall['uploaderType']);
+        $this->assertSame($stubs->user->getKey(), $prepareCall['uploaderId']);
+
+        $run = $distributor->assignGroupRuns->first();
+        $this->assertSame('user', $run->uploaderType);
+        $this->assertSame($stubs->user->getKey(), $run->uploaderId);
+
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0);
+    }
+
+    public function testDistributorUsesFallbackPoolWhenTeamAndUserAreMissing(): void
+    {
+        $orphanVideo = Video::factory()->create();
+        Clip::factory()->for($orphanVideo)->create(['user_id' => null]);
+
+        [$distributor, $stubs] = FakeDistributorDependencies::make($this->app);
+
+        $stubs->videoRepository
+            ->shouldReceive('partitionByTeamOrUploader')
+            ->once()
+            ->andReturn($stubs->uploaderPoolsForFallback($orphanVideo));
+
+        $stubs->prepareBatchWithPool(collect([$orphanVideo]));
+
+        $distributor->distribute();
+
+        $this->assertCount(1, $distributor->prepareChannelCalls);
+        $prepareCall = $distributor->prepareChannelCalls->first();
+        $this->assertSame('user', $prepareCall['uploaderType']);
+        $this->assertSame(0, $prepareCall['uploaderId']);
+
+        $run = $distributor->assignGroupRuns->first();
+        $this->assertSame('user', $run->uploaderType);
+        $this->assertSame(0, $run->uploaderId);
+
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0);
     }
 }
