@@ -41,18 +41,14 @@ final class VideoUploadTest extends DatabaseTestCase
         $path1 = 'uploads/tmp/file1.mp4';
 
         $state = [
-            'clips' => [
-                [
-                    'file' => $path1,
-                    'original_name' => 'one.mp4',
-                    'start_sec' => 1,
-                    'end_sec' => 3,
-                    'duration' => 3,
-                    'note' => 'first',
-                    'bundle_key' => 'B1',
-                    'role' => 'R1',
-                ]
-            ],
+            'file' => $path1,
+            'original_name' => 'one.mp4',
+            'start_sec' => 1,
+            'end_sec' => 3,
+            'duration' => 3,
+            'note' => 'first',
+            'bundle_key' => 'B1',
+            'role' => 'R1',
         ];
 
         $page = new VideoUpload();
@@ -136,17 +132,13 @@ final class VideoUploadTest extends DatabaseTestCase
         };
 
         $state = [
-            'clips' => [
-                [
-                    'file' => $file,
-                    'start_sec' => 0,
-                    'end_sec' => 1,
-                    'duration' => 0,
-                    'note' => null,
-                    'bundle_key' => null,
-                    'role' => null,
-                ]
-            ],
+            'file' => $file,
+            'start_sec' => 0,
+            'end_sec' => 1,
+            'duration' => 0,
+            'note' => null,
+            'bundle_key' => null,
+            'role' => null,
         ];
 
         $page = new VideoUpload();
