@@ -49,7 +49,7 @@ class UserFactory extends Factory
     /**
      * Default state for Admin-User
      */
-    public function admin(GuardEnum $guard = GuardEnum::STANDARD): static
+    public function admin(GuardEnum $guard = GuardEnum::DEFAULT): static
     {
         return $this->withRole(RoleEnum::SUPER_ADMIN, $guard->value);
     }
