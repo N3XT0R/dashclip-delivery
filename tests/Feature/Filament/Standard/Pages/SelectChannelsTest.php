@@ -59,8 +59,6 @@ class SelectChannelsTest extends DatabaseTestCase
         Filament::setTenant($tenant, true);
         $this->actingAs($user, GuardEnum::STANDARD->value);
 
-        $user->givePermissionTo('manageChannels', $tenant);
-
         $channels = Channel::factory()->count(3)->create();
 
         $component = Livewire::test(SelectChannels::class);
@@ -72,7 +70,7 @@ class SelectChannelsTest extends DatabaseTestCase
         ]);
 
         foreach ($channels as $channel) {
-            $this->assertDatabaseHas('team_channel', [
+            $this->assertDatabaseHas('channel_team', [
                 'team_id' => $tenant->id,
                 'channel_id' => $channel->id,
             ]);
