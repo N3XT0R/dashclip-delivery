@@ -112,6 +112,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel->plugins([
             FilamentShieldPlugin::make()
+                ->centralApp()
                 ->scopeToTenant(false)
                 ->tenantRelationshipName('teams')
                 ->tenantOwnershipRelationshipName('owner'),
