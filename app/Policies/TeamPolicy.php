@@ -12,7 +12,7 @@ class TeamPolicy
 {
     use HandlesAuthorization;
 
-    public function __construct(private TeamRepository $teamRepository)
+    public function __construct(private TeamRepository $teamRepository, private RoleRepository $roleRepository)
     {
     }
 
@@ -45,7 +45,8 @@ class TeamPolicy
      */
     public function update(User $user, Team $team): bool
     {
-        return $this->teamRepository->isUserOwnerOfTeam($user, $team);
+        return $this->teamRepository->isUserOwnerOfTeam($user, $team) ||
+            $this->roleRepository->canAccessEverything($user);
     }
 
     /**
@@ -94,11 +95,11 @@ class TeamPolicy
 
     public function manageChannels(User $user, ?Team $team): bool
     {
-        $roleRepository = app(RoleRepository::class);
         if (!$team) {
             return false;
         }
 
-        return $this->teamRepository->isUserOwnerOfTeam($user, $team) || $roleRepository->canAccessEverything($user);
+        return $this->teamRepository->isUserOwnerOfTeam($user, $team) ||
+            $this->roleRepository->canAccessEverything($user);
     }
 }
