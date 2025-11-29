@@ -31,7 +31,8 @@ class TeamResource extends Resource
         return $schema
             ->components([
                 Forms\Components\TextInput::make('slug')
-                    ->required(),
+                    ->required()
+                    ->unique(),
                 Forms\Components\TextInput::make('name')
                     ->required(),
                 Select::make('owner_id')
