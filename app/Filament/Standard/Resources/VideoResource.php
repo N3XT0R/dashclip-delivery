@@ -8,7 +8,7 @@ use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRe
 use App\Models\Video;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
-use Filament\Infolists\Components\ImageEntry;
+use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -45,11 +45,11 @@ class VideoResource extends Resource
                         'md' => 2,
                     ])
                     ->schema([
-                        ImageEntry::make('preview_url')
-                            ->label('Vorschau')
-                            ->visible(fn(Video $record) => filled($record->getAttribute('preview_url')))
+                        ViewField::make('video_preview')
+                            ->label('Preview')
+                            ->view('filament.forms.components.video-preview')
                             ->columnSpan(1)
-                            ->extraImgAttributes(['class' => 'rounded-lg shadow-md w-full max-w-xs']),
+                            ->extraAttributes(['class' => 'rounded-lg shadow-md w-full max-w-xs']),
                         Grid::make()
                             ->schema([
                                 TextEntry::make('original_name')
