@@ -12,7 +12,6 @@ use Closure;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -53,46 +52,40 @@ class VideoUpload extends Page implements HasForms
     {
         return $schema
             ->components([
-                Repeater::make('clips')
-                    ->label('Video')
-                    ->addActionLabel('Weiteres Video hinzufügen')
-                    ->defaultItems(1)
-                    ->schema([
-                        $this->getFileComponent(),
-                        $this->getDurationComponent(),
-                        TextEntry::make('upload_hint')
-                            ->label('Upload-Hinweis')
-                            ->state('Die Zeitfelder werden automatisch freigeschaltet, sobald ein Video hochgeladen wurde.')
-                            ->visible(fn(Get $get): bool => (int)($get('duration') ?? 0) < 1)
-                            ->extraAttributes(['class' => 'text-sm text-gray-500 italic'])
-                            ->columnSpanFull(),
-                        $this->timeFields(),
-                        $this->getClipSelectorComponent(),
-                        Textarea::make('note')->label('Notiz')
-                            ->rows(5)
-                            ->autosize()
-                            ->trim(),
-                        TextInput::make('bundle_key')
-                            ->label('Bundle ID')
-                            ->datalist(
-                                Clip::query()
-                                    ->whereNotNull('bundle_key')
-                                    ->whereHas('video', fn($q) => $q->doesntHave('assignments'))
-                                    ->pluck('bundle_key')
-                                    ->unique()
-                                    ->values()
-                                    ->all()
-                            )
-                            ->trim()
-                            ->helperText('Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.'),
-                        TextInput::make('role')->label('Rolle')
-                            ->datalist([
-                                'F' => 'Front',
-                                'R' => 'Rear',
-                            ])
-                            ->helperText('Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R).')
-                            ->trim(),
+                $this->getFileComponent(),
+                $this->getDurationComponent(),
+                TextEntry::make('upload_hint')
+                    ->label('Upload-Hinweis')
+                    ->state('Die Zeitfelder werden automatisch freigeschaltet, sobald ein Video hochgeladen wurde.')
+                    ->visible(fn(Get $get): bool => (int)($get('duration') ?? 0) < 1)
+                    ->extraAttributes(['class' => 'text-sm text-gray-500 italic'])
+                    ->columnSpanFull(),
+                $this->timeFields(),
+                $this->getClipSelectorComponent(),
+                Textarea::make('note')->label('Notiz')
+                    ->rows(5)
+                    ->autosize()
+                    ->trim(),
+                TextInput::make('bundle_key')
+                    ->label('Bundle ID')
+                    ->datalist(
+                        Clip::query()
+                            ->whereNotNull('bundle_key')
+                            ->whereHas('video', fn($q) => $q->doesntHave('assignments'))
+                            ->pluck('bundle_key')
+                            ->unique()
+                            ->values()
+                            ->all()
+                    )
+                    ->trim()
+                    ->helperText('Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.'),
+                TextInput::make('role')->label('Rolle')
+                    ->datalist([
+                        'F' => 'Front',
+                        'R' => 'Rear',
                     ])
+                    ->helperText('Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R).')
+                    ->trim(),
             ])
             ->statePath('data');
     }
