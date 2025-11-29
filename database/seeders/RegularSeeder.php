@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enum\Guard\GuardEnum;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -85,12 +84,6 @@ class RegularSeeder extends Seeder
         }
 
         $role->syncPermissions($permissions->pluck('name'));
-
-        //give admin users access to standard panel as well
-        $adminUsers = User::role('super_admin', GuardEnum::DEFAULT->value)->get();
-        foreach ($adminUsers as $user) {
-            $user->assignRole($role);
-        }
     }
 
 }
