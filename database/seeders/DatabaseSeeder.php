@@ -19,8 +19,5 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             RegularSeeder::class,
         ]);
-
-
-        $this->command->call('permission:cache-reset');
     }
 }
