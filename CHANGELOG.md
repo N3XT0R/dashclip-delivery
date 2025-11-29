@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2025-11-29
+
+### Fixed
+
+- **Logging**
+    - Updated logfile permissions to `775` to allow shared read/write access (e.g. `root` and `www-data`).
+
+- **Upload**
+    - Increased maximum upload size to **2 GB**.
+
 ## [3.0.0] - 2025-11-15
 
 ### Added
