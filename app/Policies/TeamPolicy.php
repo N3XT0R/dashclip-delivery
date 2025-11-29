@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Repository\RoleRepository;
 use App\Repository\TeamRepository;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -93,10 +94,11 @@ class TeamPolicy
 
     public function manageChannels(User $user, ?Team $team): bool
     {
+        $roleRepository = app(RoleRepository::class);
         if (!$team) {
             return false;
         }
 
-        return $this->teamRepository->isUserOwnerOfTeam($user, $team);
+        return $this->teamRepository->isUserOwnerOfTeam($user, $team) || $roleRepository->canAccessEverything($user);
     }
 }
