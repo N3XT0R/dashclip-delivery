@@ -12,11 +12,12 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
-        $adminRole = Role::where('name', 'super_admin')->firstOrFail();
-
-        User::all()->each(function (User $user) use ($adminRole) {
-            $user->syncRoles([$adminRole]);
+        Role::where('name', 'super_admin')->each(function (Role $adminRole) {
+            User::all()->each(function (User $user) use ($adminRole) {
+                $user->syncRoles([$adminRole]);
+            });
         });
+
 
         $this->command->info('All existing users assigned to the admin role.');
     }
