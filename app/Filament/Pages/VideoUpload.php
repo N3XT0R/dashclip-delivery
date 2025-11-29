@@ -208,34 +208,32 @@ class VideoUpload extends Page implements HasForms
     public function submit(): void
     {
         $this->form->validate();
-        $state = $this->form->getState();
+        $clip = $this->form->getState();
         $user = Auth::user();
         $targetDisk = Cfg::get('default_file_system', 'default', 'dropbox');
 
-        foreach ($state['clips'] ?? [] as $clip) {
-            $file = $clip['file'] ?? '';
-            $fileInfoDto = new FileInfoDto(
-                $file,
-                Str::afterLast($file, '/'),
-                Str::afterLast($file, '.'),
-                $clip['original_name'] ?? null,
-            );
+        $file = $clip['file'] ?? '';
+        $fileInfoDto = new FileInfoDto(
+            $file,
+            Str::afterLast($file, '/'),
+            Str::afterLast($file, '.'),
+            $clip['original_name'] ?? null,
+        );
 
+        ProcessUploadedVideo::dispatch(
+            user: $user,
+            fileInfoDto: $fileInfoDto,
+            targetDisk: $targetDisk,
+            sourceDisk: self::SOURCE_DISK,
+            start: (int)($clip['start_sec'] ?? 0),
+            end: (int)($clip['end_sec'] ?? 0),
+            submittedBy: $user?->display_name,
+            note: $clip['note'] ?? null,
+            bundleKey: $clip['bundle_key'] ?? null,
+            role: $clip['role'] ?? null,
+            team: Filament::getTenant()
+        );
 
-            ProcessUploadedVideo::dispatch(
-                user: $user,
-                fileInfoDto: $fileInfoDto,
-                targetDisk: $targetDisk,
-                sourceDisk: self::SOURCE_DISK,
-                start: (int)($clip['start_sec'] ?? 0),
-                end: (int)($clip['end_sec'] ?? 0),
-                submittedBy: $user?->display_name,
-                note: $clip['note'] ?? null,
-                bundleKey: $clip['bundle_key'] ?? null,
-                role: $clip['role'] ?? null,
-                team: Filament::getTenant()
-            );
-        }
 
         Notification::make()
             ->title('Videos werden verarbeitet')
