@@ -60,6 +60,12 @@ class VideoResource extends Resource
                                     ->state(function (Video $record) {
                                         return self::formatDuration($record->clips()?->first()?->getAttribute('duration'));
                                     }),
+                                TextEntry::make('bundle_key')
+                                    ->label('Bundle')
+                                    ->state(function (Video $record) {
+                                        return $record->clips()?->first()?->getAttribute('bundle_key');
+                                    })
+                                    ->extraAttributes(['class' => 'text-lg font-semibold']),
                                 TextEntry::make('created_at')
                                     ->label('Upload am')
                                     ->dateTime('d.m.Y, H:i'),
@@ -98,6 +104,14 @@ class VideoResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(60),
+                TextColumn::make('bundle')
+                    ->label('Bundle')
+                    ->sortable()
+                    ->searchable()
+                    ->getStateUsing(function (Video $record) {
+                        return $record->clips()?->first()?->getAttribute('bundle_key');
+                    })
+                    ->limit(60),
                 TextColumn::make('role')
                     ->label('Ansicht')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -129,10 +143,12 @@ class VideoResource extends Resource
 
                 TextColumn::make('available_assignments_count')
                     ->label('Verfügbare Offers')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('expired_assignments_count')
                     ->label('Abgelaufene Offers')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
             ])
             ->filters([
