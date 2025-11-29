@@ -14,7 +14,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -95,13 +94,6 @@ class VideoResource extends Resource
                 ViewColumn::make('video_preview')
                     ->label('Preview')
                     ->view('filament.forms.components.video-preview'),
-                ImageColumn::make('preview_url')
-                    ->label('Vorschau')
-                    ->imageSize(48)
-                    ->circular()
-                    ->visible(fn(?Video $record) => filled($record?->getAttribute('preview_url')))
-                    ->getStateUsing(fn(?Video $record) => (string)$record?->getAttribute('preview_url')),
-
                 TextColumn::make('original_name')
                     ->label('Video-Titel')
                     ->description('Meine hochgeladenen Clips')
