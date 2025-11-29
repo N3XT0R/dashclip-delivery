@@ -14,10 +14,13 @@ class SelectChannelsTest extends DatabaseTestCase
 {
     public function testRegularUserHasAccess(): void
     {
+        $guard = GuardEnum::STANDARD;
         $regularUser = User::factory()
             ->withOwnTeam()
-            ->standard(GuardEnum::DEFAULT->value)->create();
-        $this->actingAs($regularUser);
+            ->standard($guard)
+            ->create();
+
+        $this->actingAs($regularUser, $guard->value);
 
         Livewire::test(SelectChannels::class)
             ->assertStatus(200);

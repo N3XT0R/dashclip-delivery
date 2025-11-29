@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -48,17 +49,17 @@ class UserFactory extends Factory
     /**
      * Default state for Admin-User
      */
-    public function admin(string $guard = 'web'): static
+    public function admin(GuardEnum $guard = GuardEnum::STANDARD): static
     {
-        return $this->withRole(RoleEnum::SUPER_ADMIN, $guard);
+        return $this->withRole(RoleEnum::SUPER_ADMIN, $guard->value);
     }
 
     /**
      * Default state for Standard-User
      */
-    public function standard(string $guard = 'standard'): static
+    public function standard(GuardEnum $guard = GuardEnum::STANDARD): static
     {
-        return $this->withRole(RoleEnum::REGULAR, $guard);
+        return $this->withRole(RoleEnum::REGULAR, $guard->value);
     }
 
     public function withRole(RoleEnum $roleName, ?string $guard = null): static

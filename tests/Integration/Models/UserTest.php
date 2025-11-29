@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Models;
 
+use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Models\Team;
 use App\Models\User;
@@ -81,7 +82,7 @@ final class UserTest extends DatabaseTestCase
 
     public function testRegularCanAccessPanelReturnsTrue(): void
     {
-        $user = User::factory()->standard('web')->create();
+        $user = User::factory()->standard(GuardEnum::DEFAULT)->create();
         $panel = Panel::make()
             ->id(PanelEnum::STANDARD->value);
 

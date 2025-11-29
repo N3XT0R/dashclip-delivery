@@ -94,7 +94,7 @@ class TeamPolicy
     public function manageChannels(User $user, ?Team $team): bool
     {
         if (!$team) {
-            return true;
+            return false;
         }
 
         return $this->teamRepository->isUserOwnerOfTeam($user, $team);

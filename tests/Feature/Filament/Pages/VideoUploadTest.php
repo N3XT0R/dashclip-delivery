@@ -21,13 +21,13 @@ final class VideoUploadTest extends DatabaseTestCase
 
     public function testRegularUserHasAccess(): void
     {
-        $regularUser = User::factory()->standard(GuardEnum::DEFAULT->value)->create();
+        $regularUser = User::factory()->standard(GuardEnum::DEFAULT)->create();
         $this->actingAs($regularUser);
 
         Livewire::test(VideoUpload::class)
             ->assertStatus(200);
     }
-    
+
     public function testSubmitDispatchesJobForEachClip(): void
     {
         Bus::fake();
