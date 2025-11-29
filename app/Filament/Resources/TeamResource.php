@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeamResource\Pages;
 use App\Models\Team;
-use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
 use Filament\Forms;
@@ -37,9 +36,9 @@ class TeamResource extends Resource
                     ->required(),
                 Select::make('owner_id')
                     ->label('Owner')
-                    ->options(User::all())
+                    ->relationship('users', 'name')
+                    ->preload()
                     ->searchable()
-                    ->multiple()
                     ->preload()
                     ->required(),
             ]);
