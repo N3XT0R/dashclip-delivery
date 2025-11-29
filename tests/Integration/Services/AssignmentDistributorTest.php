@@ -5,8 +5,8 @@ namespace Tests\Integration\Services;
 use App\Models\{Assignment, Channel, Clip, Video};
 use App\Services\AssignmentDistributor;
 use RuntimeException;
-use Services\Stubs\FakeDistributorDependencies;
 use Tests\DatabaseTestCase;
+use Tests\Integration\Services\Stubs\FakeDistributorDependencies;
 
 class AssignmentDistributorTest extends DatabaseTestCase
 {

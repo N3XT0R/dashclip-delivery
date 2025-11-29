@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Services\Stubs;
+namespace Tests\Integration\Services\Stubs;
 
 use App\DTO\UploaderPoolInfo;
 use App\Models\Batch;
@@ -19,7 +19,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\Integration\Services\stubs\InstrumentedAssignmentDistributor;
 
 final class FakeDistributorDependencies
 {

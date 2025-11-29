@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Services\Stubs;
+namespace Tests\Integration\Services\Stubs;
 
 use App\DTO\ChannelPoolDto;
 use App\Models\Batch;
