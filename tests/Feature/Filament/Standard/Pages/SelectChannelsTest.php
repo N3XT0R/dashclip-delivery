@@ -14,8 +14,11 @@ use Tests\DatabaseTestCase;
 
 class SelectChannelsTest extends DatabaseTestCase
 {
-    public function testRegularUserHasAccess(): void
+
+
+    protected function setUp(): void
     {
+        parent::setUp();
         User::flushEventListeners();
         $guard = GuardEnum::STANDARD;
         $regularUser = User::factory()
@@ -25,8 +28,19 @@ class SelectChannelsTest extends DatabaseTestCase
         $tenant = $this->app->make(TeamRepository::class)->getDefaultTeamForUser($regularUser);
         Filament::setTenant($tenant, true);
         $this->actingAs($regularUser, $guard->value);
+    }
 
+    public function testRegularUserHasAccess(): void
+    {
         Livewire::test(SelectChannels::class)
             ->assertStatus(200);
+    }
+
+    public function testTableHasExpectedColumns(): void
+    {
+        Livewire::test(SelectChannels::class)
+            ->assertTableColumnExists('name')
+            ->assertTableColumnExists('youtube_name')
+            ->assertTableColumnExists('quota');
     }
 }
