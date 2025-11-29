@@ -220,7 +220,7 @@ class VideoUpload extends Page implements HasForms
             $clip['original_name'] ?? null,
         );
 
-        $dispatched = ProcessUploadedVideo::dispatch(
+        ProcessUploadedVideo::dispatch(
             user: $user,
             fileInfoDto: $fileInfoDto,
             targetDisk: $targetDisk,
@@ -233,7 +233,7 @@ class VideoUpload extends Page implements HasForms
             role: $clip['role'] ?? null,
             team: Filament::getTenant()
         );
-        
+
         Notification::make()
             ->title('Videos werden verarbeitet')
             ->success()
