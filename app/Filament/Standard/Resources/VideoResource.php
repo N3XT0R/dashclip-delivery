@@ -16,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -91,6 +92,9 @@ class VideoResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->recordUrl(fn(Video $record) => static::getUrl('view', ['record' => $record]))
             ->columns([
+                ViewColumn::make('video_preview')
+                    ->label('Preview')
+                    ->view('filament.forms.components.video-preview'),
                 ImageColumn::make('preview_url')
                     ->label('Vorschau')
                     ->imageSize(48)
