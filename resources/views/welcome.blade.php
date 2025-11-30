@@ -9,7 +9,7 @@
              alt="DashClip Delivery Logo"
              class="mx-auto mb-4 h-16 w-auto">
 
-        <h1 class="text-3xl font-extrabold mb-4 text-indigo-600">
+        <h1 class="text-3xl font-extrabold mb-4 text-indigo-600 text-center">
             DashClip Delivery
         </h1>
 
