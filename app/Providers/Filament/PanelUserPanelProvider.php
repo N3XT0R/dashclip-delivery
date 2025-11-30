@@ -8,6 +8,7 @@ use App\Filament\Pages\VideoUpload;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
 use App\Filament\Standard\Resources\VideoResource;
+use App\Filament\Standard\Widgets\OnboardingWizard;
 use App\Models\Team;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
@@ -151,7 +152,7 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addWidgets(Panel $panel): Panel
     {
         return $panel->widgets([
-            //OnboardingWizard::class,
+            OnboardingWizard::class,
             AccountWidget::class,
         ]);
     }

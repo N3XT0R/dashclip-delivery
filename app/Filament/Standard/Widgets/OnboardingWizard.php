@@ -2,7 +2,6 @@
 
 namespace App\Filament\Standard\Widgets;
 
-use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Infolists\Components\TextEntry;
@@ -15,7 +14,6 @@ use Illuminate\Support\Stringable;
 class OnboardingWizard extends Widget implements HasForms
 {
     use InteractsWithForms;
-    use HasWidgetShield;
 
     protected static ?string $modalId = 'onboarding-wizard';
     protected string $view = 'filament.standard.widgets.onboarding-wizard';
