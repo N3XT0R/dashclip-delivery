@@ -12,6 +12,7 @@ use App\Exceptions\PreviewGenerationException;
 use App\Facades\DynamicStorage;
 use App\Facades\PathBuilder;
 use App\Models\User;
+use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;
 use App\Services\BatchService;
 use App\Services\CsvService;
@@ -222,7 +223,7 @@ class IngestScanner
 
     private function notifyUserUploadIsDuplicate(User $user, FileInfoDto $file): void
     {
-        $user->notify(new UserUploadProceedNotification(
+        $user->notify(new UserUploadDuplicatedNotification(
             filename: $file->originalName ?? $file->basename,
             note: 'Die Datei wurde als Duplikat erkannt und nicht erneut hochgeladen.'
         ));
