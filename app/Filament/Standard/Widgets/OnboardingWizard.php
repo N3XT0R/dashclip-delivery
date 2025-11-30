@@ -41,21 +41,35 @@ class OnboardingWizard extends Widget implements HasForms
                 Wizard\Step::make('Willkommen')
                     ->schema([
                         TextEntry::make('intro')
-                            ->state($this->markdownFromView('Onboarding.steps.willkommen'))
+                            ->state($this->markdownFromView('onboarding.steps.welcome'))
                             ->markdown(),
                     ]),
 
                 Wizard\Step::make('Video-Upload')
                     ->schema([
                         TextEntry::make('video-upload')
-                            ->state($this->markdownFromView('Onboarding.steps.video-upload'))
+                            ->state($this->markdownFromView('onboarding.steps.video-upload'))
+                            ->markdown(),
+                    ]),
+
+                Wizard\Step::make('Kanal-Auswahl')
+                    ->schema([
+                        TextEntry::make('channel-selection')
+                            ->state($this->markdownFromView('onboarding.steps.channel-selection'))
+                            ->markdown(),
+                    ]),
+
+                Wizard\Step::make('Video-Management')
+                    ->schema([
+                        TextEntry::make('video-management')
+                            ->state($this->markdownFromView('onboarding.steps.video-management'))
                             ->markdown(),
                     ]),
 
                 Wizard\Step::make('Fertig')
                     ->schema([
                         TextEntry::make('done')
-                            ->state($this->markdownFromView('Onboarding.steps.fertig'))
+                            ->state($this->markdownFromView('onboarding.steps.finished'))
                             ->markdown(),
                     ]),
 
