@@ -71,6 +71,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Automatic pivot synchronization (`channel_team`)  
       This completes the foundation for user-driven distribution pipelines in the  
       upcoming distribution engine.
+- **User Notification Center (Filament Bell Icon)**  
+  Enabled Filament’s notification system in the user-facing `/standard` panel, including the in-panel notification
+  bell.  
+  Users now receive real-time and database-backed notifications directly within the UI, providing clear visibility into
+  all upload-related events.
+
+- **Upload Processing Notifications (via `ProcessUploadedVideo` Job)**  
+  Added two new user-facing notifications that are automatically dispatched by the `ProcessUploadedVideo` job:
+    - **UserUploadProceedNotification** – sent when an uploaded video has been successfully processed.
+    - **UserUploadDuplicatedNotification** – sent when an uploaded video is detected as a duplicate.  
+      Each notification includes both a custom HTML email and a Filament in-app notification, ensuring consistent
+      communication across channels.
 
 ### Changed
 
@@ -114,6 +126,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Uploader-only pools (non-team videos) continue to use the global quota  
   unchanged, ensuring full backward compatibility with existing behavior and  
   preserving all current test expectations.
+- **VideoUpload UX Improvement**  
+  Added a client-side JavaScript event in the video upload form that re-enables the “Upload abschließen” button only
+  after the file upload has fully completed.  
+  This prevents premature submissions, improves user experience, and increases reliability under slower network
+  conditions.
 
 ## [3.0.1] - 2025-11-29
 
