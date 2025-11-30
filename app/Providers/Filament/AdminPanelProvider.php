@@ -40,7 +40,14 @@ class AdminPanelProvider extends PanelProvider
         $this->addRenderHooks($panel);
         $this->addMFA($panel);
         $this->addWidgets($panel);
+        $this->addNotifications($panel);
 
+        return $panel;
+    }
+
+    protected function addNotifications(Panel $panel): Panel
+    {
+        $panel->databaseNotifications();
         return $panel;
     }
 
