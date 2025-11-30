@@ -55,26 +55,11 @@ final class OnboardingWizardTest extends DatabaseTestCase
         $this->assertFalse(OnboardingWizard::canView());
     }
 
-    public function testMountDispatchesOpenModalEvent(): void
-    {
-        $component = Livewire::test(OnboardingWizard::class);
-
-        $dispatches = data_get($component->effects, 'dispatches', []);
-
-        $this->assertNotEmpty($dispatches);
-        $this->assertSame('open-modal', $dispatches[0]['name']);
-        $this->assertSame(['id' => 'onboarding-wizard'], $dispatches[0]['params']);
-    }
-
-    public function testSubmitCompletesOnboardingAndStoresNotification(): void
+    public function testMountRedirectsToOnboardingPageWhenIncomplete(): void
     {
         Livewire::test(OnboardingWizard::class)
-            ->call('submit');
-
-        $this->assertTrue($this->user->fresh()->onboarding_completed);
-        $notifications = session('filament.notifications', []);
-
-        $this->assertNotEmpty($notifications);
-        $this->assertSame('Onboarding abgeschlossen', $notifications[0]['title']);
+            ->assertRedirect(route('filament.standard.pages.onboarding-wizard', [
+                'tenant' => $this->tenant,
+            ]));
     }
 }
