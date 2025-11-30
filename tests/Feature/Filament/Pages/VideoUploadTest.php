@@ -153,12 +153,10 @@ final class VideoUploadTest extends DatabaseTestCase
             {
                 $this->validated = true;
 
-                foreach ($this->state['clips'] ?? [] as $index => $clip) {
-                    if (($clip['duration'] ?? 0) < 1) {
-                        throw ValidationException::withMessages([
-                            "clips.$index.duration" => 'The duration must be at least 1 second.',
-                        ]);
-                    }
+                if (($this->state['duration'] ?? 0) < 1) {
+                    throw ValidationException::withMessages([
+                        "duration" => 'The duration must be at least 1 second.',
+                    ]);
                 }
             }
 
