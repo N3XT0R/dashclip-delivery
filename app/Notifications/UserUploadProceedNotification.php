@@ -54,7 +54,8 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
             ->title("Upload verarbeitet")
             ->body("Die Datei **{$this->filename}** wurde erfolgreich bearbeitet.".($this->note ? "\n\n{$this->note}" : ''))
             ->success()
-            ->sendToDatabase($notifiable);
+            ->sendToDatabase($notifiable)
+            ->broadcast($notifiable);
 
         return $this->toArray($notifiable);
     }
