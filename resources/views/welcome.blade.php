@@ -88,6 +88,13 @@
         <li>Rückgabe-Option für nicht benötigte Inhalte</li>
         <li>Transparente Protokollierung aller Aktionen</li>
     </ul>
+    <a href="{{ route('filament.standard.auth.register') }}" class="btn">
+        Jetzt registrieren
+    </a>
+
+    <a href="{{ route('filament.standard.auth.login') }}" class="btn">
+        Zum Login
+    </a>
     @include('partials.footer')
 </div>
 </body>
