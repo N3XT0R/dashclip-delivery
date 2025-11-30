@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Notifications;
 
+use App\Mail\UserUploadProceedMail;
 use App\Models\User;
 use App\Notifications\UserUploadProceedNotification;
 use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Mail;
 use Tests\DatabaseTestCase;
 
@@ -107,22 +107,25 @@ class UserUploadProceedNotificationTest extends DatabaseTestCase
             note: 'Zusätzliche Notiz'
         );
 
-        /** @var MailMessage $mail */
+        /** @var UserUploadProceedMail $mail */
         $mail = $notification->toMail($user);
+
+        $html = $mail->render();
 
         $this->assertSame(
             'Upload verarbeitet: testfile.mp4',
-            $mail->subject
+            $mail->envelope()->subject
         );
 
-        $this->assertTrue(
-            collect($mail->introLines)
-                ->contains('Dein Upload wurde erfolgreich verarbeitet.')
+
+        $this->assertStringContainsString(
+            'wurde vom System vollständig eingelesen',
+            $html
         );
 
-        $this->assertTrue(
-            collect($mail->introLines)
-                ->contains('Zusätzliche Notiz')
+        $this->assertStringContainsString(
+            'Zusätzliche Notiz',
+            $html
         );
     }
 
