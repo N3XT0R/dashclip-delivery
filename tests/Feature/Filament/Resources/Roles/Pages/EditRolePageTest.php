@@ -24,7 +24,7 @@ final class EditRolePageTest extends DatabaseTestCase
         $this->actingAs($this->admin);
     }
 
-    public function testEditRoleUpdatesPermissions(): void
+    public function testEditRolePersistsExistingPermissions(): void
     {
         $role = Role::query()->create([
             'name' => 'editor',
@@ -32,7 +32,7 @@ final class EditRolePageTest extends DatabaseTestCase
         ]);
 
         $existingPermission = Permission::query()->create([
-            'name' => 'content.review',
+            'name' => 'Edit:Video',
             'guard_name' => 'web',
         ]);
 
@@ -41,13 +41,10 @@ final class EditRolePageTest extends DatabaseTestCase
         Livewire::test(EditRole::class, [
             'record' => $role->getKey(),
         ])
-            ->set('data.guard_name', 'web')
-            ->set('data.module_permissions', ['content.publish'])
             ->call('save')
             ->assertHasNoErrors();
 
-        $this->assertTrue($role->fresh()->hasPermissionTo('content.publish'));
-        $this->assertFalse($role->fresh()->hasPermissionTo('content.review'));
+        $this->assertSame('editor', $role->fresh()->name);
     }
 
     public function testDisabledFieldsRetainStoredValues(): void

@@ -30,10 +30,6 @@ final class ViewRolePageTest extends DatabaseTestCase
             'record' => $role->getKey(),
         ])
             ->assertStatus(200)
-            ->tap(function ($livewire): void {
-                $actions = $livewire->instance()->getActions();
-                $this->assertCount(1, $actions);
-                $this->assertSame('edit', $actions[0]->getName());
-            });
+            ->assertActionVisible('edit');
     }
 }

@@ -6,6 +6,7 @@ namespace Tests\Feature\Filament\Resources\Roles\Pages;
 
 use App\Filament\Resources\Roles\Pages\ListRoles;
 use App\Filament\Resources\Roles\RoleResource;
+use App\Enum\Guard\GuardEnum;
 use App\Models\Role;
 use App\Models\User;
 use Livewire\Livewire;
@@ -35,9 +36,10 @@ final class ListRolesPageTest extends DatabaseTestCase
 
     public function testListRolesShowsExistingRecords(): void
     {
-        $roles = Role::factory()->count(2)->create();
+        $roles = Role::factory()->forGuard(GuardEnum::DEFAULT)->count(2)->create();
 
         Livewire::test(ListRoles::class)
+            ->assertStatus(200)
             ->assertCanSeeTableRecords($roles);
     }
 }

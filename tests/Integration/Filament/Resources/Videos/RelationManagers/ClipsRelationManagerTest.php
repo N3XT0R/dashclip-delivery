@@ -42,8 +42,8 @@ final class ClipsRelationManagerTest extends DatabaseTestCase
             ->assertTableColumnVisible('end_sec')
             ->assertTableColumnVisible('submitted_by')
             ->assertTableColumnVisible('created_at')
-            ->assertTableActionVisible('view')
-            ->assertTableActionVisible('preview');
+            ->assertTableActionVisible('view', $clip)
+            ->assertTableActionVisible('preview', $clip);
     }
 
     public function testPreviewActionHiddenWhenVideoHasNoPreviewUrl(): void

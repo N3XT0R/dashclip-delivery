@@ -26,7 +26,7 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
     public function testAssignmentsRelationManagerShowsRecordsAndActions(): void
     {
         $video = Video::factory()->withPreviewUrl()->create();
-        $assignment = Assignment::factory()->forVideo($video)->create();
+        $assignment = Assignment::factory()->withBatch()->forVideo($video)->create();
 
         $this->actingAs($this->admin);
 
@@ -36,14 +36,14 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
         ])
             ->assertSuccessful()
             ->assertCanSeeTableRecords([$assignment])
-            ->assertTableActionVisible('open')
-            ->assertTableActionVisible('preview');
+            ->assertTableActionVisible('open', $assignment)
+            ->assertTableActionVisible('preview', $assignment);
     }
 
     public function testPreviewActionHiddenWhenVideoMissingPreviewUrl(): void
     {
         $video = Video::factory()->create(['preview_url' => null]);
-        $assignment = Assignment::factory()->forVideo($video)->create();
+        $assignment = Assignment::factory()->withBatch()->forVideo($video)->create();
 
         $this->actingAs($this->admin);
 
