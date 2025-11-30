@@ -255,6 +255,5 @@
                 Wesentliche Änderungen werden per E-Mail oder Plattformhinweis mitgeteilt.
             </p>
         </section>
-
     </div>
 @endsection
