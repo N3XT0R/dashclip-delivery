@@ -16,45 +16,11 @@
             background-color: #f9fafb;
         }
 
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-        }
-
-        .popup {
-            background: #fff;
-            border-radius: 12px;
-            padding: 16px;
-            max-width: 90%;
-            width: 90%;
-            height: 90%;
-            display: flex;
-            flex-direction: column;
-        }
-
         .popup iframe {
             border: none;
             flex: 1;
             width: 100%;
             border-radius: 8px;
-        }
-
-        .close-btn {
-            display: inline-block;
-            background: #ef4444;
-            color: #fff;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 8px;
-            align-self: flex-end;
         }
     </style>
 </head>
