@@ -127,7 +127,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unchanged, ensuring full backward compatibility with existing behavior and  
   preserving all current test expectations.
 - **VideoUpload UX Improvement**  
-  Added a client-side JavaScript event in the video upload form that re-enables the “Upload abschließen” button only
+  Added a client-side JavaScript event in the video upload form that re-enables the “Upload” button only
   after the file upload has fully completed.  
   This prevents premature submissions, improves user experience, and increases reliability under slower network
   conditions.
