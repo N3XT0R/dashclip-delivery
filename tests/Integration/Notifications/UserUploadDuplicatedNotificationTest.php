@@ -14,13 +14,6 @@ use Tests\DatabaseTestCase;
 class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 {
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        \Bus::fake();
-    }
-
-
     public function testItSendsMailAndDatabaseNotifications(): void
     {
         Mail::fake();
@@ -95,7 +88,7 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
         ]);
 
         $this->assertDatabaseHas('notifications', [
-            'data->body' => 'Die Datei **clip.mov** wurde erfolgreich bearbeitet.',
+            'data->body' => 'Die Datei **clip.mov** wurde als *Doppeleinsendung* erkannt.',
         ]);
     }
 
@@ -118,7 +111,7 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 
         $html = $mail->render();
         $this->assertStringContainsString(
-            'Dein Upload ist eine Doppeleinsendung!.',
+            'jedoch als <strong>Doppeleinsendung</strong> erkannt.',
             $html
         );
 
