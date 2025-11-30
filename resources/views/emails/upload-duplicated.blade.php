@@ -16,6 +16,10 @@
                 Doppeleinsendung erkannt
             </h1>
 
+            <p style="font-size:13px; color:#64748b; margin:0 0 18px;">
+                Stand: {{ $date->format('d.m.Y H:i') }} Uhr
+            </p>
+
             <p>Hallo {{ $user->name }},</p>
 
             <p>
