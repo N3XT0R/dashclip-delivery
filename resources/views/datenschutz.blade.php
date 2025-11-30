@@ -239,8 +239,11 @@
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Widerruf der Einwilligung</h2>
             <p>
-                Eine erteilte Einwilligung (z. B. Dropbox-Integration) kann jederzeit widerrufen werden.
-                Die Rechtmäßigkeit der bisherigen Verarbeitung bleibt hiervon unberührt.
+                Die Einwilligung zur Nutzung der Dropbox-Integration ist zwingend erforderlich,
+                da die Plattform technisch auf der Speicherung und Verarbeitung der Inhalte über Dropbox basiert.
+                Sie können Ihre Einwilligung jederzeit widerrufen; ein Widerruf führt jedoch dazu,
+                dass Ihr Benutzerkonto deaktiviert wird und die Plattform nicht weiter genutzt werden kann.
+                Die bis zum Widerruf erfolgte Verarbeitung bleibt rechtmäßig.
             </p>
         </section>
 
