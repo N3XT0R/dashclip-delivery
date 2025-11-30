@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Notifications;
 
+use App\Mail\UserUploadProceedMail;
 use App\Models\User;
 use App\Notifications\UserUploadDuplicatedNotification;
 use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Mail;
 use Tests\DatabaseTestCase;
 
@@ -102,7 +102,7 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
             note: 'Zusätzliche Notiz'
         );
 
-        /** @var MailMessage $mail */
+        /** @var UserUploadProceedMail $mail */
         $mail = $notification->toMail($user);
 
         $this->assertSame(
@@ -110,14 +110,15 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
             $mail->subject
         );
 
-        $this->assertTrue(
-            collect($mail->introLines)
-                ->contains('Dein Upload ist eine Doppeleinsendung!.')
+        $html = $mail->render();
+        $this->assertStringContainsString(
+            'Dein Upload ist eine Doppeleinsendung!.',
+            $html
         );
 
-        $this->assertTrue(
-            collect($mail->introLines)
-                ->contains('Zusätzliche Notiz')
+        $this->assertStringContainsString(
+            'Zusätzliche Notiz',
+            $html
         );
     }
 
