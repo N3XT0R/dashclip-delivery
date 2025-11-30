@@ -100,35 +100,32 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->limit(40),
                 TextColumn::make('quota')
                     ->label('Quota (Videos/Woche)')
-                    ->sortable()
-                    ->inline()
-                    ->action(
-                        EditAction::make('editQuota')
-                            ->label('Quota bearbeiten')
-                            ->schema([
-                                TextInput::make('quota')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->required(),
-                            ])
-                            ->action(function (Channel $record, array $data) use ($tenant) {
-                                $tenant->assignedChannels()
-                                    ->updateExistingPivot($record->getKey(), [
-                                        'quota' => $data['quota'],
-                                    ]);
-                            })
-                            ->visible($isOwner)
-                            ->modalIcon('heroicon-m-pencil-square')
-                            ->icon('heroicon-m-pencil-square')
-                            ->iconPosition(IconPosition::After)
-                            ->iconButton()
-                    ),
+                    ->sortable(),
             ])
             ->recordActions([
+                EditAction::make('editQuota')
+                    ->label('Quota bearbeiten')
+                    ->schema([
+                        TextInput::make('quota')
+                            ->numeric()
+                            ->minValue(0)
+                            ->required(),
+                    ])
+                    ->action(function (?Channel $record, array $data) use ($tenant) {
+                        $tenant->assignedChannels()
+                            ->updateExistingPivot($record?->getKey(), [
+                                'quota' => $data['quota'],
+                            ]);
+                    })
+                    ->visible($isOwner)
+                    ->modalIcon('heroicon-m-pencil-square')
+                    ->icon('heroicon-m-pencil-square')
+                    ->iconPosition(IconPosition::After)
+                    ->iconButton(),
                 DetachAction::make()
                     ->label('Entfernen')
-                    ->action(function (Channel $record) use ($tenant) {
-                        $tenant->assignedChannels()->detach($record->getKey());
+                    ->action(function (?Channel $record) use ($tenant) {
+                        $tenant->assignedChannels()->detach($record?->getKey());
                     })
                     ->visible($isOwner),
             ]);
