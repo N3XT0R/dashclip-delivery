@@ -171,6 +171,20 @@
         border-top: 1px solid rgba(0, 0, 0, 0.1);
         margin: 24px 0;
     }
+
+    .welcome-card {
+        @apply w-full max-w-3xl mx-auto p-10 rounded-xl shadow text-center border;
+        background: var(--color-panel);
+        color: var(--color-text);
+        border-color: var(--color-border);
+    }
+
+    /* Light-mode Override */
+    .light .welcome-card {
+        background: var(--color-panel-light);
+        color: var(--color-text-light);
+        border-color: var(--color-border-light);
+    }
 }
 
 /* Utility-helper */

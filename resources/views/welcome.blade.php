@@ -4,7 +4,7 @@
 @section('subtitle', null)
 
 @section('content')
-    <div class="max-w-xl w-full mx-auto p-8 bg-white rounded-xl shadow text-center">
+    <div class="welcome-card">
         <img src="{{ asset('images/logo.png') }}"
              alt="DashClip Delivery Logo"
              class="mx-auto mb-4 h-16 w-auto">
