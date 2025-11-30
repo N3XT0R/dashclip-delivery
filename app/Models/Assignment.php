@@ -27,7 +27,10 @@ class Assignment extends Model
         'download_token',
         'notification_id'
     ];
-    protected $casts = ['expires_at' => 'datetime', 'last_notified_at' => 'datetime'];
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'last_notified_at' => 'datetime'
+    ];
 
 
     public function scopeHasUsersClips(Builder $query, User $user): Builder

@@ -76,6 +76,22 @@ final class AssignmentTest extends DatabaseTestCase
         $this->assertNotNull($assignment->last_notified_at);
     }
 
+    public function testSetExpiresAtMutateAttributesToMinDate(): void
+    {
+        $expiresAt = now()->addDays(3);
+        $assignment = Assignment::factory()->create([
+            'expires_at' => $expiresAt,
+            'status' => StatusEnum::QUEUED->value,
+            'last_notified_at' => null,
+            'batch_id' => Batch::factory()->create(),
+        ]);
+        
+        $assignment->setExpiresAt(2);
+        $this->assertNotNull($assignment->expires_at);
+        $this->assertTrue($assignment->expires_at->greaterThan(now()->addDays(1)->addHours(23)));
+        $this->assertTrue($assignment->expires_at->lessThan(now()->addDays(2)->addHours(1)));
+    }
+
     public function testBelongsToNotification(): void
     {
         $notification = Notification::factory()->create();
