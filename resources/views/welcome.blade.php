@@ -88,29 +88,7 @@
         <li>Rückgabe-Option für nicht benötigte Inhalte</li>
         <li>Transparente Protokollierung aller Aktionen</li>
     </ul>
-    <button id="openGame" class="inline-block px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-400">
-        Ist dir gerade langweilig?
-    </button>
     @include('partials.footer')
 </div>
-
-
-<div class="overlay" id="gameOverlay">
-    <div class="popup">
-        <button class="close-btn" id="closeGame">Schließen</button>
-        <iframe src="{{ route('game') }}"></iframe>
-    </div>
-</div>
-<script>
-    const openBtn = document.getElementById('openGame');
-    const closeBtn = document.getElementById('closeGame');
-    const overlay = document.getElementById('gameOverlay');
-    openBtn.addEventListener('click', () => {
-        overlay.style.display = 'flex';
-    });
-    closeBtn.addEventListener('click', () => {
-        overlay.style.display = 'none';
-    });
-</script>
 </body>
 </html>
