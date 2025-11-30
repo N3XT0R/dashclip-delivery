@@ -45,6 +45,14 @@ class PanelUserPanelProvider extends PanelProvider
         $this->addMFA($panel);
         $this->addWidgets($panel);
         $this->addTenantMiddlewares($panel);
+        $this->addNotifications($panel);
+        
+        return $panel;
+    }
+
+    protected function addNotifications(Panel $panel): Panel
+    {
+        $panel->databaseNotifications();
         return $panel;
     }
 
