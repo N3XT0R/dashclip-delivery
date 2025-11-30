@@ -84,7 +84,6 @@ class SelectChannels extends Page implements HasForms, HasTable
         $isOwner = auth()->user()->can('manageChannels', $tenant);
 
         return $table
-            ->recordTitle('name')
             ->modelLabel('Kanal')
             ->columns([
                 TextColumn::make('name')
@@ -102,28 +101,30 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->limit(40),
                 TextColumn::make('quota')
                     ->label('Quota (Videos/Woche)')
-                    ->sortable(),
+                    ->sortable()
+                    ->action(
+                        EditAction::make('editQuota')
+                            ->label('Quota bearbeiten')
+                            ->schema([
+                                TextInput::make('quota')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->required(),
+                            ])
+                            ->action(function (Channel $record, array $data) use ($tenant) {
+                                $tenant->assignedChannels()
+                                    ->updateExistingPivot($record->getKey(), [
+                                        'quota' => $data['quota'],
+                                    ]);
+                            })
+                            ->visible($isOwner)
+                            ->modalIcon('heroicon-m-pencil-square')
+                            ->icon('heroicon-m-pencil-square')
+                            ->iconPosition(IconPosition::After)
+                            ->iconButton()
+                    ),
             ])
             ->recordActions([
-                EditAction::make('editQuota')
-                    ->label('Quota bearbeiten')
-                    ->schema([
-                        TextInput::make('quota')
-                            ->numeric()
-                            ->minValue(0)
-                            ->required(),
-                    ])
-                    ->using(function (?Model $record, array $data = []) use ($tenant) {
-                        $tenant?->assignedChannels()
-                            ->updateExistingPivot($record?->getKey(), [
-                                'quota' => $data['quota'],
-                            ]);
-                    })
-                    ->visible($isOwner)
-                    ->modalIcon('heroicon-m-pencil-square')
-                    ->icon('heroicon-m-pencil-square')
-                    ->iconPosition(IconPosition::After)
-                    ->iconButton(),
                 DetachAction::make()
                     ->label('Entfernen')
                     ->using(function (?Model $record) use ($tenant) {
