@@ -17,6 +17,7 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \Bus::fake();
     }
 
 
