@@ -6,6 +6,7 @@ namespace Tests\Integration\Models;
 
 use App\Facades\PathBuilder;
 use App\Models\Clip;
+use App\Models\User;
 use App\Models\Video;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -84,6 +85,25 @@ final class VideoTest extends DatabaseTestCase
 
         // Assert
         $this->assertNull($result);
+    }
+
+    public function testHasUsersClipsScopeReturnsVideos(): void
+    {
+        $user = User::factory()->create();
+        $videoWithClip = Video::factory()->create();
+        $videoWithoutClip = Video::factory()->create();
+
+        $clip = $videoWithClip->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+        ]);
+        $clip->setUser($user)->save();
+
+        $videos = Video::query()->hasUsersClips($user)->get();
+
+        $this->assertCount(1, $videos);
+        $this->assertTrue($videos->first()->is($videoWithClip));
+        $this->assertFalse($videos->contains($videoWithoutClip));
     }
 
     public function testDeletingVideoRemovesFilesFromStorage(): void
