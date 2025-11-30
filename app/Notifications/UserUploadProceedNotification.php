@@ -2,11 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Mail\UserUploadProceedMail;
+use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 
@@ -30,15 +31,16 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @param  Notifiable&Model  $notifiable
-     * @return MailMessage
+     * @param  Notifiable&User  $notifiable
+     * @return UserUploadProceedMail
      */
-    public function toMail(Model $notifiable): MailMessage
+    public function toMail(User $notifiable): UserUploadProceedMail
     {
-        return (new MailMessage)
-            ->subject("Upload verarbeitet: {$this->filename}")
-            ->line("Dein Upload wurde erfolgreich verarbeitet.")
-            ->lineIf($this->note, $this->note);
+        return new UserUploadProceedMail(
+            $notifiable,
+            $this->filename,
+            $this->note
+        )->to($notifiable->email);
     }
 
 
