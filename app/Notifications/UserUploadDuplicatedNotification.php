@@ -2,72 +2,53 @@
 
 namespace App\Notifications;
 
+use App\Mail\UserUploadDuplicatedMail;
+use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 
-class UserUploadDuplicatedNotification extends Notification
+class UserUploadDuplicatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
     public function __construct(
         public string $filename,
         public ?string $note = null
     ) {
-        //
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  Notifiable&Model  $notifiable
-     * @return array<int, string>
-     */
     public function via(Model $notifiable): array
     {
         return ['mail', 'database'];
     }
 
-    /**
-     * @param  Notifiable&Model  $notifiable
-     * @return MailMessage
-     */
-    public function toMail(Model $notifiable): MailMessage
+    public function toMail(User $notifiable): UserUploadDuplicatedMail
     {
-        return (new MailMessage)
-            ->subject("Upload verarbeitet: {$this->filename}")
-            ->line("Dein Upload ist eine Doppeleinsendung!.")
-            ->lineIf($this->note, $this->note);
+        return new UserUploadDuplicatedMail(
+            user: $notifiable,
+            filename: $this->filename,
+            note: $this->note
+        )->to($notifiable->email);
     }
 
-    /**
-     * @param  Notifiable&Model  $notifiable
-     * @return array
-     */
     public function toDatabase(Model $notifiable): array
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")
-            ->body("Die Datei **{$this->filename}** wurde erfolgreich bearbeitet.".($this->note ? "\n\n{$this->note}" : ''))
-            ->success()
+            ->body(
+                "Die Datei **{$this->filename}** wurde als *Doppeleinsendung* erkannt.".
+                ($this->note ? "\n\n{$this->note}" : '')
+            )
+            ->warning()
             ->sendToDatabase($notifiable)
             ->toBroadcast();
 
         return $this->toArray($notifiable);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  Notifiable&Model  $notifiable
-     * @return array<string, mixed>
-     */
     public function toArray(Model $notifiable): array
     {
         return [
