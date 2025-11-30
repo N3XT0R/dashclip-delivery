@@ -22,6 +22,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class SelectChannels extends Page implements HasForms, HasTable
 {
@@ -83,7 +84,8 @@ class SelectChannels extends Page implements HasForms, HasTable
         $isOwner = auth()->user()->can('manageChannels', $tenant);
 
         return $table
-            ->recordTitle('Kanal')
+            ->recordTitle('name')
+            ->modelLabel('Kanal')
             ->columns([
                 TextColumn::make('name')
                     ->label('Name')
@@ -92,7 +94,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->label('Youtube-Kanal')
                     ->inline()
                     ->formatStateUsing(fn($state) => $state ? '@'.$state : '-')
-                    ->url(fn($record) => $record->youtube_name
+                    ->url(fn(Channel $record) => $record->youtube_name
                         ? 'https://www.youtube.com/@'.$record->youtube_name
                         : null
                     )
@@ -111,8 +113,8 @@ class SelectChannels extends Page implements HasForms, HasTable
                             ->minValue(0)
                             ->required(),
                     ])
-                    ->action(function (?Channel $record, array $data) use ($tenant) {
-                        $tenant->assignedChannels()
+                    ->using(function (?Model $record, array $data = []) use ($tenant) {
+                        $tenant?->assignedChannels()
                             ->updateExistingPivot($record?->getKey(), [
                                 'quota' => $data['quota'],
                             ]);
@@ -124,8 +126,8 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ->iconButton(),
                 DetachAction::make()
                     ->label('Entfernen')
-                    ->action(function (?Channel $record) use ($tenant) {
-                        $tenant->assignedChannels()->detach($record?->getKey());
+                    ->using(function (?Model $record) use ($tenant) {
+                        $tenant?->assignedChannels()->detach($record?->getKey());
                     })
                     ->visible($isOwner),
             ]);
