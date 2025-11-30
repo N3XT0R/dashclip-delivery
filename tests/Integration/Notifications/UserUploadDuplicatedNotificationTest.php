@@ -13,6 +13,13 @@ use Tests\DatabaseTestCase;
 
 class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 {
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
+
     public function testItSendsMailAndDatabaseNotifications(): void
     {
         Mail::fake();
