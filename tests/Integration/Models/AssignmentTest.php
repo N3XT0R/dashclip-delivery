@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration\Models;
 
 use App\Enum\StatusEnum;
+use App\Facades\Cfg;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -85,11 +86,27 @@ final class AssignmentTest extends DatabaseTestCase
             'last_notified_at' => null,
             'batch_id' => Batch::factory()->create(),
         ]);
-        
+
         $assignment->setExpiresAt(2);
         $this->assertNotNull($assignment->expires_at);
         $this->assertTrue($assignment->expires_at->greaterThan(now()->addDays(1)->addHours(23)));
         $this->assertTrue($assignment->expires_at->lessThan(now()->addDays(2)->addHours(1)));
+    }
+
+    public function testSetExpiresAtMutateAttributesToConfigTTLDate(): void
+    {
+        $value = Cfg::get('expire_after_days', 'default', 6);
+        $assignment = Assignment::factory()->create([
+            'expires_at' => null,
+            'status' => StatusEnum::QUEUED->value,
+            'last_notified_at' => null,
+            'batch_id' => Batch::factory()->create(),
+        ]);
+
+        $assignment->setExpiresAt();
+        $this->assertNotNull($assignment->expires_at);
+        $this->assertTrue($assignment->expires_at->greaterThan(now()->addDays($value)->subDay()->addHours(23)));
+        $this->assertTrue($assignment->expires_at->lessThan(now()->addDays($value)->addHours(1)));
     }
 
     public function testBelongsToNotification(): void
