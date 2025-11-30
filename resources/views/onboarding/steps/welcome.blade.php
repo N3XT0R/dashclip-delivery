@@ -2,7 +2,11 @@
 
 Schön, dass du da bist! Das **Standard-Panel** ist deine Schaltzentrale, um Videos hochzuladen, Kanäle zu verbinden und alles im Blick zu behalten. Hier erledigst du alles Wichtige ohne Umwege: von den ersten Uploads bis zum Livegang deiner Kampagnen.
 
-[Hier: Screenshot/Grafik des Dashboards]
+<img
+        src="{{ asset('images/onboarding/dashboard.jpg') }}"
+        alt="Onboarding Illustration"
+        class="w-20 h-20 object-contain mb-3"
+/>
 
 ### Was dich gleich erwartet
 - ✅ **Video-Upload:** Deine Clips sicher hochladen und verarbeiten lassen.

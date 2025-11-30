@@ -2,10 +2,14 @@
 
 Starte mit deinen Inhalten! Unter `Videos` findest du oben rechts den Button `Video hochladen`. Dort ziehst du Dateien per Drag & Drop hinein oder wählst sie über den Dateidialog aus.
 
-[Hier: Screenshot/Grafik des Upload-Interfaces]
+<img
+        src="{{ asset('images/onboarding/upload.jpg') }}"
+        alt="Onboarding Illustration"
+        class="w-20 h-20 object-contain mb-3"
+/>
 
 ### Schritt für Schritt
-- ✅ Klicke auf `Video hochladen` und wähle deinen Clip aus.
+- ✅ Klicke auf `Datei ablegen oder auswählen` und wähle deinen Clip aus.
 - ✅ Ergänze einen Titel und, falls vorhanden, kurze Notizen für dein Team.
 - ✅ Bestätige den Upload und bleib kurz im Fenster, bis die Übertragung abgeschlossen ist.
 
@@ -15,7 +19,7 @@ Starte mit deinen Inhalten! Unter `Videos` findest du oben rechts den Button `Vi
 - 🔄 Der Status wird in der Übersicht aktualisiert, sodass du jederzeit siehst, wie weit die Verarbeitung ist.
 
 ### Tipps für reibungslose Uploads
-- Bevorzuge **MP4** oder **MOV**; Auflösung bis **4K** ist möglich.
+- Bevorzuge **MP4**; Auflösung bis **4K** ist möglich.
 - Halte einzelne Dateien idealerweise unter **2 GB**, damit der Upload schnell bleibt.
 - Nutze eine stabile Verbindung und vermeide gleichzeitige Massen-Uploads.
 
