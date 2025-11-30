@@ -34,15 +34,13 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 
         $user->notify($notification);
 
-        // Erwartete Notification 1: Laravel-Standardnotification
         $this->assertDatabaseHas('notifications', [
-            'notifiable_id' => $user->id,
+            'notifiable_id' => $user->getKey(),
             'type' => UserUploadDuplicatedNotification::class,
         ]);
 
-        // Erwartete Notification 2: Filament-Notification
         $this->assertDatabaseHas('notifications', [
-            'notifiable_id' => $user->id,
+            'notifiable_id' => $user->getKey(),
             'type' => \Filament\Notifications\DatabaseNotification::class,
         ]);
     }
@@ -115,7 +113,7 @@ class UserUploadDuplicatedNotificationTest extends DatabaseTestCase
 
         $this->assertSame(
             'Upload verarbeitet: testfile.mp4',
-            $mail->subject
+            $mail->envelope()->subject
         );
 
         $html = $mail->render();

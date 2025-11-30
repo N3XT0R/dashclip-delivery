@@ -56,7 +56,8 @@ class UserUploadDuplicatedNotification extends Notification
             ->title("Upload verarbeitet")
             ->body("Die Datei **{$this->filename}** wurde erfolgreich bearbeitet.".($this->note ? "\n\n{$this->note}" : ''))
             ->success()
-            ->sendToDatabase($notifiable);
+            ->sendToDatabase($notifiable)
+            ->toBroadcast();
 
         return $this->toArray($notifiable);
     }
