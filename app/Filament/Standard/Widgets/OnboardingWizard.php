@@ -21,12 +21,6 @@ class OnboardingWizard extends Widget implements HasForms
     protected string $view = 'filament.standard.widgets.onboarding-wizard';
     protected static bool $isLazy = false;
 
-    public function mount(): void
-    {
-        if (static::canView()) {
-            $this->dispatch('open-modal', id: static::$modalId);
-        }
-    }
 
     public static function canView(): bool
     {
@@ -37,7 +31,6 @@ class OnboardingWizard extends Widget implements HasForms
     {
         return $schema->components([
             Wizard::make([
-
                 Wizard\Step::make('Willkommen')
                     ->schema([
                         TextEntry::make('intro')
