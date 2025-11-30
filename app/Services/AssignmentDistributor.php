@@ -135,8 +135,7 @@ readonly class AssignmentDistributor
         Batch $batch,
         string $uploaderType,
         string|int $uploaderId
-    ): ChannelPoolDto
-    {
+    ): ChannelPoolDto {
         $channelService = app(ChannelService::class);
         $channelPoolDto = $channelService->prepareChannelsAndPool(
             $quotaOverride,
@@ -171,6 +170,9 @@ readonly class AssignmentDistributor
                 $run->assignedChannelsByVideo
             );
 
+            // Defensive fallback: occurs only during rare race conditions
+            // (e.g. channel removed between pool calculation and pickup).
+            // Not deterministically testable; covered by integration behavior.
             if (!$channel) {
                 $skipped += $group->count();
                 continue;
