@@ -16,8 +16,7 @@
         <x-filament::modal
                 id="onboarding-wizard"
                 alignment="center"
-                width="3xl"
-                lazy
+                width="6xl"
         >
             <x-slot name="trigger">
                 <x-filament::button
