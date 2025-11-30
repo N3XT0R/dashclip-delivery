@@ -1,29 +1,13 @@
 <x-filament-widgets::widget>
-    <x-filament::modal
-            id="onboarding-wizard" visible="{{ true }}" alignment="center" width="3xl"
-    >
-        <x-slot name="trigger">
-            <button
-                    x-data
-                    x-init="$nextTick(() => $el.click())"
-                    class="hidden"
-                    type="button"
-            >
-                Auto-open
-            </button>
-        </x-slot>
-        <x-slot name="heading">
-            Willkommen! So funktioniert DashClip:
-        </x-slot>
-
-        <form wire:submit.prevent="submit">
-            {{ $this->schema ?? $this->form }}
-        </form>
-
-        <x-slot name="footer">
-            <x-filament::button type="submit" wire:click="submit" color="primary" size="xs">
-                Nicht mehr anzeigen
+    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="space-y-3">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900">Willkommen im Panel 👋</h2>
+                <p class="text-sm text-gray-600">Starte hier dein Onboarding, um alle Funktionen des DashClip Panels kennenzulernen.</p>
+            </div>
+            <x-filament::button tag="a" href="{{ route('filament.standard.pages.onboarding-wizard') }}" color="primary">
+                Onboarding starten
             </x-filament::button>
-        </x-slot>
-    </x-filament::modal>
+        </div>
+    </div>
 </x-filament-widgets::widget>
