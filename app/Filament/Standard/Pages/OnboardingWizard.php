@@ -2,8 +2,10 @@
 
 namespace App\Filament\Standard\Pages;
 
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Infolists\Components\TextEntry;
@@ -20,7 +22,7 @@ class OnboardingWizard extends Page implements HasForms
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static ?string $navigationIcon = null;
+    protected static string|BackedEnum|null $navigationIcon = null;
 
     protected static ?string $title = 'Onboarding';
 
@@ -89,6 +91,9 @@ class OnboardingWizard extends Page implements HasForms
             $user->forceFill(['onboarding_completed' => true])->save();
         }
 
-        return redirect()->route('filament.standard.pages.dashboard');
+        return redirect()->route(
+            'filament.standard.pages.dashboard',
+            ['tenant' => Filament::getTenant()]
+        );
     }
 }

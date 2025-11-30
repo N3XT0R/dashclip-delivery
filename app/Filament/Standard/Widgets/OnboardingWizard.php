@@ -3,6 +3,7 @@
 namespace App\Filament\Standard\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Filament\Facades\Filament;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,14 +17,21 @@ class OnboardingWizard extends Widget
 
     protected static bool $isLazy = false;
 
-    public function mount(): void
+    public static function canView(): bool
+    {
+        $user = Auth::user();
+
+        return $user ? $user->onboarding_completed === false : false;
+    }
+
+    public function mount()
     {
         $user = Auth::user();
 
         if ($user && $user->onboarding_completed === false) {
-            redirect()
-                ->route('filament.standard.pages.onboarding-wizard')
-                ->send();
+            return redirect()->route('filament.standard.pages.onboarding-wizard', [
+                'tenant' => Filament::getTenant(),
+            ]);
         }
     }
 }
