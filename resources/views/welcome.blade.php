@@ -4,7 +4,7 @@
 @section('subtitle', null)
 
 @section('content')
-    <div class="welcome-card">
+    <div class="panel">
         <img src="{{ asset('images/logo.png') }}"
              alt="DashClip Delivery Logo"
              class="mx-auto mb-4 h-16 w-auto">
@@ -13,26 +13,26 @@
             DashClip Delivery
         </h1>
 
-        <p class="mb-6 text-gray-600">
+        <p class="mb-6">
             DashClip Delivery ist eine zentrale Plattform für Einsender, die ihre Dashcam-Clips
             an mehrere YouTube-Kanäle verteilen möchten – ohne mehrfachen Upload, ohne
             verschiedene Formulare und ohne den Überblick zu verlieren.
         </p>
 
-        <p class="mb-6 text-gray-600">
+        <p class="mb-6">
             Du lädst deinen Clip einmal hoch. Die Plattform übernimmt anschließend automatisch
             die faire, nachvollziehbare Verteilung an die angeschlossenen Kanäle. Jeder Kanal
             erhält nur passende Angebote und kann Clips einzeln oder gesammelt herunterladen.
         </p>
 
-        <p class="mb-6 text-gray-600">
+        <p class="mb-6">
             DashClip Delivery löst damit ein Problem, das viele Einsender haben: ein einziger
             Upload statt mehrere Portale. Kanäle sind reine Empfänger innerhalb dieses Systems.
             Downloads sind zeitlich begrenzt, werden protokolliert und nicht benötigte Clips
             können jederzeit zurückgegeben werden.
         </p>
 
-        <ul class="list-disc pl-6 space-y-1 text-gray-600 mb-6 text-left">
+        <ul class="list-disc pl-6 space-y-1 mb-6 text-left">
             <li>Zentraler Upload für mehrere YouTube-Kanäle gleichzeitig</li>
             <li>Automatische, faire Verteilung von Clips anhand definierter Regeln</li>
             <li>Download-Links mit Vorschau und optionalem ZIP-Paket</li>
