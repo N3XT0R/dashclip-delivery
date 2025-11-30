@@ -42,7 +42,7 @@ class UserUploadDuplicatedNotification extends Notification implements ShouldQue
                 "Die Datei **{$this->filename}** wurde als *Doppeleinsendung* erkannt.".
                 ($this->note ? "\n\n{$this->note}" : '')
             )
-            ->warning()
+            ->danger()
             ->sendToDatabase($notifiable)
             ->toBroadcast();
 
