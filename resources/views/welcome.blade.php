@@ -40,7 +40,7 @@
             <li>Transparente Protokollierung aller Aktionen</li>
         </ul>
 
-        <div class="flex items-center justify-center gap-4 mt-6">
+        <div class="flex items-center justify-center gap-6 mt-6">
             <a href="{{ route('filament.standard.auth.register') }}" class="btn">
                 Jetzt registrieren
             </a>
