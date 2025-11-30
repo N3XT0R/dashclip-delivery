@@ -9,8 +9,8 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Stringable;
 
 class OnboardingWizard extends Widget implements HasForms
 {
@@ -40,22 +40,46 @@ class OnboardingWizard extends Widget implements HasForms
 
                 Wizard\Step::make('Willkommen')
                     ->schema([
-                        TextColumn::make('intro')
-                            ->markdown()
-                            ->state('So funktioniert DashClip ...'),
+                        TextEntry::make('intro')
+                            ->state($this->markdownFromView('onboarding.steps.welcome'))
+                            ->markdown(),
                     ]),
 
                 Wizard\Step::make('Video-Upload')
-                    ->schema([]),
+                    ->schema([
+                        TextEntry::make('video-upload')
+                            ->state($this->markdownFromView('onboarding.steps.video-upload'))
+                            ->markdown(),
+                    ]),
+
+                Wizard\Step::make('Kanal-Auswahl')
+                    ->schema([
+                        TextEntry::make('channel-selection')
+                            ->state($this->markdownFromView('onboarding.steps.channel-selection'))
+                            ->markdown(),
+                    ]),
+
+                Wizard\Step::make('Video-Management')
+                    ->schema([
+                        TextEntry::make('video-management')
+                            ->state($this->markdownFromView('onboarding.steps.video-management'))
+                            ->markdown(),
+                    ]),
 
                 Wizard\Step::make('Fertig')
                     ->schema([
                         TextEntry::make('done')
-                            ->state('Alles bereit – bestätige zum Abschluss.'),
+                            ->state($this->markdownFromView('onboarding.steps.finished'))
+                            ->markdown(),
                     ]),
 
             ]),
         ]);
+    }
+
+    private function markdownFromView(string $view): Stringable
+    {
+        return str(view($view)->render())->trim();
     }
 
     public function submit(): void
