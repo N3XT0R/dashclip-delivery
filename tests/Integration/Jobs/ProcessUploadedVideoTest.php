@@ -84,6 +84,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         \Storage::fake('tmp');
 
         // Arrange
+        User::flushEventListeners();
         $user = User::factory()->create();
         $team = Team::factory()->create();
 
@@ -93,7 +94,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
 
         $video = Video::factory()->create([
             'hash' => $hash,
-            'original_name' => 'teamclip.mp4',
+            'original_name' => 'standalone.mp4',
             'team_id' => null,
         ]);
 
