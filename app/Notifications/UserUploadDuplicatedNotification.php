@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Mail\UserUploadDuplicatedMail;
 use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,7 @@ class UserUploadDuplicatedNotification extends Notification implements ShouldQue
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")
+            ->icon(Heroicon::OutlinedQueueList)
             ->body(
                 "Die Datei **{$this->filename}** wurde als *Doppeleinsendung* erkannt.".
                 ($this->note ? "\n\n{$this->note}" : '')

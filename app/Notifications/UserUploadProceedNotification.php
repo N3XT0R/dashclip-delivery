@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Mail\UserUploadProceedMail;
 use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
@@ -52,6 +53,7 @@ class UserUploadProceedNotification extends Notification implements ShouldQueue
     {
         FilamentNotification::make()
             ->title("Upload verarbeitet")
+            ->icon(Heroicon::OutlinedQueueList)
             ->body("Die Datei **{$this->filename}** wurde erfolgreich bearbeitet.".($this->note ? "\n\n{$this->note}" : ''))
             ->success()
             ->sendToDatabase($notifiable)
