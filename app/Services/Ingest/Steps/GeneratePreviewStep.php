@@ -44,7 +44,7 @@ class GeneratePreviewStep implements IngestStepInterface
             );
 
             return $next($context);
-        } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
+        } catch (PreviewGenerationException $e) {
             Log::error('Preview generation failed', [
                 'file' => $context->file->path,
                 'video_id' => $context->video?->getKey(),
@@ -53,6 +53,8 @@ class GeneratePreviewStep implements IngestStepInterface
             ]);
 
             return IngestResult::ERR;
+        } catch (InvalidTimeRangeException $e) {
+            Log::error($e->getMessage(), $e->context());
         } catch (\Throwable $e) {
             Log::error('Unexpected error during preview generation', [
                 'file' => $context->file->path,

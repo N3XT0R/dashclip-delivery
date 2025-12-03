@@ -21,6 +21,7 @@ final class InvalidTimeRangeException extends InvalidArgumentException
             'start' => $this->start,
             'end' => $this->end,
             'duration' => $this->end - $this->start,
+            'exception' => $this,
         ];
     }
 }
