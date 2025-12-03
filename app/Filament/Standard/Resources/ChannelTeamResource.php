@@ -7,13 +7,10 @@ use App\Models\ChannelTeam;
 use App\Models\Pivots\ChannelTeamPivot;
 use BackedEnum;
 use Filament\Actions;
-use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\IconPosition;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -52,6 +49,7 @@ class ChannelTeamResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
+        $tenant = Filament::getTenant();
         return $schema
             ->components([
                 Forms\Components\Select::make('channel_id')
@@ -60,6 +58,7 @@ class ChannelTeamResource extends Resource
                 Forms\Components\TextInput::make('quota')
                     ->numeric()
                     ->minValue(0)
+                    ->default(10)
                     ->required(),
             ]);
     }
@@ -88,28 +87,16 @@ class ChannelTeamResource extends Resource
                 Tables\Columns\TextColumn::make('quota')
                     ->label('Quota (Videos/Woche)')
                     ->sortable()
-                    ->inline()
-                    ->action(
-                        EditAction::make('editQuota')
-                            ->label('Quota bearbeiten')
-                            ->schema([
-                                TextInput::make('quota')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->required(),
-                            ])
-                            ->modalIcon('heroicon-m-pencil-square')
-                            ->icon('heroicon-m-pencil-square')
-                            ->iconPosition(IconPosition::After)
-                            ->iconButton()
-                    ),
+                    ->inline(),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                Actions\EditAction::make(),
-                Actions\DeleteAction::make(),
+                Actions\EditAction::make()
+                    ->modal(),
+                Actions\DeleteAction::make()
+                    ->modal(),
             ])
             ->toolbarActions([
                 Actions\BulkActionGroup::make([
