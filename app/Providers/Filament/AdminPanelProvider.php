@@ -67,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ->path(PanelEnum::ADMIN->value)
             ->authGuard(GuardEnum::DEFAULT->value)
             ->tenant(null)
-            ->login(Login::class)
+            ->login()
             ->emailVerification()
             ->emailChangeVerification()
             ->profile(EditProfile::class, false)
