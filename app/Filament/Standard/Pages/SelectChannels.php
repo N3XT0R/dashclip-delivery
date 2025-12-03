@@ -6,7 +6,6 @@ use App\Models\Channel;
 use App\Models\Team;
 use App\Repository\ChannelRepository;
 use BackedEnum;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
@@ -27,7 +26,6 @@ class SelectChannels extends Page implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
-    use HasPageShield;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $title = 'Kanäle auswählen';
