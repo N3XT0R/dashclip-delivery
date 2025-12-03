@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChannelTeamPivot extends Model
 {
-    protected $table = 'team_channel';
+    protected $table = 'channel_team';
 
     public $timestamps = false;
 
