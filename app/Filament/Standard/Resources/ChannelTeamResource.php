@@ -108,7 +108,8 @@ class ChannelTeamResource extends Resource
             ])
             ->recordActions([
                 Actions\EditAction::make(),
-                Actions\DeleteAction::make(),
+                Actions\DeleteAction::make()
+                    ->modalHeading('Kanal löschen'),
             ])
             ->toolbarActions([
                 Actions\BulkActionGroup::make([
