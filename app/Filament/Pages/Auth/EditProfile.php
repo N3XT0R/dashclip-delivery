@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Pages\Auth;
 
 use App\Facades\NotificationDiscovery;
+use App\Models\User;
 use App\Repository\UserMailConfigRepository;
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use Filament\Forms\Components\Checkbox;
@@ -48,18 +49,23 @@ class EditProfile extends BaseEditProfile
 
     protected function getNotificationComponent(): Component
     {
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        $repo = app(UserMailConfigRepository::class);
+
         return Section::make(__('notifications.mail.title'))
             ->collapsed()
             ->schema(
                 collect(NotificationDiscovery::list())
-                    ->map(function ($class) {
+                    ->map(function ($class) use ($user, $repo) {
+                        $isAllowed = $repo->isAllowed($user, $class);
+
                         return Checkbox::make("notifications.mail.types.$class")
                             ->translateLabel()
                             ->label("notifications.mail.types.$class")
-                            ->default(function ($record) use ($class) {
-                                return app(UserMailConfigRepository::class)
-                                    ->isAllowed($record, $class);
-                            });
+                            ->default($isAllowed);
                     })->toArray()
             );
     }
