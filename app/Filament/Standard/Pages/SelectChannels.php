@@ -84,6 +84,7 @@ class SelectChannels extends Page implements HasForms, HasTable
         $isOwner = auth()->user()->can('manageChannels', $tenant);
 
         return $table
+            ->recordTitle('name')
             ->modelLabel('Kanal')
             ->columns([
                 TextColumn::make('name')
