@@ -15,4 +15,10 @@ class ChannelTeamPivot extends Model
         'channel_id',
         'quota',
     ];
+
+    protected $casts = [
+        'quota' => 'integer',
+        'team_id' => 'integer',
+        'channel_id' => 'integer',
+    ];
 }
