@@ -27,11 +27,12 @@ class ChannelTeamResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Kanäle';
-
     protected static ?string $navigationLabel = 'Channels';
 
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
+
+    protected static ?string $modelLabel = 'Kanal-Zuweisung';
+    protected static ?string $pluralModelLabel = 'Kanal-Zuweisungen';
 
     public static function canEdit(Model $record): bool
     {
@@ -107,10 +108,8 @@ class ChannelTeamResource extends Resource
                 //
             ])
             ->recordActions([
-                Actions\EditAction::make()
-                    ->modalHeading('Kanal editieren'),
-                Actions\DeleteAction::make()
-                    ->modalHeading('Kanal löschen'),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->toolbarActions([
                 Actions\BulkActionGroup::make([
