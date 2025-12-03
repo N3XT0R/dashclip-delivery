@@ -2,7 +2,11 @@
 
 Hier behältst du den Überblick über alle Uploads. Unter `Videos` siehst du Liste, Status und wichtige Kennzahlen.
 
-[Hier: Screenshot/Grafik der Video-Übersicht]
+<img
+        src="{{ asset('images/onboarding/video_management.jpg') }}"
+        alt="Onboarding Illustration"
+        class="w-20 h-20 object-contain mb-3"
+/>
 
 ### Was du siehst
 - 📊 **Verfügbare Offers:** Wie viele Angebote für dein Video aktiv sind.

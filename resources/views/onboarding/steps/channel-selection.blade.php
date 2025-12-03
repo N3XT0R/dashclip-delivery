@@ -2,7 +2,12 @@
 
 Deine Verteilung entscheidet über Reichweite. Öffne `Channels` oder den Schritt `Kanäle wählen`, um festzulegen, wohin deine Videos ausgespielt werden.
 
-[Hier: Screenshot/Grafik der Kanal-Auswahl]
+<img
+        src="{{ asset('images/onboarding/channel_selection.jpg') }}"
+        alt="Onboarding Illustration"
+        class="w-20 h-20 object-contain mb-3"
+/>
+
 
 ### So wählst du Kanäle
 - ✅ Klicke auf `Kanäle wählen` oder öffne `Channels` in der Seitenleiste.
