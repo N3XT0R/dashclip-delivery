@@ -180,7 +180,7 @@ class IngestScanner
 
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName, $dstRel);
             $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
-            
+
             $this->log('Upload abgeschlossen für '.$file->basename, 'info', [
                 'path' => $video->path,
                 'disk' => $video->disk,
@@ -191,7 +191,6 @@ class IngestScanner
                 $this->notifyUserUploadComplete($user, $file);
             }
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
-            DB::rollBack();
             $this->log($e->getMessage(), 'error', $e->context());
         } catch (Throwable $e) {
             DB::rollBack();
