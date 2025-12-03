@@ -49,7 +49,6 @@ class ChannelTeamResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $tenant = Filament::getTenant();
         return $schema
             ->components([
                 Forms\Components\Select::make('channel_id')
