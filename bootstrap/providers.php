@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AppServiceProvider::class,
+    App\Providers\ServiceServiceProvider::class,
     App\Providers\PolicyServiceProvider::class,
     App\Providers\ObserverServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,

@@ -19,15 +19,7 @@ class UserUploadProceedNotification extends AbstractUserNotification
         public ?string $note = null
     ) {
     }
-
-    /**
-     * @param  Notifiable&Model  $notifiable
-     * @return array
-     */
-    public function via(Model $notifiable): array
-    {
-        return ['mail', 'database'];
-    }
+    
 
     /**
      * @param  Notifiable&User  $notifiable
