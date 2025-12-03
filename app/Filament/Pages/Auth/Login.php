@@ -20,13 +20,6 @@ class Login extends BaseLogin
         $user = Auth::user();
 
         if (!$user->hasRole(RoleEnum::REGULAR, GuardEnum::STANDARD->value)) {
-            Auth::logout();
-
-            Notification::make()
-                ->danger()
-                ->title('Kein Zugriff')
-                ->body('Dieses Login ist nur für Administratoren.')
-                ->send();
             activity()
                 ->causedBy($user)
                 ->performedOn($user)
@@ -37,6 +30,14 @@ class Login extends BaseLogin
                     'user_agent' => request()->userAgent(),
                 ])
                 ->log('User logged in to admin panel');
+            Auth::logout();
+
+            Notification::make()
+                ->danger()
+                ->title('Kein Zugriff')
+                ->body('Dieses Login ist nur für Administratoren.')
+                ->send();
+
 
             $this->throwFailureValidationException();
         }
