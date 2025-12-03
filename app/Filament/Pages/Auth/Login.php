@@ -8,7 +8,6 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Auth\Pages\Login as BaseLogin;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
 class Login extends BaseLogin
@@ -21,6 +20,7 @@ class Login extends BaseLogin
 
         if (!$user->hasRole(RoleEnum::REGULAR, GuardEnum::STANDARD->value)) {
             activity()
+                ->event('wrong_panel')
                 ->causedBy($user)
                 ->performedOn($user)
                 ->event('login')
@@ -32,31 +32,10 @@ class Login extends BaseLogin
                 ->log('User logged in to admin panel');
             Auth::logout();
 
-            Notification::make()
-                ->danger()
-                ->title('Kein Zugriff')
-                ->body('Dieses Login ist nur für Administratoren.')
-                ->send();
-
 
             $this->throwFailureValidationException();
         }
 
         return $response;
-    }
-
-    protected function throwFailureValidationException(): never
-    {
-        activity()
-            ->event('login_failed')
-            ->withProperties([
-                'panel' => 'admin',
-                'email' => $this->data['email'] ?? null,
-                'ip' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-            ])
-            ->log('Failed login attempt on admin panel');
-
-        parent::throwFailureValidationException();
     }
 }
