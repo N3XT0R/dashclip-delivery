@@ -32,4 +32,13 @@ class UserMailConfigRepository
             ->pluck('value', 'key')
             ->toArray();
     }
+
+    public function isAllowed(User $user, string $notificationClass, bool $default = true): bool
+    {
+        $value = UserMailConfig::where('user_id', $user->getKey())
+            ->where('key', $notificationClass)
+            ->value('value');
+
+        return $value === null ? $default : (bool)$value;
+    }
 }
