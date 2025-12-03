@@ -18,7 +18,7 @@ class Login extends BaseLogin
 
         $user = Auth::user();
 
-        if (!$user->hasRole(RoleEnum::REGULAR, GuardEnum::STANDARD->value)) {
+        if (!$user->hasRole(RoleEnum::getRoles(), GuardEnum::DEFAULT->value)) {
             activity()
                 ->event('wrong_panel')
                 ->causedBy($user)
