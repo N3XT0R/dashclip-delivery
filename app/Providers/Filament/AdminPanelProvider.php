@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Pages\Auth\Login;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
@@ -66,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ->path(PanelEnum::ADMIN->value)
             ->authGuard(GuardEnum::DEFAULT->value)
             ->tenant(null)
-            ->login()
+            ->login(Login::class)
             ->emailVerification()
             ->emailChangeVerification()
             ->profile(EditProfile::class, false)
