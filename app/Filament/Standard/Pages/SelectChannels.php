@@ -7,7 +7,7 @@ use App\Models\Team;
 use App\Repository\ChannelRepository;
 use BackedEnum;
 use Filament\Actions\AttachAction;
-use Filament\Actions\DetachAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
@@ -122,7 +122,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                     ),
             ])
             ->recordActions([
-                DetachAction::make('detach')
+                DeleteAction::make('detach')
                     ->label('Entfernen')
                     ->requiresConfirmation()
                     ->visible($isOwner),
