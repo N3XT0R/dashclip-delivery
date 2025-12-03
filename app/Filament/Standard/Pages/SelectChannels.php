@@ -6,7 +6,7 @@ use App\Models\Pivots\ChannelTeamPivot;
 use App\Models\Team;
 use App\Repository\ChannelRepository;
 use BackedEnum;
-use Filament\Actions\AttachAction;
+use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
@@ -54,7 +54,7 @@ class SelectChannels extends Page implements HasForms, HasTable
             ->whereNotIn('id', $tenant->assignedChannels()->pluck('channels.id'));
 
         return [
-            AttachAction::make()
+            CreateAction::make()
                 ->label('Kanäle hinzufügen')
                 ->modalHeading('Kanäle hinzufügen')
                 ->schema([
