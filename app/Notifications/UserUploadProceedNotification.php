@@ -7,12 +7,10 @@ use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Notifications\Notification;
 
-class UserUploadProceedNotification extends Notification implements ShouldQueue
+class UserUploadProceedNotification extends AbstractUserNotification
 {
     use Queueable;
 

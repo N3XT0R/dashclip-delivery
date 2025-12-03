@@ -7,11 +7,9 @@ use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notification;
 
-class UserUploadDuplicatedNotification extends Notification implements ShouldQueue
+class UserUploadDuplicatedNotification extends AbstractUserNotification
 {
     use Queueable;
 
@@ -19,11 +17,6 @@ class UserUploadDuplicatedNotification extends Notification implements ShouldQue
         public string $filename,
         public ?string $note = null
     ) {
-    }
-
-    public function via(Model $notifiable): array
-    {
-        return ['mail', 'database'];
     }
 
     public function toMail(User $notifiable): UserUploadDuplicatedMail
