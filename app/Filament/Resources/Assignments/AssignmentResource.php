@@ -13,12 +13,7 @@ use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -33,23 +28,6 @@ class AssignmentResource extends Resource
     protected static ?string $modelLabel = 'Assignment';
     protected static ?string $pluralModelLabel = 'Assignments';
     protected static bool $shouldRegisterNavigation = false;
-
-    public static function form(Schema $schema): Schema
-    {
-        return $schema->components([
-            Group::make()->schema([
-                TextInput::make('id')->disabled(),
-                TextInput::make('status')->disabled(),
-                Select::make('video')->relationship('video', 'original_name')->disabled(),
-                Select::make('channel')->relationship('channel', 'name')->disabled(),
-                TextInput::make('batch_id')->disabled(),
-                TextInput::make('attempts')->numeric()->disabled(),
-                DateTimePicker::make('expires_at')->disabled(),
-                DateTimePicker::make('last_notified_at')->disabled(),
-                TextInput::make('download_token')->disabled()->columnSpanFull(),
-            ])->columns(2)->columnSpanFull(),
-        ]);
-    }
 
     public static function table(Table $table): Table
     {
@@ -162,10 +140,6 @@ class AssignmentResource extends Resource
         return [
             'index' => ListAssignments::route('/'),
             'view' => ViewAssignment::route('/{record}'),
-
-            // Enable if you want CRUD:
-            // 'create' => Pages\CreateAssignment::route('/create'),
-            // 'edit'   => Pages\EditAssignment::route('/{record}/edit'),
         ];
     }
 }
