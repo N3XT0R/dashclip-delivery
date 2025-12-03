@@ -9,10 +9,12 @@ class UserMailConfigRepository
 {
     public function getForUser(User $user, string $key, bool $default = true): bool
     {
-        return UserMailConfig::query()
+        $value = UserMailConfig::query()
             ->where('user_id', $user->getKey())
             ->where('key', $key)
-            ->value('value') ?? $default;
+            ->value('value');
+
+        return $value !== null ? (bool)$value : $default;
     }
 
     public function setForUser(User $user, string $key, bool $value): void
