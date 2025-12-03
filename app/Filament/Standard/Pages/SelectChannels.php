@@ -130,6 +130,9 @@ class SelectChannels extends Page implements HasForms, HasTable
                 DetachAction::make('detach')
                     ->label('Entfernen')
                     ->using(function (?Model $record) use ($tenant) {
+                        if (!$record) {
+                            return;
+                        }
                         $tenant?->assignedChannels()->detach($record?->getKey());
                     })
                     ->visible($isOwner),
