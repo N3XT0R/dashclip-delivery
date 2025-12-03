@@ -355,6 +355,7 @@ task('deploy', [
     'artisan:view:cache',
     'artisan:event:cache',
     'artisan:migrate',
+    'artisan:db:seed',
     'deploy:publish',
 ]);
 
