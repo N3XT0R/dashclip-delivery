@@ -22,7 +22,6 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class SelectChannels extends Page implements HasForms, HasTable
 {
@@ -129,12 +128,10 @@ class SelectChannels extends Page implements HasForms, HasTable
             ->recordActions([
                 DetachAction::make('detach')
                     ->label('Entfernen')
-                    ->using(function (?Model $record) use ($tenant) {
-                        if (!$record) {
-                            return;
-                        }
-                        $tenant?->assignedChannels()->detach($record?->getKey());
+                    ->action(function (Channel $record) use ($tenant) {
+                        $tenant->assignedChannels()->detach($record->getKey());
                     })
+                    ->requiresConfirmation()
                     ->visible($isOwner),
             ]);
     }
