@@ -170,7 +170,6 @@ class IngestScanner
             $endSec = $clip?->end_sec ?? null;
             DB::commit();
 
-
             $previewUrl = $previewService->generatePreviewByDisk(
                 $inboxDisk,
                 $pathToFile,
