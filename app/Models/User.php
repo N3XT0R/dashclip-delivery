@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -179,6 +180,12 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         )
             ->using(ModelHasRoleTeam::class)
             ->withPivot('team_id');
+    }
+
+
+    public function mailConfigs(): HasMany
+    {
+        return $this->hasMany(UserMailConfig::class);
     }
 
     public function canAccessTenant(Team|Model $tenant): bool
