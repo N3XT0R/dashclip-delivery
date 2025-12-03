@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Pivots\ChannelTeamPivot;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,7 +46,6 @@ class Team extends Model
     {
         return $this->belongsToMany(Channel::class)
             ->withPivot(['quota'])
-            ->using(ChannelTeamPivot::class)
             ->isActive()
             ->withTimestamps();
     }
