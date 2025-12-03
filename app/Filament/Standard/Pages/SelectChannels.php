@@ -59,6 +59,7 @@ class SelectChannels extends Page implements HasForms, HasTable
         return [
             AttachAction::make()
                 ->label('Kanäle hinzufügen')
+                ->modalHeading('Kanäle hinzufügen')
                 ->schema([
                     Select::make('recordId')
                         ->label('Channel')
@@ -84,7 +85,6 @@ class SelectChannels extends Page implements HasForms, HasTable
         $isOwner = auth()->user()->can('manageChannels', $tenant);
 
         return $table
-            ->recordTitle('name')
             ->modelLabel('Kanal')
             ->columns([
                 TextColumn::make('name')
