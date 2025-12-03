@@ -132,6 +132,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This prevents premature submissions, improves user experience, and increases reliability under slower network
   conditions.
 
+### Fixed
+
+- **Ingest**
+    - Fixed long-running database transactions during video ingest that caused
+      `Lock wait timeout exceeded` errors.
+    - Moved preview generation and file upload outside of transactional scope to
+      prevent table locks during heavy I/O operations.
+    - Limited DB transactions to initial video creation and CSV import for minimal
+      lock duration.
+    - Removed redundant `DB::rollBack()` calls in non-transactional error paths.
+    - `finalizeUpload()` now performs a single atomic `UPDATE` without wrapping it
+      in a transaction.
+
 ## [3.0.1] - 2025-11-29
 
 ### Fixed
@@ -141,6 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Upload**
     - Increased maximum upload size to **2 GB**.
+      Fixed – Ingest Deadlocks & Long-Running Transaction Issues
 
 ## [3.0.0] - 2025-11-15
 
