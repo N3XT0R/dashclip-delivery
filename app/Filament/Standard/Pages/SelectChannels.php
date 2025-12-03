@@ -2,7 +2,7 @@
 
 namespace App\Filament\Standard\Pages;
 
-use App\Models\Channel;
+use App\Models\Pivots\ChannelTeamPivot;
 use App\Models\Team;
 use App\Repository\ChannelRepository;
 use BackedEnum;
@@ -84,17 +84,21 @@ class SelectChannels extends Page implements HasForms, HasTable
         return $table
             ->modelLabel('Kanal')
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('channel.name')
                     ->label('Name')
                     ->sortable(),
-                TextColumn::make('youtube_name')
+                TextColumn::make('channel.youtube_name')
                     ->label('Youtube-Kanal')
                     ->inline()
                     ->formatStateUsing(fn($state) => $state ? '@'.$state : '-')
-                    ->url(fn(Channel $record) => $record->youtube_name
-                        ? 'https://www.youtube.com/@'.$record->youtube_name
-                        : null
-                    )
+                    ->url(function (ChannelTeamPivot $record) {
+                        $channel = $record->channel;
+                        if ($channel->youtube_name) {
+                            return 'https://www.youtube.com/@'.$record->youtube_name;
+                        } else {
+                            return null;
+                        }
+                    })
                     ->openUrlInNewTab()
                     ->limit(40),
                 TextColumn::make('quota')
@@ -110,12 +114,6 @@ class SelectChannels extends Page implements HasForms, HasTable
                                     ->minValue(0)
                                     ->required(),
                             ])
-                            ->action(function (Channel $record, array $data) use ($tenant) {
-                                $tenant->assignedChannels()
-                                    ->updateExistingPivot($record->getKey(), [
-                                        'quota' => $data['quota'],
-                                    ]);
-                            })
                             ->visible($isOwner)
                             ->modalIcon('heroicon-m-pencil-square')
                             ->icon('heroicon-m-pencil-square')
@@ -126,9 +124,6 @@ class SelectChannels extends Page implements HasForms, HasTable
             ->recordActions([
                 DetachAction::make('detach')
                     ->label('Entfernen')
-                    ->action(function (Channel $record) use ($tenant) {
-                        $tenant->assignedChannels()->detach($record->getKey());
-                    })
                     ->requiresConfirmation()
                     ->visible($isOwner),
             ]);
@@ -141,8 +136,8 @@ class SelectChannels extends Page implements HasForms, HasTable
          */
         $tenant = Filament::getTenant();
 
-        return $tenant
-            ->assignedChannels()
-            ->getQuery();
+        return ChannelTeamPivot::query()
+            ->where('team_id', $tenant->getKey())
+            ->whereNotNull('team_id');
     }
 }
