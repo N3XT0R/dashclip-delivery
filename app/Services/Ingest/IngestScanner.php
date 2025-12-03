@@ -168,6 +168,7 @@ class IngestScanner
 
             $startSec = $clip?->start_sec ?? 0;
             $endSec = $clip?->end_sec ?? null;
+            DB::commit();
 
 
             $previewUrl = $previewService->generatePreviewByDisk(
@@ -180,8 +181,7 @@ class IngestScanner
 
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName, $dstRel);
             $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
-
-            DB::commit();
+            
             $this->log('Upload abgeschlossen für '.$file->basename, 'info', [
                 'path' => $video->path,
                 'disk' => $video->disk,
