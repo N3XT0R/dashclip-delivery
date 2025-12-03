@@ -6,9 +6,9 @@ namespace App\Filament\Pages\Auth;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
-use App\Models\Notification;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Auth\Pages\Login as BaseLogin;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
 class Login extends BaseLogin
