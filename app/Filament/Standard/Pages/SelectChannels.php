@@ -103,6 +103,7 @@ class SelectChannels extends Page implements HasForms, HasTable
                 TextColumn::make('quota')
                     ->label('Quota (Videos/Woche)')
                     ->sortable()
+                    ->inline()
                     ->action(
                         EditAction::make('editQuota')
                             ->label('Quota bearbeiten')
