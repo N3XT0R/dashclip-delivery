@@ -138,6 +138,6 @@ class ChannelTeamResource extends Resource
         $tenant = Filament::getTenant();
 
         return parent::getEloquentQuery()
-            ->where('team_id', $tenant->getKey());
+            ->where('team_id', $tenant?->getKey());
     }
 }
