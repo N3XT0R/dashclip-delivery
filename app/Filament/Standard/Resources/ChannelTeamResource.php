@@ -3,7 +3,6 @@
 namespace App\Filament\Standard\Resources;
 
 use App\Filament\Standard\Resources\ChannelTeamResource\Pages;
-use App\Models\ChannelTeam;
 use App\Models\Pivots\ChannelTeamPivot;
 use BackedEnum;
 use Filament\Actions;
