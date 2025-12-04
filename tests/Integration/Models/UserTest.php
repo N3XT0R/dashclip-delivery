@@ -169,4 +169,48 @@ final class UserTest extends DatabaseTestCase
 
         $this->assertSame($team->getKey(), $gotTeam->getKey());
     }
+
+    public function testGetTenantsReturnsAllTeams(): void
+    {
+        $user = User::factory()->create();
+        $existingTeamIds = $user->teams()->pluck('teams.id');
+        $teams = Team::factory()->count(2)->create();
+        $user->teams()->attach($teams->pluck('id')->all());
+
+        $panel = Panel::make()->id(PanelEnum::STANDARD->value);
+
+        $tenants = $user->getTenants($panel);
+
+        $this->assertCount($existingTeamIds->count() + $teams->count(), $tenants);
+        $this->assertEqualsCanonicalizing(
+            $existingTeamIds->merge($teams->pluck('id'))->unique()->all(),
+            $tenants->pluck('id')->all()
+        );
+    }
+
+    public function testTeamRolesMorphToManyReturnsAssignedRoles(): void
+    {
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $role = \App\Models\Role::factory()->create();
+
+        $user->teamRoles()->attach($role->getKey());
+
+        $roles = $user->teamRoles;
+
+        $this->assertTrue($roles->contains(fn($assignedRole) => $assignedRole->is($role)));
+        $this->assertSame(
+            $user->getKey(),
+            (int) $roles->firstWhere('id', $role->getKey())->pivot->model_id
+        );
+    }
+
+    public function testMailConfigsReturnsConfigsForUser(): void
+    {
+        $user = User::factory()->create();
+        $configs = \App\Models\UserMailConfig::factory()->count(2)->forUser($user)->create();
+
+        $this->assertCount(2, $user->mailConfigs);
+        $this->assertEqualsCanonicalizing($configs->pluck('key')->all(), $user->mailConfigs->pluck('key')->all());
+    }
 }
