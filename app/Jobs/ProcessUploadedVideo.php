@@ -20,6 +20,8 @@ class ProcessUploadedVideo implements ShouldQueue
 
     protected string $hash;
 
+    public $tries = 0;
+
     public function __construct(
         public User $user,
         public FileInfoDto $fileInfoDto,
