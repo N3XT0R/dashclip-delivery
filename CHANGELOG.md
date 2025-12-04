@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Unique Video Processing Jobs**
+    - Introduced `ShouldBeUnique` for the `ProcessUploadedVideo` job to prevent duplicate ingestion when the same file
+      is
+      uploaded or dispatched multiple times.
+    - Each job is now uniquely identified via a `user_id:file_hash` composite key, ensuring that deduplication occurs
+      per-user while still avoiding duplicate processing of identical uploads.
+    - Activity logs now include additional metadata such as the job's retry attempt (`$this->attempts()`), improving
+      traceability and debugging capabilities.
+    - Upload events now record structured properties (e.g., `file`, `attempt`) consistently across all ingestion logs.
+
 ### Changed
 
 - **Offer Expiration Logic**
