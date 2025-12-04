@@ -173,13 +173,18 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function teamRoles(): MorphToMany|BelongsToMany
     {
-        return $this->morphToMany(
+        $relation = $this->morphToMany(
             \Spatie\Permission\Models\Role::class,
             'model',
             'model_has_roles'
         )
-            ->using(ModelHasRoleTeam::class)
-            ->withPivot('team_id');
+            ->using(ModelHasRoleTeam::class);
+
+        if (config('permission.teams')) {
+            $relation->withPivot('team_id');
+        }
+
+        return $relation;
     }
 
 

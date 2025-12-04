@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models\Pivots;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
-class ModelHasRoleTeam extends Pivot
+class ModelHasRoleTeam extends MorphPivot
 {
     protected $table = 'model_has_roles';
 
