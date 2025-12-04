@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enum\StatusEnum;
 use App\Facades\Cfg;
-use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -74,11 +73,9 @@ class Assignment extends Model
             $ttlDays = Cfg::get('expire_after_days', 'default', 6);
         }
 
-        $defaultExpiry = now()->addDays($ttlDays);
-
-        $expiry = $this->expires_at instanceof CarbonInterface
-            ? ($this->expires_at->lessThan($defaultExpiry) ? $this->expires_at : $defaultExpiry)
-            : $defaultExpiry;
+        $expiry = $this->expires_at
+            ? min($this->expires_at, now()->addDays($ttlDays)->endOfDay())
+            : now()->addDays($ttlDays)->endOfDay();
         $this->setAttribute('expires_at', $expiry);
     }
 
