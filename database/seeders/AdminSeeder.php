@@ -15,6 +15,9 @@ class AdminSeeder extends Seeder
 
         $adminRoles = Role::where('name', 'super_admin')->get();
 
+        /**
+         * @todo change after deployment
+         */
         User::all()->each(function (User $user) use ($adminRoles) {
             $user->syncRoles($adminRoles);
         });
