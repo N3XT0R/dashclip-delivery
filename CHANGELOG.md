@@ -87,8 +87,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added automatic discovery of user-facing notifications via a configurable `NotificationDiscoveryService`.
     - Implemented opt-in/opt-out handling per notification type using `UserMailConfigRepository`.
     - Added dynamic form generation in the profile section, including label translation and per-user default states.
-    - Added optional caching layer for notification discovery (`CachedNotificationDiscoveryService`) with configurable
-      DI parameters.
+    - Implemented optional caching layer via Decorator Pattern for notification discovery.
+      The `CachedNotificationDiscoveryService` wraps the base service with configurable
+      TTL and can be toggled per-request via DI parameters (`useCache`, `ttl`).
+      Ensures discovery performance scales without impacting code simplicity.
 
 ### Changed
 
