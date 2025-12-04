@@ -65,7 +65,7 @@ class EditProfile extends BaseEditProfile
                         return Checkbox::make("notifications.mail.types.$class")
                             ->translateLabel()
                             ->label("notifications.mail.types.$class")
-                            ->default($isAllowed);
+                            ->formatStateUsing(fn() => ($isAllowed));
                     })->toArray()
             );
     }
