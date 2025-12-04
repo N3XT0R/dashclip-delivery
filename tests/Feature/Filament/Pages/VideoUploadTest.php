@@ -6,6 +6,7 @@ namespace Tests\Feature\Filament\Pages;
 
 use App\Enum\Guard\GuardEnum;
 use App\Facades\Cfg;
+use App\Facades\DynamicStorage;
 use App\Filament\Pages\VideoUpload;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\User;
@@ -31,13 +32,14 @@ final class VideoUploadTest extends DatabaseTestCase
     public function testSubmitDispatchesJobForEachClip(): void
     {
         Bus::fake();
+        $inboxPath = base_path('tests/Fixtures/Inbox/Videos/');
+        $dynamicStorage = DynamicStorage::fromPath($inboxPath);
         $disk = Storage::fake('public');
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
         $disk->makeDirectory('uploads/tmp/');
 
-        $disk->put('uploads/tmp/file1.mp4', 'a');
-
+        $disk->put('uploads/tmp/file1.mp4', $dynamicStorage->readStream('standalone.mp4'));
         $path1 = 'uploads/tmp/file1.mp4';
 
         $state = [

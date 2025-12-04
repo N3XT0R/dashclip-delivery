@@ -7,9 +7,9 @@ namespace Tests\Feature\Console;
 use App\Models\Batch;
 use App\Models\Video;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Storage;
 use Tests\DatabaseTestCase;
+use Tests\Testing\Traits\CopyDiskTrait;
 
 /**
  * Feature tests for the "ingest:scan" console command with the real IngestScanner.
@@ -20,6 +20,7 @@ use Tests\DatabaseTestCase;
  */
 final class IngestScanTest extends DatabaseTestCase
 {
+    use CopyDiskTrait;
 
     /** Happy path: one new video is ingested to the local disk; batch stats and file move are correct. */
     public function testCommandMovesVideoAndCreatesBatchStats(): void
@@ -168,20 +169,6 @@ final class IngestScanTest extends DatabaseTestCase
         $this->assertNotNull($video);
         $this->assertNotEmpty($video->hash);
         $this->assertSame('local', $video->disk);
-    }
-
-    /**
-     * Helper to recursively copy all files & dirs from one disk to another.
-     */
-    private function copyDisk(Filesystem $source, Filesystem $target): void
-    {
-        foreach ($source->allFiles() as $path) {
-            $target->put($path, $source->get($path));
-        }
-
-        foreach ($source->allDirectories() as $dir) {
-            $target->makeDirectory($dir);
-        }
     }
 
     /** Error path: non-existent inbox should produce FAILURE and print the error message. */
