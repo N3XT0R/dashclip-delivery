@@ -76,13 +76,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   bell.  
   Users now receive real-time and database-backed notifications directly within the UI, providing clear visibility into
   all upload-related events.
-
 - **Upload Processing Notifications (via `ProcessUploadedVideo` Job)**  
   Added two new user-facing notifications that are automatically dispatched by the `ProcessUploadedVideo` job:
     - **UserUploadProceedNotification** – sent when an uploaded video has been successfully processed.
     - **UserUploadDuplicatedNotification** – sent when an uploaded video is detected as a duplicate.  
       Each notification includes both a custom HTML email and a Filament in-app notification, ensuring consistent
       communication across channels.
+- **Notification Preferences**
+    - Introduced user-configurable email notification settings in the Filament *Edit Profile* page.
+    - Added automatic discovery of user-facing notifications via a configurable `NotificationDiscoveryService`.
+    - Implemented opt-in/opt-out handling per notification type using `UserMailConfigRepository`.
+    - Added dynamic form generation in the profile section, including label translation and per-user default states.
+    - Added optional caching layer for notification discovery (`CachedNotificationDiscoveryService`) with configurable
+      DI parameters.
 
 ### Changed
 
