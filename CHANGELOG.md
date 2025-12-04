@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Offer Expiration Logic**
+    - Updated assignment expiration handling so that `expires_at` is now normalized to the end of the day (
+      `endOfDay()`).  
+      This ensures that a configured TTL (e.g., “7 days”) corresponds to a full calendar-day period as users naturally
+      expect.
+    - Previously, expirations were based on the exact creation timestamp, which was technically correct but resulted in
+      shorter perceived validity windows.  
+      The new logic guarantees that offers remain active consistently until the end of the final valid day.
+
 ### [3.1.0-beta.1] - 2025-12-04
 
 ### Added

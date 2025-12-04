@@ -74,8 +74,8 @@ class Assignment extends Model
         }
 
         $expiry = $this->expires_at
-            ? min($this->expires_at, now()->addDays($ttlDays))
-            : now()->addDays($ttlDays);
+            ? min($this->expires_at, now()->addDays($ttlDays)->endOfDay())
+            : now()->addDays($ttlDays)->endOfDay();
         $this->setAttribute('expires_at', $expiry);
     }
 
