@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Database\Seeders\AdminSeeder;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -20,7 +19,6 @@ class DatabaseTestCase extends TestCase
         Artisan::call('config:clear');
         $this->seed([
             DatabaseSeeder::class,
-            AdminSeeder::class,
         ]);
     }
 }
