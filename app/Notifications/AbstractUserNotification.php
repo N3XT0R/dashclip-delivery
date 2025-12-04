@@ -9,7 +9,6 @@ use App\Repository\UserMailConfigRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Log;
 
 abstract class AbstractUserNotification extends Notification implements ShouldQueue
 {
@@ -41,7 +40,6 @@ abstract class AbstractUserNotification extends Notification implements ShouldQu
             $channels = array_filter($channels, fn($channel) => $channel !== 'mail');
         }
 
-        Log::debug('test', ['channels' => $channels]);
 
         return $channels;
     }
