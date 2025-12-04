@@ -192,6 +192,7 @@ class IngestScanner
             }
         } catch (PreviewGenerationException|InvalidTimeRangeException $e) {
             $this->log($e->getMessage(), 'error', $e->context());
+            throw $e;
         } catch (Throwable $e) {
             DB::rollBack();
             $this->log(
