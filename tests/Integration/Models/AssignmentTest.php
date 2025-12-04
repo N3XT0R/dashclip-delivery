@@ -13,6 +13,7 @@ use App\Models\Download;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Video;
+use Carbon\Carbon;
 use Tests\DatabaseTestCase;
 
 final class AssignmentTest extends DatabaseTestCase
@@ -87,10 +88,15 @@ final class AssignmentTest extends DatabaseTestCase
             'batch_id' => Batch::factory()->create(),
         ]);
 
-        $assignment->setExpiresAt(2);
-        $this->assertNotNull($assignment->expires_at);
-        $this->assertTrue($assignment->expires_at->greaterThan(now()->addDays(1)->addHours(23)));
-        $this->assertTrue($assignment->expires_at->lessThan(now()->addDays(2)->addHours(1)));
+        Carbon::setTestNow($now = now());
+        try {
+            $assignment->setExpiresAt(2);
+            $this->assertNotNull($assignment->expires_at);
+            $expectedExpiry = $now->copy()->addDays(2)->endOfDay();
+            $this->assertTrue($assignment->expires_at->isSameSecond($expectedExpiry));
+        } finally {
+            Carbon::setTestNow();
+        }
     }
 
     public function testSetExpiresAtMutateAttributesToConfigTTLDate(): void
@@ -103,10 +109,15 @@ final class AssignmentTest extends DatabaseTestCase
             'batch_id' => Batch::factory()->create(),
         ]);
 
-        $assignment->setExpiresAt();
-        $this->assertNotNull($assignment->expires_at);
-        $this->assertTrue($assignment->expires_at->greaterThan(now()->addDays($value)->subDay()->addHours(23)));
-        $this->assertTrue($assignment->expires_at->lessThan(now()->addDays($value)->addHours(1)));
+        Carbon::setTestNow($now = now());
+        try {
+            $assignment->setExpiresAt();
+            $this->assertNotNull($assignment->expires_at);
+            $expectedExpiry = $now->copy()->addDays($value)->endOfDay();
+            $this->assertTrue($assignment->expires_at->isSameSecond($expectedExpiry));
+        } finally {
+            Carbon::setTestNow();
+        }
     }
 
     public function testBelongsToNotification(): void

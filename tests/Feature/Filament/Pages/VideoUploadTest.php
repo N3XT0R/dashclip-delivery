@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
+use Tests\Testing\Traits\CopyDiskTrait;
 
 final class VideoUploadTest extends DatabaseTestCase
 {
+    use CopyDiskTrait;
 
 
     public function testRegularUserHasAccess(): void
@@ -34,7 +36,8 @@ final class VideoUploadTest extends DatabaseTestCase
         Bus::fake();
         $inboxPath = base_path('tests/Fixtures/Inbox/Videos/');
         $dynamicStorage = DynamicStorage::fromPath($inboxPath);
-        $disk = Storage::fake('public');
+        $disk = Storage::fake('local');
+        $this->copyDisk($dynamicStorage, $disk);
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
         $disk->makeDirectory('uploads/tmp/');
