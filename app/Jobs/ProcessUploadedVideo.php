@@ -59,7 +59,13 @@ class ProcessUploadedVideo implements ShouldQueue
             activity()
                 ->performedOn($video)
                 ->causedBy($this->user)
-                ->withProperties(['action' => 'upload', ['file' => $video->original_name]])
+                ->withProperties([
+                    'action' => 'upload',
+                    [
+                        'file' => $video->original_name,
+                        'attempt' => $this->attempts(),
+                    ]
+                ])
                 ->log('uploaded a video');
 
             /**
