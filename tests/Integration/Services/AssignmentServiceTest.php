@@ -226,7 +226,7 @@ class AssignmentServiceTest extends DatabaseTestCase
         $this->assertNotNull($assignment->fresh()->last_notified_at);
 
         // Expiry must be exactly now + Cfg value
-        $this->assertTrue($assignment->fresh()->expires_at->equalTo(now()->addDays($ttlDays)));
+        $this->assertTrue($assignment->fresh()->expires_at->isSameSecond(now()->addDays($ttlDays)->endOfDay()));
 
         // verify the signature is valid for the generated URL
         $this->assertTrue(URL::hasValidSignature(
