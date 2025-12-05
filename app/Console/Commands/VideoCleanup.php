@@ -9,9 +9,10 @@ use Illuminate\Console\Command;
 
 class VideoCleanup extends Command
 {
-    protected $signature = 'video:cleanup {--weeks=1 : Anzahl der Wochen, die der Ablauf überschritten haben muss}';
+    protected $signature = 'video:cleanup {--weeks=1 : Number of weeks the expiration must be exceeded}';
 
-    protected $description = 'Löscht heruntergeladene Videos, deren Ablauf seit der angegebenen Wochenzahl überschritten ist.';
+    protected $description = 'Deletes downloaded videos whose expiration date has been exceeded by the specified number of weeks.';
+
 
     public function __construct(private VideoCleanupService $service)
     {

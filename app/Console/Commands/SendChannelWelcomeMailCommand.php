@@ -12,21 +12,22 @@ class SendChannelWelcomeMailCommand extends Command
     /**
      * Command signature.
      *
-     * Beispiele:
+     * Examples:
      *  php artisan channels:send-welcome
      *  php artisan channels:send-welcome 5
      *  php artisan channels:send-welcome test@example.com
      *  php artisan channels:send-welcome --dry
      */
     protected $signature = 'channels:send-welcome
-                            {channel? : Channel ID oder E-Mail-Adresse}
-                            {--force : Sende auch, wenn bereits approved}
-                            {--dry : Zeigt nur an, wer eine Mail erhalten würde (keine Sendung)}';
+                        {channel? : Channel ID or email address}
+                        {--force : Send even if already approved}
+                        {--dry : Preview who would receive an email (no sending)}';
 
     /**
      * Command description.
      */
-    protected $description = 'Sendet Willkommens-/Freigabe-Mails an Kanäle oder zeigt sie als Vorschau (--dry).';
+    protected $description = 'Sends welcome/approval emails to channels or shows a preview (--dry).';
+
 
     public function __construct(
         private readonly ChannelService $channelService
