@@ -90,12 +90,8 @@ class AdminPanelProvider extends PanelProvider
     protected function addRenderHooks(Panel $panel): Panel
     {
         return $panel->renderHook(
-            PanelsRenderHook::FOOTER,
+            PanelsRenderHook::BODY_END,
             function (): ?string {
-                if (request()->routeIs('filament.admin.pages.video-upload')) {
-                    return null;
-                }
-
                 return view('partials.footer')->render();
             }
         );
