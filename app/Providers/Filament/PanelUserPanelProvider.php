@@ -15,6 +15,7 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -62,6 +63,7 @@ class PanelUserPanelProvider extends PanelProvider
         $panel
             ->id(PanelEnum::STANDARD->value)
             ->path(PanelEnum::STANDARD->value)
+            ->defaultThemeMode(ThemeMode::Light)
             ->favicon(asset('images/icons/favicon.ico'))
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('75px')
