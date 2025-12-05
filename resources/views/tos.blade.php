@@ -34,7 +34,28 @@
                 Änderungen, Erweiterungen oder Einschränkungen des Angebots können jederzeit ohne vorherige Ankündigung
                 erfolgen.</p>
         </section>
-
+        <section class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">Kostenfreie und kostenpflichtige Funktionen</h2>
+            <p>
+                {{ config('app.name') }} stellt derzeit ausschließlich <strong>kostenfreie Funktionen</strong> zur
+                Verfügung.
+                Zukünftig können optionale <strong>kostenpflichtige Zusatzfunktionen</strong> (z. B. erhöhte
+                Kanal-Kapazitäten,
+                Prioritätsverteilung, erweiterte Analysewerkzeuge oder Team-Funktionen) angeboten werden.
+            </p>
+            <p>
+                Kostenpflichtige Funktionen werden stets deutlich gekennzeichnet, bevor sie genutzt oder aktiviert
+                werden können.
+                Es erfolgt keine automatische oder stillschweigende Kostenpflicht: eine Nutzung kostenpflichtiger
+                Funktionen setzt
+                stets eine bewusste Auswahl und Bestätigung durch den Nutzer voraus.
+            </p>
+            <p>
+                Preise, Leistungsumfang und Abrechnungsmodalitäten werden vor Aktivierung transparent dargestellt.
+                Nutzer können
+                kostenpflichtige Funktionen jederzeit abwählen, sofern keine vertraglichen Mindestlaufzeiten bestehen.
+            </p>
+        </section>
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Rollen und Verantwortlichkeiten</h2>
             <p><strong>Uploader/Submitter:</strong> Personen, die Videoinhalte zur Plattform hinzufügen.
