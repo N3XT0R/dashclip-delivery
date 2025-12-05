@@ -110,8 +110,7 @@ class PanelUserPanelProvider extends PanelProvider
             PanelsRenderHook::BODY_END,
             function (): ?string {
                 return view('partials.footer')->render();
-            }
-        );
+            });
     }
 
     protected function addMiddlewares(Panel $panel): Panel
