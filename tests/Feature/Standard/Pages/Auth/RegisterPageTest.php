@@ -33,6 +33,7 @@ final class RegisterPageTest extends DatabaseTestCase
             'email' => 'user@example.com',
             'password' => 'secret-password',
             'passwordConfirmation' => 'secret-password',
+            'accept_terms' => true,
         ];
 
         Livewire::test(Register::class)
