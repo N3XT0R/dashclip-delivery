@@ -38,8 +38,6 @@ class VideoUpload extends Page implements HasForms
     protected static ?string $title = 'Video Upload (alpha)';
     protected string $view = 'filament.pages.video-upload';
 
-    protected const string SOURCE_DISK = 'local';
-
     public ?array $data = [];
 
     public function mount(): void
@@ -95,8 +93,8 @@ class VideoUpload extends Page implements HasForms
         return FileUpload::make('file')
             ->label('Video')
             ->required()
-            ->disk(self::SOURCE_DISK)
-            ->directory('uploads/tmp')
+            ->disk(config('uploads.disk'))
+            ->directory(config('uploads.directory'))
             ->acceptedFileTypes([
                 'video/mp4',
                 'application/mp4',
@@ -224,7 +222,7 @@ class VideoUpload extends Page implements HasForms
             user: $user,
             fileInfoDto: $fileInfoDto,
             targetDisk: $targetDisk,
-            sourceDisk: self::SOURCE_DISK,
+            sourceDisk: config('uploads.disk'),
             start: (int)($clip['start_sec'] ?? 0),
             end: (int)($clip['end_sec'] ?? 0),
             submittedBy: $user?->display_name,
