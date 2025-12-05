@@ -12,6 +12,8 @@ class AssignUploader extends Command
 {
     protected $signature = 'assign:uploader';
 
+    protected $description = 'Assigns an uploader to all clips that currently have no associated user.';
+
     public function handle(ClipRepository $clipRepository, ClipService $clipService): int
     {
         $clipsWithoutUserId = $clipRepository->getClipsWhereUserIdIsNull();
