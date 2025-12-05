@@ -9,19 +9,15 @@ use Illuminate\Console\Command;
 
 class InfoImport extends Command
 {
-    /**
-     * Erwartetes CSV-Format (Semikolon-getrennt, erste Zeile = Spaltenbeschreibung):
-     * filename;start;end;note;bundle;role;submitted_by
-     */
     protected $signature = 'info:import
-        {--dir= : Upload-Ordner mit Clips (rekursiv nach CSV/TXT suchen)}
-        {--csv= : Optional: direkter Pfad zur CSV/TXT}
-        {--infer-role=1 : Rolle (F/R) aus Dateinamen _F/_R ableiten, wenn Spalte leer}
-        {--default-bundle= : Bundle-Fallback, wenn in CSV leer}
-        {--default-submitter= : submitted_by-Fallback, wenn in CSV leer}
-        {--keep-csv=1 : CSV/TXT nach Import behalten (1 = nicht löschen)}';
+        {--dir= : Upload directory containing clips (scan recursively for CSV/TXT files)}
+        {--csv= : Optional: direct path to a CSV/TXT file}
+        {--infer-role=1 : Infer role (F/R) from filename suffix _F/_R if the column is empty}
+        {--default-bundle= : Fallback bundle if the CSV field is empty}
+        {--default-submitter= : Fallback for submitted_by if the CSV field is empty}
+        {--keep-csv=1 : Keep the CSV/TXT file after import (1 = do not delete)}';
 
-    protected $description = 'Importiert Clip-Infos (start/end/note/bundle/role/submitted_by) aus einer CSV.';
+    protected $description = 'Imports clip metadata (start/end/note/bundle/role/submitted_by) from a CSV file.';
 
     public function handle(InfoImporter $importer): int
     {
