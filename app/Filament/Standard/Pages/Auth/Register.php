@@ -7,6 +7,7 @@ namespace App\Filament\Standard\Pages\Auth;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use Filament\Auth\Pages\Register as BaseRegister;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
@@ -56,7 +57,7 @@ class Register extends BaseRegister
 
         /** @var User $user */
         $user = parent::handleRegistration($data);
-        $user->syncRoles([RoleEnum::REGULAR->value]);
+        $user->assignRole(RoleEnum::REGULAR->value, Filament::getCurrentPanel()?->getAuthGuard());
 
         return $user;
     }
