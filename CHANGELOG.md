@@ -40,8 +40,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `handleRecordUpdate()` now persists each notification preference through the `UserMailConfigRepository`.
     - Removed the notification subtree from form data before calling the parent update handler to prevent unintended
       writes to the `users` table.
-
-[3.1.0-beta.2] - 2025-12-05
+- **Incorrect Role Assignment Guard During User Registration**
+    - Resolved an issue where newly registered users were assigned a role under the wrong authentication guard.
+    - Filament’s registration flow now correctly uses the panel’s active guard (`standard`) when attaching the default
+      user role.
+    - Prevented silent failures where Spatie Permission rejected role assignment due to a guard mismatch.
+    - Ensures that newly registered users can authenticate and access the panel without encountering unexpected `403`
+      errors.
+      [3.1.0-beta.2] - 2025-12-05
 
 ### Added
 
