@@ -16,11 +16,11 @@
 </head>
 <body>
 <header class="topbar">
-    <div class="brand">
+    <a href="{{ url('/') }}" class="brand" style="text-decoration: none; color: inherit;">
         <img class="logo" src="{{ asset('images/logo.png') }}" alt="{{ config('app.name', 'App') }} Logo">
         <span>{{ config('app.name', 'App') }}</span>
         <span class="muted" style="font-weight:400;">@yield('subtitle')</span>
-    </div>
+    </a>
     <nav>
         @yield('actions')
         <button id="themeToggle" class="btn" type="button" style="margin-left:10px;">🌙</button>
