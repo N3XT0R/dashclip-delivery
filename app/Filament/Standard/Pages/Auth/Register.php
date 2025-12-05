@@ -58,6 +58,7 @@ class Register extends BaseRegister
         }
 
         unset($data['accept_terms']);
+        $data['terms_accepted_at'] = now();
 
         /** @var User $user */
         $user = parent::handleRegistration($data);
