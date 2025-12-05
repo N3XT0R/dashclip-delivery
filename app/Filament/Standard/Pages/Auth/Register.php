@@ -70,7 +70,7 @@ class Register extends BaseRegister
                 Filament::getCurrentPanel()?->getAuthGuard()
             ));
         } catch (\Throwable $e) {
-            Log::error($e->getMessage(), ['exception' => $e, 'user' => $user]);
+            Log::error('Role assignment failed', ['exception' => $e, 'user' => $user]);
             $user->delete();
 
 
