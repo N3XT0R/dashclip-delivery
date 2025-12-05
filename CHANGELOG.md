@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Ensures that newly registered users can authenticate and access the panel without encountering unexpected `403`
       errors.
 
-[3.1.0-beta.2] - 2025-12-05
+## [3.1.0-beta.2] - 2025-12-05
 
 ### Added
 
