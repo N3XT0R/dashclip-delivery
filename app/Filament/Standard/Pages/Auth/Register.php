@@ -12,6 +12,7 @@ use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Checkbox;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 
@@ -63,14 +64,15 @@ class Register extends BaseRegister
 
         try {
             $user->assignRole($roleRepository->getRoleByRoleEnum(RoleEnum::REGULAR, GuardEnum::DEFAULT->value));
-        } catch (\Throwable $exception) {
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage(), ['exception' => $e, 'user' => $user]);
             $user->delete();
 
-            throw ValidationException::withMessages([
-                'role' => __('auth.register.role_assignment_failed', [
-                    'message' => $exception->getMessage(),
-                ]),
-            ]);
+
+            $this->getRoleAssignmentFailedNotification(
+                RoleEnum::REGULAR->value,
+                GuardEnum::DEFAULT->value
+            )->send();
         }
 
         return $user;
