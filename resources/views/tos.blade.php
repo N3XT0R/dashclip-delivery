@@ -35,26 +35,27 @@
                 erfolgen.</p>
         </section>
         <section class="mb-6">
-            <h2 class="text-xl font-semibold mb-2">Kostenfreie und kostenpflichtige Funktionen</h2>
+            <h2 class="text-xl font-semibold mb-2">Kostenfreie und optionale Zusatzfunktionen</h2>
             <p>
-                {{ config('app.name') }} stellt derzeit ausschließlich <strong>kostenfreie Funktionen</strong> zur
-                Verfügung.
-                Zukünftig können optionale <strong>kostenpflichtige Zusatzfunktionen</strong> angeboten werden, etwa zur
-                Erweiterung der Nutzungs- oder Speicherkapazitäten oder zur Bereitstellung zusätzlicher Komfort- und
-                Verwaltungsfunktionen. Der genaue Funktionsumfang kostenpflichtiger Angebote kann sich im Laufe der
-                Weiterentwicklung des Dienstes ändern.
+                {{ config('app.name') }} stellt derzeit ausschließlich <strong>kostenfreie Funktionen</strong> bereit.
+                Zukünftig können optionale <strong>zusätzliche Funktionen</strong> eingeführt werden, für die ein
+                Beitrag
+                zur Deckung notwendiger Infrastruktur- oder Betriebskosten erhoben wird
+                (z.&nbsp;B. zusätzlicher Speicherplatz, höhere Verarbeitungskapazitäten oder andere
+                ressourcenintensive Dienste). Eine Gewinnerzielungsabsicht besteht nicht.
             </p>
             <p>
-                Kostenpflichtige Funktionen werden stets deutlich gekennzeichnet, bevor sie genutzt oder aktiviert
-                werden können.
-                Es erfolgt keine automatische oder stillschweigende Kostenpflicht: eine Nutzung kostenpflichtiger
-                Funktionen setzt
-                stets eine bewusste Auswahl und Bestätigung durch den Nutzer voraus.
+                Solche Zusatzfunktionen sind vollständig optional und für die Nutzung des Grundsystems nicht
+                erforderlich.
+                Sie können nur aktiviert werden, wenn der Nutzer sie bewusst auswählt und einer entsprechenden
+                Kostenbeteiligung
+                ausdrücklich zustimmt.
             </p>
             <p>
-                Preise, Leistungsumfang und Abrechnungsmodalitäten werden vor Aktivierung transparent dargestellt.
-                Nutzer können
-                kostenpflichtige Funktionen jederzeit abwählen, sofern keine vertraglichen Mindestlaufzeiten bestehen.
+                Vor Aktivierung einer kostenpflichtigen Zusatzfunktion werden sämtliche
+                Informationen – einschließlich Leistungsumfang, Kostenbeitrag und Abrechnungsmodalitäten –
+                klar und transparent dargestellt. Zusatzfunktionen können jederzeit wieder deaktiviert werden,
+                sofern nicht im Einzelfall abweichende Bedingungen bei Aktivierung kommuniziert wurden.
             </p>
         </section>
         <section class="mb-6">
