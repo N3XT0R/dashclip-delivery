@@ -9,13 +9,15 @@ use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Storage;
 use Tests\DatabaseTestCase;
+use Tests\Testing\Traits\CopyDiskTrait;
 
 class IngestScannerTest extends DatabaseTestCase
 {
     protected IngestScanner $ingestScanner;
+
+    use CopyDiskTrait;
 
     protected function setUp(): void
     {
@@ -38,21 +40,6 @@ class IngestScannerTest extends DatabaseTestCase
         $stats = $ingestStats->toArray();
         $this->assertSame(3, $ingestStats->total());
         $this->assertSame(['new' => 1, 'dups' => 2, 'err' => 0], $stats);
-    }
-
-    /**
-     * Recursively copies all files from one Laravel disk to another.
-     */
-    private function copyDisk(Filesystem $source, Filesystem $target): void
-    {
-        foreach ($source->allFiles() as $path) {
-            $target->put($path, $source->get($path));
-        }
-
-        // Optional: copy empty directories as well
-        foreach ($source->allDirectories() as $dir) {
-            $target->makeDirectory($dir);
-        }
     }
 
     /**

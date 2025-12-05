@@ -6,6 +6,7 @@ namespace Tests\Feature\Filament\Pages;
 
 use App\Enum\Guard\GuardEnum;
 use App\Facades\Cfg;
+use App\Facades\DynamicStorage;
 use App\Filament\Pages\VideoUpload;
 use App\Jobs\ProcessUploadedVideo;
 use App\Models\User;
@@ -14,9 +15,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
+use Tests\Testing\Traits\CopyDiskTrait;
 
 final class VideoUploadTest extends DatabaseTestCase
 {
+    use CopyDiskTrait;
 
 
     public function testRegularUserHasAccess(): void
@@ -31,13 +34,15 @@ final class VideoUploadTest extends DatabaseTestCase
     public function testSubmitDispatchesJobForEachClip(): void
     {
         Bus::fake();
-        $disk = Storage::fake('public');
+        $inboxPath = base_path('tests/Fixtures/Inbox/Videos/');
+        $dynamicStorage = DynamicStorage::fromPath($inboxPath);
+        $disk = Storage::fake('local');
+        $this->copyDisk($dynamicStorage, $disk);
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
         $disk->makeDirectory('uploads/tmp/');
 
-        $disk->put('uploads/tmp/file1.mp4', 'a');
-
+        $disk->put('uploads/tmp/file1.mp4', $dynamicStorage->readStream('standalone.mp4'));
         $path1 = 'uploads/tmp/file1.mp4';
 
         $state = [
@@ -62,12 +67,11 @@ final class VideoUploadTest extends DatabaseTestCase
             public function validate(): void
             {
                 $this->validated = true;
-                foreach ($this->state['clips'] ?? [] as $index => $clip) {
-                    if (($clip['duration'] ?? 0) < 1) {
-                        throw ValidationException::withMessages([
-                            "clips.$index.duration" => 'The duration must be at least 1 second.',
-                        ]);
-                    }
+
+                if (($this->state['duration'] ?? 0) < 1) {
+                    throw ValidationException::withMessages([
+                        "duration" => 'The duration must be at least 1 second.',
+                    ]);
                 }
             }
 

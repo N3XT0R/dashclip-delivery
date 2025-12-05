@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Unique Video Processing Jobs**
+    - Introduced `ShouldBeUnique` for the `ProcessUploadedVideo` job to prevent duplicate ingestion when the same file
+      is
+      uploaded or dispatched multiple times.
+    - Each job is now uniquely identified via a `user_id:file_hash` composite key, ensuring that deduplication occurs
+      per-user while still avoiding duplicate processing of identical uploads.
+    - Activity logs now include additional metadata such as the job's retry attempt (`$this->attempts()`), improving
+      traceability and debugging capabilities.
+    - Upload events now record structured properties (e.g., `file`, `attempt`) consistently across all ingestion logs.
+
+### Changed
+
+- **Offer Expiration Logic**
+    - Updated assignment expiration handling so that `expires_at` is now normalized to the end of the day (
+      `endOfDay()`).  
+      This ensures that a configured TTL (e.g., “7 days”) corresponds to a full calendar-day period as users naturally
+      expect.
+    - Previously, expirations were based on the exact creation timestamp, which was technically correct but resulted in
+      shorter perceived validity windows.  
+      The new logic guarantees that offers remain active consistently until the end of the final valid day.
+
 ### [3.1.0-beta.1] - 2025-12-04
 
 ### Added

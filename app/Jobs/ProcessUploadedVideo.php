@@ -3,22 +3,26 @@
 namespace App\Jobs;
 
 use App\DTO\FileInfoDto;
+use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessUploadedVideo implements ShouldQueue
+class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected string $hash;
+
+    public $tries = 0;
 
     public function __construct(
         public User $user,
@@ -33,6 +37,13 @@ class ProcessUploadedVideo implements ShouldQueue
         public ?string $role = null,
         public ?Team $team = null,
     ) {
+        $disk = \Storage::disk($sourceDisk);
+        $this->hash = DynamicStorage::getHashForFileInfoDto($disk, $fileInfoDto);
+    }
+
+    public function uniqueId(): string
+    {
+        return "{$this->user->getKey()}:{$this->hash}";
     }
 
     /**
@@ -57,7 +68,11 @@ class ProcessUploadedVideo implements ShouldQueue
             activity()
                 ->performedOn($video)
                 ->causedBy($this->user)
-                ->withProperties(['action' => 'upload', ['file' => $video->original_name]])
+                ->withProperties([
+                    'action' => 'upload',
+                    'file' => $video->original_name,
+                    'attempt' => $this->attempts(),
+                ])
                 ->log('uploaded a video');
 
             /**

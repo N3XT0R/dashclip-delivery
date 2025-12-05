@@ -15,18 +15,22 @@ use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
 use Mockery;
 use Tests\DatabaseTestCase;
+use Tests\Testing\Traits\CopyDiskTrait;
 
 class ProcessUploadedVideoTest extends DatabaseTestCase
 {
+    use CopyDiskTrait;
 
     public function testJobWritesActivityAndCreatesClip(): void
     {
         \Storage::fake('tmp');
+        \Storage::fake('local');
         // Arrange
         $user = User::factory()->create();
         $fileInfo = new FileInfoDto('standalone.mp4', 'standalone.mp4', 'mp4');
         $disk = DynamicStorage::fromPath(base_path('tests/Fixtures/Inbox/Videos'));
         $hash = DynamicStorage::getHashForFilePath($disk, $fileInfo->path);
+        $this->copyDisk($disk, \Storage::disk('local'));
 
         $video = Video::factory()->create([
             'hash' => $hash,
@@ -82,6 +86,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
     public function testJobAssignsTeamToVideoWhenProvided(): void
     {
         \Storage::fake('tmp');
+        \Storage::fake('local');
 
         // Arrange
         User::flushEventListeners();
@@ -91,6 +96,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         $fileInfo = new FileInfoDto('standalone.mp4', 'standalone.mp4', 'mp4');
         $disk = DynamicStorage::fromPath(base_path('tests/Fixtures/Inbox/Videos'));
         $hash = DynamicStorage::getHashForFilePath($disk, $fileInfo->path);
+        $this->copyDisk($disk, \Storage::disk('local'));
 
         $video = Video::factory()->create([
             'hash' => $hash,
