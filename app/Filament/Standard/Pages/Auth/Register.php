@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\Auth;
 
+use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use Filament\Auth\Pages\Register as BaseRegister;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
@@ -57,8 +57,20 @@ class Register extends BaseRegister
 
         /** @var User $user */
         $user = parent::handleRegistration($data);
-        $user->assignRole(RoleEnum::REGULAR->value, Filament::getCurrentPanel()?->getAuthGuard());
+
+        try {
+            $user->assignRole(RoleEnum::REGULAR->value, GuardEnum::DEFAULT->value);
+        } catch (\Throwable $exception) {
+            $user->delete();
+
+            throw ValidationException::withMessages([
+                'email' => __('auth.register.role_assignment_failed', [
+                    'message' => $exception->getMessage(),
+                ]),
+            ]);
+        }
 
         return $user;
     }
+
 }
