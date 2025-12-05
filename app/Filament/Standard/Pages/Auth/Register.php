@@ -71,7 +71,7 @@ class Register extends BaseRegister
 
             $this->getRoleAssignmentFailedNotification(
                 RoleEnum::REGULAR,
-                GuardEnum::DEFAULT->value
+                GuardEnum::DEFAULT
             )->send();
         }
 
