@@ -39,9 +39,10 @@
             <p>
                 {{ config('app.name') }} stellt derzeit ausschließlich <strong>kostenfreie Funktionen</strong> zur
                 Verfügung.
-                Zukünftig können optionale <strong>kostenpflichtige Zusatzfunktionen</strong> (z. B. erhöhte
-                Kanal-Kapazitäten,
-                Prioritätsverteilung, erweiterte Analysewerkzeuge oder Team-Funktionen) angeboten werden.
+                Zukünftig können optionale <strong>kostenpflichtige Zusatzfunktionen</strong> angeboten werden, etwa zur
+                Erweiterung der Nutzungs- oder Speicherkapazitäten oder zur Bereitstellung zusätzlicher Komfort- und
+                Verwaltungsfunktionen. Der genaue Funktionsumfang kostenpflichtiger Angebote kann sich im Laufe der
+                Weiterentwicklung des Dienstes ändern.
             </p>
             <p>
                 Kostenpflichtige Funktionen werden stets deutlich gekennzeichnet, bevor sie genutzt oder aktiviert
