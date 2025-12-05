@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Notification Settings Not Persisting in Profile Edit**
+    - Fixed an issue where dynamically generated notification checkboxes  
+      (`notifications.mail.types.{NotificationClass}`) were not being saved in Filament v4.
+    - Form state is now correctly read from the nested structure `notifications.mail.types` instead of non-existent flat
+      keys.
+    - `handleRecordUpdate()` now persists each notification preference through the `UserMailConfigRepository`.
+    - Removed the notification subtree from form data before calling the parent update handler to prevent unintended
+      writes to the `users` table.
+
 [3.1.0-beta.2] - 2025-12-05
 
 ### Added
