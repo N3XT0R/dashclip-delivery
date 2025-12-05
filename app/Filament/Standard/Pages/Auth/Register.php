@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Repository\RoleRepository;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Checkbox;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
@@ -73,6 +74,17 @@ class Register extends BaseRegister
         }
 
         return $user;
+    }
+
+    protected function getRoleAssignmentFailedNotification(string $role, ?string $guard = null): Notification
+    {
+        return Notification::make()
+            ->title(__('auth.register.role_assignment_failed_title'))
+            ->body(__('auth.register.role_assignment_failed_body', [
+                'role' => $role,
+                'guard' => $guard ?: 'default',
+            ]))
+            ->danger();
     }
 
 }
