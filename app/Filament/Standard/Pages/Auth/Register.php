@@ -70,7 +70,7 @@ class Register extends BaseRegister
 
 
             $this->getRoleAssignmentFailedNotification(
-                RoleEnum::REGULAR->value,
+                RoleEnum::REGULAR,
                 GuardEnum::DEFAULT->value
             )->send();
         }
@@ -78,13 +78,13 @@ class Register extends BaseRegister
         return $user;
     }
 
-    protected function getRoleAssignmentFailedNotification(string $role, ?string $guard = null): Notification
+    protected function getRoleAssignmentFailedNotification(RoleEnum $role, ?GuardEnum $guard = null): Notification
     {
         return Notification::make()
             ->title(__('auth.register.role_assignment_failed_title'))
             ->body(__('auth.register.role_assignment_failed_body', [
                 'role' => $role,
-                'guard' => $guard ?: 'default',
+                'guard' => $guard?->value ?: 'web',
             ]))
             ->danger();
     }
