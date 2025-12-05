@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\VideoUpload;
@@ -65,7 +66,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('75px')
             ->homeUrl('dashboard')
-            ->authGuard(PanelEnum::STANDARD->value)
+            ->authGuard(GuardEnum::STANDARD->value)
             ->tenant(
                 model: Team::class,
                 slugAttribute: 'slug',
