@@ -42,6 +42,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         'email',
         'password',
         'onboarding_completed',
+        'terms_accepted_at',
     ];
 
     /**
@@ -59,6 +60,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     protected $appends = [
         'display_name',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'terms_accepted_at' => 'datetime',
     ];
 
     protected function scopeIsOwnTeam(Builder $query, ?self $user = null): Builder
