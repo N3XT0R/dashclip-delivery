@@ -201,6 +201,7 @@ return [
         'prefix' => 'view',
         'exclude' => [
             \Filament\Pages\Dashboard::class,
+            \App\Filament\Standard\Pages\Auth\Register::class,
         ],
     ],
 
