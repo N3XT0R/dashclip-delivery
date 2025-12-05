@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
 class AssignExpire extends Command
 {
     protected $signature = 'assign:expire {--cooldown-days=}';
-    protected $description = 'Markiert überfällige Assignments als expired und setzt Cooldown je (channel, video).';
+    protected $description = 'Marks overdue assignments as expired and sets a cooldown for each (channel, video) pair.';
 
     public function __construct(private AssignmentExpirer $expirer)
     {
