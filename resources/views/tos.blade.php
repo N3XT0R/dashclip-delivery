@@ -121,17 +121,33 @@
 
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Urheberrechte und geistiges Eigentum</h2>
-            <p>Alle Inhalte der Plattform selbst (insbesondere Benutzeroberfläche, Logos, Layouts, Systemfunktionen,
-                Dokumentation) unterliegen dem Urheberrecht und sind Eigentum des Betreibers oder seiner Lizenzgeber.
-                Der Quellcode von {{ config('app.name') }} ist unter der AGPL-3.0-or-later Lizenz veröffentlicht
-                und unterliegt den Bestimmungen dieser Lizenz.</p>
-            <p><strong>Videoinhalte:</strong> Mit dem Upload von Videoinhalten räumt der Uploader dem Betreiber
-                und damit auch den Kanälen das Recht ein, diese Videos zum Zwecke der Verteilung, Speicherung,
-                Vorschau-Generierung, Verwaltung und letztlichen Verwendung in ihren jeweiligen Kanälen zu nutzen.
-                Der Uploader garantiert, dass er diese Rechte zur Verfügung hat oder von allen Rechteinhabern
-                die entsprechende Erlaubnis erhalten hat. Der Uploader bleibt inhaltlich verantwortlich für die
-                Legalität
-                und Originalität der hochgeladenen Inhalte.</p>
+            <p>
+                Alle Inhalte der Plattform selbst (insbesondere Benutzeroberfläche, Logos, Layouts, Systemfunktionen
+                und Dokumentation) unterliegen dem Urheberrecht und sind Eigentum des Betreibers oder seiner
+                Lizenzgeber.
+            </p>
+            <p>
+                Der Quellcode von {{ config('app.name') }} wird im Rahmen eines
+                <strong>Dual-Lizenzmodells</strong> bereitgestellt:
+                einerseits unter der <strong>AGPL-3.0-or-later</strong>, andererseits unter einer
+                <strong>kommerziellen Lizenz</strong>.
+                Die Nutzung des Quellcodes richtet sich nach den Bedingungen der jeweils gewählten Lizenz.
+                Die AGPL-3.0 verpflichtet insbesondere zur Offenlegung von Änderungen und zur Bereitstellung des
+                vollständigen
+                Quellcodes gegenüber allen Nutzern des angebotenen Dienstes. Die kommerzielle Lizenz erlaubt hingegen
+                proprietäre Nutzung ohne Offenlegungspflichten.
+            </p>
+            <p>
+                <strong>Videoinhalte:</strong>
+                Mit dem Upload von Videoinhalten räumt der Uploader dem Betreiber – sowie den zugehörigen Kanälen – das
+                Recht ein,
+                diese Videos zum Zwecke der Verteilung, Speicherung, Vorschau-Generierung, Verwaltung und Nutzung
+                innerhalb der
+                jeweiligen Kanäle zu verarbeiten. Der Uploader garantiert, dass er über alle hierfür erforderlichen
+                Rechte verfügt
+                oder entsprechende Erlaubnisse eingeholt hat. Die inhaltliche Verantwortung für die Rechtmäßigkeit und
+                Originalität der hochgeladenen Inhalte verbleibt vollständig beim Uploader.
+            </p>
         </section>
 
         <section class="mb-6">
