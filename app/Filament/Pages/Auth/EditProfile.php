@@ -13,10 +13,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 class EditProfile extends BaseEditProfile
 {
     protected static bool $isScopedToTenant = false;
+
+    private const CHECKBOX_NAMESPACE = 'notifications.mail.types.';
 
 
     public function form(Schema $schema): Schema
@@ -60,13 +63,31 @@ class EditProfile extends BaseEditProfile
             ->schema(
                 collect(NotificationDiscovery::list())
                     ->map(function ($class) use ($user, $repo) {
+                        $key = self::CHECKBOX_NAMESPACE.$class;
                         $isAllowed = $repo->isAllowed($user, $class);
 
-                        return Checkbox::make("notifications.mail.types.$class")
+                        return Checkbox::make($key)
                             ->translateLabel()
-                            ->label("notifications.mail.types.$class")
+                            ->label($key)
                             ->formatStateUsing(fn() => ($isAllowed));
                     })->toArray()
             );
+    }
+
+    protected function handleRecordUpdate(Model|User $record, array $data): Model
+    {
+        $repo = app(UserMailConfigRepository::class);
+
+        $types = data_get($data, 'notifications.mail.types', []);
+
+        foreach (NotificationDiscovery::list() as $class) {
+            if (array_key_exists($class, $types)) {
+                $repo->setForUser($record, $class, $types[$class]);
+            }
+        }
+
+        unset($data['notifications']);
+
+        return parent::handleRecordUpdate($record, $data);
     }
 }
