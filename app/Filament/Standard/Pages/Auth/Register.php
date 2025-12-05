@@ -9,6 +9,7 @@ use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Repository\RoleRepository;
 use Filament\Auth\Pages\Register as BaseRegister;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
@@ -63,7 +64,10 @@ class Register extends BaseRegister
         $roleRepository = app(RoleRepository::class);
 
         try {
-            $user->assignRole($roleRepository->getRoleByRoleEnum(RoleEnum::REGULAR, GuardEnum::DEFAULT->value));
+            $user->assignRole($roleRepository->getRoleByRoleEnum(
+                RoleEnum::REGULAR,
+                Filament::getCurrentPanel()?->getAuthGuard()
+            ));
         } catch (\Throwable $e) {
             Log::error($e->getMessage(), ['exception' => $e, 'user' => $user]);
             $user->delete();
