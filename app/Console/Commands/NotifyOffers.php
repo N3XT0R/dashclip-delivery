@@ -13,7 +13,7 @@ use RuntimeException;
 class NotifyOffers extends Command
 {
     protected $signature = 'notify:offers {--ttl-days=} {--assign-batch=}';
-    protected $description = 'Sendet je Kanal einen Offer-Link (Übersicht + ZIP).';
+    protected $description = 'Sends an offer link per channel (overview + ZIP).';
 
     public function __construct(private OfferNotifier $notifier)
     {

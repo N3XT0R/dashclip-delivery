@@ -8,8 +8,9 @@ use Illuminate\Console\Command;
 class RefreshDropboxToken extends Command
 {
     protected $signature = 'dropbox:refresh-token';
+    
+    protected $description = 'Updates the Dropbox access token and rotates the refresh token if necessary.';
 
-    protected $description = 'Aktualisiert den Dropbox Access Token und dreht ggf. den Refresh Token.';
 
     public function __construct(private AutoRefreshTokenProvider $provider)
     {

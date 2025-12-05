@@ -22,7 +22,7 @@ class IngestScan extends Command
         {--ttl=900 : Lock TTL in seconds}
         {--lock-store= : Optional cache store (e.g., redis)}';
 
-    protected $description = 'Scannt Inbox rekursiv, dedupe per SHA-256, verschiebt content-addressiert auf konfiguriertes Storage.';
+    protected $description = 'Recursively scans the inbox, deduplicates files via SHA-256, and moves them to the configured storage using content addressing.';
 
     public function __construct(
         private readonly IngestScanner $scanner
