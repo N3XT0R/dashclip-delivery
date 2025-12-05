@@ -75,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       shorter perceived validity windows.  
       The new logic guarantees that offers remain active consistently until the end of the final valid day.
 
-### [3.1.0-beta.1] - 2025-12-04
+## [3.1.0-beta.1] - 2025-12-04
 
 ### Added
 
