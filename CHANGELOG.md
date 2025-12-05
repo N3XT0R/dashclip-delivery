@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - User consent is stored client-side via a one-year cookie.
     - Implemented without external dependencies and fully independent of Filament’s theme or styling system.
 
+### Changed
+
+- **Command Descriptions and Signatures Localized to English**
+    - Updated multiple Artisan commands to use clear, consistent English descriptions and option texts.
+    - Improved readability and standardization across commands such as:
+        - `assign:uploader`
+        - `info:import`
+        - `channels:send-welcome`
+        - `video:cleanup`
+        - Dropbox token refresh command
+        - Offer link dispatch command
+    - Ensures that command usage, help output, and documentation are now fully aligned with the project's
+      English-language conventions.
+
 ### Fixed
 
 - **Notification Settings Not Persisting in Profile Edit**
