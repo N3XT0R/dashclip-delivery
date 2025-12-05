@@ -5,7 +5,7 @@ Hier behältst du den Überblick über alle Uploads. Unter `Videos` siehst du Li
 <img
         src="{{ asset('images/onboarding/video_management.jpg') }}"
         alt="Onboarding Illustration"
-        class="w-20 h-20 object-contain mb-3"
+        class="w-full max-w-md mx-auto object-contain mb-6"
 />
 
 ### Was du siehst

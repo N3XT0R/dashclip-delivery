@@ -5,7 +5,7 @@ Schön, dass du da bist! Das **Standard-Panel** ist deine Schaltzentrale, um Vid
 <img
         src="{{ asset('images/onboarding/dashboard.jpg') }}"
         alt="Onboarding Illustration"
-        class="w-20 h-20 object-contain mb-3"
+        class="w-full max-w-md mx-auto object-contain mb-6"
 />
 
 ### Was dich gleich erwartet

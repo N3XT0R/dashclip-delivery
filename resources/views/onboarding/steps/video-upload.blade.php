@@ -5,7 +5,7 @@ Starte mit deinen Inhalten! Unter `Videos` findest du oben rechts den Button `Vi
 <img
         src="{{ asset('images/onboarding/upload.jpg') }}"
         alt="Onboarding Illustration"
-        class="w-20 h-20 object-contain mb-3"
+        class="w-full max-w-md mx-auto object-contain mb-6"
 />
 
 ### Schritt für Schritt

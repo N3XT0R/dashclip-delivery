@@ -2,7 +2,6 @@
 
 Glückwunsch – das Onboarding ist abgeschlossen. Deine ersten Videos sind vorbereitet und die passenden Kanäle ausgewählt. Ab jetzt kannst du den Alltag im Standard-Panel übernehmen.
 
-[Hier: Screenshot/Grafik des Erfolgsbildschirms]
 
 ### Was jetzt wichtig ist
 - 🚀 **Dashboard:** Prüfe täglich den Überblick und aktuelle Meldungen.
