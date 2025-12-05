@@ -46,6 +46,7 @@
 </main>
 
 @include('partials.footer')
+@include('components.cookie-banner')
 
 @stack('scripts')
 
