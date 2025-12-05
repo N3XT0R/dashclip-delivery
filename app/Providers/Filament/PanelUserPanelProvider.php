@@ -66,7 +66,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('75px')
             ->homeUrl('dashboard')
-            ->authGuard(GuardEnum::STANDARD->value)
+            ->authGuard(GuardEnum::DEFAULT->value)
             ->tenant(
                 model: Team::class,
                 slugAttribute: 'slug',
