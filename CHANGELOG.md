@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Introduced a minimal, unobtrusive cookie banner informing users that the site only uses strictly necessary
       cookies.
     - The banner is displayed only when no `cookie_consent=true` flag is present.
-    - User consent is stored client-side via a one-year cookie.
+    - User consent is persisted for one year via a client-side cookie.
     - Implemented without external dependencies and fully independent of Filament’s theme or styling system.
 
 ### Changed
