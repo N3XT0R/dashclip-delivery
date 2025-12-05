@@ -7,6 +7,7 @@ namespace App\Filament\Standard\Pages\Auth;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
+use App\Repository\RoleRepository;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\Checkbox;
 use Filament\Schemas\Schema;
@@ -57,14 +58,15 @@ class Register extends BaseRegister
 
         /** @var User $user */
         $user = parent::handleRegistration($data);
+        $roleRepository = app(RoleRepository::class);
 
         try {
-            $user->assignRole(RoleEnum::REGULAR->value, GuardEnum::DEFAULT->value);
+            $user->assignRole($roleRepository->getRoleByRoleEnum(RoleEnum::REGULAR, GuardEnum::DEFAULT->value));
         } catch (\Throwable $exception) {
             $user->delete();
 
             throw ValidationException::withMessages([
-                'email' => __('auth.register.role_assignment_failed', [
+                'role' => __('auth.register.role_assignment_failed', [
                     'message' => $exception->getMessage(),
                 ]),
             ]);
