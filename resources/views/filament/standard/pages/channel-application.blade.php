@@ -11,6 +11,8 @@
                 {{ __('filament.channel_application.form.about_benefit_security') }}</p>
             <p><strong>{{ __('filament.channel_application.form.about_benefit_control_title') }}</strong><br>
                 {{ __('filament.channel_application.form.about_benefit_control') }}</p>
+            <p><strong>{{ __('filament.channel_application.form.about_benefit_portal_title') }}</strong><br>
+                {{ __('filament.channel_application.form.about_benefit_portal') }}</p>
             <p><strong>{{ __('filament.channel_application.form.about_benefit_remain_title') }}</strong><br>
                 {{ __('filament.channel_application.form.about_benefit_remain') }}</p>
         </div>
