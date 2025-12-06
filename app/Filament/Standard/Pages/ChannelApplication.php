@@ -2,7 +2,7 @@
 
 namespace App\Filament\Standard\Pages;
 
-use App\DTO\ChannelApplicationRequestDto;
+use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
 use BackedEnum;
@@ -55,43 +55,39 @@ class ChannelApplication extends Page implements HasForms
                 Checkbox::make('other_channel_request')
                     ->label(__('filament.channel_application.form.request_other_channel'))
                     ->reactive(),
+
                 Select::make('channel_id')
-                    ->label('Channel')
-                    ->options(function () {
-                        return app(ChannelRepository::class)->getActiveChannels()->pluck('name', 'id')->toArray();
-                    })
+                    ->label(__('filament.channel_application.form.channel_label'))
+                    ->options(fn() => app(ChannelRepository::class)->getActiveChannels()->pluck('name',
+                        'id')->toArray())
                     ->searchable()
                     ->hidden(fn($get) => $get('other_channel_request'))
                     ->required(fn($get) => !$get('other_channel_request')),
+
                 TextInput::make('new_channel_name')
                     ->label(__('filament.channel_application.form.new_channel_name_label'))
-                    ->placeholder(__('filament.channel_application.form.new_channel_name_placeholder'))
                     ->visible(fn($get) => $get('other_channel_request'))
                     ->required(fn($get) => $get('other_channel_request')),
 
-                TextInput::make('new_channel_slug')
-                    ->label(__('filament.channel_application.form.new_channel_slug_label'))
-                    ->placeholder(__('filament.channel_application.form.new_channel_slug_placeholder'))
+                TextInput::make('new_channel_creator_name')
+                    ->label(__('filament.channel_application.form.new_channel_creator_name_label'))
                     ->visible(fn($get) => $get('other_channel_request'))
                     ->required(fn($get) => $get('other_channel_request')),
 
                 TextInput::make('new_channel_email')
                     ->label(__('filament.channel_application.form.new_channel_email_label'))
                     ->type('email')
-                    ->placeholder(__('filament.channel_application.form.new_channel_email_placeholder'))
                     ->visible(fn($get) => $get('other_channel_request'))
                     ->required(fn($get) => $get('other_channel_request')),
 
-                Textarea::make('new_channel_description')
-                    ->label(__('filament.channel_application.form.new_channel_description_label'))
-                    ->placeholder(__('filament.channel_application.form.new_channel_description_placeholder'))
-                    ->rows(4)
+                TextInput::make('new_channel_youtube_name')
+                    ->label(__('filament.channel_application.form.new_channel_youtube_name_label'))
                     ->visible(fn($get) => $get('other_channel_request'))
-                    ->required(fn($get) => $get('other_channel_request')),
+                    ->required(false),
+
                 Textarea::make('note')
-                    ->label('filament.channel_application.form.note_label')
-                    ->translateLabel()
-                    ->maxLength(255)
+                    ->label(__('filament.channel_application.form.note_label'))
+                    ->maxLength(500)
                     ->rows(5)
                     ->placeholder(__('filament.channel_application.form.note_placeholder')),
             ])
@@ -106,9 +102,9 @@ class ChannelApplication extends Page implements HasForms
             note: $state['note'] ?? '',
             otherChannelRequest: $state['other_channel_request'] ?? false,
             newChannelName: $state['new_channel_name'] ?? null,
-            newChannelSlug: $state['new_channel_slug'] ?? null,
+            newChannelCreatorName: $state['new_channel_creator_name'] ?? null,
             newChannelEmail: $state['new_channel_email'] ?? null,
-            newChannelDescription: $state['new_channel_description'] ?? null,
+            newChannelYoutubeName: $state['new_channel_youtube_name'] ?? null,
         );
 
         try {

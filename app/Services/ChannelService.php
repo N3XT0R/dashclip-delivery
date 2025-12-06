@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\DTO\ChannelApplicationRequestDto;
+use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\DTO\ChannelPoolDto;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
@@ -223,9 +223,9 @@ class ChannelService
             'status' => 'pending',
             'meta' => json_encode([
                 'new_channel_name' => $dto->newChannelName,
-                'new_channel_slug' => $dto->newChannelSlug,
+                'new_channel_creator_name' => $dto->newChannelCreatorName,
                 'new_channel_email' => $dto->newChannelEmail,
-                'new_channel_description' => $dto->newChannelDescription,
+                'new_channel_youtube_name' => $dto->newChannelYoutubeName,
             ]),
         ]);
     }
