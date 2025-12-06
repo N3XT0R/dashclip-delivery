@@ -228,6 +228,8 @@ class ChannelService
                     'email' => $dto->newChannelEmail,
                     'youtube_name' => $dto->newChannelYoutubeName,
                 ],
+                'tos_accepted' => true,
+                'tos_accepted_at' => now()->toDateTimeString(),
             ]),
         ]);
     }
