@@ -2,6 +2,7 @@
 
 namespace App\Filament\Standard\Pages;
 
+use App\DTO\ChannelApplicationRequestDto;
 use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
 use BackedEnum;
@@ -99,10 +100,19 @@ class ChannelApplication extends Page implements HasForms
 
     public function submit(): void
     {
-        $data = $this->form->getState();
+        $state = $this->form->getState();
+        $dto = new ChannelApplicationRequestDto(
+            channelId: $state['channel_id'] ?? null,
+            note: $state['note'] ?? '',
+            otherChannelRequest: $state['other_channel_request'] ?? false,
+            newChannelName: $state['new_channel_name'] ?? null,
+            newChannelSlug: $state['new_channel_slug'] ?? null,
+            newChannelEmail: $state['new_channel_email'] ?? null,
+            newChannelDescription: $state['new_channel_description'] ?? null,
+        );
 
         try {
-            app(ChannelService::class)->applyForAccess($data, auth()->user());
+            app(ChannelService::class)->applyForAccess($dto, auth()->user());
             Notification::make()
                 ->title(__('filament.channel_application.messages.application_submitted'))
                 ->success()

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\ChannelApplicationRequestDto;
 use App\DTO\ChannelPoolDto;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
@@ -191,26 +192,41 @@ class ChannelService
     /**
      * Create a channel access application for the user.
      *
-     * @param  array  $data  ['channel_id' => int, 'note' => string]
+     * @param  ChannelApplicationRequestDto  $dto
      * @param  User  $user
      * @return ChannelApplication
      */
-    public function applyForAccess(array $data, User $user): ChannelApplication
+    public function applyForAccess(ChannelApplicationRequestDto $dto, User $user): ChannelApplication
     {
-        $existing = $user->channelApplications()
-            ->where('channel_id', $data['channel_id'])
-            ->whereIn('status', ['pending', 'approved'])
-            ->first();
+        if (!$dto->otherChannelRequest && $dto->channelId) {
+            $existing = $user->channelApplications()
+                ->where('channel_id', $dto->channelId)
+                ->whereIn('status', ['pending', 'approved'])
+                ->first();
 
-        if ($existing) {
-            throw new \DomainException(__('You have already applied for this channel.'));
+            if ($existing) {
+                throw new \DomainException(__('You have already applied for this channel.'));
+            }
+
+            return $this->channelRepository->createApplication([
+                'user_id' => $user->id,
+                'channel_id' => $dto->channelId,
+                'note' => $dto->note,
+                'status' => 'pending',
+            ]);
         }
 
         return $this->channelRepository->createApplication([
             'user_id' => $user->id,
-            'channel_id' => $data['channel_id'],
-            'note' => $data['note'] ?? null,
+            'channel_id' => null,
+            'note' => $dto->note,
             'status' => 'pending',
+            'meta' => json_encode([
+                'new_channel_name' => $dto->newChannelName,
+                'new_channel_slug' => $dto->newChannelSlug,
+                'new_channel_email' => $dto->newChannelEmail,
+                'new_channel_description' => $dto->newChannelDescription,
+            ]),
         ]);
     }
 }
