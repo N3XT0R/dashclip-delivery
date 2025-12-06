@@ -208,4 +208,9 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         return app(TeamRepository::class)->getDefaultTeamForUser($this);
     }
+
+    public function channelApplications(): HasMany
+    {
+        return $this->hasMany(ChannelApplication::class);
+    }
 }
