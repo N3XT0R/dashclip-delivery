@@ -3,6 +3,7 @@
 namespace App\Filament\Standard\Pages;
 
 use BackedEnum;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
@@ -44,7 +45,10 @@ class ChannelApplication extends Page implements HasForms
     {
         return $schema
             ->schema([
-                
+                TextInput::make('channel_id')
+                    ->label('Channel')
+                    ->numeric()
+                    ->required(),
             ])
             ->statePath('data');
     }

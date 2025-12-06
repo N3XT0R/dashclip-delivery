@@ -1,3 +1,6 @@
 <x-filament-panels::page>
-    {{-- Page content --}}
+    {{ $this->form }}
+    <x-filament::button type="submit" color="primary" form="form">
+        {{ __('Submit Application') }}
+    </x-filament::button>
 </x-filament-panels::page>
