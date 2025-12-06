@@ -73,7 +73,7 @@ class ChannelApplication extends Page implements HasForms
             $this->notify('success', __('Application submitted!'));
             $this->form->fill([]);
         } catch (\DomainException $e) {
-            $this->notify('danger', $e->getMessage());
+            $this->registerErrorNotification('Error', $e->getMessage());
         }
     }
 }
