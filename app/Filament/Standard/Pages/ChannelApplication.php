@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -70,10 +71,16 @@ class ChannelApplication extends Page implements HasForms
 
         try {
             app(ChannelService::class)->applyForAccess($data, auth()->user());
-            $this->notify('success', __('Application submitted!'));
+            Notification::make()
+                ->title(__('Application submitted!'))
+                ->success()
+                ->send();
             $this->form->fill([]);
         } catch (\DomainException $e) {
-            $this->registerErrorNotification('Error', $e->getMessage());
+            Notification::make()
+                ->title($e->getMessage())
+                ->danger()
+                ->send();
         }
     }
 }
