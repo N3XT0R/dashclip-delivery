@@ -2,8 +2,10 @@
 
 namespace App\Filament\Standard\Pages;
 
+use App\Repository\ChannelRepository;
 use BackedEnum;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
@@ -45,10 +47,18 @@ class ChannelApplication extends Page implements HasForms
     {
         return $schema
             ->schema([
-                TextInput::make('channel_id')
+                Select::make('channel_id')
                     ->label('Channel')
-                    ->numeric()
+                    ->options(function () {
+                        return app(ChannelRepository::class)->getActiveChannels()->pluck('name', 'id')->toArray();
+                    })
                     ->required(),
+                Textarea::make('note')
+                    ->label('filament.channel_application.note_label')
+                    ->translateLabel()
+                    ->maxLength(255)
+                    ->rows(5)
+                    ->placeholder('filament.channel_application.note_placeholder'),
             ])
             ->statePath('data');
     }
