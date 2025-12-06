@@ -62,4 +62,16 @@ class ChannelApplication extends Page implements HasForms
             ])
             ->statePath('data');
     }
+
+    public function submit(): void
+    {
+        $validated = $this->form->getState();
+
+        // Service-Logik für Bewerbung
+        app(ChannelApplicationService::class)->apply($validated, auth()->user());
+
+        $this->notify('success', __('Application was submitted successfully!'));
+
+        $this->form->fill([]); // Reset Form
+    }
 }
