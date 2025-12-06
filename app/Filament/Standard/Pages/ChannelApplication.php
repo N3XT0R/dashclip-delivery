@@ -5,6 +5,7 @@ namespace App\Filament\Standard\Pages;
 use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
+use App\Support\FilamentComponents;
 use BackedEnum;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
@@ -81,12 +82,12 @@ class ChannelApplication extends Page implements HasForms
                             ->label(__('filament.channel_application.form.new_channel_youtube_name_label'))
                             ->required(false),
                     ]),
-
                 Textarea::make('note')
                     ->label(__('filament.channel_application.form.note_label'))
                     ->maxLength(500)
                     ->rows(5)
                     ->placeholder(__('filament.channel_application.form.note_placeholder')),
+                FilamentComponents::tosCheckbox(),
             ])
             ->statePath('data');
     }

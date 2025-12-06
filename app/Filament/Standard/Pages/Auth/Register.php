@@ -8,13 +8,12 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Repository\RoleRepository;
+use App\Support\FilamentComponents;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Checkbox;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 
 class Register extends BaseRegister
@@ -28,24 +27,8 @@ class Register extends BaseRegister
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getPasswordConfirmationFormComponent(),
-                $this->getTosComponent(),
+                FilamentComponents::tosCheckbox(),
             ]);
-    }
-
-    protected function getTosComponent(): Checkbox
-    {
-        $tosUrl = route('tos');
-        $tosText = __('auth.register.tos_link_text');
-
-        $label = __('auth.register.accept_terms_label', [
-            'tos_link' => '<a href="'.$tosUrl.'" target="_blank" class="underline text-primary-600 hover:text-primary-700">'.$tosText.'</a>',
-        ]);
-
-        return Checkbox::make('accept_terms')
-            ->label(fn() => new HtmlString($label))
-            ->required()
-            ->accepted()
-            ->columnSpanFull();
     }
 
 
