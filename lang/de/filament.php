@@ -21,6 +21,7 @@ return [
             'about_footer' => 'Die Freischaltung erfolgt nach kurzer Prüfung. Anschließend hast du Zugriff auf alle aktuellen und zukünftigen Angebote in deinem Kanal.',
             'request_other_channel' => 'Mein Kanal ist nicht in der Liste',
             'channel_label' => 'Vorhandenen Kanal auswählen',
+            'new_channel_section_label' => 'Angaben für neuen Kanal',
             'new_channel_name_label' => 'Kanalname',
             'new_channel_name_placeholder' => 'Vollständigen Namen des gewünschten Kanals eingeben',
             'new_channel_creator_name_label' => 'Name des Betreibers',

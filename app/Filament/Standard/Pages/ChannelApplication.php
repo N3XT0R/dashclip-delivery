@@ -14,6 +14,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
@@ -63,27 +64,27 @@ class ChannelApplication extends Page implements HasForms
                     ->searchable()
                     ->hidden(fn($get) => $get('other_channel_request'))
                     ->required(fn($get) => !$get('other_channel_request')),
-
-                TextInput::make('new_channel_name')
-                    ->label(__('filament.channel_application.form.new_channel_name_label'))
+                
+                Section::make(__('filament.channel_application.form.new_channel_section_label'))
                     ->visible(fn($get) => $get('other_channel_request'))
-                    ->required(fn($get) => $get('other_channel_request')),
+                    ->schema([
+                        TextInput::make('new_channel_name')
+                            ->label(__('filament.channel_application.form.new_channel_name_label'))
+                            ->required(fn($get) => $get('other_channel_request')),
 
-                TextInput::make('new_channel_creator_name')
-                    ->label(__('filament.channel_application.form.new_channel_creator_name_label'))
-                    ->visible(fn($get) => $get('other_channel_request'))
-                    ->required(fn($get) => $get('other_channel_request')),
+                        TextInput::make('new_channel_creator_name')
+                            ->label(__('filament.channel_application.form.new_channel_creator_name_label'))
+                            ->required(fn($get) => $get('other_channel_request')),
 
-                TextInput::make('new_channel_email')
-                    ->label(__('filament.channel_application.form.new_channel_email_label'))
-                    ->type('email')
-                    ->visible(fn($get) => $get('other_channel_request'))
-                    ->required(fn($get) => $get('other_channel_request')),
+                        TextInput::make('new_channel_email')
+                            ->label(__('filament.channel_application.form.new_channel_email_label'))
+                            ->type('email')
+                            ->required(fn($get) => $get('other_channel_request')),
 
-                TextInput::make('new_channel_youtube_name')
-                    ->label(__('filament.channel_application.form.new_channel_youtube_name_label'))
-                    ->visible(fn($get) => $get('other_channel_request'))
-                    ->required(false),
+                        TextInput::make('new_channel_youtube_name')
+                            ->label(__('filament.channel_application.form.new_channel_youtube_name_label'))
+                            ->required(false),
+                    ]),
 
                 Textarea::make('note')
                     ->label(__('filament.channel_application.form.note_label'))

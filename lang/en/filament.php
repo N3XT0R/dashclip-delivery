@@ -21,6 +21,7 @@ return [
             'about_footer' => 'Access is granted after a short review. You will then have access to all current and future offers for your channel.',
             'request_other_channel' => 'My channel is not in the list',
             'channel_label' => 'Select an existing channel',
+            'new_channel_section_label' => 'Details for new channel',
             'new_channel_name_label' => 'Channel name',
             'new_channel_name_placeholder' => 'Please enter the full name of your requested channel',
             'new_channel_slug_label' => 'Short name / slug',
