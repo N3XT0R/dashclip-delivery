@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Channel Access Application Workflow for Channel Operators**  
-  Introduced a new Filament admin page that enables channel operators to request access to their video pool via a guided
+  Introduced a new Filament page that enables channel operators to request access to their video pool via a guided
   application form.  
   The process supports both existing and new channels:
     - Users can select their channel from a searchable list or submit detailed information for a new channel that is not
