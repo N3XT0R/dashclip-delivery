@@ -222,10 +222,12 @@ class ChannelService
             'note' => $dto->note,
             'status' => 'pending',
             'meta' => json_encode([
-                'new_channel_name' => $dto->newChannelName,
-                'new_channel_creator_name' => $dto->newChannelCreatorName,
-                'new_channel_email' => $dto->newChannelEmail,
-                'new_channel_youtube_name' => $dto->newChannelYoutubeName,
+                'new_channel' => [
+                    'name' => $dto->newChannelName,
+                    'creator_name' => $dto->newChannelCreatorName,
+                    'email' => $dto->newChannelEmail,
+                    'youtube_name' => $dto->newChannelYoutubeName,
+                ],
             ]),
         ]);
     }
