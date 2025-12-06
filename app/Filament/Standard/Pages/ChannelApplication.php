@@ -58,7 +58,7 @@ class ChannelApplication extends Page implements HasForms
                     ->translateLabel()
                     ->maxLength(255)
                     ->rows(5)
-                    ->placeholder('filament.channel_application.note_placeholder'),
+                    ->placeholder(__('filament.channel_application.note_placeholder')),
             ])
             ->statePath('data');
     }
