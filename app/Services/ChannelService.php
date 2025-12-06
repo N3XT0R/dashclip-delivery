@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\DTO\ChannelPoolDto;
+use App\Enum\Channel\ApplicationEnum;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
@@ -198,6 +199,12 @@ class ChannelService
      */
     public function applyForAccess(ChannelApplicationRequestDto $dto, User $user): ChannelApplication
     {
+        $data = [
+            'user_id' => $user->getKey(),
+            'channel_id' => $dto->channelId,
+            'note' => $dto->note,
+            'status' => ApplicationEnum::PENDING->value,
+        ];
         if (!$dto->otherChannelRequest && $dto->channelId) {
             $existing = $user->channelApplications()
                 ->where('channel_id', $dto->channelId)
@@ -208,19 +215,10 @@ class ChannelService
                 throw new \DomainException(__('You have already applied for this channel.'));
             }
 
-            return $this->channelRepository->createApplication([
-                'user_id' => $user->id,
-                'channel_id' => $dto->channelId,
-                'note' => $dto->note,
-                'status' => 'pending',
-            ]);
+            return $this->channelRepository->createApplication($data);
         }
 
-        return $this->channelRepository->createApplication([
-            'user_id' => $user->id,
-            'channel_id' => null,
-            'note' => $dto->note,
-            'status' => 'pending',
+        $data = array_merge($data, [
             'meta' => json_encode([
                 'new_channel' => [
                     'name' => $dto->newChannelName,
@@ -232,5 +230,7 @@ class ChannelService
                 'tos_accepted_at' => now()->toDateTimeString(),
             ]),
         ]);
+
+        return $this->channelRepository->createApplication($data);
     }
 }
