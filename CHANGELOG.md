@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Channel Access Application Workflow for Channel Operators**  
+  Introduced a new Filament admin page that enables channel operators to request access to their video pool via a guided
+  application form.  
+  The process supports both existing and new channels:
+    - Users can select their channel from a searchable list or submit detailed information for a new channel that is not
+      yet present in the system.
+    - Applications for new channels collect all necessary data for direct approval and automated channel creation in the
+      admin backend.
+    - A mandatory "Terms of Service" acceptance checkbox enforces explicit consent to platform usage conditions at the
+      time of channel access request, independent of generic registration.
+    - The workflow is fully permissioned and compatible with audit logging, enabling precise compliance tracking of
+      access requests and legal acceptance.  
+      This addition improves security for channel assets, clarifies account/channel responsibility, and streamlines the
+      onboarding of new partners.
+
 ## [3.1.0] - 2025-12-05
 
 ### Added
