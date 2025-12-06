@@ -54,11 +54,11 @@ class ChannelApplication extends Page implements HasForms
                     })
                     ->required(),
                 Textarea::make('note')
-                    ->label('filament.channel_application.note_label')
+                    ->label('filament.channel_application.form.note_label')
                     ->translateLabel()
                     ->maxLength(255)
                     ->rows(5)
-                    ->placeholder(__('filament.channel_application.note_placeholder')),
+                    ->placeholder(__('filament.channel_application.form.note_placeholder')),
             ])
             ->statePath('data');
     }
