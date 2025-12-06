@@ -20,6 +20,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -48,7 +49,23 @@ class PanelUserPanelProvider extends PanelProvider
         $this->addWidgets($panel);
         $this->addTenantMiddlewares($panel);
         $this->addNotifications($panel);
+        $this->customizeNavigation($panel);
 
+        return $panel;
+    }
+
+
+    protected function customizeNavigation(Panel $panel): Panel
+    {
+        $panel->navigationGroups([
+            NavigationGroup::make('Media')
+                ->label(__('nav.media')),
+            NavigationGroup::make('Settings')
+                ->label(__('nav.settings')),
+            NavigationGroup::make('channel_owner')
+                ->label(__('nav.channel_owner'))
+                ->items([])
+        ]);
         return $panel;
     }
 
