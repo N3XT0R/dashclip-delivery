@@ -12,6 +12,8 @@ return [
             'note_placeholder' => 'Geben Sie hier einen kurzen Grund an, warum Sie Zugang zu den Videos dieses Kanals benötigen.',
             'submit' => 'Anfrage absenden',
         ],
-
+        'messages' => [
+            'application_submitted' => 'Anfrage eingereicht!',
+        ],
     ],
 ];
