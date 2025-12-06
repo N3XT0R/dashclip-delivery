@@ -20,8 +20,10 @@
             {{ __('filament.channel_application.form.about_footer') }}
         </p>
     </div>
-    {{ $this->form }}
-    <x-filament::button type="submit" color="primary" form="form">
-        {{ __('filament.channel_application.form.submit') }}
-    </x-filament::button>
+    <form wire:submit="submit" id="form">
+        {{ $this->form }}
+        <x-filament::button type="submit" color="primary" form="form">
+            {{ __('filament.channel_application.form.submit') }}
+        </x-filament::button>
+    </form>
 </x-filament-panels::page>
