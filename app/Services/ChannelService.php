@@ -204,6 +204,10 @@ class ChannelService
             'channel_id' => $dto->channelId,
             'note' => $dto->note,
             'status' => ApplicationEnum::PENDING->value,
+            'meta' => [
+                'tos_accepted' => true,
+                'tos_accepted_at' => now()->toDateTimeString(),
+            ],
         ];
         if (!$dto->otherChannelRequest && $dto->channelId) {
             $existing = $user->channelApplications()
@@ -218,7 +222,7 @@ class ChannelService
             return $this->channelRepository->createApplication($data);
         }
 
-        $data = array_merge($data, [
+        $data = array_merge_recursive($data, [
             'meta' => json_encode([
                 'new_channel' => [
                     'name' => $dto->newChannelName,
@@ -226,8 +230,6 @@ class ChannelService
                     'email' => $dto->newChannelEmail,
                     'youtube_name' => $dto->newChannelYoutubeName,
                 ],
-                'tos_accepted' => true,
-                'tos_accepted_at' => now()->toDateTimeString(),
             ]),
         ]);
 
