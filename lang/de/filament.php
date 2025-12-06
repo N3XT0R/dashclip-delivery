@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 return [
     'channel_application' => [
-        'title' => 'Apply for Channel',
-        'navigation_label' => 'Channel Application',
+        'title' => 'Zugang zu Kanalvideos beantragen',
+        'navigation_label' => 'Zugang beantragen',
         'navigation_group' => __('nav.channel_owner'),
     ],
 ];
