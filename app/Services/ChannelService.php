@@ -7,7 +7,9 @@ namespace App\Services;
 use App\DTO\ChannelPoolDto;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
+use App\Models\ChannelApplication;
 use App\Models\Team;
+use App\Models\User;
 use App\Models\Video;
 use App\Repository\ChannelRepository;
 use Illuminate\Support\Collection;
@@ -31,8 +33,7 @@ class ChannelService
         ?int $quotaOverride,
         string $uploaderType,
         string|int $uploaderId,
-    ): ChannelPoolDto
-    {
+    ): ChannelPoolDto {
         $channels = $this->channelRepository->getActiveChannels();
 
         $rotationPool = collect();
@@ -187,4 +188,29 @@ class ChannelService
         return null;
     }
 
+    /**
+     * Create a channel access application for the user.
+     *
+     * @param  array  $data  ['channel_id' => int, 'note' => string]
+     * @param  User  $user
+     * @return ChannelApplication
+     */
+    public function applyForAccess(array $data, User $user): ChannelApplication
+    {
+        $existing = $user->channelApplications()
+            ->where('channel_id', $data['channel_id'])
+            ->whereIn('status', ['pending', 'approved'])
+            ->first();
+
+        if ($existing) {
+            throw new \DomainException(__('You have already applied for this channel.'));
+        }
+
+        return $this->channelRepository->createApplication([
+            'user_id' => $user->id,
+            'channel_id' => $data['channel_id'],
+            'note' => $data['note'] ?? null,
+            'status' => 'pending',
+        ]);
+    }
 }
