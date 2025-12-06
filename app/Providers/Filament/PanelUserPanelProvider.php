@@ -56,6 +56,11 @@ class PanelUserPanelProvider extends PanelProvider
 
     protected function customizeNavigation(Panel $panel): Panel
     {
+        $panel->navigationGroups([
+            __('nav.media'),
+            __('nav.settings'),
+            __('nav.channel_owner'),
+        ]);
         return $panel;
     }
 
