@@ -3,6 +3,7 @@
 namespace App\Filament\Standard\Pages;
 
 use App\Repository\ChannelRepository;
+use App\Services\ChannelService;
 use BackedEnum;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -65,13 +66,14 @@ class ChannelApplication extends Page implements HasForms
 
     public function submit(): void
     {
-        $validated = $this->form->getState();
+        $data = $this->form->getState();
 
-        // Service-Logik für Bewerbung
-        app(ChannelApplicationService::class)->apply($validated, auth()->user());
-
-        $this->notify('success', __('Application was submitted successfully!'));
-
-        $this->form->fill([]); // Reset Form
+        try {
+            app(ChannelService::class)->applyForAccess($data, auth()->user());
+            $this->notify('success', __('Application submitted!'));
+            $this->form->fill([]);
+        } catch (\DomainException $e) {
+            $this->notify('danger', $e->getMessage());
+        }
     }
 }
