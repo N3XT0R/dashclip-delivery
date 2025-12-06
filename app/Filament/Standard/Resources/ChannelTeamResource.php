@@ -15,7 +15,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use UnitEnum;
 
 class ChannelTeamResource extends Resource
 {
@@ -25,10 +24,14 @@ class ChannelTeamResource extends Resource
 
     protected static ?string $navigationLabel = 'Channels';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
     protected static ?string $modelLabel = 'Kanal-Zuweisung';
     protected static ?string $pluralModelLabel = 'Kanal-Zuweisungen';
+
+    public static function getNavigationGroup(): string
+    {
+        return __('nav.settings');
+    }
 
     public static function canEdit(Model $record): bool
     {

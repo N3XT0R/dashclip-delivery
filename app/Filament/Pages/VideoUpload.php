@@ -33,12 +33,17 @@ class VideoUpload extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::ArrowUpTray;
     protected static ?string $navigationLabel = 'Video Upload';
-    protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected ?string $subheading = 'Diese Seite ist noch experementell';
     protected static ?string $title = 'Video Upload (alpha)';
     protected string $view = 'filament.pages.video-upload';
 
     public ?array $data = [];
+
+
+    public static function getNavigationGroup(): string
+    {
+        return __('nav.media');
+    }
 
     public function mount(): void
     {
