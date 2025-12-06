@@ -11,9 +11,9 @@ class ChannelApplicationRequestDto
         public string $note,
         public bool $otherChannelRequest = false,
         public ?string $newChannelName = null,
-        public ?string $newChannelSlug = null,
+        public ?string $newChannelCreatorName = null,
         public ?string $newChannelEmail = null,
-        public ?string $newChannelDescription = null,
+        public ?string $newChannelYoutubeName = null,
     ) {
     }
 }
