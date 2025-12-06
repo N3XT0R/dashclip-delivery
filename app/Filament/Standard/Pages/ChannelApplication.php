@@ -62,24 +62,21 @@ class ChannelApplication extends Page implements HasForms
                     ->options(fn() => app(ChannelRepository::class)->getActiveChannels()->pluck('name',
                         'id')->toArray())
                     ->searchable()
-                    ->required(fn($get) => !($get('other_channel_request'))),
-
+                    ->hidden(fn($get) => $get('other_channel_request'))
+                    ->requiredIfDeclined(fn($get) => !$get('other_channel_request')),
                 Section::make(__('filament.channel_application.form.new_channel_section_label'))
                     ->visible(fn($get) => $get('other_channel_request'))
                     ->schema([
                         TextInput::make('new_channel_name')
                             ->label(__('filament.channel_application.form.new_channel_name_label'))
-                            ->required(fn($get) => $get('other_channel_request')),
-
+                            ->requiredIfAccepted(fn($get) => $get('other_channel_request')),
                         TextInput::make('new_channel_creator_name')
                             ->label(__('filament.channel_application.form.new_channel_creator_name_label'))
-                            ->required(fn($get) => $get('other_channel_request')),
-
+                            ->requiredIfAccepted(fn($get) => $get('other_channel_request')),
                         TextInput::make('new_channel_email')
                             ->label(__('filament.channel_application.form.new_channel_email_label'))
                             ->type('email')
-                            ->required(fn($get) => $get('other_channel_request')),
-
+                            ->requiredIfAccepted(fn($get) => $get('other_channel_request')),
                         TextInput::make('new_channel_youtube_name')
                             ->label(__('filament.channel_application.form.new_channel_youtube_name_label'))
                             ->required(false),
