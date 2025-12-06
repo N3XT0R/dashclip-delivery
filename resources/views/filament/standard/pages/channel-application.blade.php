@@ -22,6 +22,7 @@
     </div>
     <form wire:submit="submit" id="form">
         {{ $this->form }}
+        <br>
         <x-filament::button type="submit" color="primary" form="form">
             {{ __('filament.channel_application.form.submit') }}
         </x-filament::button>
