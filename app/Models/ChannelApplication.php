@@ -15,6 +15,7 @@ class ChannelApplication extends Model
         'user_id',
         'channel_id',
         'status',
+        'note',
         'meta',
     ];
 

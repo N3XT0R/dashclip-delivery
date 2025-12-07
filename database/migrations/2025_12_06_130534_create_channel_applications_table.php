@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
             $table->string('status')->default('pending'); // e.g. pending, approved, rejected
+            $table->text('note')->nullable();
             $table->json('meta')->nullable();
             $table->timestamps();
         });
