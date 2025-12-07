@@ -36,19 +36,19 @@
                 <b>{{ __('filament.channel_application.form.note_label') }}</b>
                 {{ $pendingApplication->note }}
             </div>
-            @if (!empty($pendingApplication->meta['new_channel']['name'] ?? null))
+            @if (!empty($pendingApplication->meta->channel['name'] ?? null))
                 <div class="mt-2 text-sm text-gray-700">
                     <b>{{ __('filament.channel_application.form.new_channel_name_label') }}</b>
-                    {{ $pendingApplication->meta['new_channel']['name'] }}
+                    {{ $pendingApplication->meta->channel['name'] }}
                     <br>
                     <b>{{ __('filament.channel_application.form.new_channel_creator_name_label') }}</b>
-                    {{ $pendingApplication->meta['new_channel']['creator_name'] }}
+                    {{ $pendingApplication->meta->channel['creator_name'] }}
                     <br>
                     <b>{{ __('filament.channel_application.form.new_channel_email_label') }}</b>
-                    {{ $pendingApplication->meta['new_channel']['email'] }}
+                    {{ $pendingApplication->meta->channel['email'] }}
                     <br>
                     <b>{{ __('filament.channel_application.form.new_channel_youtube_name_label') }}</b>
-                    {{ $pendingApplication->meta['new_channel']['youtube_name'] }}
+                    {{ $pendingApplication->meta->channel['youtube_name'] }}
                 </div>
             @endif
             <p class="text-gray-500 text-xs mt-4">
