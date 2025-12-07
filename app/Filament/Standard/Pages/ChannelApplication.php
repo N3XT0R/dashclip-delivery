@@ -36,7 +36,15 @@ class ChannelApplication extends Page implements HasForms
     protected static ?string $navigationLabel = 'filament.channel_application.navigation_label';
     protected static string|UnitEnum|null $navigationGroup = 'filament.channel_application.navigation_group';
 
-    public ?array $data = [];
+    public ?array $data = [
+        'channel_id' => null,
+        'note' => null,
+        'other_channel_request' => false,
+        'new_channel_name' => null,
+        'new_channel_creator_name' => null,
+        'new_channel_email' => null,
+        'new_channel_youtube_name' => null,
+    ];
     public ?\App\Models\ChannelApplication $pendingApplication = null;
 
     private function getChannelRepository(): ChannelRepository
@@ -85,6 +93,7 @@ class ChannelApplication extends Page implements HasForms
                         ->toArray()
                     )
                     ->searchable()
+                    ->preload()
                     ->placeholder(__('filament.channel_application.form.choose_channel'))
                     ->hidden(fn($get) => $get('other_channel_request'))
                     ->requiredIfDeclined(fn($get) => !$get('other_channel_request')),
