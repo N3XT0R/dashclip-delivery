@@ -27,7 +27,9 @@ class ChannelApplication extends Page implements HasForms
 {
 
     use InteractsWithForms;
-    use HasPageShield;
+    use HasPageShield {
+        canAccess as canAccessShield;
+    }
 
     protected string $view = 'filament.standard.pages.channel-application';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPencil;
@@ -54,7 +56,7 @@ class ChannelApplication extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        $canAccess = parent::canAccess();
+        $canAccess = self::canAccessShield();
         if ($canAccess) {
             $user = auth()->user();
             $pendingApplications = self::getChannelRepository()->getChannelApplicationsByUser(
