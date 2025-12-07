@@ -47,15 +47,26 @@ class ChannelApplication extends Page implements HasForms
     ];
     public ?\App\Models\ChannelApplication $pendingApplication = null;
 
-    private function getChannelRepository(): ChannelRepository
+    private static function getChannelRepository(): ChannelRepository
     {
         return app(ChannelRepository::class);
+    }
+
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        $pendingApplications = self::getChannelRepository()->getChannelApplicationsByUser(
+            $user,
+            [ApplicationEnum::APPROVED->value]
+        );
+
+        return $pendingApplications->isEmpty();
     }
 
     public function mount(): void
     {
         $user = auth()->user();
-        $pendingApplications = $this->getChannelRepository()->getChannelApplicationsByUser(
+        $pendingApplications = self::getChannelRepository()->getChannelApplicationsByUser(
             $user,
             [ApplicationEnum::PENDING->value]
         );
