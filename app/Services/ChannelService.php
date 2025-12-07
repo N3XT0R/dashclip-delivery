@@ -223,14 +223,14 @@ class ChannelService
         }
 
         $data = array_merge_recursive($data, [
-            'meta' => json_encode([
+            'meta' => [
                 'new_channel' => [
                     'name' => $dto->newChannelName,
                     'creator_name' => $dto->newChannelCreatorName,
                     'email' => $dto->newChannelEmail,
                     'youtube_name' => $dto->newChannelYoutubeName,
                 ],
-            ]),
+            ],
         ]);
 
         return $this->channelRepository->createApplication($data);

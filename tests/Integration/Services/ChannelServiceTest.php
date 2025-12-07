@@ -249,6 +249,7 @@ class ChannelServiceTest extends DatabaseTestCase
         );
 
         $application = $this->channelService->applyForAccess($dto, $user);
+        dump($application->meta);
 
         $this->assertNotNull($application);
         $this->assertNull($application->channel_id);
