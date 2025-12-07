@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\Channel\ApplicationEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,11 @@ class ChannelApplication extends Model
         'channel_id',
         'status',
         'meta',
+    ];
+
+    protected $casts = [
+        'meta' => 'array',
+        'status' => ApplicationEnum::class,
     ];
 
     // Relationships

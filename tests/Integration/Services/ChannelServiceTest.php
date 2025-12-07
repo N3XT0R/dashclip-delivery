@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\DTO\Channel\ChannelApplicationRequestDto;
+use App\Enum\Channel\ApplicationEnum;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
+use App\Models\User;
 use App\Services\ChannelService;
 use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
@@ -176,5 +179,85 @@ class ChannelServiceTest extends DatabaseTestCase
 
         // Assert
         $this->assertSame([], $result, 'Should return empty array when sending fails');
+    }
+
+    public function testApplyForAccessCreatesApplicationForExistingChannel(): void
+    {
+        $user = User::factory()->create();
+        $channel = Channel::factory()->create();
+
+        $dto = new ChannelApplicationRequestDto(
+            channelId: $channel->id,
+            note: 'Bitte freischalten',
+            otherChannelRequest: false,
+            newChannelName: null,
+            newChannelCreatorName: null,
+            newChannelEmail: null,
+            newChannelYoutubeName: null
+        );
+
+        $application = $this->channelService->applyForAccess($dto, $user);
+
+        $this->assertNotNull($application);
+        $this->assertSame($user->id, $application->user_id);
+        $this->assertSame($channel->id, $application->channel_id);
+        $this->assertSame('Bitte freischalten', $application->note);
+        $this->assertEquals('pending', $application->status);
+        $this->assertTrue($application->meta['tos_accepted']);
+        $this->assertNotNull($application->meta['tos_accepted_at']);
+    }
+
+    public function testApplyForAccessThrowsForDuplicateApplication(): void
+    {
+        $user = User::factory()->create();
+        $channel = Channel::factory()->create();
+
+        $user->channelApplications()->create([
+            'channel_id' => $channel->getKey(),
+            'note' => 'Test',
+            'status' => ApplicationEnum::PENDING->value,
+            'meta' => [],
+        ]);
+
+        $dto = new ChannelApplicationRequestDto(
+            channelId: $channel->id,
+            note: 'Bitte nochmal',
+            otherChannelRequest: false,
+            newChannelName: null,
+            newChannelCreatorName: null,
+            newChannelEmail: null,
+            newChannelYoutubeName: null
+        );
+
+        $this->expectException(\DomainException::class);
+
+        $this->channelService->applyForAccess($dto, $user);
+    }
+
+    public function testApplyForAccessCreatesApplicationForNewChannel(): void
+    {
+        $user = User::factory()->create();
+
+        $dto = new ChannelApplicationRequestDto(
+            channelId: null,
+            note: 'Neuer Kanal gewünscht',
+            otherChannelRequest: true,
+            newChannelName: 'MegaTV',
+            newChannelCreatorName: 'Max Mustermann',
+            newChannelEmail: 'tv@example.org',
+            newChannelYoutubeName: 'megachannel'
+        );
+
+        $application = $this->channelService->applyForAccess($dto, $user);
+
+        $this->assertNotNull($application);
+        $this->assertNull($application->channel_id);
+        $meta = json_decode($application->meta, true);
+        $this->assertTrue($meta['tos_accepted']);
+        $this->assertNotNull($meta['tos_accepted_at']);
+        $this->assertEquals('MegaTV', $meta['new_channel']['name']);
+        $this->assertEquals('Max Mustermann', $meta['new_channel']['creator_name']);
+        $this->assertEquals('tv@example.org', $meta['new_channel']['email']);
+        $this->assertEquals('megachannel', $meta['new_channel']['youtube_name']);
     }
 }
