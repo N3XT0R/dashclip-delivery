@@ -216,7 +216,7 @@ class ChannelService
                 ->first();
 
             if ($existing) {
-                throw new \DomainException(__('filament.channel_application.messages.sucess.already_applied'));
+                throw new \DomainException(__('filament.channel_application.messages.success.already_applied'));
             }
 
             return $this->channelRepository->createApplication($data);
