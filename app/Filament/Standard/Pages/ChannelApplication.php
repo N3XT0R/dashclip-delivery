@@ -7,6 +7,7 @@ use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
 use App\Support\FilamentComponents;
 use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -25,6 +26,7 @@ class ChannelApplication extends Page implements HasForms
 {
 
     use InteractsWithForms;
+    use HasPageShield;
 
     protected string $view = 'filament.standard.pages.channel-application';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPencil;
