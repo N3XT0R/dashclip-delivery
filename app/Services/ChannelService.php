@@ -212,7 +212,7 @@ class ChannelService
         if (!$dto->otherChannelRequest && $dto->channelId) {
             $existing = $user->channelApplications()
                 ->where('channel_id', $dto->channelId)
-                ->whereIn('status', ApplicationEnum::pendingOrApproved())
+                ->whereIn('status', ApplicationEnum::nonRejected())
                 ->first();
 
             if ($existing) {
