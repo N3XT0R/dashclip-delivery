@@ -39,10 +39,15 @@ class ChannelApplication extends Page implements HasForms
     public ?array $data = [];
     public ?\App\Models\ChannelApplication $pendingApplication = null;
 
-    public function mount(ChannelRepository $repo): void
+    private function getChannelRepository(): ChannelRepository
+    {
+        return app(ChannelRepository::class);
+    }
+
+    public function mount(): void
     {
         $user = auth()->user();
-        $pendingApplications = $repo->getChannelApplicationsByUser(
+        $pendingApplications = $this->getChannelRepository()->getChannelApplicationsByUser(
             $user,
             [ApplicationEnum::PENDING->value]
         );
@@ -127,7 +132,7 @@ class ChannelApplication extends Page implements HasForms
                 ->success()
                 ->send();
             $this->form->fill([]);
-            $this->refresh();
+            $this->mount();
         } catch (\DomainException $e) {
             Notification::make()
                 ->title($e->getMessage())
