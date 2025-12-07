@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('channel_applications', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('channel_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('status')->default('pending'); // e.g. pending, approved, rejected
             $table->text('note')->nullable();
             $table->json('meta')->nullable();
