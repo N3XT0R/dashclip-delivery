@@ -80,8 +80,10 @@ class ChannelApplication extends Page implements HasForms
 
                 Select::make('channel_id')
                     ->label(__('filament.channel_application.form.channel_label'))
-                    ->options(fn() => app(ChannelRepository::class)->getActiveChannels()->pluck('name',
-                        'id')->toArray())
+                    ->options(fn() => app(ChannelRepository::class)
+                        ->getActiveChannels()->pluck('name', 'id')
+                        ->toArray()
+                    )
                     ->searchable()
                     ->placeholder(__('filament.channel_application.form.choose_channel'))
                     ->hidden(fn($get) => $get('other_channel_request'))
