@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\DTO\Channel\ApplicationMetaDto;
 use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\Enum\Channel\ApplicationEnum;
 use App\Mail\ChannelWelcomeMail;
@@ -203,8 +204,8 @@ class ChannelServiceTest extends DatabaseTestCase
         $this->assertSame($channel->id, $application->channel_id);
         $this->assertSame('Bitte freischalten', $application->note);
         $this->assertEquals('pending', $application->status);
-        $this->assertTrue($application->meta['tos_accepted']);
-        $this->assertNotNull($application->meta['tos_accepted_at']);
+        $this->assertTrue($application->meta->tosAccepted);
+        $this->assertNotNull($application->meta->tosAcceptedAt);
     }
 
     public function testApplyForAccessThrowsForDuplicateApplication(): void
@@ -253,12 +254,12 @@ class ChannelServiceTest extends DatabaseTestCase
         $this->assertNotNull($application);
         $this->assertNull($application->channel_id);
         $meta = $application->meta;
-        $this->assertTrue($meta['tos_accepted']);
-        $this->assertNotNull($meta['tos_accepted_at']);
-        $this->assertArrayHasKey('new_channel', $meta);
-        $this->assertEquals('MegaTV', $meta['new_channel']['name']);
-        $this->assertEquals('Max Mustermann', $meta['new_channel']['creator_name']);
-        $this->assertEquals('tv@example.org', $meta['new_channel']['email']);
-        $this->assertEquals('megachannel', $meta['new_channel']['youtube_name']);
+        $this->assertInstanceOf(ApplicationMetaDto::class, $meta);
+        $this->assertTrue($meta->tosAccepted);
+        $this->assertNotNull($meta->tosAcceptedAt);
+        $this->assertEquals('MegaTV', $meta->channel['name']);
+        $this->assertEquals('Max Mustermann', $meta->channel['creator_name']);
+        $this->assertEquals('tv@example.org', $meta->channel['email']);
+        $this->assertEquals('megachannel', $meta->channel['youtube_name']);
     }
 }
