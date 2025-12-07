@@ -54,13 +54,17 @@ class ChannelApplication extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        $user = auth()->user();
-        $pendingApplications = self::getChannelRepository()->getChannelApplicationsByUser(
-            $user,
-            [ApplicationEnum::APPROVED->value]
-        );
+        $canAccess = parent::canAccess();
+        if ($canAccess) {
+            $user = auth()->user();
+            $pendingApplications = self::getChannelRepository()->getChannelApplicationsByUser(
+                $user,
+                [ApplicationEnum::APPROVED->value]
+            );
+            $canAccess = $pendingApplications->isEmpty();
+        }
 
-        return $pendingApplications->isEmpty();
+        return $canAccess;
     }
 
     public function mount(): void
