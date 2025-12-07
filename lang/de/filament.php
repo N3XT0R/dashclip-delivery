@@ -15,7 +15,7 @@ return [
             'about_benefit_control_title' => 'Volle Kontrolle',
             'about_benefit_control' => 'Dein Benutzerkonto ist direkt mit deinem Kanal verknüpft. Du kannst alle Angebote einfach und sicher verwalten.',
             'about_benefit_portal_title' => 'Alles auf einen Blick',
-            'about_benefit_portal' => 'Alle Ihnen zugeteilten Videos finden Sie nicht nur in Ihren E-Mail-Angeboten, sondern auch jederzeit übersichtlich in Ihrem persönlichen Portal. Dort können Sie alle Clips verwalten, herunterladen oder den aktuellen Status einsehen.',
+            'about_benefit_portal' => 'Alle dir zugeteilten Videos findest du nicht nur in deinen E-Mail-Angeboten, sondern auch jederzeit übersichtlich in deinem persönlichen Portal. Dort kannst du alle Clips verwalten, herunterladen oder den aktuellen Status einsehen.',
             'about_benefit_remain_title' => 'Freiwillig & Flexibel',
             'about_benefit_remain' => 'Die Registrierung ist freiwillig und deine bisherigen Zugriffswege per E-Mail-Link bleiben weiterhin vollständig verfügbar.',
             'about_footer' => 'Die Freischaltung erfolgt nach kurzer Prüfung. Anschließend hast du Zugriff auf alle aktuellen und zukünftigen Angebote in deinem Kanal.',
