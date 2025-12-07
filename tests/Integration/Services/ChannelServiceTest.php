@@ -255,6 +255,7 @@ class ChannelServiceTest extends DatabaseTestCase
         $meta = $application->meta;
         $this->assertTrue($meta['tos_accepted']);
         $this->assertNotNull($meta['tos_accepted_at']);
+        $this->assertArrayHasKey('new_channel', $meta);
         $this->assertEquals('MegaTV', $meta['new_channel']['name']);
         $this->assertEquals('Max Mustermann', $meta['new_channel']['creator_name']);
         $this->assertEquals('tv@example.org', $meta['new_channel']['email']);
