@@ -35,7 +35,13 @@ return [
             'submit' => 'Bewerbung absenden',
         ],
         'messages' => [
-            'application_submitted' => 'Anfrage eingereicht!',
+            'success' => [
+                'application_submitted' => 'Anfrage eingereicht!',
+            ],
+            'error' => [
+                'already_applied' => 'Du hast für diesen Kanal bereits eine Anfrage eingereicht.',
+                'no_channels' => 'Es sind keine Kanäle für eine Anfrage verfügbar.',
+            ],
         ],
     ],
 ];

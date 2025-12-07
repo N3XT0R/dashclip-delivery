@@ -35,7 +35,13 @@ return [
             'submit' => 'Submit application',
         ],
         'messages' => [
-            'application_submitted' => 'Application submitted!',
+            'success' => [
+                'application_submitted' => 'Application submitted!',
+            ],
+            'error' => [
+                'no_channels' => 'No channels available for application.',
+                'already_applied' => 'You have already submitted an application for this channel.',
+            ],
         ],
     ],
 ];

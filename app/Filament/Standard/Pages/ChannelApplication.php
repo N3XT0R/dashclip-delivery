@@ -108,7 +108,7 @@ class ChannelApplication extends Page implements HasForms
         try {
             app(ChannelService::class)->applyForAccess($dto, auth()->user());
             Notification::make()
-                ->title(__('filament.channel_application.messages.application_submitted'))
+                ->title(__('filament.channel_application.messages.success.application_submitted'))
                 ->success()
                 ->send();
             $this->form->fill([]);
