@@ -33,6 +33,15 @@ return [
             'note_label' => 'Begründung',
             'note_placeholder' => 'Geben Sie hier einen kurzen Grund an, warum Sie Zugang zu den Videos dieses Kanals benötigen.',
             'submit' => 'Bewerbung absenden',
+            'status_title' => 'Antrag bereits gestellt für :channel',
+            'status_message' => 'Du hast bereits eine Bewerbung für diesen Kanal gestellt. Status: :status',
+            'status_note' => 'Bitte warte, bis die Bewerbung bearbeitet wurde oder kontaktiere den Support.',
+            'submitted_at' => 'Eingereicht am:',
+        ],
+        'status' => [
+            'pending' => 'In Bearbeitung',
+            'approved' => 'Genehmigt',
+            'rejected' => 'Abgelehnt',
         ],
         'messages' => [
             'success' => [
