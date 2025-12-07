@@ -127,6 +127,7 @@ class ChannelApplication extends Page implements HasForms
                 ->success()
                 ->send();
             $this->form->fill([]);
+            $this->refresh();
         } catch (\DomainException $e) {
             Notification::make()
                 ->title($e->getMessage())
