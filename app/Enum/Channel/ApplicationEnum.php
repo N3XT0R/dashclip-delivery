@@ -9,4 +9,12 @@ enum ApplicationEnum: string
     case PENDING = 'pending';
     case APPROVED = 'approved';
     case REJECTED = 'rejected';
+
+    public static function pendingOrApproved(): array
+    {
+        return [
+            self::PENDING->value,
+            self::APPROVED->value,
+        ];
+    }
 }
