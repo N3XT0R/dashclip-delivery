@@ -252,7 +252,7 @@ class ChannelServiceTest extends DatabaseTestCase
 
         $this->assertNotNull($application);
         $this->assertNull($application->channel_id);
-        $meta = json_decode($application->meta, true);
+        $meta = $application->meta;
         $this->assertTrue($meta['tos_accepted']);
         $this->assertNotNull($meta['tos_accepted_at']);
         $this->assertEquals('MegaTV', $meta['new_channel']['name']);
