@@ -83,6 +83,7 @@ class ChannelApplication extends Page implements HasForms
                     ->options(fn() => app(ChannelRepository::class)->getActiveChannels()->pluck('name',
                         'id')->toArray())
                     ->searchable()
+                    ->placeholder(__('filament.channel_application.form.choose_channel'))
                     ->hidden(fn($get) => $get('other_channel_request'))
                     ->requiredIfDeclined(fn($get) => !$get('other_channel_request')),
                 Section::make(__('filament.channel_application.form.new_channel_section_label'))

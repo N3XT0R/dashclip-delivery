@@ -37,6 +37,7 @@ return [
             'status_message' => 'You have already submitted an application for this channel. Status: :status',
             'status_note' => 'Please wait until your application is processed or contact support.',
             'submitted_at' => 'Submitted on:',
+            'choose_channel' => 'Choose a channel',
         ],
         'status' => [
             'pending' => 'Pending',

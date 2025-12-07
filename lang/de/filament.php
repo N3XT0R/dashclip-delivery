@@ -37,6 +37,7 @@ return [
             'status_message' => 'Du hast bereits eine Bewerbung für diesen Kanal gestellt. Status: :status',
             'status_note' => 'Bitte warte, bis die Bewerbung bearbeitet wurde oder kontaktiere den Support.',
             'submitted_at' => 'Eingereicht am:',
+            'choose_channel' => 'Kanal auswählen',
         ],
         'status' => [
             'pending' => 'In Bearbeitung',
