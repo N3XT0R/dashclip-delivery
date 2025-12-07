@@ -87,4 +87,16 @@ class ChannelRepository
     {
         return ChannelApplication::create($attributes);
     }
+
+    public function getChannelApplicationsByUser(User $user, ?array $byStatus): Collection
+    {
+        $query = ChannelApplication::query()
+            ->where('user_id', $user->getKey());
+
+        if ($byStatus !== null) {
+            $query->whereIn('status', $byStatus);
+        }
+
+        return $query->get();
+    }
 }

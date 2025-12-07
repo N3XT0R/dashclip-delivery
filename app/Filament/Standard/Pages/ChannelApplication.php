@@ -3,6 +3,7 @@
 namespace App\Filament\Standard\Pages;
 
 use App\DTO\Channel\ChannelApplicationRequestDto;
+use App\Enum\Channel\ApplicationEnum;
 use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
 use App\Support\FilamentComponents;
@@ -36,6 +37,18 @@ class ChannelApplication extends Page implements HasForms
     protected static string|UnitEnum|null $navigationGroup = 'filament.channel_application.navigation_group';
 
     public ?array $data = [];
+    public ?\App\Models\ChannelApplication $pendingApplication = null;
+
+    public function mount(ChannelRepository $repo): void
+    {
+        $user = auth()->user();
+        $pendingApplications = $repo->getChannelApplicationsByUser(
+            $user,
+            [ApplicationEnum::PENDING->value]
+        );
+
+        $this->pendingApplication = $pendingApplications->first();
+    }
 
     public function getTitle(): string|Htmlable
     {
