@@ -10,10 +10,10 @@ use App\Enum\Channel\ApplicationEnum;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
-use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use App\Repository\ChannelRepository;
+use App\Repository\TeamRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
@@ -36,6 +36,7 @@ class ChannelService
         string $uploaderType,
         string|int $uploaderId,
     ): ChannelPoolDto {
+        $teamRepository = app(TeamRepository::class);
         $channels = $this->channelRepository->getActiveChannels();
 
         $rotationPool = collect();
@@ -51,7 +52,7 @@ class ChannelService
             ->all();
 
         if ($uploaderType === 'team') {
-            $team = Team::query()->where('slug', $uploaderId)->first();
+            $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
 
             if ($team) {
                 $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
