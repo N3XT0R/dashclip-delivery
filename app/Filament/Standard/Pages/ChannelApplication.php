@@ -50,7 +50,7 @@ class ChannelApplication extends Page implements HasForms
     ];
     public ?\App\Models\ChannelApplication $pendingApplication = null;
 
-    private static function getChannelRepository(): ChannelRepository
+    protected static function getChannelRepository(): ChannelRepository
     {
         return app(ChannelRepository::class);
     }
@@ -73,7 +73,7 @@ class ChannelApplication extends Page implements HasForms
 
     protected static function getApplicationsByStatus(ApplicationEnum $statusEnum): Collection
     {
-        return self::getChannelRepository()->getChannelApplicationsByUser(
+        return static::getChannelRepository()->getChannelApplicationsByUser(
             auth()->user(),
             [$statusEnum->value]
         );
