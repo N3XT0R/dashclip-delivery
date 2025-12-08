@@ -7,6 +7,18 @@ namespace App\Console\Commands;
 use App\Services\InfoImporter;
 use Illuminate\Console\Command;
 
+/**
+ * Command to import clip metadata from a CSV/TXT file.
+ * Usage:
+ *  php artisan info:import --csv=/path/to/file.csv
+ *  php artisan info:import --dir=/path/to/directory
+ * Options:
+ * --infer-role=1 : Infer role (F/R) from filename suffix _F/_R if the column is empty
+ * --default-bundle= : Fallback bundle if the CSV field is empty
+ * --default-submitter= : Fallback for submitted_by if the CSV field is empty
+ * --keep-csv=1 : Keep the CSV/TXT file after import (1 = do not delete)
+ * @todo refactor to service class at version 4.0
+ */
 class InfoImport extends Command
 {
     protected $signature = 'info:import
