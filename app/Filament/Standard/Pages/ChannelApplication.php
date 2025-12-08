@@ -72,8 +72,7 @@ class ChannelApplication extends Page implements HasForms
         $this->pendingApplication = static::getChannelRepository()->getChannelApplicationsByUser(
             auth()->user(),
             ApplicationEnum::PENDING
-        )
-            ->first();
+        )->first();
     }
 
     public function getTitle(): string|Htmlable
