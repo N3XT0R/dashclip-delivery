@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Enum\Channel\ApplicationEnum;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
@@ -88,13 +89,13 @@ class ChannelRepository
     }
 
     /**
-     * Get channels assigned to a specific user.
-     * @param  User  $user
-     * @return SupportCollection
+     * Get channels assigned to a specific team.
+     * @param  Team  $team
+     * @return SupportCollection<Channel>
      */
-    public function getUserAssignedChannels(User $user): SupportCollection
+    public function getTeamAssignedChannels(Team $team): SupportCollection
     {
-        return $user->assignedChannels()->get();
+        return $team->assignedChannels()->get();
     }
 
     /**
