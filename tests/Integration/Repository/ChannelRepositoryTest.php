@@ -218,8 +218,8 @@ class ChannelRepositoryTest extends DatabaseTestCase
             'user_id' => $user->id,
             'status' => ApplicationEnum::APPROVED->value,
         ]);
-
-        // belongs to other user → darf nicht erscheinen
+        
+        // Should NOT match
         ChannelApplication::factory()->create([
             'user_id' => $otherUser->id,
             'status' => ApplicationEnum::APPROVED->value,
