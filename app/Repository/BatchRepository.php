@@ -28,4 +28,10 @@ class BatchRepository
             ->orderByDesc('finished_at')
             ->first();
     }
+
+    public function findById(int $id): ?Batch
+    {
+        return Batch::query()
+            ->find($id);
+    }
 }

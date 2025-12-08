@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Batch;
+use App\Repository\BatchRepository;
 use App\Repository\ChannelRepository;
 use App\Services\{AssignmentService, Zip\ZipService};
 use Illuminate\Bus\Queueable;
@@ -32,11 +32,13 @@ class BuildZipJob implements ShouldQueue
 
     public function handle(AssignmentService $assignments, ZipService $svc): void
     {
-        $channelRepository = app(ChannelRepository::class);
+        $batch = app(BatchRepository::class)->findById($this->batchId);
+        $channel = app(ChannelRepository::class)->findById($this->channelId);
 
+        if (!$batch) {
+            throw new RuntimeException("Batch with ID {$this->batchId} not found");
+        }
 
-        $batch = Batch::query()->whereKey($this->batchId)->firstOrFail();
-        $channel = $channelRepository->findById($this->channelId);
         if (!$channel) {
             throw new RuntimeException("Channel with ID {$this->channelId} not found");
         }
