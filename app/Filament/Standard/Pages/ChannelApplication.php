@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Collection;
 use UnitEnum;
 
 class ChannelApplication extends Page implements HasForms
@@ -58,12 +59,7 @@ class ChannelApplication extends Page implements HasForms
     {
         $canAccess = self::canAccessShield();
         if ($canAccess) {
-            $user = auth()->user();
-            $pendingApplications = self::getChannelRepository()->getChannelApplicationsByUser(
-                $user,
-                [ApplicationEnum::APPROVED->value]
-            );
-            $canAccess = $pendingApplications->isEmpty();
+            $canAccess = self::getApplicationsByStatus(ApplicationEnum::APPROVED)->isEmpty();
         }
 
         return $canAccess;
@@ -71,13 +67,16 @@ class ChannelApplication extends Page implements HasForms
 
     public function mount(): void
     {
-        $user = auth()->user();
-        $pendingApplications = self::getChannelRepository()->getChannelApplicationsByUser(
-            $user,
-            [ApplicationEnum::PENDING->value]
-        );
+        $this->pendingApplication = static::getApplicationsByStatus(ApplicationEnum::PENDING)
+            ->first();
+    }
 
-        $this->pendingApplication = $pendingApplications->first();
+    protected static function getApplicationsByStatus(ApplicationEnum $statusEnum): Collection
+    {
+        return self::getChannelRepository()->getChannelApplicationsByUser(
+            auth()->user(),
+            [$statusEnum->value]
+        );
     }
 
     public function getTitle(): string|Htmlable
