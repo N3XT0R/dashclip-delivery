@@ -13,6 +13,10 @@ use Illuminate\Support\Collection as SupportCollection;
 
 class ChannelRepository
 {
+    /**
+     * Get all active channels where video reception is not paused.
+     * @return Collection<Channel>
+     */
     public function getActiveChannels(): Collection
     {
         return Channel::query()
@@ -20,6 +24,11 @@ class ChannelRepository
             ->orderBy('id')->get();
     }
 
+    /**
+     * Approve a channel by updating its status.
+     * @param  Channel  $channel
+     * @return bool
+     */
     public function approve(Channel $channel): bool
     {
         return $channel->update([
