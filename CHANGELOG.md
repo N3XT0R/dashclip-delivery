@@ -24,6 +24,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       This addition improves security for channel assets, clarifies account/channel responsibility, and streamlines the
       onboarding of new partners.
 
+### Fixed
+
+- **Incorrect Membership Check Affecting Channel Access Application State**  
+  Fixed an issue where the `channel_id` field in the Filament v4 channel access application form was always submitted as
+  `null`, even when a valid channel was selected.  
+  The underlying cause was an invalid relation check using `has($model)` on a BelongsToMany relation, which resulted in
+  a framework-level exception and prevented the form state from hydrating correctly.  
+  The method was updated to use a proper pivot-aware membership check via  
+  `wherePivot('user_id', $user->getKey())`, ensuring reliable evaluation of team membership without interrupting the
+  request lifecycle.  
+  As a result, all form fields — including dynamically displayed Select components — now hydrate and persist correctly,
+  ensuring complete and accurate application data for review and approval.
+
 ## [3.1.0] - 2025-12-05
 
 ### Added
