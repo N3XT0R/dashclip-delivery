@@ -59,7 +59,7 @@ class ChannelApplication extends Page implements HasForms
     {
         $canAccess = self::canAccessShield();
         if ($canAccess) {
-            $canAccess = self::getApplicationsByStatus(ApplicationEnum::APPROVED)->isEmpty();
+            $canAccess = static::getApplicationsByStatus(ApplicationEnum::APPROVED)->isEmpty();
         }
 
         return $canAccess;
