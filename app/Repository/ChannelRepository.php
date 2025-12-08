@@ -88,7 +88,11 @@ class ChannelRepository
         return $user->assignedChannels()->get();
     }
 
-    // ...
+    /**
+     * Create a new channel application with the given attributes.
+     * @param  array  $attributes
+     * @return ChannelApplication
+     */
     public function createApplication(array $attributes): ChannelApplication
     {
         return ChannelApplication::create($attributes);
