@@ -89,6 +89,12 @@ class ChannelRepository
         return ChannelApplication::create($attributes);
     }
 
+    /**
+     * Get channel applications for a specific user, optionally filtered by status.
+     * @param  User  $user
+     * @param  ApplicationEnum|null  ...$byStatus
+     * @return Collection
+     */
     public function getChannelApplicationsByUser(User $user, ?ApplicationEnum ...$byStatus): Collection
     {
         return ChannelApplication::query()
