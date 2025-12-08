@@ -21,6 +21,15 @@ class BuildZipJob implements ShouldQueue
 
     public int $timeout = 1200;       // 20 minutes for big ZIPs
 
+    /**
+     * Create a new job instance.
+     * @param  int  $batchId
+     * @param  int  $channelId
+     * @param  array  $assignmentIds
+     * @param  string  $ip
+     * @param  string|null  $userAgent
+     * @todo refactor to DTO
+     */
     public function __construct(
         private readonly int $batchId,
         private readonly int $channelId,
