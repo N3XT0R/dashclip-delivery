@@ -66,7 +66,7 @@ class TeamRepository
      */
     public function isMemberOfTeam(User $user, Team $team): bool
     {
-        return $team->users()->has($user)->exists();
+        return $team->users()->wherePivot('user_id', $user->getKey())->exists();
     }
 
     /**
