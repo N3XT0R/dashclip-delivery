@@ -78,6 +78,11 @@ class ChannelRepository
             ->first();
     }
 
+    /**
+     * Get channels assigned to a specific user.
+     * @param  User  $user
+     * @return SupportCollection
+     */
     public function getUserAssignedChannels(User $user): SupportCollection
     {
         return $user->assignedChannels()->get();
