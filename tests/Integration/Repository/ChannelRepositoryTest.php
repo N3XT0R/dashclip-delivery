@@ -267,18 +267,18 @@ class ChannelRepositoryTest extends DatabaseTestCase
         $user = User::factory()->create();
 
         $pending = ChannelApplication::factory()->create([
-            'user_id' => $user->id,
+            'user_id' => $user->getKey(),
             'status' => ApplicationEnum::PENDING->value,
         ]);
 
         $approved = ChannelApplication::factory()->create([
-            'user_id' => $user->id,
+            'user_id' => $user->getKey(),
             'status' => ApplicationEnum::APPROVED->value,
         ]);
 
         // Should not match
         ChannelApplication::factory()->create([
-            'user_id' => $user->id,
+            'user_id' => $user->getKey(),
             'status' => ApplicationEnum::REJECTED->value,
         ]);
 
@@ -301,12 +301,12 @@ class ChannelRepositoryTest extends DatabaseTestCase
         $user = User::factory()->create();
 
         $a1 = ChannelApplication::factory()->create([
-            'user_id' => $user->id,
+            'user_id' => $user->getKey(),
             'status' => ApplicationEnum::PENDING->value,
         ]);
 
         $a2 = ChannelApplication::factory()->create([
-            'user_id' => $user->id,
+            'user_id' => $user->getKey(),
             'status' => ApplicationEnum::APPROVED->value,
         ]);
 
