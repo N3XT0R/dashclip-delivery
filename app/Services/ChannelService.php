@@ -54,7 +54,7 @@ class ChannelService
             $team = Team::query()->where('slug', $uploaderId)->first();
 
             if ($team) {
-                $teamChannels = $team->assignedChannels()->get();
+                $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
 
                 $teamQuotas = $teamChannels
                     ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot->quota])
