@@ -28,7 +28,7 @@ class BuildZipJob implements ShouldQueue
      * @param  array  $assignmentIds
      * @param  string  $ip
      * @param  string|null  $userAgent
-     * @todo refactor to DTO
+     * @todo refactor to DTO at v4.0
      */
     public function __construct(
         private readonly int $batchId,
