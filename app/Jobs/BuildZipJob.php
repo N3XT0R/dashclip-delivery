@@ -12,6 +12,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use RuntimeException;
 
+/**
+ * Job to build a ZIP file for a batch of assignments in a specific channel.
+ */
 class BuildZipJob implements ShouldQueue
 {
     use Queueable, SerializesModels, Dispatchable, InteractsWithQueue;
@@ -39,6 +42,12 @@ class BuildZipJob implements ShouldQueue
     ) {
     }
 
+    /**
+     * Execute the job.
+     * @param  AssignmentService  $assignments
+     * @param  ZipService  $svc
+     * @return void
+     */
     public function handle(AssignmentService $assignments, ZipService $svc): void
     {
         $batch = app(BatchRepository::class)->findById($this->batchId);
