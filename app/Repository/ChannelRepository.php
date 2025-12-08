@@ -93,7 +93,7 @@ class ChannelRepository
      * Get channel applications for a specific user, optionally filtered by status.
      * @param  User  $user
      * @param  ApplicationEnum|null  ...$byStatus
-     * @return Collection
+     * @return Collection<ChannelApplication>
      */
     public function getChannelApplicationsByUser(User $user, ?ApplicationEnum ...$byStatus): Collection
     {
