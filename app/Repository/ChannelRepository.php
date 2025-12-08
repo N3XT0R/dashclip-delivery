@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Enum\Channel\ApplicationEnum;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;
@@ -88,15 +89,13 @@ class ChannelRepository
         return ChannelApplication::create($attributes);
     }
 
-    public function getChannelApplicationsByUser(User $user, ?array $byStatus): Collection
+    public function getChannelApplicationsByUser(User $user, ?ApplicationEnum ...$byStatus): Collection
     {
-        $query = ChannelApplication::query()
-            ->where('user_id', $user->getKey());
-
-        if ($byStatus !== null) {
-            $query->whereIn('status', $byStatus);
-        }
-
-        return $query->get();
+        return ChannelApplication::query()
+            ->where('user_id', $user->getKey())
+            ->when(
+                filled($byStatus),
+                fn($query) => $query->whereIn('status', array_column($byStatus, 'value'))
+            )->get();
     }
 }
