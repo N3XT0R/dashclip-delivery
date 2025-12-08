@@ -71,7 +71,7 @@ class ChannelApplication extends Page implements HasForms
             ->first();
     }
 
-    protected static function getApplicationsByStatus(ApplicationEnum $statusEnum): Collection
+    public static function getApplicationsByStatus(ApplicationEnum $statusEnum): Collection
     {
         return static::getChannelRepository()->getChannelApplicationsByUser(
             auth()->user(),
