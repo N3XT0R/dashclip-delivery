@@ -20,12 +20,15 @@ class ChannelApplicationResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Channel Application';
-
 
     public static function getPluralLabel(): ?string
     {
         return __('filament.admin_channel_application.navigation_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.admin_channel_application.navigation_group');
     }
 
     public static function form(Schema $schema): Schema
