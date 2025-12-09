@@ -45,15 +45,25 @@ class ChannelApplicationResource extends Resource
             ->recordTitleAttribute('Channel Application')
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
+                    ->label('filament.admin_channel_application.table.columns.applicant')
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('channel.name')
+                    ->label('filament.admin_channel_application.table.columns.channel')
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label('filament.admin_channel_application.table.columns.status')
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('filament.admin_channel_application.table.columns.submitted_at')
+                    ->translateLabel()
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('filament.admin_channel_application.table.columns.updated_at')
+                    ->translateLabel()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -68,7 +78,7 @@ class ChannelApplicationResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                 ]),
-            ])->defaultSort('created_at', 'desc');
+            ])->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array

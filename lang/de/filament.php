@@ -63,6 +63,7 @@ return [
                 'channel' => 'Kanal',
                 'status' => 'Status',
                 'submitted_at' => 'Eingereicht am',
+                'updated_at' => 'Aktualisiert am',
             ],
         ],
     ],
