@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Resources\ChannelApplicationResource\Pages;
 use App\Models\ChannelApplication;
 use BackedEnum;
@@ -32,7 +33,7 @@ class ChannelApplicationResource extends Resource
                     ->relationship('channel', 'name'),
                 Forms\Components\TextInput::make('status')
                     ->required()
-                    ->default('pending'),
+                    ->default(ApplicationEnum::PENDING->value),
                 Forms\Components\Textarea::make('note')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('meta'),
