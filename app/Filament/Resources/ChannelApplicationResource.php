@@ -41,13 +41,19 @@ class ChannelApplicationResource extends Resource
         return $schema
             ->components([
                 Forms\Components\Select::make('user_id')
+                    ->label('filament.admin_channel_application.table.columns.applicant')
+                    ->translateLabel()
                     ->relationship('user', 'name')
                     ->required(),
                 Forms\Components\Select::make('channel_id')
+                    ->label('filament.admin_channel_application.table.columns.channel')
+                    ->translateLabel()
                     ->relationship('channel', 'name'),
-                Forms\Components\TextInput::make('status')
-                    ->required()
-                    ->default(ApplicationEnum::PENDING->value),
+                Forms\Components\Select::make('status')
+                    ->label('filament.admin_channel_application.table.columns.status')
+                    ->translateLabel()
+                    ->options(ApplicationEnum::all())
+                    ->searchable(),
                 Forms\Components\Textarea::make('note')
                     ->columnSpanFull(),
             ]);

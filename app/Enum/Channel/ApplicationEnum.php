@@ -17,4 +17,13 @@ enum ApplicationEnum: string
             self::APPROVED->value,
         ];
     }
+
+    public static function all(): array
+    {
+        return [
+            self::PENDING->value,
+            self::APPROVED->value,
+            self::REJECTED->value,
+        ];
+    }
 }
