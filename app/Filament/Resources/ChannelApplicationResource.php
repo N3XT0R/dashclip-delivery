@@ -28,6 +28,11 @@ class ChannelApplicationResource extends Resource
         return __('filament.admin_channel_application.navigation_label');
     }
 
+    public static function getPluralLabel(): ?string
+    {
+        return __('filament.admin_channel_application.navigation_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
