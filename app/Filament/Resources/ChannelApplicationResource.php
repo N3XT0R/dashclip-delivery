@@ -31,6 +31,11 @@ class ChannelApplicationResource extends Resource
         return __('filament.admin_channel_application.navigation_group');
     }
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -84,9 +89,6 @@ class ChannelApplicationResource extends Resource
                 Actions\EditAction::make(),
             ])
             ->toolbarActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                ]),
             ])->defaultSort('updated_at', 'desc');
     }
 
@@ -101,7 +103,6 @@ class ChannelApplicationResource extends Resource
     {
         return [
             'index' => Pages\ListChannelApplications::route('/'),
-            'create' => Pages\CreateChannelApplication::route('/create'),
             'edit' => Pages\EditChannelApplication::route('/{record}/edit'),
         ];
     }
