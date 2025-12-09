@@ -16,4 +16,9 @@ class ListChannelApplications extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return __('filament.admin_channel_application.navigation_label');
+    }
 }

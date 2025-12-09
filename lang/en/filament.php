@@ -54,4 +54,16 @@ return [
             ],
         ],
     ],
+    'admin_channel_application' => [
+        'navigation_label' => 'Channel Access Applications',
+        'navigation_group' => __('nav.media'),
+        'table' => [
+            'columns' => [
+                'applicant' => 'Applicant',
+                'channel' => 'Channel',
+                'status' => 'Status',
+                'submitted_at' => 'Submitted at',
+            ],
+        ],
+    ],
 ];

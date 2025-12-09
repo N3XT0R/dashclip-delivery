@@ -54,4 +54,16 @@ return [
             ],
         ],
     ],
+    'admin_channel_application' => [
+        'navigation_label' => 'Kanalzugangs-Anfragen',
+        'navigation_group' => __('nav.media'),
+        'table' => [
+            'columns' => [
+                'applicant' => 'Bewerber',
+                'channel' => 'Kanal',
+                'status' => 'Status',
+                'submitted_at' => 'Eingereicht am',
+            ],
+        ],
+    ],
 ];
