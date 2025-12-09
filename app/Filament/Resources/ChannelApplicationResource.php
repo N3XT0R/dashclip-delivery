@@ -23,11 +23,6 @@ class ChannelApplicationResource extends Resource
     protected static ?string $recordTitleAttribute = 'Channel Application';
 
 
-    public static function getLabel(): string
-    {
-        return __('filament.admin_channel_application.navigation_label');
-    }
-
     public static function getPluralLabel(): ?string
     {
         return __('filament.admin_channel_application.navigation_label');
