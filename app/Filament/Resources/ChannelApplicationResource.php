@@ -36,7 +36,6 @@ class ChannelApplicationResource extends Resource
                     ->default(ApplicationEnum::PENDING->value),
                 Forms\Components\Textarea::make('note')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('meta'),
             ]);
     }
 
