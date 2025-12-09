@@ -89,19 +89,23 @@ class ChannelApplicationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->multiple()
+                    ->options(ApplicationEnum::all())
+                    ->default(ApplicationEnum::nonRejected())
             ])
             ->recordActions([
                 Actions\EditAction::make(),
             ])
             ->toolbarActions([
-            ])->defaultSort('updated_at', 'desc');
+            ])
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 
