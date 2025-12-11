@@ -74,5 +74,10 @@ return [
                 'reason' => 'Reason',
             ],
         ],
+        'status' => [
+            'pending' => 'Pending',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+        ],
     ],
 ];

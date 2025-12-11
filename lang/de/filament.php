@@ -73,5 +73,10 @@ return [
                 'reason' => 'Begründung',
             ],
         ],
+        'status' => [
+            'pending' => 'In Bearbeitung',
+            'approved' => 'Genehmigt',
+            'rejected' => 'Abgelehnt',
+        ],
     ],
 ];

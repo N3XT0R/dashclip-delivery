@@ -59,8 +59,8 @@ class ChannelApplicationResource extends Resource
                 Forms\Components\Select::make('status')
                     ->label('filament.admin_channel_application.table.columns.status')
                     ->translateLabel()
-                    ->options(ApplicationEnum::all())
-                    ->searchable(),
+                    ->options(fn() => collect(ApplicationEnum::all())->map(fn($value
+                    ) => [$value => __('filament.admin_channel_application.status.'.$value)])),
                 TextEntry::make('note')
                     ->label('filament.admin_channel_application.form.fields.note')
                     ->translateLabel()
