@@ -67,5 +67,10 @@ return [
                 'updated_at' => 'Updated at',
             ],
         ],
+        'form' => [
+            'fields' => [
+                'user_email' => 'User Email',
+            ],
+        ],
     ],
 ];

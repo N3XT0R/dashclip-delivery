@@ -60,11 +60,15 @@ return [
         'table' => [
             'columns' => [
                 'applicant' => 'Bewerber',
-                'user_email' => 'Benutzer-E-Mail',
                 'channel' => 'Kanal',
                 'status' => 'Status',
                 'submitted_at' => 'Eingereicht am',
                 'updated_at' => 'Aktualisiert am',
+            ],
+        ],
+        'form' => [
+            'fields' => [
+                'user_email' => 'Benutzer-E-Mail',
             ],
         ],
     ],
