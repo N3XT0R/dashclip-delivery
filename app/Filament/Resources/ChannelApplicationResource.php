@@ -10,6 +10,7 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
@@ -52,21 +53,28 @@ class ChannelApplicationResource extends Resource
                     ->label('filament.admin_channel_application.form.fields.user_email')
                     ->disabled()
                     ->translateLabel(),
-                Forms\Components\Select::make('channel_id')
-                    ->label('filament.admin_channel_application.table.columns.channel')
-                    ->translateLabel()
-                    ->relationship('channel', 'name'),
                 Forms\Components\Select::make('status')
                     ->label('filament.admin_channel_application.table.columns.status')
                     ->translateLabel()
                     ->options(fn() => collect(ApplicationEnum::all())->map(fn($value
                     ) => [$value => __('filament.admin_channel_application.status.'.$value)])),
+                Section::make('existing_channel')
+                    ->heading(false)
+                    ->label('filament.admin_channel_application.form.sections.existing_channel')
+                    ->translateLabel()
+                    ->schema([
+                        Forms\Components\Select::make('channel_id')
+                            ->label('filament.admin_channel_application.table.columns.channel')
+                            ->translateLabel()
+                            ->relationship('channel', 'name'),
+                    ])
+                    ->columnSpanFull(),
                 TextEntry::make('note')
                     ->label('filament.admin_channel_application.form.fields.note')
                     ->translateLabel()
                     ->markdown()
                     ->columnSpanFull(),
-                Forms\Components\MarkdownEditor::make('meta.reason')
+                Forms\Components\MarkdownEditor::make('meta.reject_reason')
                     ->label('filament.admin_channel_application.form.fields.reason')
                     ->translateLabel()
                     ->disableToolbarButtons(['attachFiles'])

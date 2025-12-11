@@ -31,6 +31,7 @@ return [
             'new_channel_youtube_name_label' => 'YouTube channel (optional)',
             'new_channel_youtube_name_placeholder' => 'YouTube channel name (optional)',
             'note_label' => 'Reason',
+            'reject_reason_label' => 'Rejection reason',
             'note_placeholder' => 'Please briefly explain why you need access to the videos in this channel.',
             'submit' => 'Submit application',
             'status_title' => 'Application already submitted for :channel',
@@ -72,6 +73,9 @@ return [
                 'user_email' => 'User Email',
                 'note' => 'Note',
                 'reason' => 'Reason',
+            ],
+            'sections' => [
+                'existing_channel' => 'Existing Channel',
             ],
         ],
         'status' => [

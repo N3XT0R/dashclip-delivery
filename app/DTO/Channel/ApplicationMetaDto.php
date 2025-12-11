@@ -13,6 +13,7 @@ readonly class ApplicationMetaDto implements Arrayable
         public array $channel = [],
         public bool $tosAccepted = false,
         public ?Carbon $tosAcceptedAt = null,
+        public ?string $rejectReason = null,
     ) {
     }
 
@@ -22,6 +23,7 @@ readonly class ApplicationMetaDto implements Arrayable
             channel: $data['new_channel'] ?? [],
             tosAccepted: $data['tos_accepted'] ?? false,
             tosAcceptedAt: isset($data['tos_accepted_at']) ? Carbon::parse($data['tos_accepted_at']) : null,
+            rejectReason: $data['reject_reason'] ?? null,
         );
     }
 
@@ -31,6 +33,7 @@ readonly class ApplicationMetaDto implements Arrayable
             'new_channel' => $this->channel,
             'tos_accepted' => $this->tosAccepted,
             'tos_accepted_at' => $this->tosAcceptedAt?->toDateTimeString(),
+            'reject_reason' => $this->rejectReason,
         ];
     }
 

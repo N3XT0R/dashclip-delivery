@@ -31,6 +31,7 @@ return [
             'new_channel_youtube_name_label' => 'YouTube-Kanal (optional)',
             'new_channel_youtube_name_placeholder' => 'YouTube-Kanal-Name (optional)',
             'note_label' => 'Begründung',
+            'reject_reason_label' => 'Ablehnungsgrund',
             'note_placeholder' => 'Geben Sie hier einen kurzen Grund an, warum Sie Zugang zu den Videos dieses Kanals benötigen.',
             'submit' => 'Bewerbung absenden',
             'status_title' => 'Antrag bereits gestellt für :channel',
@@ -71,6 +72,9 @@ return [
                 'user_email' => 'Benutzer-E-Mail',
                 'note' => 'Notiz',
                 'reason' => 'Begründung',
+            ],
+            'sections' => [
+                'existing_channel' => 'Vorhandener Kanal',
             ],
         ],
         'status' => [
