@@ -34,7 +34,7 @@
                 {{ $pendingApplication->created_at->format('d.m.Y H:i') }}
                 <br>
                 <b>{{ __('filament.channel_application.form.note_label') }}</b>
-                {{ $pendingApplication->note }}
+                {!! str($pendingApplication->note)->markdown()->sanitizeHtml() !!}
                 @if(!empty($pendingApplication->meta->rejectReason))
                     <br>
                     <b>{{ __('filament.channel_application.form.reject_reason_label') }}</b>
