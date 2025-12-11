@@ -60,6 +60,7 @@ class ChannelApplicationResource extends Resource
                     ) => [$value => __('filament.admin_channel_application.status.'.$value)])),
                 Section::make('existing_channel')
                     ->heading(false)
+                    ->hidden(fn() => filled(data_get(request()->get('record'), 'meta.new_channel_name')))
                     ->label('filament.admin_channel_application.form.sections.existing_channel')
                     ->translateLabel()
                     ->schema([
@@ -71,6 +72,7 @@ class ChannelApplicationResource extends Resource
                     ->columnSpanFull(),
                 Section::make('new_channel')
                     ->heading(false)
+                    ->hidden(fn() => !filled(data_get(request()->get('record'), 'meta.new_channel_name')))
                     ->label('filament.admin_channel_application.form.sections.new_channel')
                     ->translateLabel()
                     ->schema([
