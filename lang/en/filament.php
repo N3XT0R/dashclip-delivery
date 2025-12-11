@@ -71,6 +71,7 @@ return [
             'fields' => [
                 'user_email' => 'User Email',
                 'note' => 'Note',
+                'reason' => 'Reason',
             ],
         ],
     ],

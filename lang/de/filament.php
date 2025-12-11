@@ -70,6 +70,7 @@ return [
             'fields' => [
                 'user_email' => 'Benutzer-E-Mail',
                 'note' => 'Notiz',
+                'reason' => 'Begründung',
             ],
         ],
     ],

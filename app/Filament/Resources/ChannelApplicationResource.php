@@ -66,6 +66,11 @@ class ChannelApplicationResource extends Resource
                     ->translateLabel()
                     ->markdown()
                     ->columnSpanFull(),
+                Forms\Components\MarkdownEditor::make('meta.reason')
+                    ->label('filament.admin_channel_application.form.fields.reason')
+                    ->translateLabel()
+                    ->disableToolbarButtons(['attachFiles'])
+                    ->columnSpanFull(),
             ]);
     }
 
