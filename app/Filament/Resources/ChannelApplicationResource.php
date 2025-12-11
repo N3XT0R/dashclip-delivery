@@ -44,6 +44,7 @@ class ChannelApplicationResource extends Resource
                     ->label('filament.admin_channel_application.table.columns.applicant')
                     ->translateLabel()
                     ->relationship('user', 'name')
+                    ->disabled()
                     ->required(),
                 Forms\Components\TextInput::make('user_email')
                     ->formatStateUsing(fn(ChannelApplication $record) => $record->user->email)
