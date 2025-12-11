@@ -128,6 +128,9 @@ class ChannelApplication extends Page implements HasForms
                     ]),
                 MarkdownEditor::make('note')
                     ->label(__('filament.channel_application.form.note_label'))
+                    ->disableToolbarButtons([
+                        'attachFiles',
+                    ])
                     ->maxLength(500)
                     ->placeholder(__('filament.channel_application.form.note_placeholder')),
                 FilamentComponents::tosCheckbox(),
