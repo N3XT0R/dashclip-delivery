@@ -6,4 +6,5 @@ return [
     'channel_owner' => 'Channel Owner',
     'media' => 'My Media',
     'settings' => 'Settings',
+    'channels' => 'Channels',
 ];

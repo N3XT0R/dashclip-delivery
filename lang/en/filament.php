@@ -56,7 +56,7 @@ return [
     ],
     'admin_channel_application' => [
         'navigation_label' => 'Channel Access Applications',
-        'navigation_group' => __('nav.media'),
+        'navigation_group' => __('nav.channels'),
         'table' => [
             'columns' => [
                 'applicant' => 'Applicant',
