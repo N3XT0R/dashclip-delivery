@@ -56,8 +56,11 @@ class ChannelApplicationResource extends Resource
                 Forms\Components\Select::make('status')
                     ->label('filament.admin_channel_application.table.columns.status')
                     ->translateLabel()
-                    ->options(fn() => collect(ApplicationEnum::all())->map(fn($value
-                    ) => [$value => __('filament.admin_channel_application.status.'.$value)])),
+                    ->options(function () {
+                        return collect(ApplicationEnum::all())->mapWithKeys(function ($value) {
+                            return [$value => __('filament.admin_channel_application.status.'.$value)];
+                        });
+                    }),
                 Section::make('existing_channel')
                     ->heading(false)
                     ->hidden(fn() => filled(data_get(request()->get('record'), 'meta.new_channel_name')))
