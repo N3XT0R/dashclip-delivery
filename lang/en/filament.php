@@ -73,6 +73,11 @@ return [
                 'user_email' => 'User Email',
                 'note' => 'Note',
                 'reason' => 'Reason',
+                'new_channel' => 'New Channel',
+                'new_channel_name_label' => 'Channel name',
+                'new_channel_creator_name_label' => 'Operator name',
+                'new_channel_email_label' => 'Contact email',
+                'new_channel_youtube_name_label' => 'YouTube channel (optional)',
             ],
             'sections' => [
                 'existing_channel' => 'Existing Channel',

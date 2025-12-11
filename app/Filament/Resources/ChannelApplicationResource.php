@@ -69,6 +69,29 @@ class ChannelApplicationResource extends Resource
                             ->relationship('channel', 'name'),
                     ])
                     ->columnSpanFull(),
+                Section::make('new_channel')
+                    ->heading(false)
+                    ->label('filament.admin_channel_application.form.sections.new_channel')
+                    ->translateLabel()
+                    ->schema([
+                        Forms\Components\TextInput::make('meta.new_channel_name')
+                            ->label('filament.admin_channel_application.form.fields.new_channel_name_label')
+                            ->translateLabel()
+                            ->disabled(),
+                        Forms\Components\TextInput::make('meta.new_channel_creator_name')
+                            ->label('filament.admin_channel_application.form.fields.new_channel_creator_name_label')
+                            ->translateLabel()
+                            ->disabled(),
+                        Forms\Components\TextInput::make('meta.new_channel_email')
+                            ->label('filament.admin_channel_application.form.fields.new_channel_email_label')
+                            ->translateLabel()
+                            ->disabled(),
+                        Forms\Components\TextInput::make('meta.new_channel_youtube_name')
+                            ->label('filament.admin_channel_application.form.fields.new_channel_youtube_name_label')
+                            ->translateLabel()
+                            ->disabled(),
+                    ])
+                    ->columnSpanFull(),
                 TextEntry::make('note')
                     ->label('filament.admin_channel_application.form.fields.note')
                     ->translateLabel()

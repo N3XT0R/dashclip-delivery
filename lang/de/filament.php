@@ -72,9 +72,15 @@ return [
                 'user_email' => 'Benutzer-E-Mail',
                 'note' => 'Notiz',
                 'reason' => 'Begründung',
+                'new_channel' => 'Neuer Kanal',
+                'new_channel_name_label' => 'Kanalname',
+                'new_channel_creator_name_label' => 'Name des Betreibers',
+                'new_channel_email_label' => 'Kontakt-E-Mail',
+                'new_channel_youtube_name_label' => 'YouTube-Kanal (optional)',
             ],
             'sections' => [
                 'existing_channel' => 'Vorhandener Kanal',
+                'new_channel' => 'Neuer Kanal',
             ],
         ],
         'status' => [
