@@ -38,7 +38,7 @@
                 @if(!empty($pendingApplication->meta->rejectReason))
                     <br>
                     <b>{{ __('filament.channel_application.form.reject_reason_label') }}</b>
-                    {{ $pendingApplication->meta->rejectReason }}
+                    {!! str($pendingApplication->meta->rejectReason)->markdown()->sanitizeHtml() !!}
                 @endif
             </div>
             @if (!empty($pendingApplication->meta->channel['name'] ?? null))
