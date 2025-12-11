@@ -8,6 +8,7 @@ use App\Models\ChannelApplication;
 use BackedEnum;
 use Filament\Actions;
 use Filament\Forms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -60,7 +61,8 @@ class ChannelApplicationResource extends Resource
                     ->translateLabel()
                     ->options(ApplicationEnum::all())
                     ->searchable(),
-                Forms\Components\Textarea::make('note')
+                TextEntry::make('note')
+                    ->markdown()
                     ->columnSpanFull(),
             ]);
     }
