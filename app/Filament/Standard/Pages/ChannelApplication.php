@@ -10,8 +10,8 @@ use App\Support\FilamentComponents;
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -126,10 +126,9 @@ class ChannelApplication extends Page implements HasForms
                             ->label(__('filament.channel_application.form.new_channel_youtube_name_label'))
                             ->required(false),
                     ]),
-                Textarea::make('note')
+                MarkdownEditor::make('note')
                     ->label(__('filament.channel_application.form.note_label'))
                     ->maxLength(500)
-                    ->rows(5)
                     ->placeholder(__('filament.channel_application.form.note_placeholder')),
                 FilamentComponents::tosCheckbox(),
             ])
