@@ -45,6 +45,10 @@ class ChannelApplicationResource extends Resource
                     ->translateLabel()
                     ->relationship('user', 'name')
                     ->required(),
+                Forms\Components\TextInput::make('user_email')
+                    ->label('filament.admin_channel_application.form.fields.user_email')
+                    ->disabled()
+                    ->translateLabel(),
                 Forms\Components\Select::make('channel_id')
                     ->label('filament.admin_channel_application.table.columns.channel')
                     ->translateLabel()

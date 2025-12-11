@@ -60,6 +60,7 @@ return [
         'table' => [
             'columns' => [
                 'applicant' => 'Applicant',
+                'user_email' => 'User Email',
                 'channel' => 'Channel',
                 'status' => 'Status',
                 'submitted_at' => 'Submitted at',
