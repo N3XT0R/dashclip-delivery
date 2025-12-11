@@ -62,6 +62,8 @@ class ChannelApplicationResource extends Resource
                     ->options(ApplicationEnum::all())
                     ->searchable(),
                 TextEntry::make('note')
+                    ->label('filament.admin_channel_application.form.fields.note')
+                    ->translateLabel()
                     ->markdown()
                     ->columnSpanFull(),
             ]);

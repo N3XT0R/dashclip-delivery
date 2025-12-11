@@ -69,6 +69,7 @@ return [
         'form' => [
             'fields' => [
                 'user_email' => 'Benutzer-E-Mail',
+                'note' => 'Notiz',
             ],
         ],
     ],
