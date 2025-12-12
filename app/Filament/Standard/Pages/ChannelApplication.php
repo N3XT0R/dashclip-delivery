@@ -166,6 +166,8 @@ class ChannelApplication extends Page implements HasForms, HasTable
                     ->wrap(),
                 TextColumn::make('created_at')
                     ->label(__('filament.channel_application.table.columns.submitted_at')),
+                TextColumn::make('updated_at')
+                    ->label(__('filament.channel_application.table.columns.updated_at')),
             ])
             ->defaultSort('created_at', 'desc');
     }
