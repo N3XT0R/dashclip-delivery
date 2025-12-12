@@ -177,6 +177,10 @@ class ChannelApplication extends Page implements HasForms, HasTable
                     ->modalHeading(__('filament.channel_application.table.actions.view.modal_heading'))
                     ->label(__('filament.channel_application.table.actions.view.label'))
                     ->schema([
+                        MarkdownEditor::make('note')
+                            ->label(__('filament.channel_application.form.note_label'))
+                            ->translateLabel()
+                            ->disabled(),
                         MarkdownEditor::make('meta.reject_reason')
                             ->label(__('filament.channel_application.form.reject_reason_label'))
                             ->translateLabel()
