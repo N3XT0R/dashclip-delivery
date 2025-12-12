@@ -4,6 +4,7 @@ namespace App\Filament\Standard\Pages;
 
 use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\Enum\Channel\ApplicationEnum;
+use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
 use App\Support\FilamentComponents;
@@ -174,7 +175,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
 
     public function getTableQuery(): Builder|Relation|null
     {
-        return \App\Models\ChannelApplication::query()
+        return ChannelApplicationModel::query()
             ->where('user_id', auth()->id());
     }
 
