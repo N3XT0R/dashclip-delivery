@@ -8,6 +8,7 @@ return [
         'navigation_label' => 'Request Access',
         'navigation_group' => __('nav.channel_owner'),
         'table' => [
+            'record_title' => 'History of Channel Access Applications',
             'columns' => [
                 'channel' => 'Channel',
                 'status' => 'Status',

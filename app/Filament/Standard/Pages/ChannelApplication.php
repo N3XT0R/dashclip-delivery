@@ -149,6 +149,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->heading(__('filament.channel_application.table.record_title'))
             ->columns([
                 TextColumn::make('channel')
                     ->label(__('filament.channel_application.table.columns.channel'))

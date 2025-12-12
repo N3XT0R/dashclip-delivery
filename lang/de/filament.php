@@ -8,6 +8,7 @@ return [
         'navigation_label' => 'Zugang beantragen',
         'navigation_group' => __('nav.channel_owner'),
         'table' => [
+            'record_title' => 'Historie der Kanalzugangs-Anfragen',
             'columns' => [
                 'channel' => 'Kanal',
                 'status' => 'Status',
