@@ -63,7 +63,7 @@ class ChannelApplicationResource extends Resource
                     }),
                 Section::make('existing_channel')
                     ->heading(false)
-                    ->hidden(fn() => filled(data_get(request()->get('record'), 'meta.new_channel_name')))
+                    ->hidden(fn($record) => filled($record->meta->channel['name'] ?? null))
                     ->label('filament.admin_channel_application.form.sections.existing_channel')
                     ->translateLabel()
                     ->schema([
@@ -75,23 +75,23 @@ class ChannelApplicationResource extends Resource
                     ->columnSpanFull(),
                 Section::make('new_channel')
                     ->heading(false)
-                    ->hidden(fn() => !filled(data_get(request()->get('record'), 'meta.new_channel_name')))
+                    ->hidden(fn($record) => !filled($record->meta->channel['name'] ?? null))
                     ->label('filament.admin_channel_application.form.sections.new_channel')
                     ->translateLabel()
                     ->schema([
-                        Forms\Components\TextInput::make('meta.new_channel_name')
+                        Forms\Components\TextInput::make('meta.new_channel.name')
                             ->label('filament.admin_channel_application.form.fields.new_channel_name_label')
                             ->translateLabel()
                             ->disabled(),
-                        Forms\Components\TextInput::make('meta.new_channel_creator_name')
+                        Forms\Components\TextInput::make('meta.new_channel.creator_name')
                             ->label('filament.admin_channel_application.form.fields.new_channel_creator_name_label')
                             ->translateLabel()
                             ->disabled(),
-                        Forms\Components\TextInput::make('meta.new_channel_email')
+                        Forms\Components\TextInput::make('meta.new_channel.email')
                             ->label('filament.admin_channel_application.form.fields.new_channel_email_label')
                             ->translateLabel()
                             ->disabled(),
-                        Forms\Components\TextInput::make('meta.new_channel_youtube_name')
+                        Forms\Components\TextInput::make('meta.new_channel.youtube_name')
                             ->label('filament.admin_channel_application.form.fields.new_channel_youtube_name_label')
                             ->translateLabel()
                             ->disabled(),
