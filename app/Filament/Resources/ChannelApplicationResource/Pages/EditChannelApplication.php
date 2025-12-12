@@ -22,7 +22,7 @@ class EditChannelApplication extends EditRecord
          * @var ChannelApplicationModel $record
          */
         $record = $this->getRecord();
-        $hasChannel = $record->channel_id !== null;
+        $hasExistingChannel = $record->channel_id !== null;
         /**
          * prepare to send notification or perform other actions based on status change
          */
