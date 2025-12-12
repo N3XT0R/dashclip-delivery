@@ -17,6 +17,12 @@ return [
                 'updated_at' => 'Aktualisiert am',
                 'channel_unknown' => 'Neuer Kanal',
             ],
+            'actions' => [
+                'view' => [
+                    'label' => 'Details anzeigen',
+                    'modal_heading' => 'Details zur Kanalzugangs-Anfrage',
+                ],
+            ],
         ],
         'form' => [
             'about_title' => 'Vorteile der freiwilligen Registrierung',

@@ -10,6 +10,7 @@ use App\Services\ChannelService;
 use App\Support\FilamentComponents;
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
@@ -163,14 +164,24 @@ class ChannelApplication extends Page implements HasForms, HasTable
                     ->formatStateUsing(function ($state) {
                         return __('filament.channel_application.status.'.strtolower($state));
                     }),
-                TextColumn::make('meta.reject_reason')
-                    ->label(__('filament.channel_application.table.columns.reject_reason'))
-                    ->markdown()
-                    ->wrap(),
                 TextColumn::make('created_at')
                     ->label(__('filament.channel_application.table.columns.submitted_at')),
                 TextColumn::make('updated_at')
                     ->label(__('filament.channel_application.table.columns.updated_at')),
+            ])
+            ->recordActions([
+                ViewAction::make('view')
+                    ->modal()
+                    ->modalHeading(__('filament.channel_application.table.actions.view.modal_heading'))
+                    ->label(__('filament.channel_application.table.actions.view.label'))
+                    ->schema([
+                        TextColumn::make('meta.reject_reason')
+                            ->label(__('filament.channel_application.form.fields.reject_reason_label'))
+                            ->translateLabel()
+                            ->markdown()
+                            ->visible(fn($record) => $record->status === ApplicationEnum::REJECTED->value),
+                    ])
+                    ->icon(Heroicon::OutlinedEye),
             ])
             ->defaultSort('updated_at', 'desc');
     }

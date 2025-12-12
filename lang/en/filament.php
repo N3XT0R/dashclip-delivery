@@ -17,6 +17,12 @@ return [
                 'updated_at' => 'Updated at',
                 'channel_unknown' => 'New Channel Request',
             ],
+            'actions' => [
+                'view' => [
+                    'label' => 'View Application',
+                    'modal_heading' => 'Channel Access Application Details',
+                ],
+            ],
         ],
         'form' => [
             'about_title' => 'Benefits of Optional Registration',
