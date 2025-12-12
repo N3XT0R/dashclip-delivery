@@ -156,7 +156,10 @@ class ChannelApplication extends Page implements HasForms, HasTable
                         $record
                     ) => $record->channel?->name ?? __('filament.channel_application.table.columns.channel_unknown')),
                 TextColumn::make('status')
-                    ->label(__('filament.channel_application.table.columns.status')),
+                    ->label(__('filament.channel_application.table.columns.status'))
+                    ->formatStateUsing(function ($state) {
+                        return __('filament.channel_application.status.'.strtolower($state));
+                    }),
                 TextColumn::make('meta.reject_reason')
                     ->label(__('filament.channel_application.table.columns.reject_reason')),
                 TextColumn::make('created_at')
