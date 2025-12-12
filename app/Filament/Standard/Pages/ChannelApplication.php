@@ -161,7 +161,9 @@ class ChannelApplication extends Page implements HasForms, HasTable
                         return __('filament.channel_application.status.'.strtolower($state));
                     }),
                 TextColumn::make('meta.reject_reason')
-                    ->label(__('filament.channel_application.table.columns.reject_reason')),
+                    ->label(__('filament.channel_application.table.columns.reject_reason'))
+                    ->markdown()
+                    ->wrap(),
                 TextColumn::make('created_at')
                     ->label(__('filament.channel_application.table.columns.submitted_at')),
             ])
