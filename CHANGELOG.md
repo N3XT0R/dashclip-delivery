@@ -37,11 +37,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   As a result, all form fields — including dynamically displayed Select components — now hydrate and persist correctly,
   ensuring complete and accurate application data for review and approval.
 
+## [3.1.2] - 2025-12-12
+
+### Fixed
+
+- **Filament v4.3.1 Upgrade**
+    - Upgraded Filament to version 4.3.0 for security patches.
+
 ## [3.1.1] - 2025-12-12
 
 ### Fixed
 
-- **Filament v4.15.0 Upgrade**
+- **Filament v4.3.0 Upgrade**
     - Upgraded Filament to version 4.3.0 for security patches.
 
 ## [3.1.0] - 2025-12-05
