@@ -165,9 +165,11 @@ class ChannelApplication extends Page implements HasForms, HasTable
                         return __('filament.channel_application.status.'.strtolower($state));
                     }),
                 TextColumn::make('created_at')
-                    ->label(__('filament.channel_application.table.columns.submitted_at')),
+                    ->label(__('filament.channel_application.table.columns.submitted_at'))
+                    ->dateTime(),
                 TextColumn::make('updated_at')
-                    ->label(__('filament.channel_application.table.columns.updated_at')),
+                    ->label(__('filament.channel_application.table.columns.updated_at'))
+                    ->dateTime(),
             ])
             ->recordActions([
                 ViewAction::make('view')
