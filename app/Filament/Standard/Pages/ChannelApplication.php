@@ -55,7 +55,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
         'new_channel_email' => null,
         'new_channel_youtube_name' => null,
     ];
-    public ?\App\Models\ChannelApplication $pendingApplication = null;
+    public ?ChannelApplicationModel $pendingApplication = null;
 
     protected static function getChannelRepository(): ChannelRepository
     {
