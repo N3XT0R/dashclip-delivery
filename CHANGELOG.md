@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.1] - 2025-12-12
 
-### Changed
+### Fixed
 
 - **Filament v4.15.0 Upgrade**
-    - Upgraded Filament to version 4.3.0 for security patches and new features.
+    - Upgraded Filament to version 4.3.0 for security patches.
 
 ## [3.1.0] - 2025-12-05
 
