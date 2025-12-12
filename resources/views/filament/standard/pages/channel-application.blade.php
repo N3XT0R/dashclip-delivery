@@ -21,6 +21,8 @@
         </p>
     </div>
 
+    {{$this->table}}
+
     @if ($pendingApplication)
         <div class="p-4 rounded bg-yellow-50 border border-yellow-400 text-yellow-800 mb-6">
             <h3 class="font-semibold mb-2">
@@ -69,6 +71,4 @@
             </x-filament::button>
         </form>
     @endif
-
-    {{$this->table}}
 </x-filament-panels::page>
