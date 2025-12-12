@@ -169,7 +169,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
                 TextColumn::make('updated_at')
                     ->label(__('filament.channel_application.table.columns.updated_at')),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('updated_at', 'desc');
     }
 
     public function getTableQuery(): Builder|Relation|null
