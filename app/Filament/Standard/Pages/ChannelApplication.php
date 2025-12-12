@@ -26,8 +26,6 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use UnitEnum;
 
 class ChannelApplication extends Page implements HasForms, HasTable
@@ -149,6 +147,9 @@ class ChannelApplication extends Page implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return ChannelApplicationModel::query()->where('user_id', auth()->id());
+            })
             ->heading(__('filament.channel_application.table.record_title'))
             ->columns([
                 TextColumn::make('channel')
@@ -172,12 +173,6 @@ class ChannelApplication extends Page implements HasForms, HasTable
                     ->label(__('filament.channel_application.table.columns.updated_at')),
             ])
             ->defaultSort('updated_at', 'desc');
-    }
-
-    public function getTableQuery(): Builder|Relation|null
-    {
-        return ChannelApplicationModel::query()
-            ->where('user_id', auth()->id());
     }
 
     public function submit(): void
