@@ -20,7 +20,7 @@ class EditChannelApplication extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $meta = $record->meta->toArray();
-        $data['meta'] = array_replace_recursive($meta, $data['meta'] ?? []);
+        $data['meta'] = array_replace_recursive($meta, $data['meta'] ?? $meta);
         return parent::handleRecordUpdate($record, $data);
     }
 
