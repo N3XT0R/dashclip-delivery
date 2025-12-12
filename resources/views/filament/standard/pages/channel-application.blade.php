@@ -63,10 +63,23 @@
             </p>
         </div>
     @else
-        <form wire:submit="submit" id="form">
+        <form wire:submit.prevent="submit" id="form" wire:loading.class="opacity-50 pointer-events-none"
+              wire:target="submit">
             {{ $this->form }}
             <br>
-            <x-filament::button type="submit" color="primary" form="form">
+            <x-filament::button
+                    type="submit"
+                    color="primary"
+                    form="form"
+                    wire:loading.attr="disabled"
+                    wire:target="submit"
+            >
+        <span wire:loading wire:target="submit" class="mr-2 inline-block">
+            <svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+        </span>
                 {{ __('filament.channel_application.form.submit') }}
             </x-filament::button>
         </form>
