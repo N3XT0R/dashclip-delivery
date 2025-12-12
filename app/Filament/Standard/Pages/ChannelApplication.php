@@ -100,7 +100,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Checkbox::make('other_channel_request')
                     ->label(__('filament.channel_application.form.request_other_channel'))
                     ->reactive(),
