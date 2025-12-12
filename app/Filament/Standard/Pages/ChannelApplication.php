@@ -45,6 +45,8 @@ class ChannelApplication extends Page implements HasForms, HasTable
     protected static ?string $navigationLabel = 'filament.channel_application.navigation_label';
     protected static string|UnitEnum|null $navigationGroup = 'filament.channel_application.navigation_group';
 
+    public $tableRecordsPerPage = 5;
+
     public ?array $data = [
         'channel_id' => null,
         'note' => null,
