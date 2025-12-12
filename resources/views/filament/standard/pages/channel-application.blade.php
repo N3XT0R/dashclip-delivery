@@ -69,4 +69,6 @@
             </x-filament::button>
         </form>
     @endif
+
+    {{$this->table}}
 </x-filament-panels::page>

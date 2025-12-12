@@ -20,13 +20,20 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use UnitEnum;
 
-class ChannelApplication extends Page implements HasForms
+class ChannelApplication extends Page implements HasForms, HasTable
 {
 
     use InteractsWithForms;
+    use InteractsWithTable;
     use HasPageShield {
         canAccess as canAccessShield;
     }
@@ -136,6 +143,32 @@ class ChannelApplication extends Page implements HasForms
                 FilamentComponents::tosCheckbox(),
             ])
             ->statePath('data');
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('channel')
+                    ->label(__('filament.channel_application.table.columns.channel'))
+                    ->formatStateUsing(fn(
+                        $state,
+                        $record
+                    ) => $record->channel?->name ?? __('filament.channel_application.table.columns.channel_unknown')),
+                TextColumn::make('status')
+                    ->label(__('filament.channel_application.table.columns.status')),
+                TextColumn::make('meta.reject_reason')
+                    ->label(__('filament.channel_application.table.columns.reject_reason')),
+                TextColumn::make('created_at')
+                    ->label(__('filament.channel_application.table.columns.submitted_at')),
+            ])
+            ->defaultSort('created_at', 'desc');
+    }
+
+    public function getTableQuery(): Builder|Relation|null
+    {
+        return \App\Models\ChannelApplication::query()
+            ->where('user_id', auth()->id());
     }
 
     public function submit(): void
