@@ -175,10 +175,10 @@ class ChannelApplication extends Page implements HasForms, HasTable
                     ->modalHeading(__('filament.channel_application.table.actions.view.modal_heading'))
                     ->label(__('filament.channel_application.table.actions.view.label'))
                     ->schema([
-                        TextColumn::make('meta.reject_reason')
-                            ->label(__('filament.channel_application.form.fields.reject_reason_label'))
+                        MarkdownEditor::make('meta.reject_reason')
+                            ->label(__('filament.channel_application.form.reject_reason_label'))
                             ->translateLabel()
-                            ->markdown()
+                            ->disabled()
                             ->visible(fn($record) => $record->status === ApplicationEnum::REJECTED->value),
                     ])
                     ->icon(Heroicon::OutlinedEye),
