@@ -156,10 +156,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
             ->heading(__('filament.channel_application.table.record_title'))
             ->columns([
                 TextColumn::make('channel.name')
-                    ->label(__('filament.channel_application.table.columns.channel'))
-                    ->formatStateUsing(function (mixed $state) {
-                        return !empty($state) ? $state : __('filament.channel_application.table.columns.channel_unknown');
-                    }),
+                    ->label(__('filament.channel_application.table.columns.channel')),
                 TextColumn::make('status')
                     ->label(__('filament.channel_application.table.columns.status'))
                     ->formatStateUsing(function ($state) {
