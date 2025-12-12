@@ -39,13 +39,6 @@
                 <b>{{ __('filament.channel_application.form.submitted_at') }}</b>
                 {{ $pendingApplication->created_at->format('d.m.Y H:i') }}
                 <br>
-                <b>{{ __('filament.channel_application.form.note_label') }}</b>
-                {!! str($pendingApplication->note)->markdown()->sanitizeHtml() !!}
-                @if(!empty($pendingApplication->meta->rejectReason))
-                    <br>
-                    <b>{{ __('filament.channel_application.form.reject_reason_label') }}</b>
-                    {!! str($pendingApplication->meta->rejectReason)->markdown()->sanitizeHtml() !!}
-                @endif
             </div>
             @if (!empty($pendingApplication->meta->channel['name'] ?? null))
                 <div class="mt-2 text-sm text-gray-700">
