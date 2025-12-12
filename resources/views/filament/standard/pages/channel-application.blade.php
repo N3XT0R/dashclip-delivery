@@ -20,8 +20,12 @@
             {{ __('filament.channel_application.form.about_footer') }}
         </p>
     </div>
+    @if($this->table->getAllSelectableRecordsCount() > 0)
+        <div class="mb-6">
+            {{$this->table}}
+        </div>
+    @endif
 
-    {{$this->table}}
 
     @if ($pendingApplication)
         <div class="p-4 rounded bg-yellow-50 border border-yellow-400 text-yellow-800 mb-6">
