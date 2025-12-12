@@ -7,6 +7,16 @@ return [
         'title' => 'Zugang zu Kanalvideos beantragen',
         'navigation_label' => 'Zugang beantragen',
         'navigation_group' => __('nav.channel_owner'),
+        'table' => [
+            'columns' => [
+                'channel' => 'Kanal',
+                'status' => 'Status',
+                'reject_reason' => 'Ablehnungsgrund',
+                'submitted_at' => 'Eingereicht am',
+                'updated_at' => 'Aktualisiert am',
+                'channel_unknown' => 'Neuer Kanal',
+            ],
+        ],
         'form' => [
             'about_title' => 'Vorteile der freiwilligen Registrierung',
             'about_intro' => 'Mit einer kostenlosen Registrierung als Kanalbetreiber erhältst du zusätzliche Sicherheit und Kontrolle für deine Kanalangebote – ohne dass sich am bisherigen Ablauf etwas ändert.',

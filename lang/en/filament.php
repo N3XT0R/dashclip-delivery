@@ -7,6 +7,16 @@ return [
         'title' => 'Request Access to Channel Videos',
         'navigation_label' => 'Request Access',
         'navigation_group' => __('nav.channel_owner'),
+        'table' => [
+            'columns' => [
+                'channel' => 'Channel',
+                'status' => 'Status',
+                'reject_reason' => 'Rejection Reason',
+                'submitted_at' => 'Submitted at',
+                'updated_at' => 'Updated at',
+                'channel_unknown' => 'New Channel Request',
+            ],
+        ],
         'form' => [
             'about_title' => 'Benefits of Optional Registration',
             'about_intro' => 'By registering for free as a channel operator, you gain extra security and control for your channel offers—without changing your current workflow.',
