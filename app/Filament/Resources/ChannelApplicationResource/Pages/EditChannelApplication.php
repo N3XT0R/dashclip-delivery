@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ChannelApplicationResource\Pages;
 use App\Filament\Resources\ChannelApplicationResource;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditChannelApplication extends EditRecord
 {
@@ -14,6 +15,13 @@ class EditChannelApplication extends EditRecord
     {
         return [
         ];
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $meta = $record->meta->toArray();
+        $data['meta'] = array_replace_recursive($meta, $data['meta'] ?? []);
+        return parent::handleRecordUpdate($record, $data);
     }
 
     public function afterSave(): void
