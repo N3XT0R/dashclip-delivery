@@ -30,7 +30,7 @@
     @if ($pendingApplication)
         <div class="p-4 rounded bg-yellow-50 border border-yellow-400 text-yellow-800 mb-6">
             <h3 class="font-semibold mb-2">
-                {{ __('filament.channel_application.form.status_title', ['channel' => optional($pendingApplication->meta)->channel['name'] ?? optional($pendingApplication->channel)->name]) }}
+                {{ __('filament.channel_application.form.status_title', ['channel' => $pendingApplication->meta->channel['name'] ?? optional($pendingApplication->channel)->name]) }}
             </h3>
             <p class="mb-2">
                 {{ __('filament.channel_application.form.status_message', ['status' => __(sprintf('filament.channel_application.status.%s', $pendingApplication->status))]) }}
