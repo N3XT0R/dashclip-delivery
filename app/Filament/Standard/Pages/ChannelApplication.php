@@ -80,6 +80,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
             auth()->user(),
             ApplicationEnum::PENDING
         )->first();
+        $this->data['new_channel_email'] = auth()->user()->email;
     }
 
     public function getTitle(): string|Htmlable
@@ -127,7 +128,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
                             ->requiredIfAccepted(fn($get) => $get('other_channel_request')),
                         TextInput::make('new_channel_email')
                             ->label(__('filament.channel_application.form.new_channel_email_label'))
-                            ->type('email')
+                            ->email()
                             ->requiredIfAccepted(fn($get) => $get('other_channel_request')),
                         TextInput::make('new_channel_youtube_name')
                             ->prefixIcon(Heroicon::OutlinedAtSymbol)
