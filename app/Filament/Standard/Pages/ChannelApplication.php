@@ -130,6 +130,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
                             ->type('email')
                             ->requiredIfAccepted(fn($get) => $get('other_channel_request')),
                         TextInput::make('new_channel_youtube_name')
+                            ->prefixIcon(Heroicon::OutlinedAtSymbol)
                             ->label(__('filament.channel_application.form.new_channel_youtube_name_label'))
                             ->required(false),
                     ]),
