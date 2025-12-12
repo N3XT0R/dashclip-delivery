@@ -90,7 +90,7 @@ class AdminPanelProvider extends PanelProvider
     protected function addRenderHooks(Panel $panel): Panel
     {
         return $panel->renderHook(
-            PanelsRenderHook::BODY_END,
+            PanelsRenderHook::CONTENT_END,
             function (): ?string {
                 return view('partials.footer')->render();
             }
