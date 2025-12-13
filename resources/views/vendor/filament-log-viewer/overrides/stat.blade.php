@@ -1,6 +1,6 @@
 @php
     use Filament\Support\Enums\IconPosition;
-    use Filament\Support\Facades\FilamentView;
+    use Filament\Support\Facades\FilamentView;use function Filament\Support\generate_href_html;use function Filament\Support\get_color_css_variables;
 
     $chartColor = $getChartColor() ?? 'gray';
     $descriptionColor = $getDescriptionColor() ?? 'gray';
@@ -86,7 +86,7 @@
     $descriptionIconClasses = "fi-wi-stats-overview-stat-description-icon h-5 w-5 {$descriptionColor}";
 
     $descriptionIconStyles = \Illuminate\Support\Arr::toCssStyles([
-        \Filament\Support\get_color_css_variables(
+        get_color_css_variables(
             $descriptionColor,
             shades: [500],
             alias: 'widgets::stats-overview-widget.stat.description.icon',
@@ -97,7 +97,9 @@
 @endphp
 
 <{!! $tag !!}
-@if ($url) {{ \Filament\Support\generate_href_html($url, $shouldOpenUrlInNewTab()) }} @endif
+@if ($url)
+    {{ generate_href_html($url, $shouldOpenUrlInNewTab()) }}
+@endif
 {{ $getExtraAttributeBag()->class([
     'fi-wi-stats-overview-stat relative rounded-xl p-6 shadow-sm ring-1 ring-gray-950/5 dark:ring-white/10 ' .
     $backgroundColor,
@@ -105,7 +107,7 @@
 <div class="flex gap-y-2 gap-x-3">
     @if ($icon && $iconPosition === 'start')
         <div class="{{ $iconContainerClasses }}" style="{{ $iconContainerStyles }}">
-            <x-filament::icon :icon="$icon" class="{{ $iconClasses }}" />
+            <x-filament::icon :icon="$icon" class="{{ $iconClasses }}"/>
         </div>
     @endif
     <div class="flex-grow">
@@ -122,35 +124,38 @@
 
         @if (filled($progress))
             <div
-                class="w=full h-1 mt-3 mb-3 bg-gray-200 dark:bg-gray-800 rounded-lg {{ ($icon && $iconPosition === 'end') || $isRtl ? '-mr-[50px]' : '-ml-[50px]' }}">
-                <div class="{{ $progressBarClasses }}" style="background-color: {{ $progressBarColor }}; width: {{ $progress }}%"></div>
+                    class="w=full h-1 mt-3 mb-3 bg-gray-200 dark:bg-gray-800 rounded-lg {{ ($icon && $iconPosition === 'end') || $isRtl ? '-mr-[50px]' : '-ml-[50px]' }}">
+                <div class="{{ $progressBarClasses }}"
+                     style="background-color: {{ $progressBarColor }}; width: {{ $progress }}%"></div>
             </div>
         @endif
         @if ($description = $getDescription())
             <div
-                class="flex items-center gap-x-1 {{ ($icon && $iconPosition === 'end') || $isRtl ? '-mr-[50px]' : '-ml-[50px]' }}">
+                    class="flex items-center gap-x-1 {{ ($icon && $iconPosition === 'end') || $isRtl ? '-mr-[50px]' : '-ml-[50px]' }}">
                 @if ($descriptionIcon && in_array($descriptionIconPosition, [IconPosition::Before, 'before']))
-                    <x-filament::icon :icon="$descriptionIcon" :class="$descriptionIconClasses" :style="$descriptionIconStyles" />
+                    <x-filament::icon :icon="$descriptionIcon" :class="$descriptionIconClasses"
+                                      :style="$descriptionIconStyles"/>
                 @endif
 
                 <span @class([
                         'fi-wi-stats-overview-stat-description text-sm',
                         $descriptionColor,
                     ]) @style([
-                        \Filament\Support\get_color_css_variables($descriptionColor, shades: [400, 600], alias: 'widgets::stats-overview-widget.stat.description') => $descriptionColor !== 'gray',
+                        get_color_css_variables($descriptionColor, shades: [400, 600], alias: 'widgets::stats-overview-widget.stat.description') => $descriptionColor !== 'gray',
                     ])>
                         {{ $description }}
                     </span>
 
                 @if ($descriptionIcon && in_array($descriptionIconPosition, [IconPosition::After, 'after']))
-                    <x-filament::icon :icon="$descriptionIcon" :class="$descriptionIconClasses" :style="$descriptionIconStyles" />
+                    <x-filament::icon :icon="$descriptionIcon" :class="$descriptionIconClasses"
+                                      :style="$descriptionIconStyles"/>
                 @endif
             </div>
         @endif
     </div>
     @if ($icon && $iconPosition === 'end')
         <div class="{{ $iconContainerClasses }}" style="{{ $iconContainerStyles }}">
-            <x-filament::icon :icon="$icon" class="{{ $iconClasses }}" />
+            <x-filament::icon :icon="$icon" class="{{ $iconClasses }}"/>
         </div>
     @endif
 </div>
@@ -159,17 +164,17 @@
     {{-- An empty function to initialize the Alpine component with until it's loaded with `ax-load`. This removes the need for `x-ignore`, allowing the chart to be updated via Livewire polling. --}}
     <div x-data="{ statsOverviewStatChart: function() {} }">
         <div @if (FilamentView::hasSpaMode()) ax-load="visible"
-                @else
-                    ax-load @endif
-        ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('stats-overview/stat/chart', 'filament/widgets') }}"
-                x-data="statsOverviewStatChart({
+             @else
+                 ax-load @endif
+             ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('stats-overview/stat/chart', 'filament/widgets') }}"
+             x-data="statsOverviewStatChart({
                     dataChecksum: @js($dataChecksum),
                     labels: @js(array_keys($chart)),
                     values: @js(array_values($chart)),
                 })" @class([
                     'fi-wi-stats-overview-stat-chart inset-x-0 bottom-0 overflow-hidden rounded-b-xl',
                 ]) @style([
-                    \Filament\Support\get_color_css_variables($chartColor, shades: [50, 400, 500], alias: 'widgets::stats-overview-widget.stat.chart') => $chartColor !== 'gray',
+                    get_color_css_variables($chartColor, shades: [50, 400, 500], alias: 'widgets::stats-overview-widget.stat.chart') => $chartColor !== 'gray',
                 ])>
             <canvas x-ref="canvas" height="60"></canvas>
 
