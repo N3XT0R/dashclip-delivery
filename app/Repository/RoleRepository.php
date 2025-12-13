@@ -70,6 +70,21 @@ class RoleRepository
     }
 
     /**
+     * Remove a role from a user
+     * @param  User  $user
+     * @param  RoleEnum  $roleEnum
+     * @param  string|null  $guard
+     * @return bool
+     */
+    public function removeRoleFromUser(User $user, RoleEnum $roleEnum, ?string $guard = null): bool
+    {
+        $role = $this->getRoleByRoleEnum($roleEnum, $guard);
+        $user->removeRole($role);
+
+        return !$user->hasRole($role);
+    }
+
+    /**
      * Check if user has a specific role
      * @param  User  $user
      * @param  RoleEnum  $roleEnum
