@@ -84,6 +84,11 @@ class Assignment extends Model
         return $this->belongsTo(Notification::class);
     }
 
+    /**
+     * Set the expiration date for the assignment.
+     * @param  int|null  $ttlDays
+     * @return void
+     */
     public function setExpiresAt(?int $ttlDays = null): void
     {
         if (null === $ttlDays) {
@@ -96,6 +101,10 @@ class Assignment extends Model
         $this->setAttribute('expires_at', $expiry);
     }
 
+    /**
+     * Mark the assignment as notified.
+     * @return void
+     */
     public function setNotified(): void
     {
         $this->setAttribute('status', StatusEnum::NOTIFIED->value);
