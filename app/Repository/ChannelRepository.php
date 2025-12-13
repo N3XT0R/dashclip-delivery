@@ -123,4 +123,9 @@ class ChannelRepository
                 fn($query) => $query->whereIn('status', array_column($byStatus, 'value'))
             )->get();
     }
+
+    public function assignUserToChannel(User $user, Channel $channel): void
+    {
+        $channel->channelUsers()->syncWithoutDetaching([$user->getKey()]);
+    }
 }
