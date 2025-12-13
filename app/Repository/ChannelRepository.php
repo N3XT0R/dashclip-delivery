@@ -176,4 +176,11 @@ class ChannelRepository
     {
         return $user->channels()->exists();
     }
+
+    public function findByName(string $name): ?Channel
+    {
+        return Channel::query()
+            ->where('name', trim($name))
+            ->first();
+    }
 }

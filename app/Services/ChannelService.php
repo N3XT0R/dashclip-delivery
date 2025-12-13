@@ -260,4 +260,10 @@ class ChannelService
 
         return $channel;
     }
+
+    public function existsChannelByName(string $name): bool
+    {
+        $channel = $this->channelRepository->findByName($name);
+        return $channel !== null;
+    }
 }
