@@ -14,6 +14,8 @@ use App\Services\Dropbox\AutoRefreshTokenProvider;
 use App\Services\Ingest\Contracts\IngestPipelineInterface;
 use App\Services\Ingest\Contracts\IngestStepInterface;
 use App\Services\Ingest\IngestPipeline;
+use App\Services\Queries\AssignmentQueryInterface;
+use App\Services\Queries\AssignmentQueryService;
 use App\Services\Mail\Scanner\Handlers\BounceHandler;
 use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerZip();
         $this->registerMail();
         $this->registerIngest();
+        $this->registerQueries();
     }
 
     protected function registerConfig(): void
@@ -86,6 +89,11 @@ class AppServiceProvider extends ServiceProvider
             }
             return new IngestPipeline($instances);
         });
+    }
+
+    protected function registerQueries(): void
+    {
+        $this->app->bind(AssignmentQueryInterface::class, AssignmentQueryService::class);
     }
 
     protected function registerRefreshTokenProvider(): void
