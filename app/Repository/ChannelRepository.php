@@ -143,11 +143,15 @@ class ChannelRepository
      * Unassign a user from a channel.
      * @param  User  $user
      * @param  Channel  $channel
-     * @return void
+     * @return bool
      */
-    public function unassignUserFromChannel(User $user, Channel $channel): void
+    public function unassignUserFromChannel(User $user, Channel $channel): bool
     {
         $channel->channelUsers()->detach([$user->getKey()]);
+
+        return !$channel->channelUsers()
+            ->where('user_id', $user->getKey())
+            ->exists();
     }
 
     /**
