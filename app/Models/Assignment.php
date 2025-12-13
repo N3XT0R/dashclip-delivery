@@ -42,6 +42,11 @@ class Assignment extends Model
         });
     }
 
+    public function scopeHasChannelIds(Builder $query, array $channelIds): Builder
+    {
+        return $query->whereIn('channel_id', $channelIds);
+    }
+
     public function video(): BelongsTo
     {
         return $this->belongsTo(Video::class);
