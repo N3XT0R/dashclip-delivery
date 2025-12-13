@@ -53,4 +53,32 @@ class RoleRepository
 
         return $user->roles()->where('guard_name', $panel->getAuthGuard())->exists();
     }
+
+    /**
+     * Assign a role to a user
+     * @param  User  $user
+     * @param  RoleEnum  $roleEnum
+     * @param  string|null  $guard
+     * @return bool
+     */
+    public function giveRoleToUser(User $user, RoleEnum $roleEnum, ?string $guard = null): bool
+    {
+        $role = $this->getRoleByRoleEnum($roleEnum, $guard);
+        $user->assignRole($role);
+
+        return $user->hasRole($role);
+    }
+
+    /**
+     * Check if user has a specific role
+     * @param  User  $user
+     * @param  RoleEnum  $roleEnum
+     * @param  string|null  $guard
+     * @return bool
+     */
+    public function hasRole(User $user, RoleEnum $roleEnum, ?string $guard = null): bool
+    {
+        $role = $this->getRoleByRoleEnum($roleEnum, $guard);
+        return $user->hasRole($role);
+    }
 }

@@ -7,13 +7,13 @@ namespace App\Services\Channel;
 use App\Models\Channel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
-use App\Repository\UserRepository;
+use App\Repository\RoleRepository;
 
 class ChannelOperatorService
 {
 
     public function __construct(
-        private UserRepository $userRepository,
+        private RoleRepository $roleRepository,
         private ChannelRepository $channelRepository
     ) {
     }
