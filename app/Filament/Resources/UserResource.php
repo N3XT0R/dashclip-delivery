@@ -56,8 +56,7 @@ class UserResource extends Resource
                     ->required(),
                 Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required(),
+                    ->password(),
                 Forms\Components\Select::make('roles')
                     ->label('Roles')
                     ->multiple()
