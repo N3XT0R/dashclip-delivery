@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Widgets;
 
 use App\Enum\StatusEnum;
-use App\Models\Channel;
 use App\Services\Queries\AssignmentQueryInterface;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
 use Filament\Widgets\StatsOverviewWidget;
@@ -15,18 +14,9 @@ class AvailableOffersStatsWidget extends StatsOverviewWidget
 {
     use InteractsWithPageTable;
 
-    public ?Channel $channel = null;
-
-    protected AssignmentQueryInterface $query;
-
-    public function mount(AssignmentQueryInterface $query): void
-    {
-        $this->query = $query;
-    }
-
     protected function getStats(): array
     {
-        $availableQuery = $this->query->available();
+        $availableQuery = app(AssignmentQueryInterface::class)->available();
         $count = $availableQuery->count();
         $downloadedCount = (clone $availableQuery)->where('status', StatusEnum::PICKEDUP->value)->count();
         $averageDays = (clone $availableQuery)->average('expires_at');

@@ -11,21 +11,9 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ExpiredOffersStatsWidget extends StatsOverviewWidget
 {
-    protected ?AssignmentQueryInterface $query = null;
-
-    public function mount(AssignmentQueryInterface $query): void
-    {
-        $this->query = $query;
-    }
-
-    public function getQuery(): AssignmentQueryInterface
-    {
-        return $this->query ?? app(AssignmentQueryInterface::class);
-    }
-
     protected function getStats(): array
     {
-        $expiredQuery = $this->query->expired();
+        $expiredQuery = app(AssignmentQueryInterface::class)->expired();
         $total = $expiredQuery->count();
         $downloaded = (clone $expiredQuery)->where('status', StatusEnum::PICKEDUP->value)->count();
 
