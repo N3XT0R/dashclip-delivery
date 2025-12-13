@@ -13,6 +13,12 @@ use Filament\Panel;
 
 class RoleRepository
 {
+    /**
+     * Get Role model by RoleEnum
+     * @param  RoleEnum  $roleEnum
+     * @param  string|null  $guard
+     * @return Role
+     */
     public function getRoleByRoleEnum(RoleEnum $roleEnum, ?string $guard = null): Role
     {
         return Role::query()
@@ -21,6 +27,11 @@ class RoleRepository
             ->firstOrFail();
     }
 
+    /**
+     * Check if user has all roles to access everything
+     * @param  User  $user
+     * @return bool
+     */
     public function canAccessEverything(User $user): bool
     {
         return $user->hasAllRoles([
@@ -28,6 +39,12 @@ class RoleRepository
         ]);
     }
 
+    /**
+     * Check if user can access a given Filament panel
+     * @param  User  $user
+     * @param  Panel  $panel
+     * @return bool
+     */
     public function canAccessPanel(User $user, Panel $panel): bool
     {
         if ($this->canAccessEverything($user)) {
