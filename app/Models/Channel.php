@@ -58,7 +58,7 @@ class Channel extends Model
 
     public function getApprovalToken(): string
     {
-        return sha1($this->email.config('app.key'));
+        return hash('sha256', $this->email.config('app.key'));
     }
 
     public function getApprovalUrl(): string

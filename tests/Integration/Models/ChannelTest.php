@@ -7,10 +7,9 @@ namespace Tests\Integration\Models;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
-use App\Models\Video;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
 
 final class ChannelTest extends DatabaseTestCase
@@ -44,19 +43,20 @@ final class ChannelTest extends DatabaseTestCase
             'email' => 'creator@example.com',
         ]);
 
-        $expectedToken = sha1($channel->email.config('app.key'));
+        $expectedToken = hash('sha256', $channel->email.config('app.key'));
 
         $this->assertSame($expectedToken, $channel->getApprovalToken());
 
         $approvalUrl = $channel->getApprovalUrl();
-        $this->assertTrue(str_contains($approvalUrl, (string) $channel->getKey()));
+        $this->assertTrue(str_contains($approvalUrl, (string)$channel->getKey()));
         $this->assertTrue(str_contains($approvalUrl, $expectedToken));
-        $this->assertSame(URL::route('channels.approve', ['channel' => $channel, 'token' => $expectedToken]), $approvalUrl);
+        $this->assertSame(URL::route('channels.approve', ['channel' => $channel, 'token' => $expectedToken]),
+            $approvalUrl);
     }
 
     public function testAssignedTeamsRelationship(): void
     {
-        if (! Schema::hasTable('channel_user')) {
+        if (!Schema::hasTable('channel_user')) {
             Schema::create('channel_user', static function (Blueprint $table): void {
                 $table->id();
                 $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
