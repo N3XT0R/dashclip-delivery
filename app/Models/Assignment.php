@@ -33,6 +33,12 @@ class Assignment extends Model
     ];
 
 
+    /**
+     * Scope a query to only include assignments where the associated video has clips by the specified user.
+     * @param  Builder  $query
+     * @param  User  $user
+     * @return Builder
+     */
     public function scopeHasUsersClips(Builder $query, User $user): Builder
     {
         return $query->whereHas('video', function (Builder $q) use ($user) {
@@ -42,6 +48,12 @@ class Assignment extends Model
         });
     }
 
+    /**
+     * Scope a query to only include assignments with specified channel IDs.
+     * @param  Builder  $query
+     * @param  array  $channelIds
+     * @return Builder
+     */
     public function scopeHasChannelIds(Builder $query, array $channelIds): Builder
     {
         return $query->whereIn('channel_id', $channelIds);
