@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTO\Channel\ApplicationMetaDto;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,16 @@ class ChannelApplication extends Model
     protected $casts = [
         'meta' => 'array',
     ];
+
+    public function scopeIsNewChannel(Builder $query): Builder
+    {
+        return $query->whereNull('channel_id');
+    }
+
+    public function isNewChannel(): bool
+    {
+        return $this->channel_id === null;
+    }
 
     // Relationships
     public function user(): BelongsTo
