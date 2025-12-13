@@ -75,4 +75,10 @@ class Channel extends Model
             ->withTimestamps();
     }
 
+    public function channelUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'channel_user')
+            ->withTimestamps();
+    }
+
 }
