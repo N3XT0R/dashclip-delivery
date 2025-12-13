@@ -23,13 +23,18 @@ class ChannelOperatorService
 
     public function addUserToChannel(User $user, Channel $channel): void
     {
+        $guard = GuardEnum::STANDARD;
+        $role = RoleEnum::CHANNEL_OPERATOR;
+
         try {
             if (!$this->channelRepository->hasUserAccessToChannel($user, $channel)) {
                 $this->channelRepository->assignUserToChannel($user, $channel);
             }
-            if ($this->roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD)) {
+            if ($this->roleRepository->hasRole($user, $role, $guard)) {
+                $this->roleRepository->giveRoleToUser($user, $role, $guard);
             }
         } catch (\Throwable $e) {
+            $this->roleRepository->removeRoleFromUser($user, $role, $guard);
         }
     }
 }
