@@ -124,8 +124,25 @@ class ChannelRepository
             )->get();
     }
 
+    /**
+     * Assign a user to a channel.
+     * @param  User  $user
+     * @param  Channel  $channel
+     * @return void
+     */
     public function assignUserToChannel(User $user, Channel $channel): void
     {
-        $channel->channelUsers()->syncWithoutDetaching([$user->getKey()]);
+        $channel->channelUsers()->attach([$user->getKey()]);
+    }
+
+    /**
+     * Unassign a user from a channel.
+     * @param  User  $user
+     * @param  Channel  $channel
+     * @return void
+     */
+    public function unassignUserFromChannel(User $user, Channel $channel): void
+    {
+        $channel->channelUsers()->detach([$user->getKey()]);
     }
 }
