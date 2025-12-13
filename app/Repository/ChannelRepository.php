@@ -145,4 +145,17 @@ class ChannelRepository
     {
         $channel->channelUsers()->detach([$user->getKey()]);
     }
+
+    /**
+     * Check if a user has access to a specific channel.
+     * @param  User  $user
+     * @param  Channel  $channel
+     * @return bool
+     */
+    public function hasUserAccessToChannel(User $user, Channel $channel): bool
+    {
+        return $channel->channelUsers()
+            ->where('user_id', $user->getKey())
+            ->exists();
+    }
 }
