@@ -29,8 +29,8 @@ class AssignmentQueryServiceTest extends TestCase
         $batch = Batch::factory()->create();
         $channelA = Channel::factory()->create();
         $channelB = Channel::factory()->create();
-        Assignment::factory()->forBatch($batch)->forChannel($channelA)->create();
-        Assignment::factory()->forBatch($batch)->forChannel($channelB)->create();
+        Assignment::factory()->withBatch($batch)->forChannel($channelA)->create();
+        Assignment::factory()->withBatch($batch)->forChannel($channelB)->create();
 
         $ids = $this->service->forChannel($channelA)->pluck('channel_id')->unique();
 
@@ -40,8 +40,8 @@ class AssignmentQueryServiceTest extends TestCase
     public function testAvailableExcludesExpired(): void
     {
         $batch = Batch::factory()->create();
-        Assignment::factory()->forBatch($batch)->queued()->create();
-        Assignment::factory()->forBatch($batch)->queued()->expired()->create();
+        Assignment::factory()->withBatch($batch)->queued()->create();
+        Assignment::factory()->withBatch($batch)->queued()->expired()->create();
 
         $this->assertSame(1, $this->service->available()->count());
     }
@@ -49,8 +49,8 @@ class AssignmentQueryServiceTest extends TestCase
     public function testDownloadedMatchesStatus(): void
     {
         $batch = Batch::factory()->create();
-        Assignment::factory()->forBatch($batch)->queued()->create();
-        Assignment::factory()->forBatch($batch)->state(['status' => StatusEnum::PICKEDUP->value])->create();
+        Assignment::factory()->withBatch($batch)->queued()->create();
+        Assignment::factory()->withBatch($batch)->state(['status' => StatusEnum::PICKEDUP->value])->create();
 
         $this->assertSame(1, $this->service->downloaded()->count());
     }
@@ -58,9 +58,9 @@ class AssignmentQueryServiceTest extends TestCase
     public function testExpiredIncludesPastAndFlagged(): void
     {
         $batch = Batch::factory()->create();
-        Assignment::factory()->forBatch($batch)->queued()->expired()->create();
-        Assignment::factory()->forBatch($batch)->state(['status' => StatusEnum::EXPIRED->value])->create();
-        Assignment::factory()->forBatch($batch)->queued()->create();
+        Assignment::factory()->withBatch($batch)->queued()->expired()->create();
+        Assignment::factory()->withBatch($batch)->state(['status' => StatusEnum::EXPIRED->value])->create();
+        Assignment::factory()->withBatch($batch)->queued()->create();
 
         $this->assertSame(2, $this->service->expired()->count());
     }
@@ -68,8 +68,8 @@ class AssignmentQueryServiceTest extends TestCase
     public function testReturnedFiltersRejected(): void
     {
         $batch = Batch::factory()->create();
-        Assignment::factory()->forBatch($batch)->queued()->create();
-        Assignment::factory()->forBatch($batch)->state(['status' => StatusEnum::REJECTED->value])->create();
+        Assignment::factory()->withBatch($batch)->queued()->create();
+        Assignment::factory()->withBatch($batch)->state(['status' => StatusEnum::REJECTED->value])->create();
 
         $this->assertSame(1, $this->service->returned()->count());
     }
