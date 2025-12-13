@@ -10,6 +10,7 @@ use App\Models\Channel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
 use App\Repository\RoleRepository;
+use Throwable;
 
 class ChannelOperatorService
 {
@@ -33,7 +34,7 @@ class ChannelOperatorService
             if ($this->roleRepository->hasRole($user, $role, $guard)) {
                 $this->roleRepository->giveRoleToUser($user, $role, $guard);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->roleRepository->removeRoleFromUser($user, $role, $guard);
             throw $e;
         }
