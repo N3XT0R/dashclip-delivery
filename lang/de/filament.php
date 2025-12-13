@@ -106,4 +106,41 @@ return [
             'rejected' => 'Abgelehnt',
         ],
     ],
+    'my_offers' => [
+        'title' => 'Meine Angebote',
+        'empty_state' => 'Keine Angebote vorhanden.',
+        'tabs' => [
+            'available' => 'Verfügbar',
+            'downloaded' => 'Heruntergeladen',
+            'expired' => 'Abgelaufen',
+            'returned' => 'Zurückgewiesen',
+        ],
+        'bulk_actions' => [
+            'download_all' => 'Alle herunterladen',
+        ],
+        'placeholders' => [
+            'downloaded' => 'Bereits heruntergeladene Angebote werden hier angezeigt.',
+            'expired' => 'Abgelaufene Angebote erscheinen in dieser Übersicht.',
+            'returned' => 'Zurückgewiesene Angebote erscheinen hier zur Nachverfolgung.',
+        ],
+        'widgets' => [
+            'available' => [
+                'total' => 'Verfügbar',
+                'downloaded' => 'Bereits geladen',
+                'avg_validity' => 'Ø Gültigkeit',
+                'days' => ':days Tage',
+            ],
+            'downloaded' => [
+                'total' => 'Heruntergeladen',
+                'average_date' => 'Ø Download-Datum',
+                'trend' => 'Trend',
+                'trend_placeholder' => '–',
+            ],
+            'expired' => [
+                'total' => 'Abgelaufen',
+                'downloaded' => 'Davon geladen',
+                'missed' => 'Verpasst',
+            ],
+        ],
+    ],
 ];
