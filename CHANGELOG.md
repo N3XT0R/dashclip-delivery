@@ -44,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   request lifecycle.  
   As a result, all form fields — including dynamically displayed Select components — now hydrate and persist correctly,
   ensuring complete and accurate application data for review and approval.
+- **EditUser in Admin Panel**
+    - Fixed an issue where editing password was required when updating other user fields in the Filament v4 admin panel.
 
 ### Deprecated
 
