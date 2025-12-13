@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Channel;
 
+use App\Enum\Guard\GuardEnum;
+use App\Enum\Users\RoleEnum;
 use App\Models\Channel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
@@ -21,8 +23,13 @@ class ChannelOperatorService
 
     public function addUserToChannel(User $user, Channel $channel): void
     {
-        if (!$this->channelRepository->hasUserAccessToChannel($user, $channel)) {
-            $this->channelRepository->assignUserToChannel($user, $channel);
+        try {
+            if (!$this->channelRepository->hasUserAccessToChannel($user, $channel)) {
+                $this->channelRepository->assignUserToChannel($user, $channel);
+            }
+            if ($this->roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD)) {
+            }
+        } catch (\Throwable $e) {
         }
     }
 }

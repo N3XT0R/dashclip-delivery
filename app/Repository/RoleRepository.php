@@ -58,12 +58,12 @@ class RoleRepository
      * Assign a role to a user
      * @param  User  $user
      * @param  RoleEnum  $roleEnum
-     * @param  string|null  $guard
+     * @param  GuardEnum|null  $guard
      * @return bool
      */
-    public function giveRoleToUser(User $user, RoleEnum $roleEnum, ?string $guard = null): bool
+    public function giveRoleToUser(User $user, RoleEnum $roleEnum, ?GuardEnum $guard = null): bool
     {
-        $role = $this->getRoleByRoleEnum($roleEnum, $guard);
+        $role = $this->getRoleByRoleEnum($roleEnum, $guard?->value ?? null);
         $user->assignRole($role);
 
         return $user->hasRole($role);
@@ -73,12 +73,12 @@ class RoleRepository
      * Remove a role from a user
      * @param  User  $user
      * @param  RoleEnum  $roleEnum
-     * @param  string|null  $guard
+     * @param  GuardEnum|null  $guard
      * @return bool
      */
-    public function removeRoleFromUser(User $user, RoleEnum $roleEnum, ?string $guard = null): bool
+    public function removeRoleFromUser(User $user, RoleEnum $roleEnum, ?GuardEnum $guard = null): bool
     {
-        $role = $this->getRoleByRoleEnum($roleEnum, $guard);
+        $role = $this->getRoleByRoleEnum($roleEnum, $guard?->value ?? null);
         $user->removeRole($role);
 
         return !$user->hasRole($role);
@@ -88,12 +88,12 @@ class RoleRepository
      * Check if user has a specific role
      * @param  User  $user
      * @param  RoleEnum  $roleEnum
-     * @param  string|null  $guard
+     * @param  GuardEnum|null  $guard
      * @return bool
      */
-    public function hasRole(User $user, RoleEnum $roleEnum, ?string $guard = null): bool
+    public function hasRole(User $user, RoleEnum $roleEnum, ?GuardEnum $guard = null): bool
     {
-        $role = $this->getRoleByRoleEnum($roleEnum, $guard);
+        $role = $this->getRoleByRoleEnum($roleEnum, $guard?->value ?? null);
         return $user->hasRole($role);
     }
 }
