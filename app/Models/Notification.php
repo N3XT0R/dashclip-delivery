@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @deprecated will be removed in next major release
- * @note no useful case found for this model since notifications are now handled by mail logs
+ * @note replaced by mail notifications
  */
 class Notification extends Model
 {
