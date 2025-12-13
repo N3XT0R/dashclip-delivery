@@ -11,11 +11,16 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ExpiredOffersStatsWidget extends StatsOverviewWidget
 {
-    protected AssignmentQueryInterface $query;
+    protected ?AssignmentQueryInterface $query = null;
 
-    public function mount(?AssignmentQueryInterface $query): void
+    public function mount(AssignmentQueryInterface $query): void
     {
-        $this->query = $query ?? app(AssignmentQueryInterface::class);
+        $this->query = $query;
+    }
+
+    public function getQuery(): AssignmentQueryInterface
+    {
+        return $this->query ?? app(AssignmentQueryInterface::class);
     }
 
     protected function getStats(): array
