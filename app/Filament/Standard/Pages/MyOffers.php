@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
-use App\Filament\Standard\Pages\Widgets\MyOffersStats;
 use App\Enum\StatusEnum;
+use App\Enum\Users\RoleEnum;
+use App\Filament\Standard\Pages\Widgets\MyOffersStats;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\Download;
@@ -65,7 +66,7 @@ class MyOffers extends Page implements HasTable
     {
         $user = auth()->user();
 
-        return $user?->hasRole('kanalbetreiber') ?? false;
+        return $user?->hasRole(RoleEnum::CHANNEL_OPERATOR->value) ?? false;
     }
 
     #[Computed]
