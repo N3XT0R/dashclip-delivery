@@ -128,11 +128,15 @@ class ChannelRepository
      * Assign a user to a channel.
      * @param  User  $user
      * @param  Channel  $channel
-     * @return void
+     * @return bool
      */
-    public function assignUserToChannel(User $user, Channel $channel): void
+    public function assignUserToChannel(User $user, Channel $channel): bool
     {
         $channel->channelUsers()->attach([$user->getKey()]);
+
+        return $channel->channelUsers()
+            ->where('user_id', $user->getKey())
+            ->exists();
     }
 
     /**
