@@ -26,9 +26,9 @@ class StatsWidgetsTest extends TestCase
         $this->query = app(AssignmentQueryInterface::class);
     }
 
-    public function test_available_widget_counts_records(): void
+    public function testAvailableWidgetCountsRecords(): void
     {
-        Assignment::factory()->count(2)->queued()->create();
+        Assignment::factory()->withBatch()->count(2)->queued()->create();
         $widget = App::make(AvailableOffersStatsWidget::class);
 
         $stats = $this->callGetStats($widget);
@@ -36,7 +36,7 @@ class StatsWidgetsTest extends TestCase
         $this->assertNotEmpty($stats);
     }
 
-    public function test_downloaded_widget_handles_pickups(): void
+    public function testDownloadedWidgetHandlesPickups(): void
     {
         Assignment::factory()->state(['status' => StatusEnum::PICKEDUP->value])->create();
         $widget = App::make(DownloadedOffersStatsWidget::class);
@@ -46,9 +46,9 @@ class StatsWidgetsTest extends TestCase
         $this->assertNotEmpty($stats);
     }
 
-    public function test_expired_widget_counts_expired_items(): void
+    public function testExpiredWidgetCountsExpiredItems(): void
     {
-        Assignment::factory()->state(['status' => StatusEnum::EXPIRED->value])->create();
+        Assignment::factory()->withBatch()->state(['status' => StatusEnum::EXPIRED->value])->create();
         $widget = App::make(ExpiredOffersStatsWidget::class);
 
         $stats = $this->callGetStats($widget);
