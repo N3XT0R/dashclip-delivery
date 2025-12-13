@@ -42,7 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Notification-table Resource**  
   The `NotificationTableResource` has been deprecated and will be removed in a future release.  
   Users are encouraged to transition to the new user notification center available in the `/standard` panel, which
-  provides a more robust and user-friendly interface for managing notifications.
+  provides a more robust and user-friendly interface for managing notifications. Mails are logged by default in the new
+  system.
 
 ## [3.1.2] - 2025-12-12
 
