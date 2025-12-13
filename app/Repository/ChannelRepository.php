@@ -177,6 +177,11 @@ class ChannelRepository
         return $user->channels()->exists();
     }
 
+    /**
+     * Find a channel by its name.
+     * @param  string  $name
+     * @return Channel|null
+     */
     public function findByName(string $name): ?Channel
     {
         return Channel::query()
