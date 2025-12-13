@@ -1,6 +1,9 @@
 @php
     use Filament\Support\Enums\IconPosition;
-    use Filament\Support\Facades\FilamentAsset;use Filament\Support\Facades\FilamentView;use function Filament\Support\generate_href_html;use function Filament\Support\get_color_css_variables;
+    use Filament\Support\Facades\FilamentAsset;
+    use Filament\Support\Facades\FilamentView;
+    use function Filament\Support\generate_href_html;
+    use function Filament\Support\get_color_css_variables;
 
     $chartColor = $getChartColor() ?? 'gray';
     $descriptionColor = $getDescriptionColor() ?? 'gray';
