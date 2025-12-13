@@ -13,9 +13,9 @@ class ExpiredOffersStatsWidget extends StatsOverviewWidget
 {
     protected AssignmentQueryInterface $query;
 
-    public function mount(AssignmentQueryInterface $query): void
+    public function mount(?AssignmentQueryInterface $query): void
     {
-        $this->query = $query;
+        $this->query = $query ?? app(AssignmentQueryInterface::class);
     }
 
     protected function getStats(): array

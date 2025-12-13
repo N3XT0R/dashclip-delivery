@@ -38,7 +38,7 @@ class StatsWidgetsTest extends TestCase
 
     public function testDownloadedWidgetHandlesPickups(): void
     {
-        Assignment::factory()->state(['status' => StatusEnum::PICKEDUP->value])->create();
+        Assignment::factory()->withBatch()->state(['status' => StatusEnum::PICKEDUP->value])->create();
         $widget = App::make(DownloadedOffersStatsWidget::class);
 
         $stats = $this->callGetStats($widget);
