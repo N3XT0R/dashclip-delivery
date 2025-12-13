@@ -236,4 +236,23 @@ class ChannelService
 
         return $this->channelRepository->createApplication($data);
     }
+
+    /**
+     * Create a new channel based on the channel application meta data.
+     * @param  ChannelApplication  $application
+     * @return Channel
+     */
+    public function createNewChannelByChannelApplication(ChannelApplication $application): Channel
+    {
+        $meta = $application->meta['new_channel'] ?? [];
+
+        $channel = Channel::create([
+            'name' => $meta['name'] ?? 'Unnamed Channel',
+            'creator_name' => $meta['creator_name'] ?? 'Unknown Creator',
+            'email' => $meta['email'] ?? '',
+            'youtube_name' => $meta['youtube_name'] ?? null,
+        ]);
+
+        return $channel;
+    }
 }
