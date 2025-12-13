@@ -30,8 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Updated the hashing algorithm for channel approval tokens from `sha1` to `sha256` to enhance security and align with
   modern cryptographic standards.  
   The stronger hashing mechanism reduces the risk of collision attacks and improves overall integrity of the approval
-  workflow.  
-  Existing tokens will continue to function, as the system supports both algorithms during a transitional period.
+  workflow.
 
 ### Fixed
 
