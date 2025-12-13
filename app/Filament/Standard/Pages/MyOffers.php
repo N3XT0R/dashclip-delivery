@@ -10,6 +10,7 @@ use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\Download;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use BackedEnum;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
@@ -26,21 +27,22 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Computed;
+use UnitEnum;
 
 class MyOffers extends Page implements HasTable
 {
     use InteractsWithTable;
     use HasPageShield;
 
-    protected static ?string $navigationIcon = Heroicon::VideoCamera;
+    protected static BackedEnum|string|null $navigationIcon = Heroicon::VideoCamera;
 
     protected static ?string $title = 'filament.my_offers.title';
 
     protected static ?string $navigationLabel = 'filament.my_offers.navigation_label';
 
-    protected static ?string $navigationGroup = 'nav.media';
+    protected static UnitEnum|string|null $navigationGroup = 'nav.media';
 
-    protected static string $view = 'filament.standard.pages.my-offers';
+    protected string $view = 'filament.standard.pages.my-offers';
 
     public string $tab = 'available';
 
