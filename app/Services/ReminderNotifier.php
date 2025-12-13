@@ -54,6 +54,11 @@ class ReminderNotifier
         $expireDate = $first->expires_at;
         $offerUrl = $this->linkService->getOfferUrl($batch, $channel, $expireDate);
 
+        /**
+         * @var Notification $notification
+         * @deprecated will be removed in next major release
+         * @note replaced by mail notifications
+         */
         $notification = Notification::query()->create([
             'channel_id' => $channel->getKey(),
             'type' => NotificationTypeEnum::REMINDER->value,

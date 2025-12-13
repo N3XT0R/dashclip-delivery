@@ -66,6 +66,10 @@ class OfferNotifier
             ->where('channel_id', $channel->getKey())
             ->get();
 
+        /**
+         * @var Notification $notification
+         * @deprecated will be removed in next major
+         */
         $notification = Notification::query()->create([
             'channel_id' => $channel->getKey(),
             'type' => NotificationTypeEnum::OFFER->value,

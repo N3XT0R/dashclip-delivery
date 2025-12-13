@@ -79,6 +79,11 @@ class Assignment extends Model
         return $this->hasMany(Download::class);
     }
 
+    /**
+     * @return BelongsTo<Notification>
+     * @deprecated will be removed in next major release
+     * @note replaced by mail notifications
+     */
     public function notification(): BelongsTo
     {
         return $this->belongsTo(Notification::class);
