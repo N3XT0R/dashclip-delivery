@@ -125,6 +125,9 @@ class ChannelApplicationResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('filament.admin_channel_application.table.columns.status')
+                    ->formatStateUsing(function ($state) {
+                        return __('filament.channel_application.status.'.strtolower($state));
+                    })
                     ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
