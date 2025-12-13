@@ -166,4 +166,14 @@ class ChannelRepository
             ->where('user_id', $user->getKey())
             ->exists();
     }
+
+    /**
+     * Check if a user has access to any channel.
+     * @param  User  $user
+     * @return bool
+     */
+    public function hasUserAccessToAnyChannel(User $user): bool
+    {
+        return $user->channels()->exists();
+    }
 }
