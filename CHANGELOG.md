@@ -37,6 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   As a result, all form fields — including dynamically displayed Select components — now hydrate and persist correctly,
   ensuring complete and accurate application data for review and approval.
 
+### Deprecated
+
+- **Notification-table Resource**  
+  The `NotificationTableResource` has been deprecated and will be removed in a future release.  
+  Users are encouraged to transition to the new user notification center available in the `/standard` panel, which
+  provides a more robust and user-friendly interface for managing notifications.
+
 ## [3.1.2] - 2025-12-12
 
 ### Fixed
