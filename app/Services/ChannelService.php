@@ -261,6 +261,11 @@ class ChannelService
         return $channel;
     }
 
+    /**
+     * Check if a channel exists by its name.
+     * @param  string  $name
+     * @return bool
+     */
     public function existsChannelByName(string $name): bool
     {
         $channel = $this->channelRepository->findByName($name);
