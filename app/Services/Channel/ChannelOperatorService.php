@@ -10,7 +10,9 @@ use App\Repository\UserRepository;
 class ChannelOperatorService
 {
 
-    public function __construct(private UserRepository $userRepository, private ChannelRepository $channelRepository)
-    {
+    public function __construct(
+        private UserRepository $userRepository,
+        private ChannelRepository $channelRepository
+    ) {
     }
 }
