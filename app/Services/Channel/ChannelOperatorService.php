@@ -27,15 +27,21 @@ class ChannelOperatorService
         $guard = GuardEnum::STANDARD;
         $role = RoleEnum::CHANNEL_OPERATOR;
 
+        $channelRepo = $this->channelRepository;
+        $roleRepo = $this->roleRepository;
+
         try {
-            if (!$this->channelRepository->hasUserAccessToChannel($user, $channel)) {
-                $this->channelRepository->assignUserToChannel($user, $channel);
+            if (!$channelRepo->hasUserAccessToChannel($user, $channel)) {
+                $channelRepo->assignUserToChannel($user, $channel);
             }
-            if (!$this->roleRepository->hasRole($user, $role, $guard)) {
-                $this->roleRepository->giveRoleToUser($user, $role, $guard);
+            if (!$roleRepo->hasRole($user, $role, $guard)) {
+                $roleRepo->giveRoleToUser($user, $role, $guard);
             }
         } catch (Throwable $e) {
-            $this->roleRepository->removeRoleFromUser($user, $role, $guard);
+            if (!$channelRepo->hasUserAccessToAnyChannel($user)) {
+                $roleRepo->removeRoleFromUser($user, $role, $guard);
+            }
+
             throw $e;
         }
     }
