@@ -31,7 +31,7 @@ class ChannelOperatorService
             if (!$this->channelRepository->hasUserAccessToChannel($user, $channel)) {
                 $this->channelRepository->assignUserToChannel($user, $channel);
             }
-            if ($this->roleRepository->hasRole($user, $role, $guard)) {
+            if (!$this->roleRepository->hasRole($user, $role, $guard)) {
                 $this->roleRepository->giveRoleToUser($user, $role, $guard);
             }
         } catch (Throwable $e) {
