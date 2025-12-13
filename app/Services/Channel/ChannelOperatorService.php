@@ -22,6 +22,13 @@ class ChannelOperatorService
     }
 
 
+    /**
+     * Add user to channel and assign channel operator role
+     * @param  User  $user
+     * @param  Channel  $channel
+     * @return void
+     * @throws Throwable
+     */
     public function addUserToChannel(User $user, Channel $channel): void
     {
         $guard = GuardEnum::STANDARD;
