@@ -17,22 +17,26 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Htmlable;
+use BackedEnum;
+use UnitEnum;
 
 class MyOffers extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static string $view = 'filament.standard.pages.my-offers';
+    protected string $view = 'filament.standard.pages.my-offers';
 
-    protected static ?string $navigationIcon = Heroicon::OutlinedVideoCamera;
+    protected AssignmentQueryInterface $query;
 
-    protected static ?string $navigationGroup = 'nav.media';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedVideoCamera;
+
+    protected static string|UnitEnum|null $navigationGroup = 'nav.media';
 
     protected static ?string $title = 'filament.my_offers.title';
 
-    public function __construct(public AssignmentQueryInterface $query)
+    public function mount(AssignmentQueryInterface $query): void
     {
-        parent::__construct();
+        $this->query = $query;
     }
 
     public static function canAccess(): bool

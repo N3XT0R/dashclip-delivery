@@ -10,9 +10,11 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class DownloadedOffersStatsWidget extends StatsOverviewWidget
 {
-    public function __construct(public AssignmentQueryInterface $query)
+    protected AssignmentQueryInterface $query;
+
+    public function mount(AssignmentQueryInterface $query): void
     {
-        parent::__construct();
+        $this->query = $query;
     }
 
     protected function getStats(): array

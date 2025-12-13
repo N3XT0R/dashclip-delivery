@@ -17,9 +17,11 @@ class AvailableOffersStatsWidget extends StatsOverviewWidget
 
     public ?Channel $channel = null;
 
-    public function __construct(public AssignmentQueryInterface $query)
+    protected AssignmentQueryInterface $query;
+
+    public function mount(AssignmentQueryInterface $query): void
     {
-        parent::__construct();
+        $this->query = $query;
     }
 
     protected function getStats(): array
@@ -32,7 +34,10 @@ class AvailableOffersStatsWidget extends StatsOverviewWidget
         return [
             Stat::make(__('filament.my_offers.widgets.available.total'), $count),
             Stat::make(__('filament.my_offers.widgets.available.downloaded'), $downloadedCount),
-            Stat::make(__('filament.my_offers.widgets.available.avg_validity'), $averageDays ? __('filament.my_offers.widgets.available.days', ['days' => 0]) : '—'),
+            Stat::make(
+                __('filament.my_offers.widgets.available.avg_validity'),
+                $averageDays ? __('filament.my_offers.widgets.available.days', ['days' => 0]) : '—'
+            ),
         ];
     }
 }

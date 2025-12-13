@@ -2,9 +2,6 @@
     <div class="space-y-6">
         <x-filament::section>
             <x-slot name="heading">{{ __('filament.my_offers.tabs.available') }}</x-slot>
-            <x-filament::section.actions>
-                <x-filament::button tag="span" color="gray">{{ __('filament.my_offers.bulk_actions.download_all') }}</x-filament::button>
-            </x-filament::section.actions>
             {{ $this->table }}
         </x-filament::section>
         <x-filament::section>
