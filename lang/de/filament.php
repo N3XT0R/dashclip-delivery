@@ -153,5 +153,11 @@ return [
             'notified' => 'Verfügbar',
             'picked_up' => 'Heruntergeladen',
         ],
+        'stats' => [
+            'available_total' => 'Verfügbare Videos',
+            'available_downloaded' => 'Bereits heruntergeladen',
+            'average_validity' => 'Durchschnittliche Gültigkeitsdauer',
+            'days' => 'Tage',
+        ],
     ],
 ];

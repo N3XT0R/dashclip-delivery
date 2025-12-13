@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
+use App\Filament\Standard\Pages\Widgets\MyOffersStats;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Channel;
@@ -281,5 +282,16 @@ class MyOffers extends Page implements HasTable
                             ->columns(1),
                     ])->collapsible(),
             ]);
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        if ($this->tab !== 'available') {
+            return [];
+        }
+
+        return [
+            MyOffersStats::class,
+        ];
     }
 }
