@@ -244,7 +244,7 @@ class ChannelService
      */
     public function createNewChannelByChannelApplication(ChannelApplication $application): Channel
     {
-        $hasNewChannelRequest = filled($application->meta->channel['name'] ?? null);
+        $hasNewChannelRequest = filled($application->meta?->channel['name'] ?? null);
         if (!$hasNewChannelRequest) {
             throw new InvalidArgumentException('No new channel request found in application meta.');
         }
