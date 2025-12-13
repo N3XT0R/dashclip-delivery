@@ -35,6 +35,7 @@ class ChannelOperatorService
             }
         } catch (\Throwable $e) {
             $this->roleRepository->removeRoleFromUser($user, $role, $guard);
+            throw $e;
         }
     }
 }
