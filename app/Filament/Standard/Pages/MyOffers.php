@@ -130,7 +130,7 @@ class MyOffers extends Page implements HasTable
                     ->latest('updated_at')
             )
             ->columns([
-                TextColumn::make('video.title')
+                TextColumn::make('video.original_name')
                     ->label(__('my_offers.table.columns.video_title'))
                     ->searchable()
                     ->sortable()
@@ -239,7 +239,7 @@ class MyOffers extends Page implements HasTable
                     ->latest('updated_at')
             )
             ->columns([
-                TextColumn::make('video.title')
+                TextColumn::make('video.original_name')
                     ->label(__('my_offers.table.columns.video_title'))
                     ->searchable()
                     ->sortable()
@@ -299,7 +299,7 @@ class MyOffers extends Page implements HasTable
                     ->latest('updated_at')
             )
             ->columns([
-                TextColumn::make('video.title')
+                TextColumn::make('video.original_name')
                     ->label(__('my_offers.table.columns.video_title'))
                     ->searchable()
                     ->sortable()
@@ -369,7 +369,7 @@ class MyOffers extends Page implements HasTable
                     ->latest('updated_at')
             )
             ->columns([
-                TextColumn::make('video.title')
+                TextColumn::make('video.original_name')
                     ->label(__('my_offers.table.columns.video_title'))
                     ->searchable()
                     ->sortable()
