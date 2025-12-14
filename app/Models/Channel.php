@@ -71,7 +71,8 @@ class Channel extends Model
 
     public function assignedTeams(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)
+        return $this->belongsToMany(Team::class, 'channel_team')
+            ->withPivot(['quota'])
             ->withTimestamps();
     }
 
