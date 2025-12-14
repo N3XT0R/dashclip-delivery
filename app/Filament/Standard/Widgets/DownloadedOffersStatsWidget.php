@@ -35,7 +35,7 @@ class DownloadedOffersStatsWidget extends BaseWidget
 
         $totalDownloaded = $downloadedQuery->count();
 
-        $avgDaysAgo = Assignment::query()
+        $avgDaysAgo = (float)Assignment::query()
             ->where('channel_id', $channel->id)
             ->where('status', StatusEnum::PICKEDUP->value)
             ->whereHas('downloads')
@@ -43,7 +43,7 @@ class DownloadedOffersStatsWidget extends BaseWidget
             ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, downloads.downloaded_at, NOW()) / 86400) as avg_days_ago')
             ->value('avg_days_ago');
 
-        $avgDaysFormatted = $avgDaysAgo ? (int) round($avgDaysAgo) : 0;
+        $avgDaysFormatted = $avgDaysAgo ? (int)round($avgDaysAgo) : 0;
 
         $thisWeekCount = (clone $downloadedQuery)
             ->whereHas('downloads', function (Builder $query) {
@@ -52,18 +52,18 @@ class DownloadedOffersStatsWidget extends BaseWidget
             ->count();
 
         return [
-            Stat::make(__('my_offers.stats.downloaded.label'), (string) $totalDownloaded)
+            Stat::make(__('my_offers.stats.downloaded.label'), (string)$totalDownloaded)
                 ->description('Insgesamt heruntergeladen')
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success')
                 ->chart($this->getDownloadedChartData($channel)),
 
-            Stat::make('Diese Woche', (string) $thisWeekCount)
+            Stat::make('Diese Woche', (string)$thisWeekCount)
                 ->description('Neue Downloads')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('primary'),
 
-            Stat::make(__('my_offers.stats.downloaded.avg_download_days_ago'), (string) $avgDaysFormatted)
+            Stat::make(__('my_offers.stats.downloaded.avg_download_days_ago'), (string)$avgDaysFormatted)
                 ->description('Durchschnitt')
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info'),

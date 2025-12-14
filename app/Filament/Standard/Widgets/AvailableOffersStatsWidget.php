@@ -42,26 +42,26 @@ class AvailableOffersStatsWidget extends BaseWidget
             ->whereHas('downloads')
             ->count();
 
-        $avgValidityDays = (clone $availableQuery)
+        $avgValidityDays = (float)(clone $availableQuery)
             ->whereNotNull('expires_at')
             ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, NOW(), expires_at) / 86400) as avg_days')
             ->value('avg_days');
 
-        $avgDaysFormatted = $avgValidityDays ? (int) round($avgValidityDays) : 0;
+        $avgDaysFormatted = $avgValidityDays ? (int)round($avgValidityDays) : 0;
 
         return [
-            Stat::make(__('my_offers.stats.available.label'), (string) $totalAvailable)
+            Stat::make(__('my_offers.stats.available.label'), (string)$totalAvailable)
                 ->description('Noch nicht abgelaufen')
                 ->descriptionIcon('heroicon-m-sparkles')
                 ->color('success')
                 ->chart($this->getAvailableChartData($channel)),
 
-            Stat::make(__('my_offers.stats.available.downloaded_from_available'), (string) $downloadedFromAvailable)
+            Stat::make(__('my_offers.stats.available.downloaded_from_available'), (string)$downloadedFromAvailable)
                 ->description('Von verfügbaren')
                 ->descriptionIcon('heroicon-m-arrow-down-tray')
                 ->color('primary'),
 
-            Stat::make(__('my_offers.stats.available.avg_validity_days'), (string) $avgDaysFormatted)
+            Stat::make(__('my_offers.stats.available.avg_validity_days'), (string)$avgDaysFormatted)
                 ->description('Durchschnittliche Gültigkeit')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
