@@ -14,6 +14,7 @@ use App\Models\Channel;
 use App\Repository\UserRepository;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
@@ -196,7 +197,7 @@ class MyOffers extends Page implements HasTable
                         return $record->downloads->isNotEmpty() ? 'success' : 'warning';
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
@@ -214,7 +215,7 @@ class MyOffers extends Page implements HasTable
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([
-                \Filament\Actions\BulkAction::make('download_selected')
+                BulkAction::make('download_selected')
                     ->label(fn(Collection $records): string => __('my_offers.table.bulk_actions.download_selected',
                         ['count' => $records->count()]))
                     ->icon('heroicon-m-arrow-down-tray')
