@@ -43,6 +43,8 @@ class MyOffers extends Page implements HasTable
 
     protected string $view = 'filament.standard.pages.my-offers';
 
+    protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
+
     protected static ?int $navigationSort = 10;
 
     public string $activeTab = 'available';
@@ -54,7 +56,7 @@ class MyOffers extends Page implements HasTable
 
     public static function getNavigationGroup(): string|UnitEnum|null
     {
-        return __('my_offers.navigation_group');
+        return __(static::$navigationGroup);
     }
 
     public function getTitle(): string
