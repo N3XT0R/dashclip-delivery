@@ -19,6 +19,7 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
@@ -421,7 +422,7 @@ class MyOffers extends Page implements HasTable
                 'clips' => $assignment->video->clips,
             ])
             ->schema([
-                \Filament\Schemas\Components\Section::make(__('my_offers.modal.preview.heading'))
+                Section::make(__('my_offers.modal.preview.heading'))
                     ->schema([
                         ViewField::make('preview')
                             ->view('filament.standard.components.video-preview')
@@ -431,7 +432,7 @@ class MyOffers extends Page implements HasTable
                     ])
                     ->collapsible(),
 
-                \Filament\Schemas\Components\Section::make(__('my_offers.modal.metadata.heading'))
+                Section::make(__('my_offers.modal.metadata.heading'))
                     ->schema([
                         TextEntry::make('video.file_size')
                             ->label(__('my_offers.modal.metadata.file_size'))
@@ -449,7 +450,7 @@ class MyOffers extends Page implements HasTable
                     ])
                     ->columns(3),
 
-                \Filament\Schemas\Components\Section::make(__('my_offers.modal.clips.heading'))
+                Section::make(__('my_offers.modal.clips.heading'))
                     ->schema([
                         ViewField::make('clips')
                             ->view('filament.standard.components.clips-table')
