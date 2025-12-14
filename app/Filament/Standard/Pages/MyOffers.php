@@ -11,6 +11,7 @@ use App\Filament\Standard\Widgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Repository\UserRepository;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
@@ -77,10 +78,7 @@ class MyOffers extends Page implements HasTable
 
     protected function getHeaderWidgets(): array
     {
-        /**
-         * @var \App\Models\User $user
-         */
-        $user = Filament::auth()->user();
+        $user = app(UserRepository::class)->getCurrentUser();
         $channel = $user->channels()->first();
         return [
             AvailableOffersStatsWidget::make(['channel' => $channel]),
