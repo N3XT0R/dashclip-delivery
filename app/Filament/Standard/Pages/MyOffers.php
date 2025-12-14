@@ -6,9 +6,9 @@ namespace App\Filament\Standard\Pages;
 
 use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
-use App\Filament\Standard\Widgets\AvailableOffersStatsWidget;
-use App\Filament\Standard\Widgets\DownloadedOffersStatsWidget;
-use App\Filament\Standard\Widgets\ExpiredOffersStatsWidget;
+use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
+use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
+use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Repository\UserRepository;

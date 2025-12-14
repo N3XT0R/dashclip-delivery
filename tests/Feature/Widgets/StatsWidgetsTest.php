@@ -8,9 +8,9 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
-use App\Filament\Standard\Widgets\AvailableOffersStatsWidget;
-use App\Filament\Standard\Widgets\DownloadedOffersStatsWidget;
-use App\Filament\Standard\Widgets\ExpiredOffersStatsWidget;
+use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
+use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
+use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -107,7 +107,7 @@ final class StatsWidgetsTest extends DatabaseTestCase
         $this->assertEquals('1', $stats[1]->getValue());
 
         // Average validity days should be > 0
-        $avgDays = (int) $stats[2]->getValue();
+        $avgDays = (int)$stats[2]->getValue();
         $this->assertGreaterThan(0, $avgDays);
     }
 
@@ -152,11 +152,11 @@ final class StatsWidgetsTest extends DatabaseTestCase
         $this->assertEquals('5', $stats[0]->getValue());
 
         // This week count should be > 0
-        $thisWeek = (int) $stats[1]->getValue();
+        $thisWeek = (int)$stats[1]->getValue();
         $this->assertGreaterThanOrEqual(0, $thisWeek);
 
         // Average days ago should be >= 0
-        $avgDaysAgo = (int) $stats[2]->getValue();
+        $avgDaysAgo = (int)$stats[2]->getValue();
         $this->assertGreaterThanOrEqual(0, $avgDaysAgo);
     }
 

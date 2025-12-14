@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Standard\Widgets;
+namespace App\Filament\Standard\Widgets\ChannelWidgets;
 
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
@@ -41,22 +41,22 @@ class ExpiredOffersStatsWidget extends BaseWidget
         $missedCount = $totalExpired - $downloadedBeforeExpiry;
 
         $percentageMissed = $totalExpired > 0
-            ? (int) round(($missedCount / $totalExpired) * 100)
+            ? (int)round(($missedCount / $totalExpired) * 100)
             : 0;
 
         return [
-            Stat::make(__('my_offers.stats.expired.label'), (string) $totalExpired)
+            Stat::make(__('my_offers.stats.expired.label'), (string)$totalExpired)
                 ->description('Insgesamt abgelaufen')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('gray')
                 ->chart($this->getExpiredChartData($channel)),
 
-            Stat::make(__('my_offers.stats.expired.downloaded_count'), (string) $downloadedBeforeExpiry)
+            Stat::make(__('my_offers.stats.expired.downloaded_count'), (string)$downloadedBeforeExpiry)
                 ->description('Noch heruntergeladen')
                 ->descriptionIcon('heroicon-m-check')
                 ->color('success'),
 
-            Stat::make(__('my_offers.stats.expired.missed_count'), (string) $missedCount)
+            Stat::make(__('my_offers.stats.expired.missed_count'), (string)$missedCount)
                 ->description("{$percentageMissed}% verpasst")
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger'),

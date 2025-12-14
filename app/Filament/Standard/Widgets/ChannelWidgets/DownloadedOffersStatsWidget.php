@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Standard\Widgets;
+namespace App\Filament\Standard\Widgets\ChannelWidgets;
 
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
