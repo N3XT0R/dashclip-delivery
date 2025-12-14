@@ -40,6 +40,10 @@ class UserRepository
         return User::doesntHave('teams')->get();
     }
 
+    /**
+     * Get the currently authenticated user.
+     * @return User|null
+     */
     public function getCurrentUser(): ?User
     {
         return auth()->user();
