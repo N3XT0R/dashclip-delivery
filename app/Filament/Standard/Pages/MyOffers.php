@@ -11,6 +11,7 @@ use App\Filament\Standard\Widgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Repository\UserRepository;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
@@ -463,21 +464,12 @@ class MyOffers extends Page implements HasTable
 
     protected function getCurrentChannel(): ?Channel
     {
-        $user = Filament::auth()->user();
+        $user = app(UserRepository::class)->getCurrentUser();
 
         if (!$user) {
             return null;
         }
-
-        $tenant = Filament::getTenant();
-
-        if ($tenant instanceof \App\Models\Team) {
-            return $tenant->assignedChannels()->first();
-        }
-
-        return Channel::query()
-            ->whereHas('assignedTeams', fn(Builder $query) => $query->where('teams.id', $tenant?->id))
-            ->first();
+        return $user->channels()->firstOrFail();
     }
 
     protected function formatDuration(?int $seconds): string
