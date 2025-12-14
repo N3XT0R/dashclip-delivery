@@ -26,8 +26,7 @@ class AvailableOffersStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        dd($this->channel);
-        $channel = $this->getCurrentChannel();
+        $channel = $this->channel;
 
         if (!$channel) {
             return [
