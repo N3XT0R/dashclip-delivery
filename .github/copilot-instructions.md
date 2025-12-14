@@ -63,10 +63,11 @@ public function distribute(?int $quotaOverride = null): array
 public function handle(IngestContext $context): IngestResult
 ```
 
-### 2. Repository Pattern + DTOs
+### 2. Repository Pattern + DTOs + ValueObjects
 
 - **Repositories** (e.g., `AssignmentRepository`, `VideoRepository`) encapsulate data access
 - **DTOs** (e.g., `ChannelPoolDto`, `UploaderPoolInfo`) transport immutable data between services
+- **ValueObjects** (e.g., `AssignmentRun`, `IngestStats`) represent domain concepts with behavior
 - **Contracts** in `app/Repository/Contracts/` and `app/Services/Contracts/` define interfaces
 
 ### 3. Service Layer Organization
@@ -91,12 +92,13 @@ Custom facades for convenience:
 - `BuildZipJob`: Async ZIP building with WebSocket progress (Reverb) for UI feedback
 - Queue driver: `database` (fallback to sync in testing)
 
-### 6. Filament Admin
+### 6. Filament Admin (Multi-Panel Architecture)
 
-- `app/Filament/Resources/`: CRUD pages for channels, assignments, users
-- `app/Filament/Pages/`: Custom dashboard pages
-- `app/Filament/Support/`: UI helpers, form builders
+- **Admin Panel** (`app/Filament/Resources/`, `app/Filament/Pages/`): Full system administration
+- **Standard Panel** (`app/Filament/Standard/`): Channel-facing interface with team tenancy
+- `app/Filament/Support/`: Shared UI helpers, form builders across panels
 - Shield integration for role-based permissions (channels see only their assignments)
+- **Testing**: Always configure panel via `Filament::setCurrentPanel(PanelEnum::X->value)` before test assertions
 
 ### 7. Enum-Driven State
 
