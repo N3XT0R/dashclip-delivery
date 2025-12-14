@@ -7,22 +7,12 @@ namespace App\Filament\Standard\Widgets\ChannelWidgets;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Channel;
-use App\Models\Team;
-use Filament\Facades\Filament;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
 
-class AvailableOffersStatsWidget extends BaseWidget
+class AvailableOffersStatsWidget extends BaseChannelWidget
 {
     protected static ?int $sort = 1;
-
-    protected $channel = null;
-
-    public function mount($channel = null): void
-    {
-        $this->channel = $channel;
-    }
 
     protected function getStats(): array
     {
@@ -74,25 +64,6 @@ class AvailableOffersStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
         ];
-    }
-
-    protected function getCurrentChannel(): ?Channel
-    {
-        $user = Filament::auth()->user();
-
-        if (!$user) {
-            return null;
-        }
-
-        $tenant = Filament::getTenant();
-
-        if ($tenant instanceof Team) {
-            return $tenant->assignedChannels()->first();
-        }
-
-        return Channel::query()
-            ->whereHas('assignedTeams', fn(Builder $query) => $query->where('teams.id', $tenant?->id))
-            ->first();
     }
 
     protected function getAvailableChartData(Channel $channel): array

@@ -7,12 +7,9 @@ namespace App\Filament\Standard\Widgets\ChannelWidgets;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Channel;
-use Filament\Facades\Filament;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
 
-class ExpiredOffersStatsWidget extends BaseWidget
+class ExpiredOffersStatsWidget extends BaseChannelWidget
 {
     protected static ?int $sort = 3;
 
@@ -61,25 +58,6 @@ class ExpiredOffersStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger'),
         ];
-    }
-
-    protected function getCurrentChannel(): ?Channel
-    {
-        $user = Filament::auth()->user();
-
-        if (!$user) {
-            return null;
-        }
-
-        $tenant = Filament::getTenant();
-
-        if ($tenant instanceof \App\Models\Team) {
-            return $tenant->assignedChannels()->first();
-        }
-
-        return Channel::query()
-            ->whereHas('assignedTeams', fn(Builder $query) => $query->where('teams.id', $tenant?->id))
-            ->first();
     }
 
     protected function getExpiredChartData(Channel $channel): array
