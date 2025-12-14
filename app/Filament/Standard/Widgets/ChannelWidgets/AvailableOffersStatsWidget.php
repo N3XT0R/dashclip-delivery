@@ -76,7 +76,7 @@ class AvailableOffersStatsWidget extends BaseChannelWidget
             $count = Assignment::query()
                 ->where('channel_id', $channel->id)
                 ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
-                ->whereDate('created_at', '<=', $date->toDateString())
+                ->whereDate('created_at', '<=', $date)
                 ->where(function (Builder $query) use ($date) {
                     $query->whereNull('expires_at')
                         ->orWhere('expires_at', '>', $date);

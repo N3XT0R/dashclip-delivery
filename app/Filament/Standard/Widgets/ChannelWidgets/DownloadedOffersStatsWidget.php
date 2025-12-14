@@ -79,7 +79,7 @@ class DownloadedOffersStatsWidget extends BaseChannelWidget
                 ->where('channel_id', $channel->id)
                 ->where('status', StatusEnum::PICKEDUP->value)
                 ->whereHas('downloads', function (Builder $query) use ($date) {
-                    $query->whereDate('downloaded_at', $date->toDateString());
+                    $query->whereDate('downloaded_at', $date);
                 })
                 ->count();
 
