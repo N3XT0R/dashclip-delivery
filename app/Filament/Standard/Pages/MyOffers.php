@@ -135,7 +135,7 @@ class MyOffers extends Page implements HasTable
                     ->searchable()
                     ->sortable()
                     ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->title ?? ''),
+                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
 
                 TextColumn::make('video.clips.user.name')
                     ->label(__('my_offers.table.columns.uploader'))
@@ -244,7 +244,7 @@ class MyOffers extends Page implements HasTable
                     ->searchable()
                     ->sortable()
                     ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->title ?? ''),
+                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
 
                 TextColumn::make('video.clips.user.name')
                     ->label(__('my_offers.table.columns.uploader'))
@@ -304,7 +304,7 @@ class MyOffers extends Page implements HasTable
                     ->searchable()
                     ->sortable()
                     ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->title ?? ''),
+                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
 
                 TextColumn::make('video.clips.user.name')
                     ->label(__('my_offers.table.columns.uploader'))
@@ -374,7 +374,7 @@ class MyOffers extends Page implements HasTable
                     ->searchable()
                     ->sortable()
                     ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->title ?? ''),
+                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
 
                 TextColumn::make('video.clips.user.name')
                     ->label(__('my_offers.table.columns.uploader'))
