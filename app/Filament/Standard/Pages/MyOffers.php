@@ -11,29 +11,27 @@ use App\Filament\Standard\Widgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
+use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\MaxWidth;
-use Filament\Tables\Actions\BulkAction;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Actions\Action as TableAction;
-use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\HtmlString;
-use BackedEnum;
 use UnitEnum;
 
 class MyOffers extends Page implements HasTable
@@ -159,7 +157,7 @@ class MyOffers extends Page implements HasTable
                             return __('my_offers.table.columns.remaining_hours', ['hours' => max(0, $hours)]);
                         }
 
-                        return __('my_offers.table.columns.remaining_days', ['days' => (int) $diff]);
+                        return __('my_offers.table.columns.remaining_days', ['days' => (int)$diff]);
                     })
                     ->color(function (Assignment $record): string {
                         if (!$record->expires_at) {
@@ -191,25 +189,26 @@ class MyOffers extends Page implements HasTable
                     }),
             ])
             ->actions([
-                TableAction::make('view_details')
+                ViewAction::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(MaxWidth::FourExtraLarge)
-                    ->infolist(fn(Assignment $record): Infolist => $this->getDetailsInfolist($record))
+                    ->modalWidth(Width::FourExtraLarge)
+                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Schließen'),
 
-                TableAction::make('download')
+                ViewAction::make('download')
                     ->label(__('my_offers.table.actions.download'))
                     ->icon('heroicon-m-arrow-down-tray')
                     ->color('primary')
                     ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
                     ->openUrlInNewTab(),
             ])
-            ->bulkActions([
-                BulkAction::make('download_selected')
-                    ->label(fn(Collection $records): string => __('my_offers.table.bulk_actions.download_selected', ['count' => $records->count()]))
+            ->toolbarActions([
+                \Filament\Actions\BulkAction::make('download_selected')
+                    ->label(fn(Collection $records): string => __('my_offers.table.bulk_actions.download_selected',
+                        ['count' => $records->count()]))
                     ->icon('heroicon-m-arrow-down-tray')
                     ->color('primary')
                     ->action(function (Collection $records) {
@@ -261,17 +260,17 @@ class MyOffers extends Page implements HasTable
                     })
                     ->sortable(),
             ])
-            ->actions([
-                TableAction::make('view_details')
+            ->recordActions([
+                ViewAction::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(MaxWidth::FourExtraLarge)
-                    ->infolist(fn(Assignment $record): Infolist => $this->getDetailsInfolist($record))
+                    ->modalWidth(Width::FourExtraLarge)
+                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Schließen'),
 
-                TableAction::make('download_again')
+                Action::make('download_again')
                     ->label(__('my_offers.table.actions.download_again'))
                     ->icon('heroicon-m-arrow-path')
                     ->color('gray')
@@ -338,13 +337,13 @@ class MyOffers extends Page implements HasTable
                     })
                     ->sortable(),
             ])
-            ->actions([
-                TableAction::make('view_details')
+            ->recordActions([
+                ViewAction::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(MaxWidth::FourExtraLarge)
-                    ->infolist(fn(Assignment $record): Infolist => $this->getDetailsInfolist($record))
+                    ->modalWidth(Width::FourExtraLarge)
+                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Schließen'),
             ])
@@ -393,13 +392,13 @@ class MyOffers extends Page implements HasTable
                     ->default('—')
                     ->limit(50),
             ])
-            ->actions([
-                TableAction::make('view_details')
+            ->recordActions([
+                ViewAction::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(MaxWidth::FourExtraLarge)
-                    ->infolist(fn(Assignment $record): Infolist => $this->getDetailsInfolist($record))
+                    ->modalWidth(Width::FourExtraLarge)
+                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Schließen'),
             ])
@@ -407,15 +406,15 @@ class MyOffers extends Page implements HasTable
             ->emptyStateDescription('Sie haben keine zurückgewiesenen Angebote.');
     }
 
-    protected function getDetailsInfolist(Assignment $assignment): Infolist
+    protected function getDetailsInfolist(Assignment $assignment): Schema
     {
-        return Infolist::make()
+        return Schema::make()
             ->state([
                 'video' => $assignment->video,
                 'clips' => $assignment->video->clips,
             ])
             ->schema([
-                Section::make(__('my_offers.modal.preview.heading'))
+                \Filament\Schemas\Components\Section::make(__('my_offers.modal.preview.heading'))
                     ->schema([
                         ViewField::make('preview')
                             ->view('filament.standard.components.video-preview')
@@ -425,7 +424,7 @@ class MyOffers extends Page implements HasTable
                     ])
                     ->collapsible(),
 
-                Section::make(__('my_offers.modal.metadata.heading'))
+                \Filament\Schemas\Components\Section::make(__('my_offers.modal.metadata.heading'))
                     ->schema([
                         TextEntry::make('video.file_size')
                             ->label(__('my_offers.modal.metadata.file_size'))
@@ -443,7 +442,7 @@ class MyOffers extends Page implements HasTable
                     ])
                     ->columns(3),
 
-                Section::make(__('my_offers.modal.clips.heading'))
+                \Filament\Schemas\Components\Section::make(__('my_offers.modal.clips.heading'))
                     ->schema([
                         ViewField::make('clips')
                             ->view('filament.standard.components.clips-table')
