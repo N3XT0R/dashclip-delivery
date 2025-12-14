@@ -81,11 +81,11 @@ class MyOffers extends Page implements HasTable
          * @var \App\Models\User $user
          */
         $user = Filament::auth()->user();
-        $channel;
+        $channel = $user->channels()->first();
         return [
-            AvailableOffersStatsWidget::class,
-            DownloadedOffersStatsWidget::class,
-            ExpiredOffersStatsWidget::class,
+            AvailableOffersStatsWidget::make(['channel' => $channel]),
+            DownloadedOffersStatsWidget::make(['channel' => $channel]),
+            ExpiredOffersStatsWidget::make(['channel' => $channel]),
         ];
     }
 
