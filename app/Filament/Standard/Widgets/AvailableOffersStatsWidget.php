@@ -17,7 +17,12 @@ class AvailableOffersStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
 
-    protected ?int $channel = null;
+    protected $channel = null;
+
+    public function mount($channel = null): void
+    {
+        $this->channel = $channel;
+    }
 
     protected function getStats(): array
     {
