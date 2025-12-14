@@ -77,6 +77,11 @@ class MyOffers extends Page implements HasTable
 
     protected function getHeaderWidgets(): array
     {
+        /**
+         * @var \App\Models\User $user
+         */
+        $user = Filament::auth()->user();
+        $channel;
         return [
             AvailableOffersStatsWidget::class,
             DownloadedOffersStatsWidget::class,
