@@ -11,22 +11,15 @@ use App\Filament\Standard\Widgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
-use App\Repository\UserRepository;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Support\Enums\Width;
-use Filament\Tables\Actions\Action as TableAction;
-use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -87,6 +80,13 @@ class MyOffers extends Page implements HasTable
         ];
     }
 
+    public function getWidgetData(): array
+    {
+        return [
+            'channel' => $this->getCurrentChannel()?->id,
+        ];
+    }
+
     public function getTabs(): array
     {
         return [
@@ -102,7 +102,7 @@ class MyOffers extends Page implements HasTable
         $channel = $this->getCurrentChannel();
 
         if (!$channel) {
-            return $table->query(Assignment::query()->whereRaw('1 = 0'));
+            return $table->query(Assignment::query()->where('channel_id', -1));
         }
 
         return match ($this->activeTab) {

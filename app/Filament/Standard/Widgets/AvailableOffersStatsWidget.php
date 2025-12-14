@@ -7,6 +7,7 @@ namespace App\Filament\Standard\Widgets;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Models\Team;
 use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -16,8 +17,11 @@ class AvailableOffersStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
 
+    protected ?int $channel = null;
+
     protected function getStats(): array
     {
+        dd($this->channel);
         $channel = $this->getCurrentChannel();
 
         if (!$channel) {
@@ -78,7 +82,7 @@ class AvailableOffersStatsWidget extends BaseWidget
 
         $tenant = Filament::getTenant();
 
-        if ($tenant instanceof \App\Models\Team) {
+        if ($tenant instanceof Team) {
             return $tenant->assignedChannels()->first();
         }
 
