@@ -74,12 +74,10 @@ class MyOffers extends Page implements HasTable
 
     protected function getHeaderWidgets(): array
     {
-        $user = app(UserRepository::class)->getCurrentUser();
-        $channel = $user?->channels()->first();
         return [
-            AvailableOffersStatsWidget::make(['channel' => $channel]),
-            DownloadedOffersStatsWidget::make(['channel' => $channel]),
-            ExpiredOffersStatsWidget::make(['channel' => $channel]),
+            AvailableOffersStatsWidget::class,
+            DownloadedOffersStatsWidget::class,
+            ExpiredOffersStatsWidget::class,
         ];
     }
 
