@@ -32,6 +32,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Number;
 use UnitEnum;
 
 class MyOffers extends Page implements HasTable
@@ -428,7 +429,7 @@ class MyOffers extends Page implements HasTable
                     ->schema([
                         TextEntry::make('video.file_size')
                             ->label(__('my_offers.modal.metadata.file_size'))
-                            ->formatStateUsing(fn($state): string => $this->formatFileSize($state))
+                            ->formatStateUsing(fn($state): string => Number::fileSize($state))
                             ->default('—'),
 
                         TextEntry::make('video.duration')
