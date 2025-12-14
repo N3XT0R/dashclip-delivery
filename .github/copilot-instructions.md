@@ -170,7 +170,7 @@ Spatie `laravel-activitylog` tracks all model changes:
 
 ### Filament Page/Resource Testing (Critical)
 
-When testing **Filament Standard pages** (e.g., `MyOffers`, `ChannelApplication`), follow this setup:
+When testing **Filament pages** (Admin or Standard panel), follow this setup pattern:
 
 ```php
 use App\Enum\Guard\GuardEnum;
@@ -183,20 +183,20 @@ protected function setUp(): void
 {
     parent::setUp();
 
-    // 1. Create user with own team (MUST use withOwnTeam())
+    // 1. Create user with own team (MUST use withOwnTeam() for Standard panel)
     $this->user = User::factory()
-        ->withOwnTeam()
+        ->withOwnTeam()  // Required for Standard panel with tenancy
         ->create();
     
-    // 2. Get default team via TeamRepository
+    // 2. Get default team via TeamRepository (Standard panel only)
     $this->team = app(TeamRepository::class)->getDefaultTeamForUser($this->user);
 
     // 3. Configure Filament BEFORE acting as user
-    Filament::setCurrentPanel(PanelEnum::STANDARD->value);
-    Filament::setTenant($this->team, true);
+    Filament::setCurrentPanel(PanelEnum::STANDARD->value);  // or PanelEnum::ADMIN
+    Filament::setTenant($this->team, true);  // Only for Standard panel
     Filament::auth()->login($this->user);
 
-    // 4. Act as the user
+    // 4. Act as the user with correct guard
     $this->actingAs($this->user, GuardEnum::STANDARD->value);
     
     // 5. Grant required permissions (NOT via Policy, via Permission)
@@ -213,12 +213,12 @@ private function grantPagePermissions(): void
 
 **Key Points:**
 
-- **Always** use `withOwnTeam()` factory modifier for users in Standard panel
-- **Always** call `Filament::setCurrentPanel()`, `setTenant()`, and `auth()->login()` BEFORE `actingAs()`
-- **Never** use deprecated methods like `setDefaultTeam()` (doesn't exist in v4)
-- Grant **permissions** directly via `givePermissionTo()`, not via policies for pages
-- Use `GuardEnum::STANDARD->value` as the guard name for Standard panel
-- Use `PanelEnum::STANDARD->value` for panel configuration
+- **Panel Selection**: Call `Filament::setCurrentPanel()` with correct `PanelEnum` value
+- **Tenancy**: Use `withOwnTeam()` factory + `setTenant()` for Standard panel with multi-tenancy
+- **Guard Context**: Use `GuardEnum::STANDARD` for Standard panel, `GuardEnum::ADMIN` for Admin panel
+- **Order Matters**: Always configure Filament (`setCurrentPanel`, `setTenant`, `auth()->login`) BEFORE `actingAs()`
+- **Permissions**: Grant via `givePermissionTo()`, not via policies for custom pages
+- **Factory Helpers**: Use `->admin(GuardEnum::STANDARD)` to auto-grant admin role on user factory
 
 ### Shield Integration
 
