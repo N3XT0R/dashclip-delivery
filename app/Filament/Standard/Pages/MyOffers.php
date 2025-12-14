@@ -126,7 +126,7 @@ class MyOffers extends Page implements HasTable
                             ->orWhere('expires_at', '>', now());
                     })
                     ->with(['video.clips.user', 'downloads'])
-                    ->latest('created_at')
+                    ->latest('updated_at')
             )
             ->columns([
                 TextColumn::make('video.title')
