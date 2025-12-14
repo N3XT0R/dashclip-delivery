@@ -1,5 +1,38 @@
 # DashClip Delivery - AI Coding Agent Instructions
 
+## Environment Requirements (Setup First!)
+
+### PHP & Required Extensions
+
+- **PHP 8.4+** minimum (Laravel 12 requirement)
+- **Required Extensions**: `ext-intl`, `ext-zip`, `ext-dom`, `ext-curl`, `ext-xml`, `ext-mbstring`, `ext-sqlite3`
+- **Verify Installation**: `php --version` (should show 8.4.x)
+- **Note**: Some systems have multiple PHP versions; ensure `php8.4` binary is used
+
+### System Dependencies
+
+```bash
+# Verify PHP and extensions
+php -m | grep -E 'intl|zip|dom|curl|xml|mbstring|sqlite3'
+
+# Install Composer dependencies
+composer install
+
+# Install Node dependencies & build assets
+npm install
+npm run build  # or npm run dev for watch mode
+
+# Verify FFmpeg installation (required for preview generation)
+ffmpeg -version
+```
+
+### Initial Setup Checklist
+
+1. Copy `.env.example` to `.env` and configure database/mail/storage
+2. Generate application key: `php artisan key:generate`
+3. Run migrations: `php artisan migrate`
+4. Optional: Configure Dropbox OAuth (Client ID/Secret in `.env`)
+
 ## Architecture Overview
 
 **DashClip Delivery** is a Laravel 12 video distribution system that ingests dashcam/UGC content, deduplicates via
