@@ -475,18 +475,6 @@ class MyOffers extends Page implements HasTable
             ->first();
     }
 
-    protected function formatFileSize(?int $bytes): string
-    {
-        if (!$bytes || $bytes <= 0) {
-            return '—';
-        }
-
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $power = $bytes > 0 ? floor(log($bytes, 1024)) : 0;
-
-        return round($bytes / pow(1024, $power), 2).' '.$units[$power];
-    }
-
     protected function formatDuration(?int $seconds): string
     {
         if (!$seconds || $seconds <= 0) {
