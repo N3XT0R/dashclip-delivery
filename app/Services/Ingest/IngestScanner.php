@@ -133,7 +133,7 @@ class IngestScanner
         FileInfoDto $file,
         string $diskName,
         ?User $user = null,
-        bool $isRealDisk = false
+        ?string $sourceDiskName = null
     ): IngestResult {
         $hash = DynamicStorage::getHashForFileInfoDto($inboxDisk, $file);
         $pathToFile = $file->path;
@@ -162,8 +162,10 @@ class IngestScanner
 
         try {
             DB::beginTransaction();
-            $currentDiskName = $isRealDisk ? $diskName : 'dynamicStorage';
-            $video = $videoService->createVideoBydDiskAndFileInfoDto($currentDiskName, $inboxDisk, $file);
+            $video = $videoService->createVideoBydDiskAndFileInfoDto(
+                $sourceDiskName ?: 'dynamicStorage',
+                $inboxDisk,
+                $file);
             $importResult = $this->importCsvForDirectory($inboxDisk, true);
             $video->refresh();
 
