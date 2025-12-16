@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Footer Positioning in Filament Panels**
     - Resolved an issue where the footer overlapped with content in Filament panels when the page content was long.
     - Improved overall layout consistency across different screen sizes and content lengths.
+- **Video Upload**
+    - Fixed an issue where the ProcessUploadVideo job was dispatched with DynamicStorage instead of the actual storage
+      disk.
+    - Ensured that the correct storage disk is used during video processing to prevent file access errors
 
 ## [3.1.2] - 2025-12-12
 
