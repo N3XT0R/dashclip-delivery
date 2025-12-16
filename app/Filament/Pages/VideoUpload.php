@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use AllowDynamicProperties;
 use App\DTO\FileInfoDto;
 use App\Facades\Cfg;
 use App\Jobs\ProcessUploadedVideo;
@@ -31,6 +32,7 @@ use Illuminate\Support\Str;
  * @property array|null $data
  * @property Schema $form
  */
+#[AllowDynamicProperties]
 class VideoUpload extends Page implements HasForms
 {
     use InteractsWithForms, HasPageShield;
