@@ -112,7 +112,7 @@ final class VideoUploadTest extends DatabaseTestCase
 
         $disk = Storage::fake('uploads');
         $disk->put('tmp/file-zero.mp4', 'z');
-        $path = $disk->path('uploads/tmp/file-zero.mp4');
+        $path = $disk->path('tmp/file-zero.mp4');
 
         $file = new class($path) {
             public function __construct(private string $path)
@@ -121,7 +121,7 @@ final class VideoUploadTest extends DatabaseTestCase
 
             public function store($dir): string
             {
-                return 'uploads/tmp/'.basename($this->path);
+                return 'tmp/'.basename($this->path);
             }
 
             public function getClientOriginalName(): string
