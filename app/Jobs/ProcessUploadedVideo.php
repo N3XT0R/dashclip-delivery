@@ -68,7 +68,8 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
         );
 
         $video = Video::query()
-            ->orWhere('original_name', $fileInfoDto->originalName ?? $fileInfoDto->basename)
+            ->where('original_name', $fileInfoDto->originalName ?? $fileInfoDto->basename)
+            ->where('hash', $this->hash)
             ->orderByDesc('created_at')
             ->first();
 
