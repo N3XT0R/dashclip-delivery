@@ -155,4 +155,51 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
             'Expected activity entry for team-assigned video upload.'
         );
     }
+
+    public function testJobPassesInboxDiskNameToScanner(): void
+    {
+        \Storage::fake('tmp');
+        \Storage::fake('uploads');
+
+        User::flushEventListeners();
+        $user = User::factory()->create();
+
+        $fileInfo = new FileInfoDto('standalone.mp4', 'standalone.mp4', 'mp4');
+        $disk = DynamicStorage::fromPath(base_path('tests/Fixtures/Inbox/Videos'));
+        $hash = DynamicStorage::getHashForFilePath($disk, $fileInfo->path);
+        $this->copyDisk($disk, \Storage::disk('uploads'));
+
+        $video = Video::factory()->create([
+            'hash' => $hash,
+            'original_name' => 'standalone.mp4',
+        ]);
+
+
+        $job = new ProcessUploadedVideo(
+            user: $user,
+            fileInfoDto: $fileInfo,
+            targetDisk: 'tmp',
+            sourceDisk: 'uploads',
+            start: 0,
+            end: 10,
+            submittedBy: $user->display_name,
+            note: 'inbox name test',
+            bundleKey: 'bundle-inbox',
+            role: 'main',
+        );
+
+        $job->handle($this->app->make(IngestScanner::class));
+
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'start_sec' => 0,
+            'end_sec' => 10,
+            'submitted_by' => $user->display_name,
+            'note' => 'inbox name test',
+            'bundle_key' => 'bundle-inbox',
+            'role' => 'main',
+            'user_id' => $user->id,
+        ]);
+    }
+
 }
