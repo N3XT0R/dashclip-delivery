@@ -28,6 +28,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/**
+ * @property array|null $data
+ * @property Schema $form
+ */
 class VideoUpload extends Page implements HasForms
 {
     use InteractsWithForms, HasPageShield;
