@@ -41,6 +41,7 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
         $this->hash = DynamicStorage::getHashForFileInfoDto($disk, $fileInfoDto);
     }
 
+
     public function uniqueId(): string
     {
         return "{$this->user->getKey()}:{$this->hash}";
@@ -56,11 +57,19 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
     {
         $fileInfoDto = $this->fileInfoDto;
         $user = $this->user;
-        $disk = \Storage::disk($this->sourceDisk);
-        $scanner->processFile($disk, $fileInfoDto, $this->targetDisk, $user);
+        $sourceDiskName = $this->sourceDisk;
+        $disk = \Storage::disk($sourceDiskName);
+        $scanner->processFile(
+            inboxDisk: $disk,
+            file: $fileInfoDto,
+            diskName: $this->targetDisk,
+            user: $user,
+            inboxDiskName: $sourceDiskName,
+        );
 
         $video = Video::query()
-            ->orWhere('original_name', $fileInfoDto->originalName ?? $fileInfoDto->basename)
+            ->where('original_name', $fileInfoDto->originalName ?? $fileInfoDto->basename)
+            ->where('hash', $this->hash)
             ->orderByDesc('created_at')
             ->first();
 

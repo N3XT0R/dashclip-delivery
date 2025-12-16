@@ -46,7 +46,7 @@ jobs:
         env:
           FFMPEG_BINARIES: ${{ env.FFMPEG_BINARIES }}
           FFPROBE_BINARIES: ${{ env.FFPROBE_BINARIES }}
-        run: vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage/clover.xml --path-coverage --coverage-html=report
+        run: php artisan test --parallel --coverage-clover=coverage/clover.xml --coverage-html=report
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
