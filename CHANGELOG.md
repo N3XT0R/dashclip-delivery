@@ -54,6 +54,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   provides a more robust and user-friendly interface for managing notifications. Mails are logged by default in the new
   system.
 
+## [3.1.3] - 2025-12-16
+
+### Fixed
+
+- **Footer Positioning in Filament Panels**
+    - Resolved an issue where the footer overlapped with content in Filament panels when the page content was long.
+    - Improved overall layout consistency across different screen sizes and content lengths.
+- **Web Video Upload**
+    - Fixed an issue where uploaded videos were initially associated with an implicit dynamic storage context
+      instead of their actual source disk.
+    - Ensured that the original storage disk is preserved during ingestion and correctly transitioned to the
+      target disk on successful upload, preventing inconsistent file states and access errors.
+
+### Removed
+
+- Removed unused, undocumented code paths that were never part of the public API.
+
 ## [3.1.2] - 2025-12-12
 
 ### Fixed

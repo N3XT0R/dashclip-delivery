@@ -120,18 +120,34 @@ class IngestScanner
 
     /**
      * Process a single file from the inbox-disk.
+     *
      * @param  Filesystem  $inboxDisk
      * @param  FileInfoDto  $file
      * @param  string  $diskName
      * @param  User|null  $user
+     * @param  string|null  $inboxDiskName
      * @return IngestResult
+     *
      * @throws Throwable
+     *
+     * @todo Refactor in v4: decompose this method into explicit, isolated steps with clear responsibilities.
+     *
+     * @note
+     * This method currently performs the full ingest workflow in a single sequential operation, including
+     * duplicate detection, video registration, metadata handling, preview generation, file transfer and
+     * finalization.
+     *
+     * In a future iteration, this logic should be expressed as a dedicated workflow or pipeline composed
+     * of discrete, idempotent steps (e.g. using a workflow engine or a middleware-style step chain). This
+     * would enable more granular retry behavior, explicit state transitions and context-specific handling
+     * (e.g. web uploads vs. batch or scan-based ingest).
      */
     public function processFile(
         Filesystem $inboxDisk,
         FileInfoDto $file,
         string $diskName,
-        ?User $user = null
+        ?User $user = null,
+        ?string $inboxDiskName = null
     ): IngestResult {
         $hash = DynamicStorage::getHashForFileInfoDto($inboxDisk, $file);
         $pathToFile = $file->path;
@@ -160,7 +176,10 @@ class IngestScanner
 
         try {
             DB::beginTransaction();
-            $video = $videoService->createVideoBydDiskAndFileInfoDto('dynamicStorage', $inboxDisk, $file);
+            $video = $videoService->createVideoBydDiskAndFileInfoDto(
+                $inboxDiskName ?: 'dynamicStorage',
+                $inboxDisk,
+                $file);
             $importResult = $this->importCsvForDirectory($inboxDisk, true);
             $video->refresh();
 
