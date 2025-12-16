@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Footer Positioning in Filament Panels**
+    - Resolved an issue where the footer overlapped with content in Filament panels when the page content was long.
+    - Improved overall layout consistency across different screen sizes and content lengths.
+
 ## [3.1.2] - 2025-12-12
 
 ### Fixed
