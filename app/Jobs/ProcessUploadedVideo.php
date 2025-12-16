@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Models\Video;
 use App\Services\Ingest\IngestScanner;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,7 +28,7 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
         public User $user,
         public FileInfoDto $fileInfoDto,
         public string $targetDisk,
-        public string|Filesystem $sourceDisk,
+        public string $sourceDisk,
         public int $start,
         public int $end,
         public ?string $submittedBy,
@@ -38,17 +37,10 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
         public ?string $role = null,
         public ?Team $team = null,
     ) {
-        $disk = $this->retrieveSourceDisk($sourceDisk);
+        $disk = \Storage::disk($sourceDisk);
         $this->hash = DynamicStorage::getHashForFileInfoDto($disk, $fileInfoDto);
     }
 
-    private function retrieveSourceDisk(string|Filesystem $sourceDisk): Filesystem
-    {
-        if ($sourceDisk instanceof Filesystem) {
-            return $sourceDisk;
-        }
-        return \Storage::disk($sourceDisk);
-    }
 
     public function uniqueId(): string
     {
@@ -65,7 +57,7 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
     {
         $fileInfoDto = $this->fileInfoDto;
         $user = $this->user;
-        $disk = $this->retrieveSourceDisk($this->sourceDisk);
+        $disk = \Storage::disk($this->sourceDisk);
         $scanner->processFile($disk, $fileInfoDto, $this->targetDisk, $user);
 
         $video = Video::query()

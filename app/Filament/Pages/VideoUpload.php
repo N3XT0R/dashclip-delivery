@@ -25,7 +25,6 @@ use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -229,7 +228,7 @@ class VideoUpload extends Page implements HasForms
             user: $user,
             fileInfoDto: $fileInfoDto,
             targetDisk: $targetDisk,
-            sourceDisk: Storage::disk(config(self::UPLOAD_DISK_CONFIG_KEY)),
+            sourceDisk: config(self::UPLOAD_DISK_CONFIG_KEY),
             start: (int)($clip['start_sec'] ?? 0),
             end: (int)($clip['end_sec'] ?? 0),
             submittedBy: $user?->display_name,
