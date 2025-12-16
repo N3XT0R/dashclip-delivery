@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed unused code paths that were no longer referenced.
+- Removed unused, undocumented code paths that were never part of the public API.
 
 ## [3.1.2] - 2025-12-12
 
