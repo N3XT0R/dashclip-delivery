@@ -120,25 +120,27 @@ class IngestScanner
 
     /**
      * Process a single file from the inbox-disk.
+     *
      * @param  Filesystem  $inboxDisk
      * @param  FileInfoDto  $file
      * @param  string  $diskName
      * @param  User|null  $user
      * @param  string|null  $inboxDiskName
      * @return IngestResult
+     *
      * @throws Throwable
-     * @todo refactor for v4: split into isolated steps with clear responsibilities
+     *
+     * @todo Refactor in v4: decompose this method into explicit, isolated steps with clear responsibilities.
+     *
      * @note
-     * This method currently orchestrates the full ingest workflow (duplicate detection, video registration,
-     * metadata import, preview generation, file transfer and finalization) in a single sequential process.
+     * This method currently performs the full ingest workflow in a single sequential operation, including
+     * duplicate detection, video registration, metadata handling, preview generation, file transfer and
+     * finalization.
      *
-     * The responsibilities are intentionally kept together in v3 to preserve the existing upload behavior
-     * and avoid breaking the production workflow.
-     *
-     * For v4, this method should be refactored into explicit, isolated steps with clearly defined
-     * responsibilities (e.g. duplicate detection, metadata handling, preview generation, file transfer),
-     * coordinated by a dedicated workflow/orchestrator layer. This will allow finer-grained retries,
-     * clearer state transitions and improved testability.
+     * In a future iteration, this logic should be expressed as a dedicated workflow or pipeline composed
+     * of discrete, idempotent steps (e.g. using a workflow engine or a middleware-style step chain). This
+     * would enable more granular retry behavior, explicit state transitions and context-specific handling
+     * (e.g. web uploads vs. batch or scan-based ingest).
      */
     public function processFile(
         Filesystem $inboxDisk,
