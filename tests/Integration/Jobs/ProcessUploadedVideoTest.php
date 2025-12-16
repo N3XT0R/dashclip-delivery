@@ -169,12 +169,6 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         $hash = DynamicStorage::getHashForFilePath($disk, $fileInfo->path);
         $this->copyDisk($disk, \Storage::disk('uploads'));
 
-        $video = Video::factory()->create([
-            'hash' => $hash,
-            'original_name' => 'standalone.mp4',
-        ]);
-
-
         $job = new ProcessUploadedVideo(
             user: $user,
             fileInfoDto: $fileInfo,
@@ -190,8 +184,12 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
 
         $job->handle($this->app->make(IngestScanner::class));
 
+        $this->assertDatabaseHas('videos', [
+            'hash' => $hash,
+            'original_name' => 'standalone.mp4',
+        ]);
+
         $this->assertDatabaseHas('clips', [
-            'video_id' => $video->getKey(),
             'start_sec' => 0,
             'end_sec' => 10,
             'submitted_by' => $user->display_name,
