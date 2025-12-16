@@ -65,7 +65,7 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
     {
         $fileInfoDto = $this->fileInfoDto;
         $user = $this->user;
-        $disk = \Storage::disk($this->sourceDisk);
+        $disk = $this->retrieveSourceDisk($this->sourceDisk);
         $scanner->processFile($disk, $fileInfoDto, $this->targetDisk, $user);
 
         $video = Video::query()
