@@ -64,7 +64,7 @@ class ProcessUploadedVideo implements ShouldQueue, ShouldBeUnique
             file: $fileInfoDto,
             diskName: $this->targetDisk,
             user: $user,
-            sourceDiskName: $sourceDiskName,
+            inboxDiskName: $sourceDiskName,
         );
 
         $video = Video::query()
