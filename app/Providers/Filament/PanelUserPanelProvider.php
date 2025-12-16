@@ -110,7 +110,7 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addRenderHooks(Panel $panel): Panel
     {
         return $panel->renderHook(
-            PanelsRenderHook::BODY_END,
+            PanelsRenderHook::CONTENT_END,
             function (): ?string {
                 if (request()->routeIs('filament.standard.pages.video-upload')) {
                     return null;
