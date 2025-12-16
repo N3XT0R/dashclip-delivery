@@ -40,10 +40,10 @@ final class VideoUploadTest extends DatabaseTestCase
         $this->copyDisk($dynamicStorage, $disk);
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
-        $disk->makeDirectory('uploads/tmp/');
+        $disk->makeDirectory('tmp/');
 
-        $disk->put('uploads/tmp/file1.mp4', $dynamicStorage->readStream('standalone.mp4'));
-        $path1 = 'uploads/tmp/file1.mp4';
+        $disk->put('tmp/file1.mp4', $dynamicStorage->readStream('standalone.mp4'));
+        $path1 = 'tmp/file1.mp4';
 
         $state = [
             'file' => $path1,
