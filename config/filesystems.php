@@ -63,6 +63,16 @@ return [
             'root' => storage_path('app/uploads'),
             'throw' => false,
             'report' => false,
+            'permissions' => [
+                'file' => [
+                    'public' => 0775,
+                    'private' => 0775,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0775,
+                ],
+            ],
         ],
 
         'public' => [
