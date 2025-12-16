@@ -191,14 +191,14 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         $job->handle($this->app->make(IngestScanner::class));
 
         $this->assertDatabaseHas('clips', [
-            'video_id' => $video->id,
+            'video_id' => $video->getKey(),
             'start_sec' => 0,
             'end_sec' => 10,
             'submitted_by' => $user->display_name,
             'note' => 'inbox name test',
             'bundle_key' => 'bundle-inbox',
             'role' => 'main',
-            'user_id' => $user->id,
+            'user_id' => $user->getKey(),
         ]);
     }
 
