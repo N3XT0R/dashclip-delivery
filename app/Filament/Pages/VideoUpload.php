@@ -41,6 +41,8 @@ class VideoUpload extends Page implements HasForms
 
     public ?array $data = [];
 
+    private const string UPLOAD_DISK_CONFIG_KEY = 'uploads.disk';
+
     public function mount(): void
     {
         $this->form->fill();
@@ -94,7 +96,7 @@ class VideoUpload extends Page implements HasForms
         return FileUpload::make('file')
             ->label('Video')
             ->required()
-            ->disk(config('uploads.disk'))
+            ->disk(config(self::UPLOAD_DISK_CONFIG_KEY))
             ->directory(config('uploads.directory'))
             ->acceptedFileTypes([
                 'video/mp4',
@@ -223,7 +225,7 @@ class VideoUpload extends Page implements HasForms
             user: $user,
             fileInfoDto: $fileInfoDto,
             targetDisk: $targetDisk,
-            sourceDisk: Storage::disk(config('uploads.disk')),
+            sourceDisk: Storage::disk(config(self::UPLOAD_DISK_CONFIG_KEY)),
             start: (int)($clip['start_sec'] ?? 0),
             end: (int)($clip['end_sec'] ?? 0),
             submittedBy: $user?->display_name,
