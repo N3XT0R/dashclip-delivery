@@ -185,6 +185,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         $job->handle($this->app->make(IngestScanner::class));
 
         $this->assertDatabaseHas('videos', [
+            'disk' => 'tmp',
             'hash' => $hash,
             'original_name' => 'standalone.mp4',
         ]);
