@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Ensured that the original storage disk is preserved during ingestion and correctly transitioned to the
       target disk on successful upload, preventing inconsistent file states and access errors.
 
+### Removed
+
+- Removed unused code paths that were no longer referenced.
+
 ## [3.1.2] - 2025-12-12
 
 ### Fixed
