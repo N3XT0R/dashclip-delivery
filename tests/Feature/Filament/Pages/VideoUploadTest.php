@@ -36,7 +36,7 @@ final class VideoUploadTest extends DatabaseTestCase
         Bus::fake();
         $inboxPath = base_path('tests/Fixtures/Inbox/Videos/');
         $dynamicStorage = DynamicStorage::fromPath($inboxPath);
-        $disk = Storage::fake('local');
+        $disk = Storage::fake('uploads');
         $this->copyDisk($dynamicStorage, $disk);
         $user = User::factory()->admin()->create(['name' => 'Tester']);
         $this->actingAs($user);
@@ -110,8 +110,8 @@ final class VideoUploadTest extends DatabaseTestCase
         $user = User::factory()->admin()->create();
         $this->actingAs($user);
 
-        $disk = Storage::fake();
-        $disk->put('uploads/tmp/file-zero.mp4', 'z');
+        $disk = Storage::fake('uploads');
+        $disk->put('tmp/file-zero.mp4', 'z');
         $path = $disk->path('uploads/tmp/file-zero.mp4');
 
         $file = new class($path) {
