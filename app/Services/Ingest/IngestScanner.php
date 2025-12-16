@@ -127,6 +127,18 @@ class IngestScanner
      * @param  string|null  $inboxDiskName
      * @return IngestResult
      * @throws Throwable
+     * @todo refactor for v4: split into isolated steps with clear responsibilities
+     * @note
+     * This method currently orchestrates the full ingest workflow (duplicate detection, video registration,
+     * metadata import, preview generation, file transfer and finalization) in a single sequential process.
+     *
+     * The responsibilities are intentionally kept together in v3 to preserve the existing upload behavior
+     * and avoid breaking the production workflow.
+     *
+     * For v4, this method should be refactored into explicit, isolated steps with clearly defined
+     * responsibilities (e.g. duplicate detection, metadata handling, preview generation, file transfer),
+     * coordinated by a dedicated workflow/orchestrator layer. This will allow finer-grained retries,
+     * clearer state transitions and improved testability.
      */
     public function processFile(
         Filesystem $inboxDisk,
