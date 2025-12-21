@@ -7,6 +7,7 @@ namespace Tests\Integration\Models;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
+use App\Models\User;
 use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
 
@@ -52,4 +53,13 @@ final class ChannelTest extends DatabaseTestCase
             $approvalUrl);
     }
 
+    public function testAssignUserToChannel(): void
+    {
+        $channel = Channel::factory()->create();
+        $user = User::factory()->create();
+
+        $channel->channelUsers()->attach($user->getKey());
+
+        $this->assertTrue($channel->channelUsers()->first()->is($user));
+    }
 }
