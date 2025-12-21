@@ -459,7 +459,7 @@ class MyOffers extends Page implements HasTable
                             ->label(__('my_offers.modal.metadata.duration'))
                             ->default('—'),
 
-                        TextEntry::make('video.filename')
+                        TextEntry::make('video.original_name')
                             ->label(__('my_offers.modal.metadata.filename'))
                             ->default('—'),
                     ])
