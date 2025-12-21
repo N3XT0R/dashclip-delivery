@@ -7,6 +7,7 @@ namespace Tests\Integration\Models;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
@@ -51,6 +52,17 @@ final class ChannelTest extends DatabaseTestCase
         $this->assertTrue(str_contains($approvalUrl, $expectedToken));
         $this->assertSame(URL::route('channels.approve', ['channel' => $channel, 'token' => $expectedToken]),
             $approvalUrl);
+    }
+
+
+    public function testAssignTeamToChannel(): void
+    {
+        $channel = Channel::factory()->create();
+        $team = Team::factory()->create();
+
+        $channel->assignedTeams()->attach($team->getKey());
+
+        $this->assertTrue($channel->assignedTeams()->first()->is($team));
     }
 
     public function testAssignUserToChannel(): void
