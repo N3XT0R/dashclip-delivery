@@ -138,7 +138,7 @@ class AssignmentRepository
             ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
             ->where(function (Builder $query) {
                 $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
+                    ->orWhere('expires_at', '>=', now());
             });
     }
 
