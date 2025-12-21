@@ -8,8 +8,8 @@ use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Channel;
 use App\Repository\UserRepository;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ListAssignments extends ListRecords
 {
@@ -18,8 +18,18 @@ class ListAssignments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return __('my_offers.title');
+    }
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        return trans('common.channel').': '.$this->getCurrentChannel()?->name;
     }
 
     protected function getHeaderWidgets(): array
