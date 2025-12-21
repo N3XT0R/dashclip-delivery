@@ -26,7 +26,7 @@ class ExpiredOffersStatsWidget extends BaseChannelWidget
         }
 
         $expiredQuery = Assignment::query()
-            ->where('channel_id', $channel->id)
+            ->where('channel_id', $channel->getKey())
             ->where('status', StatusEnum::EXPIRED->value);
 
         $totalExpired = $expiredQuery->count();
