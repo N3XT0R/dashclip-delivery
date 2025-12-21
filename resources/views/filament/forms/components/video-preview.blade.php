@@ -8,5 +8,5 @@
         Your browser does not support the video tag.
     </video>
 @else
-    <p>No preview available.</p>
+    <p>{{__('my_offers.messages.no_preview_available')}}</p>
 @endif
