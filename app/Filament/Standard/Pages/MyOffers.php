@@ -437,7 +437,6 @@ class MyOffers extends Page implements HasTable
             ->state([
                 'video' => $assignment->video,
                 'clips' => $assignment->video->clips,
-                'firstClip' => $assignment->video->clips->first(),
             ])
             ->schema([
                 Section::make(__('my_offers.modal.preview.heading'))
@@ -455,10 +454,6 @@ class MyOffers extends Page implements HasTable
                         TextEntry::make('video.human_readable_size')
                             ->label(__('my_offers.modal.metadata.file_size'))
                             ->default('—'),
-                        TextEntry::make('video.firstClip.duration')
-                            ->label(__('my_offers.modal.metadata.duration'))
-                            ->default('—'),
-
                         TextEntry::make('video.original_name')
                             ->label(__('my_offers.modal.metadata.filename'))
                             ->default('—'),
