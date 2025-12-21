@@ -27,6 +27,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Number;
@@ -54,6 +55,11 @@ class MyOffers extends Page implements HasTable
     public static function getNavigationGroup(): string|UnitEnum|null
     {
         return __(static::$navigationGroup);
+    }
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        return $this->getCurrentChannel()?->name;
     }
 
     public function getTitle(): string
