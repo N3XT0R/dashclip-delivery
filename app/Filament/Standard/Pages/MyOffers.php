@@ -113,7 +113,6 @@ class MyOffers extends Page implements HasTable
         }
 
         return match ($this->activeTab) {
-            'available' => $this->availableTable($table, $channel),
             'downloaded' => $this->downloadedTable($table, $channel),
             'expired' => $this->expiredTable($table, $channel),
             'returned' => $this->returnedTable($table, $channel),
