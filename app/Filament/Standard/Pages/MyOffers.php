@@ -22,6 +22,7 @@ use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
 use Filament\Resources\Concerns\HasTabs;
+use Filament\Schemas\Components\EmbeddedTable;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
@@ -33,7 +34,6 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use UnitEnum;
 
 class MyOffers extends Page implements HasTable
@@ -43,8 +43,6 @@ class MyOffers extends Page implements HasTable
     use HasTabs;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
-
-    protected string $view = 'filament.standard.pages.my-offers';
 
     protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
 
@@ -82,6 +80,21 @@ class MyOffers extends Page implements HasTable
         return $user->hasRole(RoleEnum::CHANNEL_OPERATOR->value);
     }
 
+    public ?string $activeTab = 'available';
+
+    public function mount(): void
+    {
+        $this->loadDefaultActiveTab();
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema->components([
+            $this->getTabsContentComponent(),
+            EmbeddedTable::make(),
+        ]);
+    }
+
     protected function getHeaderWidgets(): array
     {
         return [
@@ -101,15 +114,39 @@ class MyOffers extends Page implements HasTable
     public function getTabs(): array
     {
         return [
-            'available' => Tab::make('available')
-                ->label(__('my_offers.tabs.available')),
-            'downloaded' => Tab::make('downloaded')
-                ->label(__('my_offers.tabs.downloaded')),
-            'expired' => Tab::make('expired')
-                ->label(__('my_offers.tabs.expired')),
-            'returned' => Tab::make('returned')
-                ->label(__('my_offers.tabs.returned')),
+            'available' => Tab::make(__('my_offers.tabs.available'))
+                ->modifyQueryUsing(function (Builder $query): Builder {
+                    return $query
+                        ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
+                        ->where(function (Builder $query): void {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        })
+                        ->latest('updated_at');
+                }),
+            'downloaded' => Tab::make(__('my_offers.tabs.downloaded'))
+                ->modifyQueryUsing(function (Builder $query): Builder {
+                    return $query
+                        ->where('status', StatusEnum::PICKEDUP->value)
+                        ->whereHas('downloads')
+                        ->join('downloads', 'assignments.id', '=', 'downloads.assignment_id')
+                        ->orderByDesc('downloads.downloaded_at')
+                        ->select('assignments.*');
+                }),
+            'expired' => Tab::make(__('my_offers.tabs.expired'))
+                ->modifyQueryUsing(fn(Builder $query): Builder => $query
+                    ->where('status', StatusEnum::EXPIRED->value)
+                    ->latest('updated_at')),
+            'returned' => Tab::make(__('my_offers.tabs.returned'))
+                ->modifyQueryUsing(fn(Builder $query): Builder => $query
+                    ->where('status', StatusEnum::REJECTED->value)
+                    ->latest('updated_at')),
         ];
+    }
+
+    public function getDefaultActiveTab(): string | int | null
+    {
+        return 'available';
     }
 
     public function table(Table $table): Table
@@ -120,28 +157,13 @@ class MyOffers extends Page implements HasTable
             return $table->query(Assignment::query()->where('channel_id', -1));
         }
 
-        return match ($this->activeTab ?? 'available') {
-            'downloaded' => $this->downloadedTable($table, $channel),
-            'expired' => $this->expiredTable($table, $channel),
-            'returned' => $this->returnedTable($table, $channel),
-            'available' => $this->availableTable($table, $channel),
-        };
-    }
-
-    protected function availableTable(Table $table, Channel $channel): Table
-    {
         return $table
             ->query(
                 Assignment::query()
                     ->where('channel_id', $channel->id)
-                    ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
-                    ->where(function (Builder $query) {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>', now());
-                    })
                     ->with(['video.clips.user', 'downloads'])
-                    ->latest('updated_at')
             )
+            ->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query))
             ->columns([
                 TextColumn::make('video.original_name')
                     ->label(__('my_offers.table.columns.video_title'))
@@ -153,16 +175,27 @@ class MyOffers extends Page implements HasTable
                 TextColumn::make('video.clips.user.name')
                     ->label(__('my_offers.table.columns.uploader'))
                     ->formatStateUsing(function (Assignment $record): string {
-                        $uploaders = $record->video->clips->pluck('user.name')->unique()->filter()->implode(', ');
+                        $uploaderKey = $this->activeTab === 'returned'
+                            ? 'user.display_name'
+                            : 'user.name';
+
+                        $uploaders = $record->video->clips
+                            ->pluck($uploaderKey)
+                            ->unique()
+                            ->filter()
+                            ->implode(', ');
+
                         return $uploaders ?: '—';
                     })
                     ->limit(30),
 
                 TextColumn::make('expires_at')
-                    ->label(__('my_offers.table.columns.valid_until'))
+                    ->label(fn(): string => $this->activeTab === 'expired'
+                        ? __('my_offers.table.columns.expired_at')
+                        : __('my_offers.table.columns.valid_until'))
                     ->dateTime('d.m.Y H:i')
                     ->description(function (Assignment $record): string {
-                        if (!$record->expires_at) {
+                        if ($this->activeTab !== 'available' || !$record->expires_at) {
                             return '';
                         }
 
@@ -177,10 +210,10 @@ class MyOffers extends Page implements HasTable
                             return __('my_offers.table.columns.remaining_hours', ['hours' => max(0, $hours)]);
                         }
 
-                        return __('my_offers.table.columns.remaining_days', ['days' => (int)$diff]);
+                        return __('my_offers.table.columns.remaining_days', ['days' => (int) $diff]);
                     })
                     ->color(function (Assignment $record): string {
-                        if (!$record->expires_at) {
+                        if ($this->activeTab !== 'available' || !$record->expires_at) {
                             return 'gray';
                         }
 
@@ -192,7 +225,8 @@ class MyOffers extends Page implements HasTable
 
                         return 'success';
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->visible(fn(): bool => in_array($this->activeTab, ['available', 'expired'])),
 
                 TextColumn::make('status')
                     ->label(__('my_offers.table.columns.status'))
@@ -204,142 +238,24 @@ class MyOffers extends Page implements HasTable
 
                         return __('my_offers.table.status_badges.available');
                     })
-                    ->color(function (Assignment $record): string {
-                        return $record->downloads->isNotEmpty() ? 'success' : 'warning';
-                    }),
-            ])
-            ->recordActions([
-                Action::make('view_details')
-                    ->label(__('my_offers.table.actions.view_details'))
-                    ->icon('heroicon-m-eye')
-                    ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(Width::FourExtraLarge)
-                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Schließen'),
-
-                ViewAction::make('download')
-                    ->label(__('my_offers.table.actions.download'))
-                    ->icon('heroicon-m-arrow-down-tray')
-                    ->color('primary')
-                    ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
-                    ->openUrlInNewTab(),
-            ])
-            ->toolbarActions([
-                BulkAction::make('download_selected')
-                    ->label(fn(Collection $records): string => __('my_offers.table.bulk_actions.download_selected',
-                        ['count' => $records->count()]))
-                    ->icon('heroicon-m-arrow-down-tray')
-                    ->color('primary')
-                    ->action(function (Collection $records) {
-                        // TODO: Implement bulk download
-                    }),
-            ])
-            ->selectCurrentPageOnly()
-            ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription(__('my_offers.table.empty_state.description'));
-    }
-
-    protected function downloadedTable(Table $table, Channel $channel): Table
-    {
-        return $table
-            ->query(
-                Assignment::query()
-                    ->where('channel_id', $channel->id)
-                    ->where('status', StatusEnum::PICKEDUP->value)
-                    ->whereHas('downloads')
-                    ->with(['video.clips.user', 'downloads'])
-                    ->latest('updated_at')
-            )
-            ->columns([
-                TextColumn::make('video.original_name')
-                    ->label(__('my_offers.table.columns.video_title'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
-
-                TextColumn::make('video.clips.user.name')
-                    ->label(__('my_offers.table.columns.uploader'))
-                    ->formatStateUsing(function (Assignment $record): string {
-                        $uploaders = $record->video->clips->pluck('user.name')->unique()->filter()->implode(', ');
-                        return $uploaders ?: '—';
-                    })
-                    ->limit(30),
+                    ->color(fn(Assignment $record): string => $record->downloads->isNotEmpty() ? 'success' : 'warning')
+                    ->visible(fn(): bool => $this->activeTab === 'available'),
 
                 TextColumn::make('created_at')
                     ->label(__('my_offers.table.columns.offered_at'))
                     ->dateTime('d.m.Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->visible(fn(): bool => in_array($this->activeTab, ['downloaded', 'expired', 'returned'])),
 
                 TextColumn::make('downloads.downloaded_at')
                     ->label(__('my_offers.table.columns.downloaded_at'))
                     ->formatStateUsing(function (Assignment $record): string {
                         $latestDownload = $record->downloads->sortByDesc('downloaded_at')->first();
+
                         return $latestDownload?->downloaded_at?->format('d.m.Y H:i') ?? '—';
                     })
-                    ->sortable(),
-            ])
-            ->recordActions([
-                Action::make('view_details')
-                    ->label(__('my_offers.table.actions.view_details'))
-                    ->icon('heroicon-m-eye')
-                    ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(Width::FourExtraLarge)
-                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Schließen'),
-
-                Action::make('download_again')
-                    ->label(__('my_offers.table.actions.download_again'))
-                    ->icon('heroicon-m-arrow-path')
-                    ->color('gray')
-                    ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
-                    ->openUrlInNewTab(),
-            ])
-            ->defaultSort(function (QueryBuilder $builder) {
-                $builder->join('downloads', 'assignments.id', '=', 'downloads.assignment_id')
-                    ->orderBy('downloads.downloaded_at', 'desc');
-            })
-            ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription(__('my_offers.messages.no_videos_downloaded'));
-    }
-
-    protected function expiredTable(Table $table, Channel $channel): Table
-    {
-        return $table
-            ->query(
-                Assignment::query()
-                    ->where('channel_id', $channel->id)
-                    ->where('status', StatusEnum::EXPIRED->value)
-                    ->with(['video.clips.user', 'downloads'])
-                    ->latest('updated_at')
-            )
-            ->columns([
-                TextColumn::make('video.original_name')
-                    ->label(__('my_offers.table.columns.video_title'))
-                    ->searchable()
                     ->sortable()
-                    ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
-
-                TextColumn::make('video.clips.user.name')
-                    ->label(__('my_offers.table.columns.uploader'))
-                    ->formatStateUsing(function (Assignment $record): string {
-                        $uploaders = $record->video->clips->pluck('user.name')->unique()->filter()->implode(', ');
-                        return $uploaders ?: '—';
-                    })
-                    ->limit(30),
-
-                TextColumn::make('created_at')
-                    ->label(__('my_offers.table.columns.offered_at'))
-                    ->dateTime('d.m.Y H:i')
-                    ->sortable(),
-
-                TextColumn::make('expires_at')
-                    ->label(__('my_offers.table.columns.expired_at'))
-                    ->dateTime('d.m.Y H:i')
-                    ->sortable(),
+                    ->visible(fn(): bool => in_array($this->activeTab, ['downloaded', 'expired'])),
 
                 TextColumn::make('was_downloaded')
                     ->label(__('my_offers.table.columns.was_downloaded'))
@@ -349,91 +265,73 @@ class MyOffers extends Page implements HasTable
                             ? __('common.yes')
                             : __('common.no');
                     })
-                    ->color(function (Assignment $record): string {
-                        return $record->downloads->isNotEmpty() ? 'success' : 'gray';
-                    }),
-
-                TextColumn::make('downloads.downloaded_at')
-                    ->label(__('my_offers.table.columns.downloaded_at'))
-                    ->formatStateUsing(function (Assignment $record): string {
-                        $latestDownload = $record->downloads->sortByDesc('downloaded_at')->first();
-                        return $latestDownload?->downloaded_at?->format('d.m.Y H:i') ?? '—';
-                    })
-                    ->sortable(),
-            ])
-            ->recordActions([
-                Action::make('view_details')
-                    ->label(__('my_offers.table.actions.view_details'))
-                    ->icon('heroicon-m-eye')
-                    ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(Width::FourExtraLarge)
-                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Schließen'),
-            ])
-            ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription(__('my_offers.messages.no_expired_offers'));
-    }
-
-    protected function returnedTable(Table $table, Channel $channel): Table
-    {
-        return $table
-            ->query(
-                Assignment::query()
-                    ->where('channel_id', $channel->id)
-                    ->where('status', StatusEnum::REJECTED->value)
-                    ->with(['video.clips.user', 'downloads'])
-                    ->latest('updated_at')
-            )
-            ->columns([
-                TextColumn::make('video.original_name')
-                    ->label(__('my_offers.table.columns.video_title'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
-
-                TextColumn::make('video.clips.user.name')
-                    ->label(__('my_offers.table.columns.uploader'))
-                    ->formatStateUsing(function (Assignment $record): string {
-                        $uploaders = $record->video
-                            ->clips
-                            ->pluck('user.display_name')
-                            ->unique()
-                            ->filter()
-                            ->implode(', ');
-
-                        return $uploaders ?: '—';
-                    })
-                    ->limit(30),
-
-                TextColumn::make('created_at')
-                    ->label(__('my_offers.table.columns.offered_at'))
-                    ->dateTime('d.m.Y H:i')
-                    ->sortable(),
+                    ->color(fn(Assignment $record): string => $record->downloads->isNotEmpty() ? 'success' : 'gray')
+                    ->visible(fn(): bool => $this->activeTab === 'expired'),
 
                 TextColumn::make('updated_at')
                     ->label(__('my_offers.table.columns.returned_at'))
                     ->dateTime('d.m.Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->visible(fn(): bool => $this->activeTab === 'returned'),
 
                 TextColumn::make('return_reason')
                     ->label(__('my_offers.table.columns.return_reason'))
                     ->default('—')
-                    ->limit(50),
+                    ->limit(50)
+                    ->visible(fn(): bool => $this->activeTab === 'returned'),
             ])
-            ->recordActions([
-                Action::make('view_details')
+            ->recordActions(function (): array {
+                $commonViewAction = Action::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
                     ->modalWidth(Width::FourExtraLarge)
                     ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Schließen'),
-            ])
+                    ->modalCancelActionLabel('Schließen');
+
+                return match ($this->activeTab) {
+                    'downloaded' => [
+                        $commonViewAction,
+                        Action::make('download_again')
+                            ->label(__('my_offers.table.actions.download_again'))
+                            ->icon('heroicon-m-arrow-path')
+                            ->color('gray')
+                            ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
+                            ->openUrlInNewTab(),
+                    ],
+                    'available' => [
+                        $commonViewAction,
+                        ViewAction::make('download')
+                            ->label(__('my_offers.table.actions.download'))
+                            ->icon('heroicon-m-arrow-down-tray')
+                            ->color('primary')
+                            ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
+                            ->openUrlInNewTab(),
+                    ],
+                    default => [
+                        $commonViewAction,
+                    ],
+                };
+            })
+            ->bulkActions(fn() => $this->activeTab === 'available' ? [
+                BulkAction::make('download_selected')
+                    ->label(fn(Collection $records): string => __('my_offers.table.bulk_actions.download_selected',
+                        ['count' => $records->count()]))
+                    ->icon('heroicon-m-arrow-down-tray')
+                    ->color('primary')
+                    ->action(function (Collection $records) {
+                        // TODO: Implement bulk download
+                    }),
+            ] : [])
+            ->selectCurrentPageOnly($this->activeTab === 'available')
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription(__('my_offers.messages.no_returned_offers'));
+            ->emptyStateDescription(match ($this->activeTab) {
+                'downloaded' => __('my_offers.messages.no_videos_downloaded'),
+                'expired' => __('my_offers.messages.no_expired_offers'),
+                'returned' => __('my_offers.messages.no_returned_offers'),
+                default => __('my_offers.table.empty_state.description'),
+            });
     }
 
     protected function getDetailsInfolist(Assignment $assignment): Schema
