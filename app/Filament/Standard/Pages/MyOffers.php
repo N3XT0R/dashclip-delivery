@@ -89,12 +89,15 @@ class MyOffers extends Page implements HasTable
 
     protected function resolveTableQuery(): Builder
     {
-        return match ($this->activeTab) {
+        $query = match ($this->activeTab) {
             'downloaded' => $this->query->downloaded(),
             'expired' => $this->query->expired(),
             'returned' => $this->query->returned(),
             default => $this->query->available(),
-        }->with(['video', 'channel', 'downloads'])
+        };
+
+        return $query
+            ->with(['video', 'channel', 'downloads'])
             ->latest('updated_at');
     }
 
