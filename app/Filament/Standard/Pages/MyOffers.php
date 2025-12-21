@@ -21,6 +21,7 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
+use Filament\Resources\Concerns\HasTabs;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
@@ -38,6 +39,7 @@ class MyOffers extends Page implements HasTable
 {
     use InteractsWithTable;
     use InteractsWithActions;
+    use HasTabs;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
 
@@ -46,8 +48,7 @@ class MyOffers extends Page implements HasTable
     protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
 
     protected static ?int $navigationSort = 10;
-
-    public string $activeTab = 'available';
+    
 
     public static function getNavigationLabel(): string
     {
@@ -114,11 +115,11 @@ class MyOffers extends Page implements HasTable
             return $table->query(Assignment::query()->where('channel_id', -1));
         }
 
-        return match ($this->activeTab) {
+        return match ($this->activeTab ?? 'available') {
             'downloaded' => $this->downloadedTable($table, $channel),
             'expired' => $this->expiredTable($table, $channel),
             'returned' => $this->returnedTable($table, $channel),
-            default => $this->availableTable($table, $channel),
+            'available' => $this->availableTable($table, $channel),
         };
     }
 
