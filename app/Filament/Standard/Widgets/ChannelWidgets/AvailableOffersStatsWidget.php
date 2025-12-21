@@ -17,24 +17,27 @@ class AvailableOffersStatsWidget extends BaseChannelWidget
 
     protected function getStats(): array
     {
+        $stats = [];
         $assignmentRepo = app(AssignmentRepository::class);
         $channel = $this->channel;
 
         if (!$channel) {
-            return [
-                Stat::make(__('my_offers.stats.available.label'), 0),
+            $stats = [
+                'available' => Stat::make(__('my_offers.stats.available.label'), 0),
             ];
+
+            return $stats;
         }
 
         $totalAvailable = $assignmentRepo->getAvailableOffersCountForChannel($channel);
-        
-        return [
-            Stat::make(__('my_offers.stats.available.label'), (string)$totalAvailable)
-                ->description('Noch nicht abgelaufen')
-                ->descriptionIcon('heroicon-m-sparkles')
-                ->color('success')
-                ->chart($this->getAvailableChartData($channel)),
-        ];
+        $stats['available'] = Stat::make(__('my_offers.stats.available.label'), (string)$totalAvailable)
+            ->description('Noch nicht abgelaufen')
+            ->descriptionIcon('heroicon-m-sparkles')
+            ->color('success')
+            ->chart($this->getAvailableChartData($channel));
+
+
+        return $stats;
     }
 
     protected function getAvailableChartData(Channel $channel): array
