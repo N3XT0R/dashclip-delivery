@@ -385,7 +385,13 @@ class MyOffers extends Page implements HasTable
                 TextColumn::make('video.clips.user.name')
                     ->label(__('my_offers.table.columns.uploader'))
                     ->formatStateUsing(function (Assignment $record): string {
-                        $uploaders = $record->video->clips->pluck('user.display_name')->unique()->filter()->implode(', ');
+                        $uploaders = $record->video
+                            ->clips
+                            ->pluck('user.display_name')
+                            ->unique()
+                            ->filter()
+                            ->implode(', ');
+
                         return $uploaders ?: '—';
                     })
                     ->limit(30),
