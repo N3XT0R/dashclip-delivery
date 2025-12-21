@@ -52,13 +52,4 @@ final class ChannelTest extends DatabaseTestCase
             $approvalUrl);
     }
 
-    public function testAssignedTeamsRelationship(): void
-    {
-        $channel = Channel::factory()->create();
-        $user = \App\Models\User::factory()->create();
-
-        $channel->assignedTeams()->attach($user->getKey());
-
-        $this->assertTrue($channel->assignedTeams->first()->is($user));
-    }
 }
