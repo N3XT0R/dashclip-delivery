@@ -42,6 +42,7 @@ class BaseChannelWidget extends BaseWidget
 
 
         return $user->channels()
+            ->latest()
             ->first();
     }
 }
