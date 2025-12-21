@@ -60,6 +60,11 @@ class ExpiredOffersStatsWidget extends BaseChannelWidget
         ];
     }
 
+    /**
+     * Get chart data for expired assignments over the past 7 days.
+     * @param  Channel  $channel
+     * @return array
+     */
     protected function getExpiredChartData(Channel $channel): array
     {
         $data = [];
