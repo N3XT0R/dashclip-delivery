@@ -90,4 +90,9 @@ return [
             'not_available' => 'Keine Vorschau verfügbar',
         ],
     ],
+    'messages' => [
+        'no_videos_downloaded' => 'Sie haben noch keine Videos heruntergeladen.',
+        'no_expired_offers' => 'Sie haben keine abgelaufenen Angebote.',
+        'no_returned_offers' => 'Sie haben keine zurückgewiesenen Angebote.',
+    ],
 ];

@@ -295,7 +295,7 @@ class MyOffers extends Page implements HasTable
                     ->orderBy('downloads.downloaded_at', 'desc');
             })
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription('Sie haben noch keine Videos heruntergeladen.');
+            ->emptyStateDescription(__('my_offers.messages.no_videos_downloaded'));
     }
 
     protected function expiredTable(Table $table, Channel $channel): Table
@@ -365,7 +365,7 @@ class MyOffers extends Page implements HasTable
                     ->modalCancelActionLabel('Schließen'),
             ])
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription('Sie haben keine abgelaufenen Angebote.');
+            ->emptyStateDescription(__('my_offers.messages.no_expired_offers'));
     }
 
     protected function returnedTable(Table $table, Channel $channel): Table
@@ -426,7 +426,7 @@ class MyOffers extends Page implements HasTable
                     ->modalCancelActionLabel('Schließen'),
             ])
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription('Sie haben keine zurückgewiesenen Angebote.');
+            ->emptyStateDescription(__('my_offers.messages.no_returned_offers'));
     }
 
     protected function getDetailsInfolist(Assignment $assignment): Schema
