@@ -17,7 +17,6 @@ class AvailableOffersStatsWidget extends BaseChannelWidget
 
     protected function getStats(): array
     {
-        $stats = [];
         $assignmentRepo = app(AssignmentRepository::class);
         $channel = $this->getChannel();
 
