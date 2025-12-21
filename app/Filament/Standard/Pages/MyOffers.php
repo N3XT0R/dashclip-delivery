@@ -59,7 +59,7 @@ class MyOffers extends Page implements HasTable
 
     public function getSubheading(): string|Htmlable|null
     {
-        return $this->getCurrentChannel()?->name;
+        return trans('common.channel').': '.$this->getCurrentChannel()?->name;
     }
 
     public function getTitle(): string
