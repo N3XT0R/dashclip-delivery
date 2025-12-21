@@ -465,7 +465,7 @@ class MyOffers extends Page implements HasTable
                         ViewField::make('clips')
                             ->view('filament.standard.components.clips-table')
                             ->viewData([
-                                'clips' => $assignment->video->clips,
+                                'clips' => $assignment->video->clips()->orderBy('start_sec')->get(),
                             ]),
                     ])
                     ->collapsible()
