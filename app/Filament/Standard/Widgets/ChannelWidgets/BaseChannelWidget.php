@@ -42,6 +42,6 @@ class BaseChannelWidget extends BaseWidget
 
 
         return $user->channels()
-            ->firstOrFail();
+            ->first();
     }
 }
