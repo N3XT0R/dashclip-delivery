@@ -5,48 +5,37 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Widgets\ChannelWidgets;
 
 use App\Models\Channel;
+use App\Repository\ChannelRepository;
 use App\Repository\UserRepository;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class BaseChannelWidget extends BaseWidget
 {
-    protected Channel|null $channel = null;
+    public ?int $channelId = null;
 
     protected static bool $isLazy = false;
+    
 
-    public function mount(?Channel $channel = null): void
+    public function mount(?int $channelId = null): void
     {
-        if ($channel) {
-            $this->setChannel($channel);
+        if ($channelId) {
+            $this->channelId = $channelId;
         }
     }
 
-    public function getChannel(): ?Channel
+    protected function getChannel(): ?Channel
     {
-        return $this->channel;
+        if ($this->channelId) {
+            return app(ChannelRepository::class)->findById($this->channelId);
+        }
+
+        return $this->resolveFallbackChannel();
     }
 
-    public function setChannel(?Channel $channel): void
-    {
-        $this->channel = $channel;
-    }
-
-    protected function getCurrentChannel(): ?Channel
+    protected function resolveFallbackChannel(): ?Channel
     {
         $user = app(UserRepository::class)->getCurrentUser();
-        if (!$user) {
-            return null;
-        }
 
-
-        $currentChannel = $this->getChannel();
-        if ($currentChannel) {
-            return $currentChannel;
-        }
-
-
-        return $user->channels()
-            ->latest()
-            ->first();
+        return $user?->channels()->latest()->first();
     }
 }

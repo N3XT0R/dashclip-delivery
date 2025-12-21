@@ -92,7 +92,7 @@ class MyOffers extends Page implements HasTable
     public function getWidgetData(): array
     {
         return [
-            'channel' => $this->getCurrentChannel(),
+            'channelId' => $this->getCurrentChannel()?->getKey(),
         ];
     }
 
