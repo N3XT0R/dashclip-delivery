@@ -159,14 +159,14 @@ class MyOffers extends Page implements HasTable
                             return '';
                         }
 
-                        $diff = now()->diffInDays($record->expires_at, false);
+                        $diff = now()->diffInDays($record->expires_at);
 
                         if ($diff < 0) {
                             return 'Abgelaufen';
                         }
 
                         if ($diff < 1) {
-                            $hours = now()->diffInHours($record->expires_at, false);
+                            $hours = now()->diffInHours($record->expires_at);
                             return __('my_offers.table.columns.remaining_hours', ['hours' => max(0, $hours)]);
                         }
 
@@ -177,7 +177,7 @@ class MyOffers extends Page implements HasTable
                             return 'gray';
                         }
 
-                        $diff = now()->diffInDays($record->expires_at, false);
+                        $diff = now()->diffInDays($record->expires_at);
 
                         if ($diff < 3) {
                             return 'danger';
