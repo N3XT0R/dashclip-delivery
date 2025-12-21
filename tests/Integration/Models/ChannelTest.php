@@ -7,8 +7,6 @@ namespace Tests\Integration\Models;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
 
@@ -56,15 +54,6 @@ final class ChannelTest extends DatabaseTestCase
 
     public function testAssignedTeamsRelationship(): void
     {
-        if (!Schema::hasTable('channel_user')) {
-            Schema::create('channel_user', static function (Blueprint $table): void {
-                $table->id();
-                $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
-                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-                $table->timestamps();
-            });
-        }
-
         $channel = Channel::factory()->create();
         $user = \App\Models\User::factory()->create();
 
