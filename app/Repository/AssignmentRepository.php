@@ -131,7 +131,7 @@ class AssignmentRepository
             ->count();
     }
 
-    public function getExpiredOffersForChannel(Channel $channel): int
+    private function getAvailableOfferQueryForChannel(Channel $channel): Builder
     {
         return Assignment::query()
             ->where('channel_id', $channel->getKey())
@@ -139,7 +139,12 @@ class AssignmentRepository
             ->where(function (Builder $query) {
                 $query->whereNull('expires_at')
                     ->orWhere('expires_at', '>', now());
-            })->count();
+            });
+    }
+
+    public function getAvailableOffersCountForChannel(Channel $channel): int
+    {
+        return $this->getAvailableOfferQueryForChannel($channel)->count();
     }
 
     public function getPickedUpOffersCountForUser(User $user): int

@@ -7,6 +7,7 @@ namespace App\Filament\Standard\Widgets\ChannelWidgets;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Repository\AssignmentRepository;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -16,6 +17,7 @@ class AvailableOffersStatsWidget extends BaseChannelWidget
 
     protected function getStats(): array
     {
+        $assignmentRepo = app(AssignmentRepository::class);
         $channel = $this->channel;
 
         if (!$channel) {
@@ -34,7 +36,7 @@ class AvailableOffersStatsWidget extends BaseChannelWidget
                     ->orWhere('expires_at', '>', now());
             });
 
-        $totalAvailable = $availableQuery->count();
+        $totalAvailable = $assignmentRepo->getAvailableOffersCountForChannel($channel);
 
         $downloadedFromAvailable = (clone $availableQuery)
             ->whereHas('downloads')
