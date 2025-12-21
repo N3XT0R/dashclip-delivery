@@ -12,6 +12,8 @@ class BaseChannelWidget extends BaseWidget
 {
     protected Channel|null $channel = null;
 
+    protected static bool $isLazy = false;
+
     public function mount(?Channel $channel = null): void
     {
         $this->setChannel($channel);
