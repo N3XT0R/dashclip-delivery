@@ -161,7 +161,7 @@ class MyOffers extends Page implements HasTable
                         $diff = now()->diffInDays($record->expires_at);
 
                         if ($diff < 0) {
-                            return 'Abgelaufen';
+                            return trans('common.expired');
                         }
 
                         if ($diff < 1) {
