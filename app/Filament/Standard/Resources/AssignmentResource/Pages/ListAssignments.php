@@ -10,6 +10,7 @@ use App\Models\Assignment;
 use App\Models\Channel;
 use App\Repository\UserRepository;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 
@@ -79,5 +80,15 @@ class ListAssignments extends ListRecords
 
         return $table
             ->query(Assignment::query()->where('channel_id', $channel->getKey()));
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'available' => Tab::make('available')->label(__('my_offers.tabs.available')),
+            'downloaded' => Tab::make('downloaded')->label(__('my_offers.tabs.downloaded')),
+            'expired' => Tab::make('expired')->label(__('my_offers.tabs.expired')),
+            'returned' => Tab::make('returned')->label(__('my_offers.tabs.returned')),
+        ];
     }
 }
