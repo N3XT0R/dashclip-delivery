@@ -23,6 +23,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
 use Filament\Resources\Concerns\HasTabs;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
@@ -52,7 +53,7 @@ class MyOffers extends Page implements HasTable
 
     public static function getNavigationLabel(): string
     {
-        return __('my_offers.navigation_label').'_duplicated';
+        return __('my_offers.navigation_label');
     }
 
     public static function getNavigationGroup(): string|UnitEnum|null
@@ -100,10 +101,14 @@ class MyOffers extends Page implements HasTable
     public function getTabs(): array
     {
         return [
-            'available' => __('my_offers.tabs.available'),
-            'downloaded' => __('my_offers.tabs.downloaded'),
-            'expired' => __('my_offers.tabs.expired'),
-            'returned' => __('my_offers.tabs.returned'),
+            'available' => Tab::make('available')
+                ->label(__('my_offers.tabs.available')),
+            'downloaded' => Tab::make('downloaded')
+                ->label(__('my_offers.tabs.downloaded')),
+            'expired' => Tab::make('expired')
+                ->label(__('my_offers.tabs.expired')),
+            'returned' => Tab::make('returned')
+                ->label(__('my_offers.tabs.returned')),
         ];
     }
 

@@ -1,12 +1,12 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <x-filament::tabs>
-            @foreach ($this->getTabs() as $key => $label)
+            @foreach ($this->getTabs() as $key => $tab)
                 <x-filament::tabs.item
                         :active="$activeTab === $key"
                         wire:click="$set('activeTab', '{{ $key }}')"
                 >
-                    {{ $label }}
+                    {{ $tab->getLabel() }}
                 </x-filament::tabs.item>
             @endforeach
         </x-filament::tabs>
