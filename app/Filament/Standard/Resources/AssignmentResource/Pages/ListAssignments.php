@@ -22,6 +22,11 @@ class ListAssignments extends ListRecords
         ];
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('my_offers.navigation_label');
+    }
+
     public function getTitle(): string
     {
         return __('my_offers.title');
