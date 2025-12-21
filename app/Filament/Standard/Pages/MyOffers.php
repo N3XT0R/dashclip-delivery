@@ -30,6 +30,7 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Number;
 use UnitEnum;
 
@@ -289,6 +290,10 @@ class MyOffers extends Page implements HasTable
                     ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
                     ->openUrlInNewTab(),
             ])
+            ->defaultSort(function (QueryBuilder $builder) {
+                $builder->join('downloads', 'assignments.id', '=', 'downloads.assignment_id')
+                    ->orderBy('downloads.downloaded_at', 'desc');
+            })
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
             ->emptyStateDescription('Sie haben noch keine Videos heruntergeladen.');
     }

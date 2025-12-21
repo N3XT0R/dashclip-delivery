@@ -12,8 +12,17 @@ class Download extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['assignment_id', 'downloaded_at', 'ip', 'user_agent', 'bytes_sent'];
-    protected $casts = ['downloaded_at' => 'datetime'];
+    protected $fillable = [
+        'assignment_id',
+        'downloaded_at',
+        'ip',
+        'user_agent',
+        'bytes_sent'
+    ];
+
+    protected $casts = [
+        'downloaded_at' => 'datetime'
+    ];
 
     public function assignment(): BelongsTo
     {
