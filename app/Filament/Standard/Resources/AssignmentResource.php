@@ -2,53 +2,62 @@
 
 namespace App\Filament\Standard\Resources;
 
+use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Resources\AssignmentResource\Pages;
 use App\Models\Assignment;
+use App\Repository\UserRepository;
 use BackedEnum;
-use Filament\Actions;
-use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class AssignmentResource extends Resource
 {
     protected static ?string $model = Assignment::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
-    protected static ?string $recordTitleAttribute = 'test ';
+    protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
+
+    public static function canAccess(): bool
+    {
+        $user = app(UserRepository::class)->getCurrentUser();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->hasRole(RoleEnum::CHANNEL_OPERATOR->value);
+    }
+
+
+    public static function getNavigationLabel(): string
+    {
+        return __('my_offers.navigation_label');
+    }
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return __(static::$navigationGroup);
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
-            ->components([
-                Forms\Components\TextInput::make('test ')
-                    ->required()
-                    ->maxLength(255),
-            ]);
+            ->components([]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('test ')
             ->columns([
-                Tables\Columns\TextColumn::make('test ')
-                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                Actions\EditAction::make(),
-            ])
-            ->toolbarActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
@@ -63,8 +72,6 @@ class AssignmentResource extends Resource
     {
         return [
             'index' => Pages\ListAssignments::route('/'),
-            'create' => Pages\CreateAssignment::route('/create'),
-            'edit' => Pages\EditAssignment::route('/{record}/edit'),
         ];
     }
 }

@@ -48,11 +48,11 @@ class MyOffers extends Page implements HasTable
     protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
 
     protected static ?int $navigationSort = 10;
-    
+
 
     public static function getNavigationLabel(): string
     {
-        return __('my_offers.navigation_label');
+        return __('my_offers.navigation_label').'_duplicated';
     }
 
     public static function getNavigationGroup(): string|UnitEnum|null
