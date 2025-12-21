@@ -24,6 +24,11 @@ class ListAssignments extends ListRecords
         ];
     }
 
+    public function hasResourceBreadcrumbs(): bool
+    {
+        return false;
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('my_offers.navigation_label');
