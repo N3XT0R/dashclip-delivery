@@ -15,6 +15,7 @@ use App\Repository\UserRepository;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
+use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
@@ -37,6 +38,7 @@ use UnitEnum;
 class MyOffers extends Page implements HasTable
 {
     use InteractsWithTable;
+    use InteractsWithActions;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
 
@@ -202,7 +204,7 @@ class MyOffers extends Page implements HasTable
                     }),
             ])
             ->recordActions([
-                ViewAction::make('view_details')
+                Action::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
@@ -274,7 +276,7 @@ class MyOffers extends Page implements HasTable
                     ->sortable(),
             ])
             ->recordActions([
-                ViewAction::make('view_details')
+                Action::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
@@ -355,7 +357,7 @@ class MyOffers extends Page implements HasTable
                     ->sortable(),
             ])
             ->recordActions([
-                ViewAction::make('view_details')
+                Action::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
@@ -416,7 +418,7 @@ class MyOffers extends Page implements HasTable
                     ->limit(50),
             ])
             ->recordActions([
-                ViewAction::make('view_details')
+                Action::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
