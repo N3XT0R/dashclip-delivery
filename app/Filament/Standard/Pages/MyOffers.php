@@ -373,6 +373,7 @@ class MyOffers extends Page implements HasTable
     protected function returnedTable(Table $table, Channel $channel): Table
     {
         return $table
+            ->livewire($this)
             ->query(
                 Assignment::query()
                     ->where('channel_id', $channel->id)
