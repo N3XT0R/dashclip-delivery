@@ -7,11 +7,13 @@ namespace App\Models;
 use App\Facades\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Number;
 
 class Video extends Model
 {
@@ -30,6 +32,10 @@ class Video extends Model
     ];
     protected $casts = [
         'meta' => 'array'
+    ];
+
+    protected $append = [
+        'human_readable_size',
     ];
 
 
@@ -81,5 +87,17 @@ class Video extends Model
         }
 
         return $path;
+    }
+
+    protected function humanReadableSize(): Attribute
+    {
+        return Attribute::make(get: function () {
+            $bytes = $this->getAttribute('bytes');
+            if ($bytes === null) {
+                return null;
+            }
+
+            return Number::fileSize($bytes);
+        });
     }
 }

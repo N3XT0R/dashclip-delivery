@@ -32,7 +32,6 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Number;
 use UnitEnum;
 
 class MyOffers extends Page implements HasTable
@@ -373,7 +372,6 @@ class MyOffers extends Page implements HasTable
     protected function returnedTable(Table $table, Channel $channel): Table
     {
         return $table
-            ->livewire($this)
             ->query(
                 Assignment::query()
                     ->where('channel_id', $channel->id)
@@ -435,9 +433,11 @@ class MyOffers extends Page implements HasTable
     protected function getDetailsInfolist(Assignment $assignment): Schema
     {
         return Schema::make()
+            ->livewire($this)
             ->state([
                 'video' => $assignment->video,
                 'clips' => $assignment->video->clips,
+                'firstClip' => $assignment->video->clips->first(),
             ])
             ->schema([
                 Section::make(__('my_offers.modal.preview.heading'))
@@ -452,14 +452,11 @@ class MyOffers extends Page implements HasTable
 
                 Section::make(__('my_offers.modal.metadata.heading'))
                     ->schema([
-                        TextEntry::make('video.file_size')
+                        TextEntry::make('video.human_readable_size')
                             ->label(__('my_offers.modal.metadata.file_size'))
-                            ->formatStateUsing(fn($state): string => Number::fileSize($state))
                             ->default('—'),
-
-                        TextEntry::make('video.duration')
+                        TextEntry::make('video.firstClip.duration')
                             ->label(__('my_offers.modal.metadata.duration'))
-                            ->formatStateUsing(fn($state): string => $this->formatDuration($state))
                             ->default('—'),
 
                         TextEntry::make('video.filename')
