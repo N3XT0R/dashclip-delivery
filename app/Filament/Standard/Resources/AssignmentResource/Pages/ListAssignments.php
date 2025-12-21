@@ -6,9 +6,11 @@ use App\Filament\Standard\Resources\AssignmentResource;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
+use App\Models\Assignment;
 use App\Models\Channel;
 use App\Repository\UserRepository;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 
 class ListAssignments extends ListRecords
@@ -61,5 +63,16 @@ class ListAssignments extends ListRecords
             return null;
         }
         return $user->channels()->firstOrFail();
+    }
+
+    public function table(Table $table): Table
+    {
+        $channel = $this->getCurrentChannel();
+        if (!$channel) {
+            return $table->query(Assignment::query()->where('channel_id', -1));
+        }
+
+        return $table
+            ->query(Assignment::query()->where('channel_id', $channel->getKey()));
     }
 }
