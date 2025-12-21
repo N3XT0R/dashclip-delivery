@@ -16,7 +16,7 @@ class DownloadedOffersStatsWidget extends BaseChannelWidget
 
     protected function getStats(): array
     {
-        $channel = $this->getCurrentChannel();
+        $channel = $this->getChannel();
 
         if (!$channel) {
             return [
