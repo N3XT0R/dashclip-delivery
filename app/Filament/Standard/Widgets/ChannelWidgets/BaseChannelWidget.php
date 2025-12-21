@@ -30,10 +30,18 @@ class BaseChannelWidget extends BaseWidget
     protected function getCurrentChannel(): ?Channel
     {
         $user = app(UserRepository::class)->getCurrentUser();
-
         if (!$user) {
             return null;
         }
-        return $user->channels()->firstOrFail();
+
+
+        $currentChannel = $this->getChannel();
+        if ($currentChannel) {
+            return $currentChannel;
+        }
+
+
+        return $user->channels()
+            ->firstOrFail();
     }
 }
