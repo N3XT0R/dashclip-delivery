@@ -14,6 +14,16 @@ class BaseChannelWidget extends BaseWidget
 
     public function mount(?Channel $channel = null): void
     {
+        $this->setChannel($channel);
+    }
+
+    public function getChannel(): ?Channel
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(?Channel $channel): void
+    {
         $this->channel = $channel;
     }
 
