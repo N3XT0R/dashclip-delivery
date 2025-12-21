@@ -335,8 +335,8 @@ class MyOffers extends Page implements HasTable
                     ->badge()
                     ->formatStateUsing(function (Assignment $record): string {
                         return $record->downloads->isNotEmpty()
-                            ? __('my_offers.table.status_badges.yes')
-                            : __('my_offers.table.status_badges.no');
+                            ? __('common.yes')
+                            : __('common.no');
                     })
                     ->color(function (Assignment $record): string {
                         return $record->downloads->isNotEmpty() ? 'success' : 'gray';
