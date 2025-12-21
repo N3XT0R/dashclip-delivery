@@ -27,7 +27,7 @@ class AvailableOffersStatsWidget extends BaseChannelWidget
         }
 
         $availableQuery = Assignment::query()
-            ->where('channel_id', $channel->id)
+            ->where('channel_id', $channel->getKey())
             ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
             ->where(function (Builder $query) {
                 $query->whereNull('expires_at')

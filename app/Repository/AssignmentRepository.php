@@ -11,6 +11,7 @@ use App\Models\Channel;
 use App\Models\Download;
 use App\Models\User;
 use App\Models\Video;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 
@@ -128,6 +129,17 @@ class AssignmentRepository
         return Assignment::query()->hasUsersClips($user)
             ->where('status', StatusEnum::EXPIRED->value)
             ->count();
+    }
+
+    public function getExpiredOffersForChannel(Channel $channel): int
+    {
+        return Assignment::query()
+            ->where('channel_id', $channel->getKey())
+            ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
+            ->where(function (Builder $query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })->count();
     }
 
     public function getPickedUpOffersCountForUser(User $user): int
