@@ -80,8 +80,6 @@ class MyOffers extends Page implements HasTable
         return $user->hasRole(RoleEnum::CHANNEL_OPERATOR->value);
     }
 
-    public ?string $activeTab = 'available';
-
     public function mount(): void
     {
         $this->loadDefaultActiveTab();
