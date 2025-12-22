@@ -64,6 +64,9 @@ class ChannelService
                 foreach ($teamQuotas as $channelId => $teamQuota) {
                     $quota[$channelId] = $teamQuota;
                 }
+
+                // Only use team channels in this case
+                $channels = $teamChannels;
             }
         }
 
