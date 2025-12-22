@@ -31,8 +31,7 @@ class ChannelService
         ?int $quotaOverride,
         string $uploaderType,
         string|int $uploaderId,
-    ): ChannelPoolDto
-    {
+    ): ChannelPoolDto {
         $channels = $this->channelRepository->getActiveChannels();
 
         $rotationPool = collect();
@@ -60,6 +59,8 @@ class ChannelService
                 foreach ($teamQuotas as $channelId => $teamQuota) {
                     $quota[$channelId] = $teamQuota;
                 }
+
+                $channels = $teamChannels;
             }
         }
 
