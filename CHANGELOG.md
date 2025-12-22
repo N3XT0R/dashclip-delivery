@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Team channel assignment**
+    - Fixed an issue where team channels were not correctly assigned when a team was found.
+    - Global channel and quota logic now only applies when no team channels are available.
+
 ## [3.1.3] - 2025-12-16
 
 ### Fixed
