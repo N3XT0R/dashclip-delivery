@@ -74,7 +74,7 @@ class AssignmentRepository
 
     public function fetchPickedUp(Batch $batch, Channel $channel): EloquentCollection
     {
-        return Assignment::with('video')
+        return Assignment::with('video.clips')
             ->where('batch_id', $batch->getKey())
             ->where('channel_id', $channel->getKey())
             ->where('status', StatusEnum::PICKEDUP->value)
