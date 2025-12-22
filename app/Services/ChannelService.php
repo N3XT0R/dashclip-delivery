@@ -60,6 +60,7 @@ class ChannelService
                     $quota[$channelId] = $teamQuota;
                 }
 
+                // Only use team channels in this case
                 $channels = $teamChannels;
             }
         }
