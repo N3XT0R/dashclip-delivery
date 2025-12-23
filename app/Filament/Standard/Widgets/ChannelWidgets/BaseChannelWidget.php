@@ -9,12 +9,12 @@ use App\Repository\ChannelRepository;
 use App\Repository\UserRepository;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
-class BaseChannelWidget extends BaseWidget
+abstract class BaseChannelWidget extends BaseWidget
 {
     public ?int $channelId = null;
 
     protected static bool $isLazy = false;
-    
+
 
     public function mount(?int $channelId = null): void
     {
