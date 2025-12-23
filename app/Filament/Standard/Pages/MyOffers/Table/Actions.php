@@ -13,7 +13,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 
-final class Actions
+final readonly class Actions
 {
     public function __construct(private AssignmentService $assignmentService)
     {
