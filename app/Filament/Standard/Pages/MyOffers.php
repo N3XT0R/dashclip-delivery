@@ -27,6 +27,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -42,7 +43,7 @@ class MyOffers extends Page implements HasTable
     use InteractsWithActions;
     use HasTabs;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
     protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
 
@@ -61,7 +62,7 @@ class MyOffers extends Page implements HasTable
 
     public function getSubheading(): string|Htmlable|null
     {
-        return trans('common.channel').': '.$this->getCurrentChannel()?->name;
+        return trans('common.channel') . ': ' . $this->getCurrentChannel()?->name;
     }
 
     public function getTitle(): string
@@ -142,7 +143,7 @@ class MyOffers extends Page implements HasTable
         ];
     }
 
-    public function getDefaultActiveTab(): string | int | null
+    public function getDefaultActiveTab(): string|int|null
     {
         return 'available';
     }
@@ -208,7 +209,7 @@ class MyOffers extends Page implements HasTable
                             return __('my_offers.table.columns.remaining_hours', ['hours' => max(0, $hours)]);
                         }
 
-                        return __('my_offers.table.columns.remaining_days', ['days' => (int) $diff]);
+                        return __('my_offers.table.columns.remaining_days', ['days' => (int)$diff]);
                     })
                     ->color(function (Assignment $record): string {
                         if ($this->activeTab !== 'available' || !$record->expires_at) {
