@@ -24,6 +24,7 @@ class ZipService
     }
 
     /**
+     *
      * @param Batch|null $batch
      * @param Channel $channel
      * @param Collection<Assignment> $items

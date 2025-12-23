@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Repository\AssignmentRepository;
 use App\Repository\BatchRepository;
 use App\Repository\ChannelRepository;
 use App\Services\{AssignmentService, Zip\ZipService};
@@ -26,15 +27,15 @@ class BuildZipJob implements ShouldQueue
 
     /**
      * Create a new job instance.
-     * @param  int  $batchId
-     * @param  int  $channelId
-     * @param  array  $assignmentIds
-     * @param  string  $ip
-     * @param  string|null  $userAgent
+     * @param int|null $batchId
+     * @param int $channelId
+     * @param array $assignmentIds
+     * @param string $ip
+     * @param string|null $userAgent
      * @todo refactor to DTO at v4.0
      */
     public function __construct(
-        private readonly int $batchId,
+        private readonly ?int $batchId,
         private readonly int $channelId,
         private readonly array $assignmentIds,
         private readonly string $ip,
@@ -44,24 +45,29 @@ class BuildZipJob implements ShouldQueue
 
     /**
      * Execute the job.
-     * @param  AssignmentService  $assignments
-     * @param  ZipService  $svc
+     * @param AssignmentService $assignments
+     * @param ZipService $svc
      * @return void
      */
     public function handle(AssignmentService $assignments, ZipService $svc): void
     {
-        $batch = app(BatchRepository::class)->findById($this->batchId);
+        $batch = $this->batchId ? app(BatchRepository::class)->findById($this->batchId) : null;
         $channel = app(ChannelRepository::class)->findById($this->channelId);
-
-        if (!$batch) {
-            throw new RuntimeException("Batch with ID {$this->batchId} not found");
-        }
 
         if (!$channel) {
             throw new RuntimeException("Channel with ID {$this->channelId} not found");
         }
 
-        $items = $assignments->fetchForZip($batch, $channel, collect($this->assignmentIds));
+        if ($batch) {
+            $items = $assignments->fetchForZip($batch, $channel, collect($this->assignmentIds));
+        } else {
+            $items = app(AssignmentRepository::class)->fetchForZipWithoutBatch(
+                $channel,
+                collect($this->assignmentIds)
+            );
+        }
+
+
         $svc->build($batch, $channel, $items, $this->ip, $this->userAgent ?? '');
         activity()
             ->causedBy(auth()?->user())
