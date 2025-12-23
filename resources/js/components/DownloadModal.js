@@ -13,7 +13,6 @@ export default class DownloadModal {
             position:fixed;
             inset:0;
             background:${this.options.overlayBackground};
-            display:flex;
             align-items:center;
             justify-content:center;
             z-index:50;
