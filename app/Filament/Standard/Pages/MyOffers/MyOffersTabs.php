@@ -10,38 +10,27 @@ use Illuminate\Database\Eloquent\Builder;
 
 final class MyOffersTabs
 {
-    /**
-     * @return array<string, Tab>
-     */
-    public static function make(): array
+    public function make(): array
     {
         return [
             'available' => Tab::make(__('my_offers.tabs.available'))
-                ->modifyQueryUsing(
-                    fn(Builder $query) => self::available($query)
-                ),
+                ->modifyQueryUsing(fn(Builder $q) => $this->available($q)),
 
             'downloaded' => Tab::make(__('my_offers.tabs.downloaded'))
-                ->modifyQueryUsing(
-                    fn(Builder $query) => self::downloaded($query)
-                ),
+                ->modifyQueryUsing(fn(Builder $q) => $this->downloaded($q)),
 
             'expired' => Tab::make(__('my_offers.tabs.expired'))
-                ->modifyQueryUsing(
-                    fn(Builder $query) => self::expired($query)
-                ),
+                ->modifyQueryUsing(fn(Builder $q) => $this->expired($q)),
 
             'returned' => Tab::make(__('my_offers.tabs.returned'))
-                ->modifyQueryUsing(
-                    fn(Builder $query) => self::returned($query)
-                ),
+                ->modifyQueryUsing(fn(Builder $q) => $this->returned($q)),
         ];
     }
 
     /**
      * @param Builder<Assignment> $query
      */
-    private static function available(Builder $query): Builder
+    private function available(Builder $query): Builder
     {
         return $query->available();
     }
@@ -49,7 +38,7 @@ final class MyOffersTabs
     /**
      * @param Builder<Assignment> $query
      */
-    private static function downloaded(Builder $query): Builder
+    private function downloaded(Builder $query): Builder
     {
         return $query->downloaded();
     }
@@ -57,7 +46,7 @@ final class MyOffersTabs
     /**
      * @param Builder<Assignment> $query
      */
-    private static function expired(Builder $query): Builder
+    private function expired(Builder $query): Builder
     {
         return $query->expired();
     }
@@ -65,7 +54,7 @@ final class MyOffersTabs
     /**
      * @param Builder<Assignment> $query
      */
-    private static function returned(Builder $query): Builder
+    private function returned(Builder $query): Builder
     {
         return $query->returned();
     }

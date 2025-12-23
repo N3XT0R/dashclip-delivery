@@ -111,7 +111,7 @@ class MyOffers extends Page implements HasTable
 
     public function getTabs(): array
     {
-        return MyOffersTabs::make();
+        return app(MyOffersTabs::class)->make();
     }
 
     public function getDefaultActiveTab(): string|int|null
