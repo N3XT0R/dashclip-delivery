@@ -134,7 +134,7 @@ class MyOffers extends Page implements HasTable
             ->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query))
             ->columns(app(Columns::class)->make($this))
             ->recordActions(app(Actions::class)->make($this))
-            ->bulkActions([
+            ->toolbarActions([
                 BulkAction::make('download_selected')
                     ->label(fn(Collection $records): string => __(
                         'my_offers.table.bulk_actions.download_selected',
