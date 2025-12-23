@@ -95,11 +95,11 @@ class ZipController extends Controller
         $this->cache->init($jobId);
 
         BuildZipJob::dispatch(
+            batchId: null,
             channelId: $channel->getKey(),
             assignmentIds: $ids->all(),
             ip: $req->ip(),
             userAgent: $req->userAgent(),
-            batchId: null,
         );
 
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
