@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages;
 
 use App\Enum\Users\RoleEnum;
+use App\Filament\Standard\Pages\MyOffers\Table\Actions;
 use App\Filament\Standard\Pages\MyOffers\Table\Columns;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
@@ -14,10 +15,8 @@ use App\Models\Assignment;
 use App\Models\Channel;
 use App\Repository\UserRepository;
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
@@ -26,7 +25,6 @@ use Filament\Resources\Concerns\HasTabs;
 use Filament\Schemas\Components\EmbeddedTable;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -135,32 +133,7 @@ class MyOffers extends Page implements HasTable
             )
             ->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query))
             ->columns(app(Columns::class)->make($this))
-            ->recordActions([
-                Action::make('view_details')
-                    ->label(__('my_offers.table.actions.view_details'))
-                    ->icon('heroicon-m-eye')
-                    ->modalHeading(__('my_offers.modal.title'))
-                    ->modalWidth(Width::FourExtraLarge)
-                    ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Schließen'),
-
-                Action::make('download_again')
-                    ->label(__('my_offers.table.actions.download_again'))
-                    ->icon('heroicon-m-arrow-path')
-                    ->color('gray')
-                    ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
-                    ->openUrlInNewTab()
-                    ->visible(fn(): bool => $this->activeTab === 'downloaded'),
-
-                ViewAction::make('download')
-                    ->label(__('my_offers.table.actions.download'))
-                    ->icon('heroicon-m-arrow-down-tray')
-                    ->color('primary')
-                    ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
-                    ->openUrlInNewTab()
-                    ->visible(fn(): bool => $this->activeTab === 'available'),
-            ])
+            ->recordActions(app(Actions::class)->make($this))
             ->bulkActions([
                 BulkAction::make('download_selected')
                     ->label(fn(Collection $records): string => __(
