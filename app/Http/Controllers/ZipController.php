@@ -9,17 +9,20 @@ use App\Jobs\BuildZipJob;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Repository\AssignmentRepository;
 use App\Services\AssignmentService;
 use App\Services\DownloadCacheService;
 use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ZipController extends Controller
 {
     public function __construct(
         private AssignmentService $assignments,
-        private DownloadCacheService $cache
+        private DownloadCacheService $cache,
+        private AssignmentRepository $assignmentRepository,
     ) {
     }
 
@@ -31,7 +34,7 @@ class ZipController extends Controller
         ]);
 
         $batchId = $batch->getKey();
-        $jobId = $batchId.'_'.$channel->getKey();
+        $jobId = $batchId . '_' . $channel->getKey();
 
         $ids = collect($validated['assignment_ids'])
             ->filter(static fn($v) => ctype_digit((string)$v))
@@ -40,6 +43,34 @@ class ZipController extends Controller
 
 
         $items = $this->assignments->fetchForZip($batch, $channel, $ids);
+
+        if ($items->isEmpty()) {
+            return response()->json(['error' => 'Die Auswahl ist nicht mehr verfügbar.'], 422);
+        }
+
+        // initialer Status
+        $this->cache->init($jobId);
+
+        BuildZipJob::dispatch($batchId, $channel->getKey(), $ids->all(), $req->ip(), $req->userAgent());
+
+        return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
+    }
+
+    public function startWithoutBatch(Request $req, Channel $channel)
+    {
+        $validated = $req->validate([
+            'assignment_ids' => ['required', 'array', 'min:1'],
+        ]);
+
+        $jobId = $channel->getKey() . '_' . Str::uuid();
+
+        $ids = collect($validated['assignment_ids'])
+            ->filter(static fn($v) => ctype_digit((string)$v))
+            ->map(static fn($v) => (int)$v)
+            ->values();
+
+
+        $items = $this->assignmentRepository->fetchForZipWithoutBatch($channel, $ids);
 
         if ($items->isEmpty()) {
             return response()->json(['error' => 'Die Auswahl ist nicht mehr verfügbar.'], 422);

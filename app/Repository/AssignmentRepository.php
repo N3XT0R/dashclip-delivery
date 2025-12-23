@@ -98,6 +98,15 @@ class AssignmentRepository
             ->get();
     }
 
+    public function fetchForZipWithoutBatch(Channel $channel, Collection $ids): EloquentCollection
+    {
+        return Assignment::with('video.clips')
+            ->where('channel_id', $channel->getKey())
+            ->whereIn('id', $ids)
+            ->whereIn('status', StatusEnum::getReadyStatus())
+            ->get();
+    }
+
     /**
      * Retrieve assignments that are ready for offering to a channel.
      */
