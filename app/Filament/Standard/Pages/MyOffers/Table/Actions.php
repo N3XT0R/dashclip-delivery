@@ -9,7 +9,6 @@ use App\Models\Assignment;
 use App\Services\AssignmentService;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
-use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 
@@ -36,7 +35,7 @@ final readonly class Actions
      | -----------------------------------------------------------------
      */
 
-    public function viewDetails(Page $page): Action
+    public function viewDetails(MyOffers $page): Action
     {
         return Action::make('view_details')
             ->label(__('my_offers.table.actions.view_details'))
@@ -62,7 +61,7 @@ final readonly class Actions
             ->modalCancelActionLabel(__('common.close'));
     }
 
-    public function downloadAgain(Page $page): Action
+    public function downloadAgain(MyOffers $page): Action
     {
         return Action::make('download_again')
             ->label(__('my_offers.table.actions.download_again'))
@@ -77,7 +76,7 @@ final readonly class Actions
             );
     }
 
-    public function download(Page $page): ViewAction
+    public function download(MyOffers $page): ViewAction
     {
         return ViewAction::make('download')
             ->label(__('my_offers.table.actions.download'))
@@ -92,17 +91,17 @@ final readonly class Actions
             );
     }
 
-    public function returnOffer(Page $page): Action
+    public function returnOffer(): Action
     {
-        return Action::make('return_offer')
+        return Action::make('return')
+            ->requiresConfirmation()
             ->label(__('my_offers.table.actions.return_offer'))
-            ->icon('heroicon-m-x-circle')
             ->color('danger')
-            ->action(
-                fn(Assignment $record) => $page->returnOffer($record)
-            )
             ->visible(
-                fn(Assignment $record): bool => $page->canReturnOffer($record)
+                fn(Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
+            )
+            ->action(
+                fn(Assignment $record) => $this->assignmentService->returnAssignment($record)
             );
     }
 }
