@@ -6,6 +6,7 @@ namespace App\Filament\Standard\Pages;
 
 use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Pages\MyOffers\MyOffersTabs;
+use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
@@ -111,7 +112,7 @@ class MyOffers extends Page implements HasTable
 
     public function getTabs(): array
     {
-        return app(MyOffersTabs::class)->make();
+        return app(AssignmentTabs::class)->make();
     }
 
     public function getDefaultActiveTab(): string|int|null
