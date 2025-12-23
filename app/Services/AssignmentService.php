@@ -131,12 +131,17 @@ readonly class AssignmentService
         return $poolVideos->concat($bundleVideos)->unique('id');
     }
 
+    /**
+     * Determine if an assignment can be returned.
+     * @param Assignment|null $assignment
+     * @return bool
+     */
     public function canReturnAssignment(?Assignment $assignment): bool
     {
         if (null === $assignment) {
             return false;
         }
-        
+
         if ($assignment->expires_at->isPast()) {
             return false;
         }
@@ -144,6 +149,11 @@ readonly class AssignmentService
         return in_array($assignment->status, StatusEnum::getReturnableStatuses(), true);
     }
 
+    /**
+     * Return an assignment.
+     * @param Assignment $assignment
+     * @return bool
+     */
     public function returnAssignment(Assignment $assignment): bool
     {
         if (false === $this->canReturnAssignment($assignment)) {
