@@ -15,12 +15,19 @@ function bn(s,t){return function(){return s.apply(t,arguments)}}const{toString:K
             position:fixed;
             inset:0;
             background:${this.options.overlayBackground};
-            display:flex;
             align-items:center;
             justify-content:center;
             z-index:50;
         `,this.modal.innerHTML=`
-            <div class="panel" style="max-width:600px;width:90%;">
+            <div
+              class="panel"
+              style="
+                max-width:600px;
+                width:90%;
+                background:${this.options.panelBackground};
+                color:${this.options.panelTextColor};
+              "
+            >
                 <h3>Download läuft...</h3>
                 <table class="w-full my-3 text-sm">
                     <thead>
