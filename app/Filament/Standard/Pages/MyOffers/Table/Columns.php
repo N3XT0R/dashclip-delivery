@@ -24,7 +24,6 @@ final class Columns
             $this->status($page),
             $this->createdAt($page),
             $this->downloadedAt($page),
-            $this->wasDownloaded($page),
             $this->returnedAt($page),
             //$this->returnReason($page),
         ];
@@ -133,27 +132,7 @@ final class Columns
             )
             ->sortable()
             ->visible(
-                fn(): bool => in_array($page->activeTab, ['downloaded', 'expired'], true)
-            );
-    }
-
-    public function wasDownloaded(MyOffers $page): TextColumn
-    {
-        return TextColumn::make('was_downloaded')
-            ->label(__('my_offers.table.columns.was_downloaded'))
-            ->badge()
-            ->formatStateUsing(
-                fn(Assignment $record): string => $record->downloads->isNotEmpty()
-                    ? __('common.yes')
-                    : __('common.no')
-            )
-            ->color(
-                fn(Assignment $record): string => $record->downloads->isNotEmpty()
-                    ? 'success'
-                    : 'gray'
-            )
-            ->visible(
-                fn(): bool => $page->activeTab === 'expired'
+                fn(): bool => $page->activeTab === 'downloaded'
             );
     }
 
