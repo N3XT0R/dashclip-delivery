@@ -47,7 +47,7 @@ final readonly class Actions
             )
             ->modalSubmitAction(false)
             ->modalFooterActions([
-                $this->returnOffer(),
+                $this->returnOffer($page),
             ])
             ->modalCancelActionLabel(__('common.close'));
     }
@@ -82,7 +82,7 @@ final readonly class Actions
             );
     }
 
-    public function returnOffer(): Action
+    public function returnOffer(MyOffers $page): Action
     {
         return Action::make('return')
             ->requiresConfirmation()
@@ -91,8 +91,9 @@ final readonly class Actions
             ->visible(
                 fn(Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
             )
-            ->action(
-                fn(Assignment $record) => $this->assignmentService->returnAssignment($record)
-            );
+            ->action(function (Assignment $record) use ($page) {
+                $this->assignmentService->returnAssignment($record);
+                $page->resetTable();
+            });
     }
 }
