@@ -56,7 +56,7 @@ final class Columns
 
     public function uploaders(MyOffers $page): TextColumn
     {
-        return TextColumn::make('video.clips.user.name')
+        return TextColumn::make('video.clips.user.display_name')
             ->label(__('my_offers.table.columns.uploader'))
             ->formatStateUsing(
                 fn(Assignment $record): string => $this->resolveUploaders($record, $page)
@@ -183,12 +183,8 @@ final class Columns
 
     private function resolveUploaders(Assignment $record, MyOffers $page): string
     {
-        $key = $page->activeTab === 'returned'
-            ? 'user.display_name'
-            : 'user.name';
-
         return $record->video->clips
-            ->pluck($key)
+            ->pluck('user.display_name')
             ->unique()
             ->filter()
             ->implode(', ')
