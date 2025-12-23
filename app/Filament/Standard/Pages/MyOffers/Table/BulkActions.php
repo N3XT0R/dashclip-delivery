@@ -38,7 +38,7 @@ final class BulkActions
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
             ->action(function (SupportCollection $records) use ($page): void {
-                $page->dispatch('zip-download', [
+                $event = $page->dispatch('zip-download', [
                     'assignmentIds' => $records->pluck('id')->values()->all(),
                 ]);
             })

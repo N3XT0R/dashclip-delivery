@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('livewire:init', () => {
     Livewire.on('zip-download', payload => {
-        const ids = payload?.assignmentIds ?? [];
+        const params = payload?.[0] ?? {};
+        const ids = params.assignmentIds ?? [];
         if (!ids.length) return;
 
         const form = document.getElementById('zipForm');
