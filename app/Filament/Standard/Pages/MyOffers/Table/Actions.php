@@ -102,7 +102,7 @@ final readonly class Actions
                 return $this->assignmentService->canReturnAssignment($record);
             })
             ->action(function (Assignment $record) use ($page) {
-                $this->assignmentService->returnAssignment($record);
+                $this->assignmentService->returnAssignment($record, auth()->user());
                 $page->resetTable();
             });
     }
