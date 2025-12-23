@@ -17,7 +17,7 @@ final class Columns
     public function make(MyOffers $page): array
     {
         return [
-            $this->videoPreview(),
+            $this->videoPreview($page),
             $this->videoTitle(),
             $this->uploaders($page),
             $this->expiresAt($page),
@@ -35,11 +35,14 @@ final class Columns
      | -----------------------------------------------------------------
      */
 
-    public function videoPreview(): ViewColumn
+    public function videoPreview(MyOffers $page): ViewColumn
     {
         return ViewColumn::make('video_preview')
             ->label('Preview')
-            ->view('filament.forms.components.video-preview');
+            ->view('filament.forms.components.video-preview')
+            ->visible(
+                fn(): bool => in_array($page->activeTab, ['available', 'downloaded'], true)
+            );
     }
 
     public function videoTitle(): TextColumn
