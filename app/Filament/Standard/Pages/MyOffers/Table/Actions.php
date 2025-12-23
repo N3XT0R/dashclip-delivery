@@ -27,6 +27,7 @@ final readonly class Actions
             $this->viewDetails($page),
             $this->downloadAgain($page),
             $this->download($page),
+            $this->returnOffer($page),
         ];
     }
 
@@ -88,9 +89,13 @@ final readonly class Actions
             ->requiresConfirmation()
             ->label(__('my_offers.table.actions.return_offer'))
             ->color('danger')
-            ->visible(
-                fn(?Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
-            )
+            ->visible(function (?Assignment $record) use ($page): bool {
+                if ($record === null) {
+                    return false;
+                }
+
+                return $page->activeTab === 'available' && $this->assignmentService->canReturnAssignment($record);
+            })
             ->action(function (Assignment $record) use ($page) {
                 $this->assignmentService->returnAssignment($record);
                 $page->resetTable();
