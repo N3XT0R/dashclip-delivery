@@ -2,7 +2,7 @@ import axios from 'axios';
 import DownloadModal from './DownloadModal';
 
 /**
- * hating js for being js
+ * hating js for being js, backend development would be so much easier without this mess
  */
 export default class ZipDownloader {
     constructor(arg) {
