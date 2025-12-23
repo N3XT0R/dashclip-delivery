@@ -278,41 +278,33 @@ class MyOffers extends Page implements HasTable
                     ->limit(50)
                     ->visible(fn(): bool => $this->activeTab === 'returned'),
             ])
-            ->recordActions(function (): array {
-                $commonViewAction = Action::make('view_details')
+            ->recordActions([
+                Action::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
                     ->icon('heroicon-m-eye')
                     ->modalHeading(__('my_offers.modal.title'))
                     ->modalWidth(Width::FourExtraLarge)
                     ->schema(fn(Assignment $record): Schema => $this->getDetailsInfolist($record))
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Schließen');
+                    ->modalCancelActionLabel('Schließen'),
 
-                return match ($this->activeTab) {
-                    'downloaded' => [
-                        $commonViewAction,
-                        Action::make('download_again')
-                            ->label(__('my_offers.table.actions.download_again'))
-                            ->icon('heroicon-m-arrow-path')
-                            ->color('gray')
-                            ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
-                            ->openUrlInNewTab(),
-                    ],
-                    'available' => [
-                        $commonViewAction,
-                        ViewAction::make('download')
-                            ->label(__('my_offers.table.actions.download'))
-                            ->icon('heroicon-m-arrow-down-tray')
-                            ->color('primary')
-                            ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
-                            ->openUrlInNewTab(),
-                    ],
-                    default => [
-                        $commonViewAction,
-                    ],
-                };
-            })
-            ->bulkActions(fn() => $this->activeTab === 'available' ? [
+                Action::make('download_again')
+                    ->label(__('my_offers.table.actions.download_again'))
+                    ->icon('heroicon-m-arrow-path')
+                    ->color('gray')
+                    ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
+                    ->openUrlInNewTab()
+                    ->visible(fn(): bool => $this->activeTab === 'downloaded'),
+
+                ViewAction::make('download')
+                    ->label(__('my_offers.table.actions.download'))
+                    ->icon('heroicon-m-arrow-down-tray')
+                    ->color('primary')
+                    ->url(fn(Assignment $record): string => '#') // TODO: Implement download URL
+                    ->openUrlInNewTab()
+                    ->visible(fn(): bool => $this->activeTab === 'available'),
+            ])
+            ->bulkActions([
                 BulkAction::make('download_selected')
                     ->label(fn(Collection $records): string => __('my_offers.table.bulk_actions.download_selected',
                         ['count' => $records->count()]))
@@ -320,8 +312,9 @@ class MyOffers extends Page implements HasTable
                     ->color('primary')
                     ->action(function (Collection $records) {
                         // TODO: Implement bulk download
-                    }),
-            ] : [])
+                    })
+                    ->visible(fn(): bool => $this->activeTab === 'available'),
+            ])
             ->selectCurrentPageOnly($this->activeTab === 'available')
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
             ->emptyStateDescription(match ($this->activeTab) {

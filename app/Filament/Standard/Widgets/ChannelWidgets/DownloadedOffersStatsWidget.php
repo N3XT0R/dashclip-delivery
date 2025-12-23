@@ -33,13 +33,20 @@ class DownloadedOffersStatsWidget extends BaseChannelWidget
 
         $totalDownloaded = $downloadedQuery->count();
 
-        $avgDaysAgo = (float)Assignment::query()
+        $avgDaysQuery = Assignment::query()
             ->where('channel_id', $channel->id)
             ->where('status', StatusEnum::PICKEDUP->value)
             ->whereHas('downloads')
-            ->join('downloads', 'assignments.id', '=', 'downloads.assignment_id')
-            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, downloads.downloaded_at, NOW()) / 86400) as avg_days_ago')
-            ->value('avg_days_ago');
+            ->join('downloads', 'assignments.id', '=', 'downloads.assignment_id');
+
+        $avgDaysAgo = (float)match ($avgDaysQuery->getConnection()->getDriverName()) {
+            'sqlite' => $avgDaysQuery
+                ->selectRaw("AVG((strftime('%s', 'now') - strftime('%s', downloads.downloaded_at)) / 86400) as avg_days_ago")
+                ->value('avg_days_ago'),
+            default => $avgDaysQuery
+                ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, downloads.downloaded_at, NOW()) / 86400) as avg_days_ago')
+                ->value('avg_days_ago'),
+        };
 
         $avgDaysFormatted = $avgDaysAgo ? (int)round($avgDaysAgo) : 0;
 
