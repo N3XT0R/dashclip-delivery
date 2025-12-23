@@ -136,6 +136,10 @@ readonly class AssignmentService
         if (null === $assignment) {
             return false;
         }
+        
+        if ($assignment->expires_at->isPast()) {
+            return false;
+        }
 
         return in_array($assignment->status, StatusEnum::getReturnableStatuses(), true);
     }
