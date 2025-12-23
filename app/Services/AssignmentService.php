@@ -131,8 +131,12 @@ readonly class AssignmentService
         return $poolVideos->concat($bundleVideos)->unique('id');
     }
 
-    public function canReturnAssignment(Assignment $assignment): bool
+    public function canReturnAssignment(?Assignment $assignment): bool
     {
+        if (null === $assignment) {
+            return false;
+        }
+
         return in_array($assignment->status, StatusEnum::getReturnableStatuses(), true);
     }
 
