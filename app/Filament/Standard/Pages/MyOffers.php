@@ -13,6 +13,7 @@ use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Repository\UserRepository;
+use App\Services\LinkService;
 use BackedEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Facades\Filament;
@@ -82,14 +83,27 @@ class MyOffers extends Page implements HasTable
 
     public function content(Schema $schema): Schema
     {
-        return $schema->components([
-            ViewField::make('zip_form_anchor')
-                ->view('filament.standard.components.zip-form-anchor', [
-                    'zipPostUrl' => []
-                ]),
+        return $schema->components($this->mergeComponentsIfChannelExists([
             $this->getTabsContentComponent(),
             EmbeddedTable::make(),
-        ]);
+        ]));
+    }
+
+    protected function mergeComponentsIfChannelExists(array $components): array
+    {
+        $channel = $this->getCurrentChannel();
+
+        if ($channel) {
+            $zipPostUrl = app(LinkService::class)->getZipSelectedUrlForChannel($channel, now()->addDay());
+
+            $formElement = ViewField::make('zip_form_anchor')
+                ->view('filament.standard.components.zip-form-anchor', [
+                    'zipPostUrl' => $zipPostUrl,
+                ]);
+            array_unshift($components, $formElement);
+        }
+
+        return $components;
     }
 
     protected function getHeaderWidgets(): array

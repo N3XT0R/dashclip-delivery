@@ -1,6 +1,6 @@
 <form
     id="zipForm"
-    data-zip-post-url="{{ route('zips.create') }}"
+    data-zip-post-url="{{ $zipPostUrl }}"
     style="display: none;"
 >
     @csrf
