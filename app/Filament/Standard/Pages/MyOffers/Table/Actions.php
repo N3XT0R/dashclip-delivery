@@ -43,7 +43,7 @@ final readonly class Actions
             ->modalHeading(__('my_offers.modal.title'))
             ->modalWidth(Width::FourExtraLarge)
             ->schema(
-                fn(Assignment $record): Schema => $page->getDetailsInfolist($record)
+                fn(?Assignment $record): ?Schema => $record !== null ? $page->getDetailsInfolist($record) : null
             )
             ->modalSubmitAction(false)
             ->modalFooterActions([
@@ -89,7 +89,7 @@ final readonly class Actions
             ->label(__('my_offers.table.actions.return_offer'))
             ->color('danger')
             ->visible(
-                fn(Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
+                fn(?Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
             )
             ->action(function (Assignment $record) use ($page) {
                 $this->assignmentService->returnAssignment($record);
