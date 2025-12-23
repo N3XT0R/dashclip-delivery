@@ -1,5 +1,5 @@
 export default class DownloadModal {
-    constructor() {
+    constructor(options = {}) {
         this.options = {
             overlayBackground: options.overlayBackground ?? 'rgba(0,0,0,0.5)',
             panelBackground: options.panelBackground ?? '#111827',
