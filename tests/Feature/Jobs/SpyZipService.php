@@ -28,8 +28,14 @@ class SpyZipService extends ZipService
     {
     }
 
-    public function build(Batch $batch, Channel $channel, Collection $items, string $ip, ?string $userAgent): string
-    {
+    public function build(
+        ?Batch $batch,
+        Channel $channel,
+        Collection $items,
+        string $ip,
+        ?string $userAgent,
+        ?string $jobId = null
+    ): string {
         $this->seenBatchId = $batch->getKey();
         $this->seenChannelId = $channel->getKey();
         $this->seenAssignmentIds = $items->pluck('id')->all();
@@ -37,6 +43,11 @@ class SpyZipService extends ZipService
         $this->seenUserAgent = $userAgent;
 
         // We don't create an actual ZIP in tests.
-        return 'zips/'.$batch->getKey().'_'.$channel->getKey().'.zip';
+        if ($batch) {
+            $result = 'zips/' . $batch->getKey() . '_' . $channel->getKey() . '.zip';
+        } else {
+            $result = 'zips/' . $jobId . '.zip';
+        }
+        return $result;
     }
 }
