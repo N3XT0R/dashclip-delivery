@@ -15,7 +15,7 @@ class CleanUpDiskCommand extends Command
 
     public function handle(CleanupService $cleanupService): int
     {
-        $disk = (string)($this->option('disk') ?? '');
+        $disk = (string)($this->option('disk') ?? 'uploads');
         $days = (int)($this->option('days') ?? 30);
         $cleanupService->cleanDisk($disk, $days);
 
