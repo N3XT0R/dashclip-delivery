@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
-use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
+use App\Filament\Standard\Pages\MyOffers\MyOffersTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
@@ -24,7 +24,6 @@ use Filament\Pages\Page;
 use Filament\Resources\Concerns\HasTabs;
 use Filament\Schemas\Components\EmbeddedTable;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
@@ -112,35 +111,7 @@ class MyOffers extends Page implements HasTable
 
     public function getTabs(): array
     {
-        return [
-            'available' => Tab::make(__('my_offers.tabs.available'))
-                ->modifyQueryUsing(function (Builder $query): Builder {
-                    return $query
-                        ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
-                        ->where(function (Builder $query): void {
-                            $query->whereNull('expires_at')
-                                ->orWhere('expires_at', '>', now());
-                        })
-                        ->latest('updated_at');
-                }),
-            'downloaded' => Tab::make(__('my_offers.tabs.downloaded'))
-                ->modifyQueryUsing(function (Builder $query): Builder {
-                    return $query
-                        ->where('status', StatusEnum::PICKEDUP->value)
-                        ->whereHas('downloads')
-                        ->join('downloads', 'assignments.id', '=', 'downloads.assignment_id')
-                        ->orderByDesc('downloads.downloaded_at')
-                        ->select('assignments.*');
-                }),
-            'expired' => Tab::make(__('my_offers.tabs.expired'))
-                ->modifyQueryUsing(fn(Builder $query): Builder => $query
-                    ->where('status', StatusEnum::EXPIRED->value)
-                    ->latest('updated_at')),
-            'returned' => Tab::make(__('my_offers.tabs.returned'))
-                ->modifyQueryUsing(fn(Builder $query): Builder => $query
-                    ->where('status', StatusEnum::REJECTED->value)
-                    ->latest('updated_at')),
-        ];
+        return MyOffersTabs::make();
     }
 
     public function getDefaultActiveTab(): string|int|null
@@ -307,8 +278,10 @@ class MyOffers extends Page implements HasTable
             ])
             ->bulkActions([
                 BulkAction::make('download_selected')
-                    ->label(fn(Collection $records): string => __('my_offers.table.bulk_actions.download_selected',
-                        ['count' => $records->count()]))
+                    ->label(fn(Collection $records): string => __(
+                        'my_offers.table.bulk_actions.download_selected',
+                        ['count' => $records->count()]
+                    ))
                     ->icon('heroicon-m-arrow-down-tray')
                     ->color('primary')
                     ->action(function (Collection $records) {
@@ -318,12 +291,14 @@ class MyOffers extends Page implements HasTable
             ])
             ->selectCurrentPageOnly($this->activeTab === 'available')
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription(match ($this->activeTab) {
-                'downloaded' => __('my_offers.messages.no_videos_downloaded'),
-                'expired' => __('my_offers.messages.no_expired_offers'),
-                'returned' => __('my_offers.messages.no_returned_offers'),
-                default => __('my_offers.table.empty_state.description'),
-            });
+            ->emptyStateDescription(
+                match ($this->activeTab) {
+                    'downloaded' => __('my_offers.messages.no_videos_downloaded'),
+                    'expired' => __('my_offers.messages.no_expired_offers'),
+                    'returned' => __('my_offers.messages.no_returned_offers'),
+                    default => __('my_offers.table.empty_state.description'),
+                }
+            );
     }
 
     protected function getDetailsInfolist(Assignment $assignment): Schema
