@@ -37,8 +37,8 @@ set('laravel_version', static function () {
  * - 'failIfNoEnv': Fail the command if `.env` file is inexistant or empty.
  * - 'showOutput': Show the output of the command if given.
  *
- * @param  string  $command  The artisan command (with cli options if any).
- * @param  array  $options  The options that define the behaviour of the command.
+ * @param string $command The artisan command (with cli options if any).
+ * @param array $options The options that define the behaviour of the command.
  * @return callable A function that can be used as a task.
  */
 function artisan($command, $options = [])
@@ -272,12 +272,12 @@ task('systemd:detect', function () {
 
     // If an explicit bin is configured, validate it
     if (is_string($configuredBin) && $configuredBin !== '') {
-        if (test("[ -x ".escapeshellarg($configuredBin)." ]")) {
+        if (test("[ -x " . escapeshellarg($configuredBin) . " ]")) {
             $setBin($configuredBin);
             return;
         }
         // Try executing it via sudo (handles PATH differences)
-        if (test($sudo.escapeshellarg($configuredBin)." --version >/dev/null 2>&1")) {
+        if (test($sudo . escapeshellarg($configuredBin) . " --version >/dev/null 2>&1")) {
             $setBin($configuredBin);
             return;
         }
@@ -295,7 +295,7 @@ task('systemd:detect', function () {
     }
 
     // Fallback: try to locate via sudo/which (root PATH)
-    if (test($sudo.'which systemctl >/dev/null 2>&1')) {
+    if (test($sudo . 'which systemctl >/dev/null 2>&1')) {
         $setBin('systemctl'); // rely on root PATH with sudo
         return;
     }
@@ -332,9 +332,9 @@ task('systemd:restart', function () {
 
     foreach ($units as $unit) {
         // Execute the action (restart/reload/try-reload-or-restart)
-        run($sudo.escapeshellcmd($bin).' '.escapeshellarg($action).' '.escapeshellarg($unit));
+        run($sudo . escapeshellcmd($bin) . ' ' . escapeshellarg($action) . ' ' . escapeshellarg($unit));
         // Health check: ensure unit is active
-        run($sudo.escapeshellcmd($bin).' is-active '.escapeshellarg($unit));
+        run($sudo . escapeshellcmd($bin) . ' is-active ' . escapeshellarg($unit));
         writeln("<info>systemd: {$unit} {$action} OK</info>");
     }
 });
@@ -355,7 +355,6 @@ task('deploy', [
     'artisan:view:cache',
     'artisan:event:cache',
     'artisan:migrate',
-    'artisan:db:seed',
     'deploy:publish',
 ]);
 
