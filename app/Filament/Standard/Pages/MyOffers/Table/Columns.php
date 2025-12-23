@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
+use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
-use Filament\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
 
 final class Columns
@@ -13,7 +13,7 @@ final class Columns
     /**
      * @return array<int, TextColumn>
      */
-    public function make(Page $page): array
+    public function make(MyOffers $page): array
     {
         return [
             $this->videoTitle(),
@@ -45,7 +45,7 @@ final class Columns
             );
     }
 
-    public function uploaders(Page $page): TextColumn
+    public function uploaders(MyOffers $page): TextColumn
     {
         return TextColumn::make('video.clips.user.name')
             ->label(__('my_offers.table.columns.uploader'))
@@ -55,7 +55,7 @@ final class Columns
             ->limit(30);
     }
 
-    public function expiresAt(Page $page): TextColumn
+    public function expiresAt(MyOffers $page): TextColumn
     {
         return TextColumn::make('expires_at')
             ->label(
@@ -76,7 +76,7 @@ final class Columns
             );
     }
 
-    public function status(Page $page): TextColumn
+    public function status(MyOffers $page): TextColumn
     {
         return TextColumn::make('status')
             ->label(__('my_offers.table.columns.status'))
@@ -96,7 +96,7 @@ final class Columns
             );
     }
 
-    public function createdAt(Page $page): TextColumn
+    public function createdAt(MyOffers $page): TextColumn
     {
         return TextColumn::make('created_at')
             ->label(__('my_offers.table.columns.offered_at'))
@@ -107,7 +107,7 @@ final class Columns
             );
     }
 
-    public function downloadedAt(Page $page): TextColumn
+    public function downloadedAt(MyOffers $page): TextColumn
     {
         return TextColumn::make('downloads.downloaded_at')
             ->label(__('my_offers.table.columns.downloaded_at'))
@@ -125,7 +125,7 @@ final class Columns
             );
     }
 
-    public function wasDownloaded(Page $page): TextColumn
+    public function wasDownloaded(MyOffers $page): TextColumn
     {
         return TextColumn::make('was_downloaded')
             ->label(__('my_offers.table.columns.was_downloaded'))
@@ -145,7 +145,7 @@ final class Columns
             );
     }
 
-    public function returnedAt(Page $page): TextColumn
+    public function returnedAt(MyOffers $page): TextColumn
     {
         return TextColumn::make('updated_at')
             ->label(__('my_offers.table.columns.returned_at'))
@@ -156,7 +156,7 @@ final class Columns
             );
     }
 
-    public function returnReason(Page $page): TextColumn
+    public function returnReason(MyOffers $page): TextColumn
     {
         return TextColumn::make('return_reason')
             ->label(__('my_offers.table.columns.return_reason'))
@@ -172,7 +172,7 @@ final class Columns
      | -----------------------------------------------------------------
      */
 
-    private function resolveUploaders(Assignment $record, Page $page): string
+    private function resolveUploaders(Assignment $record, MyOffers $page): string
     {
         $key = $page->activeTab === 'returned'
             ? 'user.display_name'
@@ -186,7 +186,7 @@ final class Columns
             ?: '—';
     }
 
-    private function expiresDescription(Assignment $record, Page $page): string
+    private function expiresDescription(Assignment $record, MyOffers $page): string
     {
         if ($page->activeTab !== 'available' || !$record->expires_at) {
             return '';
@@ -211,7 +211,7 @@ final class Columns
         ]);
     }
 
-    private function expiresColor(Assignment $record, Page $page): string
+    private function expiresColor(Assignment $record, MyOffers $page): string
     {
         if ($page->activeTab !== 'available' || !$record->expires_at) {
             return 'gray';

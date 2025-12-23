@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
+use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Models\Channel;
-use Filament\Pages\Page;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -21,7 +21,7 @@ final readonly class AssignmentTable
 
     public function make(
         Table $table,
-        Page $page,
+        MyOffers $page,
         ?Channel $channel,
     ): Table {
         return $table
@@ -47,7 +47,7 @@ final readonly class AssignmentTable
             ->with(['video.clips.user', 'downloads']);
     }
 
-    private function emptyStateDescription(Page $page): string
+    private function emptyStateDescription(MyOffers $page): string
     {
         return match ($page->activeTab) {
             'downloaded' => __('my_offers.messages.no_videos_downloaded'),

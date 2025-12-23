@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
+use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
@@ -16,7 +17,7 @@ final class Actions
     /**
      * @return array<int, Action>
      */
-    public function make(Page $page): array
+    public function make(MyOffers $page): array
     {
         return [
             $this->viewDetails($page),

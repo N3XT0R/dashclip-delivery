@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
+use App\Filament\Standard\Pages\MyOffers;
 use Filament\Actions\BulkAction;
-use Filament\Pages\Page;
 use Illuminate\Database\Eloquent\Collection;
 
 final class BulkActions
@@ -13,7 +13,7 @@ final class BulkActions
     /**
      * @return array<int, BulkAction>
      */
-    public function make(Page $page): array
+    public function make(MyOffers $page): array
     {
         return [
             $this->downloadSelected($page),
@@ -25,7 +25,7 @@ final class BulkActions
      | -----------------------------------------------------------------
      */
 
-    public function downloadSelected(Page $page): BulkAction
+    public function downloadSelected(MyOffers $page): BulkAction
     {
         return BulkAction::make('download_selected')
             ->label(
