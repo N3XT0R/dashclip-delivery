@@ -106,7 +106,8 @@ class MyOffers extends Page implements HasTable
 
     public function getTabs(): array
     {
-        return app(AssignmentTabs::class)->make();
+        $channel = $this->getCurrentChannel();
+        return app(AssignmentTabs::class)->make($channel);
     }
 
     public function getDefaultActiveTab(): string|int|null

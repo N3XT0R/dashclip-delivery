@@ -36,7 +36,7 @@ final readonly class AssignmentTable
             );
     }
 
-    private function baseQuery(?Channel $channel): Builder
+    public function baseQuery(?Channel $channel): Builder
     {
         if (!$channel) {
             return Assignment::query()->query(Assignment::query()->where('channel_id', -1));

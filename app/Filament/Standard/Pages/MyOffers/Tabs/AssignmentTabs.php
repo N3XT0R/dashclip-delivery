@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages\MyOffers\Tabs;
 
 use App\Models\Assignment;
+use App\Models\Channel;
+use App\Repository\AssignmentRepository;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use LogicException;
@@ -14,28 +16,33 @@ final class AssignmentTabs
     /**
      * @return array<string, Tab>
      */
-    public function make(): array
+    public function make(?Channel $channel): array
     {
+        $assignmentRepo = app(AssignmentRepository::class);
         return [
             'available' => Tab::make(__('my_offers.tabs.available'))
                 ->modifyQueryUsing(
                     fn(Builder $query): Builder => $this->available($query)
-                ),
+                )
+                ->badge($assignmentRepo->getAvailableOffersCountForChannel($channel)),
 
             'downloaded' => Tab::make(__('my_offers.tabs.downloaded'))
                 ->modifyQueryUsing(
                     fn(Builder $query): Builder => $this->downloaded($query)
-                ),
+                )
+                ->badge($assignmentRepo->getDownloadedOffersCountForChannel($channel)),
 
             'expired' => Tab::make(__('my_offers.tabs.expired'))
                 ->modifyQueryUsing(
                     fn(Builder $query): Builder => $this->expired($query)
-                ),
+                )
+                ->badge($assignmentRepo->getExpiredOffersCountForChannel($channel)),
 
             'returned' => Tab::make(__('my_offers.tabs.returned'))
                 ->modifyQueryUsing(
                     fn(Builder $query): Builder => $this->returned($query)
-                ),
+                )
+                ->badge($assignmentRepo->getReturnedOffersCountForChannel($channel)),
         ];
     }
 
@@ -83,7 +90,9 @@ final class AssignmentTabs
     {
         if (!$query->getModel() instanceof Assignment) {
             throw new LogicException(
-                self::class . ' is restricted to Assignment queries in MyOffers context.'
+                self::class . ' is restricted to Assignment queries in MyOffers context. Given: ' . get_class(
+                    $query->getModel()
+                )
             );
         }
     }

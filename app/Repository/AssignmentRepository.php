@@ -83,9 +83,9 @@ class AssignmentRepository
 
 
     /**
-     * @param  Batch  $batch
-     * @param  Channel  $channel
-     * @param  Collection  $ids
+     * @param Batch $batch
+     * @param Channel $channel
+     * @param Collection $ids
      * @return EloquentCollection<Assignment>
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
@@ -142,8 +142,44 @@ class AssignmentRepository
             });
     }
 
-    public function getAvailableOffersCountForChannel(Channel $channel): int
+    public function getDownloadedOffersCountForChannel(?Channel $channel = null): int
     {
+        if (null === $channel) {
+            return 0;
+        }
+        return Assignment::query()
+            ->where('channel_id', $channel->getKey())
+            ->where('status', StatusEnum::PICKEDUP->value)
+            ->count();
+    }
+
+    public function getExpiredOffersCountForChannel(?Channel $channel = null): int
+    {
+        if (null === $channel) {
+            return 0;
+        }
+        return Assignment::query()
+            ->where('channel_id', $channel->getKey())
+            ->where('status', StatusEnum::EXPIRED->value)
+            ->count();
+    }
+
+    public function getReturnedOffersCountForChannel(?Channel $channel = null): int
+    {
+        if (null === $channel) {
+            return 0;
+        }
+        return Assignment::query()
+            ->where('channel_id', $channel->getKey())
+            ->where('status', StatusEnum::REJECTED->value)
+            ->count();
+    }
+
+    public function getAvailableOffersCountForChannel(?Channel $channel = null): int
+    {
+        if (null === $channel) {
+            return 0;
+        }
         return $this->getAvailableOfferQueryForChannel($channel)->count();
     }
 
