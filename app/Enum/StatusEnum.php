@@ -29,4 +29,13 @@ enum StatusEnum: string
             self::REJECTED->value,
         ];
     }
+
+    public static function getReturnableStatuses(): array
+    {
+        return [
+            self::PICKEDUP->value,
+            self::NOTIFIED->value,
+            self::QUEUED->value,
+        ];
+    }
 }

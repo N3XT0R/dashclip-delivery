@@ -42,6 +42,17 @@ final class Actions
                 fn(Assignment $record): Schema => $page->getDetailsInfolist($record)
             )
             ->modalSubmitAction(false)
+            ->modalFooterActions([
+                Action::make('return')
+                    ->label(__('my_offers.table.actions.return_offer'))
+                    ->color('danger')
+                    ->visible(
+                        fn(Assignment $record): bool => $page->canReturnOffer($record)
+                    )
+                    ->action(
+                        fn(Assignment $record) => $page->returnOffer($record)
+                    ),
+            ])
             ->modalCancelActionLabel(__('common.close'));
     }
 
@@ -72,6 +83,20 @@ final class Actions
             ->openUrlInNewTab()
             ->visible(
                 fn(): bool => $page->activeTab === 'available'
+            );
+    }
+
+    public function returnOffer(Page $page): Action
+    {
+        return Action::make('return_offer')
+            ->label(__('my_offers.table.actions.return_offer'))
+            ->icon('heroicon-m-x-circle')
+            ->color('danger')
+            ->action(
+                fn(Assignment $record) => $page->returnOffer($record)
+            )
+            ->visible(
+                fn(Assignment $record): bool => $page->canReturnOffer($record)
             );
     }
 }

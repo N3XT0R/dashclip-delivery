@@ -29,9 +29,9 @@ readonly class AssignmentService
     }
 
     /**
-     * @param  Batch  $batch
-     * @param  Channel  $channel
-     * @param  Collection  $ids
+     * @param Batch $batch
+     * @param Channel $channel
+     * @param Collection $ids
      * @return EloquentCollection<Assignment>
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
@@ -86,9 +86,9 @@ readonly class AssignmentService
 
     /**
      * Assign group To Channel Assignment
-     * @param  Collection<Video>  $group
-     * @param  Channel  $channel
-     * @param  AssignmentRun  $run
+     * @param Collection<Video> $group
+     * @param Channel $channel
+     * @param AssignmentRun $run
      * @return int
      */
     public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): int
@@ -107,7 +107,7 @@ readonly class AssignmentService
 
     /**
      * Ensure that all videos belonging to a bundle are included whenever one of them is present in the pool.
-     * @param  Collection<Video>  $poolVideos
+     * @param Collection<Video> $poolVideos
      * @return Collection<Video>
      */
     public function expandBundles(Collection $poolVideos): Collection
@@ -129,6 +129,11 @@ readonly class AssignmentService
         $bundleVideos = app(VideoRepository::class)->getVideosByIds($bundleVideoIds);
 
         return $poolVideos->concat($bundleVideos)->unique('id');
+    }
+
+    public function canReturnAssignment(Assignment $assignment): bool
+    {
+        return in_array($assignment->status, StatusEnum::getReturnableStatuses(), true);
     }
 }
 
