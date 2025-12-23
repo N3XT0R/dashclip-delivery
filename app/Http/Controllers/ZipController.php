@@ -79,7 +79,7 @@ class ZipController extends Controller
         // initialer Status
         $this->cache->init($jobId);
 
-        BuildZipJob::dispatch(null, $channel->getKey(), $ids->all(), $req->ip(), $req->userAgent());
+        BuildZipJob::dispatch(null, $channel->getKey(), $ids->all(), $req->ip(), $req->userAgent(), $jobId);
 
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
     }
