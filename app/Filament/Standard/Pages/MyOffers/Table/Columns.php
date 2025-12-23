@@ -26,7 +26,7 @@ final class Columns
             $this->downloadedAt($page),
             $this->wasDownloaded($page),
             $this->returnedAt($page),
-            $this->returnReason($page),
+            //$this->returnReason($page),
         ];
     }
 
