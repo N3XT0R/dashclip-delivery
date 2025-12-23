@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.5] - 2025-12-22
+
+### Fixed
+
+- **Storage**
+    - Fixed an issue where the storage disk could be overloaded with temporary files during video uploads.
+    - Temporary files are now cleaned up immediately after processing to prevent disk space exhaustion.
+
 ## [3.1.4] - 2025-12-22
 
 ### Fixed
