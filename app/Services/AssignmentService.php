@@ -168,7 +168,12 @@ readonly class AssignmentService
             activity('assignments')
                 ->causedBy($user)
                 ->performedOn($assignment)
-                ->withProperties(['assignment_id' => $assignment->getKey(), 'channel_id' => $assignment->channel_id])
+                ->withProperties([
+                    'assignment_id' => $assignment->getKey(),
+                    'channel_id' => $assignment->channel_id,
+                    'video_name' => $assignment->video->original_name,
+                    'returned_at' => now()->toDateTimeString(),
+                ])
                 ->log('Assignment rejected by channel');
         }
 
