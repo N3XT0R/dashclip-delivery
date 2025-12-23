@@ -31,7 +31,8 @@ class ExpiredOffersStatsWidget extends BaseChannelWidget
 
         $totalExpired = $expiredQuery->count();
 
-        $downloadedBeforeExpiry = (clone $expiredQuery)
+        $downloadedBeforeExpiry = Assignment::query()
+            ->where('channel_id', $channel->getKey())
             ->whereHas('downloads')
             ->count();
 
@@ -62,7 +63,7 @@ class ExpiredOffersStatsWidget extends BaseChannelWidget
 
     /**
      * Get chart data for expired assignments over the past 7 days.
-     * @param  Channel  $channel
+     * @param Channel $channel
      * @return array
      */
     protected function getExpiredChartData(Channel $channel): array
