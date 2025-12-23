@@ -59,6 +59,11 @@ class Assignment extends Model
         return $query->whereIn('channel_id', $channelIds);
     }
 
+    /**
+     * Scope a query to only include available assignments.
+     * @param Builder $query
+     * @return Builder
+     */
     public function scopeAvailable(Builder $query): Builder
     {
         return $query
@@ -73,6 +78,11 @@ class Assignment extends Model
             });
     }
 
+    /**
+     * Scope a query to only include downloaded assignments.
+     * @param Builder $query
+     * @return Builder
+     */
     public function scopeDownloaded(Builder $query): Builder
     {
         return $query
@@ -83,6 +93,11 @@ class Assignment extends Model
             ->select('assignments.*');
     }
 
+    /**
+     * Scope a query to only include expired assignments.
+     * @param Builder $query
+     * @return Builder
+     */
     public function scopeExpired(Builder $query): Builder
     {
         return $query
@@ -90,6 +105,11 @@ class Assignment extends Model
             ->latest('updated_at');
     }
 
+    /**
+     * Scope a query to only include returned assignments.
+     * @param Builder $query
+     * @return Builder
+     */
     public function scopeReturned(Builder $query): Builder
     {
         return $query
