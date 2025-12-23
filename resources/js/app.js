@@ -22,15 +22,15 @@ document.addEventListener('livewire:init', () => {
             return;
         }
 
-        let modal = new DownloadModal({
+        const modal = new DownloadModal({
             overlayBackground: 'transparent',
             panelBackground: '#ffffff',
             panelTextColor: '#111827',
-        })
+        });
 
         const downloader = new ZipDownloader({
-            form: form,
-            modal: modal,
+            form,
+            modal,
         });
         downloader.startDownload(ids);
     });
