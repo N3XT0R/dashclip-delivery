@@ -5,4 +5,5 @@ return [
     'yes' => 'Yes',
     'no' => 'No',
     'expired' => 'Expired',
+    'close' => 'Close',
 ];
