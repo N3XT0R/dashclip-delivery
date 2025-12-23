@@ -99,6 +99,7 @@ class ZipController extends Controller
             assignmentIds: $ids->all(),
             ip: $req->ip(),
             userAgent: $req->userAgent(),
+            batchId: null,
         );
 
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
