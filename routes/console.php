@@ -41,3 +41,4 @@ Schedule::command('dropbox:refresh-token')
     ->everyMinute();
 
 Schedule::command('mail:scan-replies')->everyTenMinutes();
+Schedule::command('clean:disk')->everyMinute();
