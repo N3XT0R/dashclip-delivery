@@ -83,6 +83,8 @@ class MyOffers extends Page implements HasTable
     public function content(Schema $schema): Schema
     {
         return $schema->components([
+            ViewField::make('zip_form_anchor')
+                ->view('filament.standard.components.zip-download-form-anchor'),
             $this->getTabsContentComponent(),
             EmbeddedTable::make(),
         ]);
