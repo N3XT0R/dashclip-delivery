@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages;
 
 use App\Enum\Users\RoleEnum;
-use App\Filament\Standard\Pages\MyOffers\Table\Actions;
-use App\Filament\Standard\Pages\MyOffers\Table\BulkActions;
-use App\Filament\Standard\Pages\MyOffers\Table\Columns;
+use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
@@ -120,30 +118,10 @@ class MyOffers extends Page implements HasTable
     {
         $channel = $this->getCurrentChannel();
 
-        if (!$channel) {
-            return $table->query(Assignment::query()->where('channel_id', -1));
-        }
+        $table = app(AssignmentTable::class)->make($table, $this, $channel);
+        $table->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query));
 
-        return $table
-            ->query(
-                Assignment::query()
-                    ->where('channel_id', $channel->id)
-                    ->with(['video.clips.user', 'downloads'])
-            )
-            ->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query))
-            ->columns(app(Columns::class)->make($this))
-            ->recordActions(app(Actions::class)->make($this))
-            ->toolbarActions(app(BulkActions::class)->make($this))
-            ->selectCurrentPageOnly($this->activeTab === 'available')
-            ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
-            ->emptyStateDescription(
-                match ($this->activeTab) {
-                    'downloaded' => __('my_offers.messages.no_videos_downloaded'),
-                    'expired' => __('my_offers.messages.no_expired_offers'),
-                    'returned' => __('my_offers.messages.no_returned_offers'),
-                    default => __('my_offers.table.empty_state.description'),
-                }
-            );
+        return $table;
     }
 
     public function getDetailsInfolist(Assignment $assignment): Schema

@@ -26,12 +26,9 @@ final readonly class AssignmentTable
     ): Table {
         return $table
             ->query($this->baseQuery($channel))
-            ->modifyQueryUsing(
-                fn(Builder $query): Builder => $page->modifyQueryWithActiveTab($query)
-            )
             ->columns($this->columns->make($page))
             ->recordActions($this->actions->make($page))
-            ->bulkActions($this->bulkActions->make($page))
+            ->toolbarActions($this->bulkActions->make($page))
             ->selectCurrentPageOnly($page->activeTab === 'available')
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
             ->emptyStateDescription(
