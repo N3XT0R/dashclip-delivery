@@ -7,6 +7,7 @@ namespace App\Filament\Standard\Pages\MyOffers\Table;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 
 final class Columns
 {
@@ -16,6 +17,7 @@ final class Columns
     public function make(MyOffers $page): array
     {
         return [
+            $this->videoPreview(),
             $this->videoTitle(),
             $this->uploaders($page),
             $this->expiresAt($page),
@@ -32,6 +34,13 @@ final class Columns
      | Public component factories
      | -----------------------------------------------------------------
      */
+
+    public function videoPreview(): ViewColumn
+    {
+        return ViewColumn::make('video_preview')
+            ->label('Preview')
+            ->view('filament.forms.components.video-preview');
+    }
 
     public function videoTitle(): TextColumn
     {
