@@ -164,7 +164,7 @@ readonly class AssignmentService
         $assignment->status = StatusEnum::REJECTED->value;
 
         $result = $assignment->save();
-        if ($result && null !== $user) {
+        if ($result) {
             activity('assignments')
                 ->causedBy($user)
                 ->performedOn($assignment)
