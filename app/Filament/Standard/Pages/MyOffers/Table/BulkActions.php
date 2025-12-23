@@ -37,9 +37,11 @@ final class BulkActions
             )
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
-            ->action(
-                fn(SupportCollection $records) => $this->handleDownloadSelected($records)
-            )
+            ->action(function (SupportCollection $records) use ($page): void {
+                $page->dispatch('zip-download', [
+                    'assignmentIds' => $records->pluck('id')->values(),
+                ]);
+            })
             ->visible(
                 fn(): bool => $page->activeTab === 'available'
             );
