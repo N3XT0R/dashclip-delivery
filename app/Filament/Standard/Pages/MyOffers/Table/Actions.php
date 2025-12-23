@@ -6,6 +6,7 @@ namespace App\Filament\Standard\Pages\MyOffers\Table;
 
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
+use App\Services\AssignmentService;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Pages\Page;
@@ -14,6 +15,10 @@ use Filament\Support\Enums\Width;
 
 final class Actions
 {
+    public function __construct(private AssignmentService $assignmentService)
+    {
+    }
+
     /**
      * @return array<int, Action>
      */
@@ -47,7 +52,7 @@ final class Actions
                     ->label(__('my_offers.table.actions.return_offer'))
                     ->color('danger')
                     ->visible(
-                        fn(Assignment $record): bool => $page->canReturnOffer($record)
+                        fn(Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
                     )
                     ->action(
                         fn(Assignment $record) => $page->returnOffer($record)
