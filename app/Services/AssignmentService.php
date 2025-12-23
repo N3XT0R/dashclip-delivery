@@ -152,6 +152,7 @@ readonly class AssignmentService
     /**
      * Return an assignment.
      * @param Assignment $assignment
+     * @param User|null $user
      * @return bool
      */
     public function returnAssignment(Assignment $assignment, ?User $user = null): bool
