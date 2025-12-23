@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages;
 
 use App\Enum\Users\RoleEnum;
-use App\Filament\Standard\Pages\MyOffers\MyOffersTabs;
+use App\Filament\Standard\Pages\MyOffers\Table\Columns;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
@@ -28,7 +28,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -135,122 +134,7 @@ class MyOffers extends Page implements HasTable
                     ->with(['video.clips.user', 'downloads'])
             )
             ->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query))
-            ->columns([
-                TextColumn::make('video.original_name')
-                    ->label(__('my_offers.table.columns.video_title'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(40)
-                    ->tooltip(fn(Assignment $record): string => $record->video->original_name ?? ''),
-
-                TextColumn::make('video.clips.user.name')
-                    ->label(__('my_offers.table.columns.uploader'))
-                    ->formatStateUsing(function (Assignment $record): string {
-                        $uploaderKey = $this->activeTab === 'returned'
-                            ? 'user.display_name'
-                            : 'user.name';
-
-                        $uploaders = $record->video->clips
-                            ->pluck($uploaderKey)
-                            ->unique()
-                            ->filter()
-                            ->implode(', ');
-
-                        return $uploaders ?: '—';
-                    })
-                    ->limit(30),
-
-                TextColumn::make('expires_at')
-                    ->label(fn(): string => $this->activeTab === 'expired'
-                        ? __('my_offers.table.columns.expired_at')
-                        : __('my_offers.table.columns.valid_until'))
-                    ->dateTime('d.m.Y H:i')
-                    ->description(function (Assignment $record): string {
-                        if ($this->activeTab !== 'available' || !$record->expires_at) {
-                            return '';
-                        }
-
-                        $diff = now()->diffInDays($record->expires_at);
-
-                        if ($diff < 0) {
-                            return trans('common.expired');
-                        }
-
-                        if ($diff < 1) {
-                            $hours = now()->diffInHours($record->expires_at);
-                            return __('my_offers.table.columns.remaining_hours', ['hours' => max(0, $hours)]);
-                        }
-
-                        return __('my_offers.table.columns.remaining_days', ['days' => (int)$diff]);
-                    })
-                    ->color(function (Assignment $record): string {
-                        if ($this->activeTab !== 'available' || !$record->expires_at) {
-                            return 'gray';
-                        }
-
-                        $diff = now()->diffInDays($record->expires_at);
-
-                        if ($diff < 3) {
-                            return 'danger';
-                        }
-
-                        return 'success';
-                    })
-                    ->sortable()
-                    ->visible(fn(): bool => in_array($this->activeTab, ['available', 'expired'])),
-
-                TextColumn::make('status')
-                    ->label(__('my_offers.table.columns.status'))
-                    ->badge()
-                    ->formatStateUsing(function (Assignment $record): string {
-                        if ($record->downloads->isNotEmpty()) {
-                            return __('my_offers.table.status_badges.downloaded');
-                        }
-
-                        return __('my_offers.table.status_badges.available');
-                    })
-                    ->color(fn(Assignment $record): string => $record->downloads->isNotEmpty() ? 'success' : 'warning')
-                    ->visible(fn(): bool => $this->activeTab === 'available'),
-
-                TextColumn::make('created_at')
-                    ->label(__('my_offers.table.columns.offered_at'))
-                    ->dateTime('d.m.Y H:i')
-                    ->sortable()
-                    ->visible(fn(): bool => in_array($this->activeTab, ['downloaded', 'expired', 'returned'])),
-
-                TextColumn::make('downloads.downloaded_at')
-                    ->label(__('my_offers.table.columns.downloaded_at'))
-                    ->formatStateUsing(function (Assignment $record): string {
-                        $latestDownload = $record->downloads->sortByDesc('downloaded_at')->first();
-
-                        return $latestDownload?->downloaded_at?->format('d.m.Y H:i') ?? '—';
-                    })
-                    ->sortable()
-                    ->visible(fn(): bool => in_array($this->activeTab, ['downloaded', 'expired'])),
-
-                TextColumn::make('was_downloaded')
-                    ->label(__('my_offers.table.columns.was_downloaded'))
-                    ->badge()
-                    ->formatStateUsing(function (Assignment $record): string {
-                        return $record->downloads->isNotEmpty()
-                            ? __('common.yes')
-                            : __('common.no');
-                    })
-                    ->color(fn(Assignment $record): string => $record->downloads->isNotEmpty() ? 'success' : 'gray')
-                    ->visible(fn(): bool => $this->activeTab === 'expired'),
-
-                TextColumn::make('updated_at')
-                    ->label(__('my_offers.table.columns.returned_at'))
-                    ->dateTime('d.m.Y H:i')
-                    ->sortable()
-                    ->visible(fn(): bool => $this->activeTab === 'returned'),
-
-                TextColumn::make('return_reason')
-                    ->label(__('my_offers.table.columns.return_reason'))
-                    ->default('—')
-                    ->limit(50)
-                    ->visible(fn(): bool => $this->activeTab === 'returned'),
-            ])
+            ->columns(app(Columns::class)->make($this))
             ->recordActions([
                 Action::make('view_details')
                     ->label(__('my_offers.table.actions.view_details'))
@@ -302,7 +186,7 @@ class MyOffers extends Page implements HasTable
             );
     }
 
-    protected function getDetailsInfolist(Assignment $assignment): Schema
+    public function getDetailsInfolist(Assignment $assignment): Schema
     {
         return Schema::make()
             ->livewire($this)
