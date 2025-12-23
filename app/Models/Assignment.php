@@ -35,8 +35,8 @@ class Assignment extends Model
 
     /**
      * Scope a query to only include assignments where the associated video has clips by the specified user.
-     * @param  Builder  $query
-     * @param  User  $user
+     * @param Builder $query
+     * @param User $user
      * @return Builder
      */
     public function scopeHasUsersClips(Builder $query, User $user): Builder
@@ -50,14 +50,53 @@ class Assignment extends Model
 
     /**
      * Scope a query to only include assignments with specified channel IDs.
-     * @param  Builder  $query
-     * @param  array  $channelIds
+     * @param Builder $query
+     * @param array $channelIds
      * @return Builder
      */
     public function scopeHasChannelIds(Builder $query, array $channelIds): Builder
     {
         return $query->whereIn('channel_id', $channelIds);
     }
+
+    public function scopeAvailable(Builder $query): Builder
+    {
+        return $query
+            ->whereIn('status', [
+                StatusEnum::QUEUED->value,
+                StatusEnum::NOTIFIED->value,
+            ])
+            ->where(function (Builder $query) {
+                $query
+                    ->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
+    }
+
+    public function scopeDownloaded(Builder $query): Builder
+    {
+        return $query
+            ->where('status', StatusEnum::PICKEDUP->value)
+            ->whereHas('downloads')
+            ->join('downloads', 'assignments.id', '=', 'downloads.assignment_id')
+            ->orderByDesc('downloads.downloaded_at')
+            ->select('assignments.*');
+    }
+
+    public function scopeExpired(Builder $query): Builder
+    {
+        return $query
+            ->where('status', StatusEnum::EXPIRED->value)
+            ->latest('updated_at');
+    }
+
+    public function scopeReturned(Builder $query): Builder
+    {
+        return $query
+            ->where('status', StatusEnum::REJECTED->value)
+            ->latest('updated_at');
+    }
+
 
     public function video(): BelongsTo
     {
@@ -91,7 +130,7 @@ class Assignment extends Model
 
     /**
      * Set the expiration date for the assignment.
-     * @param  int|null  $ttlDays
+     * @param int|null $ttlDays
      * @return void
      */
     public function setExpiresAt(?int $ttlDays = null): void
