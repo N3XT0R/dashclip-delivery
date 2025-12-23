@@ -164,7 +164,7 @@ readonly class AssignmentService
 
         $result = $assignment->save();
         if ($result && null !== $user) {
-            activity()
+            activity('assignments')
                 ->causedBy($user)
                 ->performedOn($assignment)
                 ->withProperties(['assignment_id' => $assignment->getKey(), 'channel_id' => $assignment->channel_id])
