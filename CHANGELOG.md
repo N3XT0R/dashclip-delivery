@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   modern cryptographic standards.  
   The stronger hashing mechanism reduces the risk of collision attacks and improves overall integrity of the approval
   workflow.
+- **Download Workflow Refactoring**  
+  Refactored client-side download handling to decouple it from backend route and domain changes.  
+  Updated the JavaScript download logic to rely on stable job-based identifiers instead of batch-specific parameters.  
+  Improved the robustness of the ZIP download flow by isolating frontend logic from backend routing details.
 
 ### Fixed
 
