@@ -379,15 +379,4 @@ class MyOffers extends Page implements HasTable
         return $user->channels()->firstOrFail();
     }
 
-    protected function formatDuration(?int $seconds): string
-    {
-        if (!$seconds || $seconds <= 0) {
-            return '—';
-        }
-
-        $minutes = intdiv($seconds, 60);
-        $secs = $seconds % 60;
-
-        return sprintf('%d:%02d', $minutes, $secs);
-    }
 }
