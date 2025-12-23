@@ -58,12 +58,14 @@ class BuildZipJob implements ShouldQueue
             throw new RuntimeException("Channel with ID {$this->channelId} not found");
         }
 
+        $assignmentIds = collect($this->assignmentIds);
+
         if ($batch) {
-            $items = $assignments->fetchForZip($batch, $channel, collect($this->assignmentIds));
+            $items = $assignments->fetchForZip($batch, $channel, $assignmentIds);
         } else {
             $items = app(AssignmentRepository::class)->fetchForZipWithoutBatch(
                 $channel,
-                collect($this->assignmentIds)
+                $assignmentIds
             );
         }
 
