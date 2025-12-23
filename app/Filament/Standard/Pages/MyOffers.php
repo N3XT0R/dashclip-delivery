@@ -6,6 +6,7 @@ namespace App\Filament\Standard\Pages;
 
 use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\Actions;
+use App\Filament\Standard\Pages\MyOffers\Table\BulkActions;
 use App\Filament\Standard\Pages\MyOffers\Table\Columns;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
@@ -15,7 +16,6 @@ use App\Models\Assignment;
 use App\Models\Channel;
 use App\Repository\UserRepository;
 use BackedEnum;
-use Filament\Actions\BulkAction;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
@@ -31,7 +31,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
 class MyOffers extends Page implements HasTable
@@ -134,19 +133,7 @@ class MyOffers extends Page implements HasTable
             ->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query))
             ->columns(app(Columns::class)->make($this))
             ->recordActions(app(Actions::class)->make($this))
-            ->toolbarActions([
-                BulkAction::make('download_selected')
-                    ->label(fn(Collection $records): string => __(
-                        'my_offers.table.bulk_actions.download_selected',
-                        ['count' => $records->count()]
-                    ))
-                    ->icon('heroicon-m-arrow-down-tray')
-                    ->color('primary')
-                    ->action(function (Collection $records) {
-                        // TODO: Implement bulk download
-                    })
-                    ->visible(fn(): bool => $this->activeTab === 'available'),
-            ])
+            ->toolbarActions(app(BulkActions::class)->make($this))
             ->selectCurrentPageOnly($this->activeTab === 'available')
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
             ->emptyStateDescription(
