@@ -63,6 +63,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Users are encouraged to transition to the new user notification center available in the `/standard` panel, which
   provides a more robust and user-friendly interface for managing notifications. Mails are logged by default in the new
   system.
+- **Zip Download Route**  
+  The `/zips/{batch}/{channel}` route has been deprecated in favor of the new
+  `/zips/channel/{channel}` route.
 
 ## [3.1.5] - 2025-12-22
 
