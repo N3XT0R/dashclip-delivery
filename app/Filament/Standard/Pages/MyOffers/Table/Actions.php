@@ -47,16 +47,7 @@ final readonly class Actions
             )
             ->modalSubmitAction(false)
             ->modalFooterActions([
-                Action::make('return')
-                    ->requiresConfirmation()
-                    ->label(__('my_offers.table.actions.return_offer'))
-                    ->color('danger')
-                    ->visible(
-                        fn(Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
-                    )
-                    ->action(
-                        fn(Assignment $record) => $this->assignmentService->returnAssignment($record)
-                    ),
+                $this->returnOffer(),
             ])
             ->modalCancelActionLabel(__('common.close'));
     }
