@@ -90,11 +90,16 @@ final readonly class Actions
             ->label(__('my_offers.table.actions.return_offer'))
             ->color('danger')
             ->visible(function (?Assignment $record) use ($page): bool {
+                $tabs = ['available', 'downloaded'];
                 if ($record === null) {
                     return false;
                 }
 
-                return $page->activeTab === 'available' && $this->assignmentService->canReturnAssignment($record);
+                if (!in_array($page->activeTab, $tabs, true)) {
+                    return false;
+                }
+
+                return $this->assignmentService->canReturnAssignment($record);
             })
             ->action(function (Assignment $record) use ($page) {
                 $this->assignmentService->returnAssignment($record);
