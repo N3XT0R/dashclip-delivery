@@ -13,6 +13,7 @@ use App\Repository\AssignmentRepository;
 use App\Services\AssignmentService;
 use App\Services\DownloadCacheService;
 use Filament\Facades\Filament;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -26,8 +27,16 @@ class ZipController extends Controller
     ) {
     }
 
+    /**
+     * Starts a zip creation job for the given batch and channel.
+     * @param Request $req
+     * @param Batch $batch
+     * @param Channel $channel
+     * @return JsonResponse
+     * @deprecated use startWithoutBatch instead
+     */
     // POST /zips/{batch}/{channel} -> Starts Job
-    public function start(Request $req, Batch $batch, Channel $channel)
+    public function start(Request $req, Batch $batch, Channel $channel): JsonResponse
     {
         $validated = $req->validate([
             'assignment_ids' => ['required', 'array', 'min:1'],
@@ -56,7 +65,7 @@ class ZipController extends Controller
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
     }
 
-    public function startWithoutBatch(Request $req, Channel $channel)
+    public function startWithoutBatch(Request $req, Channel $channel): JsonResponse
     {
         $validated = $req->validate([
             'assignment_ids' => ['required', 'array', 'min:1'],
