@@ -39,7 +39,7 @@ final class BulkActions
             ->color('primary')
             ->action(function (SupportCollection $records) use ($page): void {
                 $page->dispatch('zip-download', [
-                    'assignmentIds' => $records->pluck('id')->values(),
+                    'assignmentIds' => $records->pluck('id')->values()->all(),
                 ]);
             })
             ->visible(
