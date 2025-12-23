@@ -140,7 +140,7 @@ readonly class AssignmentService
         return in_array($assignment->status, StatusEnum::getReturnableStatuses(), true);
     }
 
-    public function returnAssignment(?Assignment $assignment): bool
+    public function returnAssignment(Assignment $assignment): bool
     {
         if (false === $this->canReturnAssignment($assignment)) {
             return false;
