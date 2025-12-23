@@ -7,6 +7,7 @@ namespace App\Filament\Standard\Pages\MyOffers\Table;
 use App\Filament\Standard\Pages\MyOffers;
 use Filament\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
 final class BulkActions
 {
@@ -17,6 +18,7 @@ final class BulkActions
     {
         return [
             $this->downloadSelected($page),
+            $this->returnSelected($page),
         ];
     }
 
@@ -37,20 +39,45 @@ final class BulkActions
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
             ->action(
-                fn() => $this->handleDownloadSelected()
+                fn(SupportCollection $records) => $this->handleDownloadSelected($records)
             )
             ->visible(
                 fn(): bool => $page->activeTab === 'available'
             );
     }
 
+    public function returnSelected(MyOffers $page): BulkAction
+    {
+        return BulkAction::make('return_selected')
+            ->label(
+                fn(Collection $records): string => __(
+                    'my_offers.table.bulk_actions.return_selected',
+                    ['count' => $records->count()]
+                )
+            )
+            ->icon('heroicon-m-arrow-uturn-left')
+            ->color('danger')
+            ->action(
+                fn(SupportCollection $records) => $this->handleReturnSelected($records)
+            )
+            ->successNotificationTitle(__('my_offers.table.bulk_actions.return_selected_notification'))
+            ->visible(
+                fn(): bool => $page->activeTab === 'available'
+            );
+    }
+
+
     /* -----------------------------------------------------------------
      | Internal handlers
      | -----------------------------------------------------------------
      */
 
-    private function handleDownloadSelected(): void
+    private function handleDownloadSelected(SupportCollection $records): void
     {
         // TODO: Implement bulk download logic
+    }
+
+    private function handleReturnSelected(SupportCollection $records): void
+    {
     }
 }

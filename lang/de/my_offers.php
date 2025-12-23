@@ -63,6 +63,8 @@ return [
         'bulk_actions' => [
             'download_all' => 'Alle herunterladen',
             'download_selected' => 'Auswahl herunterladen (:count)',
+            'return_selected' => 'Auswahl zurückweisen (:count)',
+            'return_selected_notification' => 'Ausgewählte Angebote wurden zurückgewiesen.',
         ],
         'empty_state' => [
             'heading' => 'Keine Angebote vorhanden',
