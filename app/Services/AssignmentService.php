@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enum\StatusEnum;
-use App\Models\{Assignment, Batch, Channel, Video};
+use App\Models\{Assignment, Batch, Channel, User, Video};
 use App\Repository\AssignmentRepository;
 use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
@@ -154,7 +154,7 @@ readonly class AssignmentService
      * @param Assignment $assignment
      * @return bool
      */
-    public function returnAssignment(Assignment $assignment): bool
+    public function returnAssignment(Assignment $assignment, ?User $user = null): bool
     {
         if (false === $this->canReturnAssignment($assignment)) {
             return false;
@@ -162,7 +162,16 @@ readonly class AssignmentService
 
         $assignment->status = StatusEnum::REJECTED->value;
 
-        return $assignment->save();
+        $result = $assignment->save();
+        if ($result) {
+            activity()
+                ->causedBy($user)
+                ->performedOn($assignment)
+                ->withProperties(['assignment_id' => $assignment->getKey(), 'channel_id' => $assignment->channel_id])
+                ->log('Assignment returned by channel');
+        }
+
+        return $result;
     }
 }
 
