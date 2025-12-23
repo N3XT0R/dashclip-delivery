@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -12,6 +14,7 @@ class CleanUpDiskCommand extends Command
 
     public function handle(): int
     {
+        $disk = (string)($this->option('disk') ?? '');
 
 
         return self::SUCCESS;
