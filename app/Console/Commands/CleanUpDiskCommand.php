@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Services\CleanupService;
 use Illuminate\Console\Command;
 
 class CleanUpDiskCommand extends Command
@@ -12,10 +13,11 @@ class CleanUpDiskCommand extends Command
     {--disk=uploads : The filesystem disk to clean (as defined in config/filesystems.php)}
     {--days=30 : Delete files older than this many days}';
 
-    public function handle(): int
+    public function handle(CleanupService $cleanupService): int
     {
         $disk = (string)($this->option('disk') ?? '');
-
+        $days = (int)($this->option('days') ?? 30);
+        $cleanupService->cleanDisk($disk, $days);
 
         return self::SUCCESS;
     }
