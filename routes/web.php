@@ -39,7 +39,11 @@ Route::get('/d/{assignment}', [AssignmentDownloadController::class, 'download'])
 Route::get('/dropbox/connect', [DropboxController::class, 'connect'])->name('dropbox.connect');
 Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('dropbox.callback');
 
+/**
+ * @deprecated Use /zips/channel/{channel} instead
+ */
 Route::post('/zips/{batch}/{channel}', [ZipController::class, 'start'])->name('zips.start');
+Route::post('/zips/channel/{channel}', [ZipController::class, 'startWithoutBatch'])->name('zips.channel.start');
 Route::get('/zips/{id}/progress', [ZipController::class, 'progress'])->name('zips.progress');
 Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zips.download');
 
