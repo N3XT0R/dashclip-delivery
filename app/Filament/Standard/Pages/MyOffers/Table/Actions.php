@@ -55,7 +55,7 @@ final class Actions
                         fn(Assignment $record): bool => $this->assignmentService->canReturnAssignment($record)
                     )
                     ->action(
-                        fn(Assignment $record) => $page->returnOffer($record)
+                        fn(Assignment $record) => $this->assignmentService->returnAssignment($record)
                     ),
             ])
             ->modalCancelActionLabel(__('common.close'));
