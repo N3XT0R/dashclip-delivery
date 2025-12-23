@@ -169,7 +169,7 @@ readonly class AssignmentService
                 ->causedBy($user)
                 ->performedOn($assignment)
                 ->withProperties(['assignment_id' => $assignment->getKey(), 'channel_id' => $assignment->channel_id])
-                ->log('Assignment returned by channel');
+                ->log('Assignment rejected by channel');
         }
 
         return $result;
