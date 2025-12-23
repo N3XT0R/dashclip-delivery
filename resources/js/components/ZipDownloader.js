@@ -1,9 +1,18 @@
 import axios from 'axios';
 import DownloadModal from './DownloadModal';
 
+/**
+ * hating js for being js
+ */
 export default class ZipDownloader {
-    constructor(form) {
-        this.form = form;
+    constructor(arg) {
+        if (arg instanceof HTMLFormElement) {
+            this.form = arg;
+            this.modal = new DownloadModal(); // legacy default
+        } else {
+            this.form = arg.form;
+            this.modal = arg.modal ?? new DownloadModal();
+        }
         this.selectAllBtn = document.getElementById('selectAll');
         this.selectNoneBtn = document.getElementById('selectNone');
         this.submitBtn = document.getElementById('zipSubmit');

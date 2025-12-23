@@ -1,5 +1,6 @@
 import './bootstrap';
 import ZipDownloader from './components/ZipDownloader';
+import DownloadModal from './components/DownloadModal';
 import 'cookieconsent/build/cookieconsent.min.css';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,7 +22,16 @@ document.addEventListener('livewire:init', () => {
             return;
         }
 
-        const downloader = new ZipDownloader(form);
+        let modal = new DownloadModal({
+            overlayBackground: 'transparent',
+            panelBackground: '#ffffff',
+            panelTextColor: '#111827',
+        })
+
+        const downloader = new ZipDownloader({
+            form: form,
+            modal: modal,
+        });
         downloader.startDownload(ids);
     });
 });

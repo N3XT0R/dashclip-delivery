@@ -1,8 +1,23 @@
 export default class DownloadModal {
     constructor() {
+        this.options = {
+            overlayBackground: options.overlayBackground ?? 'rgba(0,0,0,0.5)',
+            panelBackground: options.panelBackground ?? '#111827',
+            panelTextColor: options.panelTextColor ?? '#f9fafb',
+            panelShadow: options.panelShadow ?? '0 10px 30px rgba(0,0,0,0.4)',
+        };
         this.modal = document.createElement('div');
         this.modal.id = 'downloadModal';
-        this.modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;';
+        this.modal.style.cssText = `
+            display:none;
+            position:fixed;
+            inset:0;
+            background:${this.options.overlayBackground};
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:50;
+        `;
         this.modal.innerHTML = `
             <div class="panel" style="max-width:600px;width:90%;">
                 <h3>Download läuft...</h3>
