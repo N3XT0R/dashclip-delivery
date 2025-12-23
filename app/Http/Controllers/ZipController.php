@@ -33,7 +33,7 @@ class ZipController extends Controller
      * @param Batch $batch
      * @param Channel $channel
      * @return JsonResponse
-     * @deprecated use startWithoutBatch instead
+     * @deprecated use startForChannel instead
      */
     // POST /zips/{batch}/{channel} -> Starts Job
     public function start(Request $req, Batch $batch, Channel $channel): JsonResponse
@@ -66,12 +66,12 @@ class ZipController extends Controller
     }
 
     /**
-     * Start a zip creation job without a batch context.
+     * Start a zip creation job for the given channel without a batch.
      * @param Request $req
      * @param Channel $channel
      * @return JsonResponse
      */
-    public function startWithoutBatch(Request $req, Channel $channel): JsonResponse
+    public function startForChannel(Request $req, Channel $channel): JsonResponse
     {
         $validated = $req->validate([
             'assignment_ids' => ['required', 'array', 'min:1'],

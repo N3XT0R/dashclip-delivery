@@ -43,7 +43,7 @@ Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('d
  * @deprecated Use /zips/channel/{channel} instead
  */
 Route::post('/zips/{batch}/{channel}', [ZipController::class, 'start'])->name('zips.start');
-Route::post('/zips/channel/{channel}', [ZipController::class, 'startWithoutBatch'])->name('zips.channel.start');
+Route::post('/zips/channel/{channel}', [ZipController::class, 'startForChannel'])->name('zips.channel.start');
 Route::get('/zips/{id}/progress', [ZipController::class, 'progress'])->name('zips.progress');
 Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zips.download');
 
