@@ -58,6 +58,7 @@ return [
             'view_details' => 'Details',
             'download' => 'Herunterladen',
             'download_again' => 'Erneut laden',
+            'return_offer' => 'Angebot zurückweisen',
         ],
         'bulk_actions' => [
             'download_all' => 'Alle herunterladen',

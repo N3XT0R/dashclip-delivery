@@ -49,6 +49,7 @@ final class Actions
             ->modalSubmitAction(false)
             ->modalFooterActions([
                 Action::make('return')
+                    ->requiresConfirmation()
                     ->label(__('my_offers.table.actions.return_offer'))
                     ->color('danger')
                     ->visible(
