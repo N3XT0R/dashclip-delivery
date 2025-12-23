@@ -65,6 +65,12 @@ class ZipController extends Controller
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
     }
 
+    /**
+     * Start a zip creation job without a batch context.
+     * @param Request $req
+     * @param Channel $channel
+     * @return JsonResponse
+     */
     public function startWithoutBatch(Request $req, Channel $channel): JsonResponse
     {
         $validated = $req->validate([
