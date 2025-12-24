@@ -12,6 +12,7 @@ use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Repository\ChannelRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Services\AssignmentService;
@@ -73,7 +74,7 @@ class MyOffers extends Page implements HasTable
     public static function canAccess(): bool
     {
         $roleRepository = app(RoleRepository::class);
-        $channelRepository = app(UserRepository::class);
+        $channelRepository = app(ChannelRepository::class);
         /**
          * @var \App\Models\User|null $user
          */
@@ -83,7 +84,8 @@ class MyOffers extends Page implements HasTable
             return false;
         }
 
-        return $roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, Filament::getAuthGuard());
+        return $roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, Filament::getAuthGuard()) &&
+            $channelRepository->hasUserAccessToAnyChannel($user);
     }
 
     public function mount(): void
