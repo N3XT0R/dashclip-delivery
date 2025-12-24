@@ -136,4 +136,35 @@ final class MyOffersTest extends DatabaseTestCase
             ->modifyQueryUsing(fn($q) => $q);
     }
 
+
+    public function testAvailableTabRendersExpectedColumns(): void
+    {
+        $user = User::factory()->create();
+
+        Role::findOrCreate(RoleEnum::CHANNEL_OPERATOR->value, GuardEnum::STANDARD->value);
+        $user->syncRoles(RoleEnum::CHANNEL_OPERATOR->value);
+
+        $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
+
+        $channel = Channel::factory()->create();
+        $channel->channelUsers()->attach($user);
+
+        Assignment::factory()
+            ->withBatch()
+            ->create([
+                'channel_id' => $channel->getKey(),
+            ]);
+
+        Filament::setTenant($team, true);
+        Filament::auth()->login($user);
+
+        Livewire::test(MyOffers::class)
+            ->assertStatus(200)
+            ->assertSee(__('my_offers.table.columns.video_title'))
+            ->assertSee(__('my_offers.table.columns.uploader'))
+            ->assertSee(__('my_offers.table.columns.valid_until'))
+            ->assertSee(__('my_offers.table.columns.status'))
+            ->assertDontSee(__('my_offers.table.columns.returned_at'));
+    }
+
 }
