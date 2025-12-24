@@ -44,9 +44,7 @@ final readonly class BulkActions
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
             ->action(function (SupportCollection $records) use ($page): void {
-                $event = $page->dispatch('zip-download', [
-                    'assignmentIds' => $records->pluck('id')->values()->all(),
-                ]);
+                $this->handleDownloadSelected($page, $records);
             })
             ->visible(
                 fn(): bool => $page->activeTab === 'available'
@@ -79,9 +77,11 @@ final readonly class BulkActions
      | -----------------------------------------------------------------
      */
 
-    private function handleDownloadSelected(SupportCollection $records): void
+    private function handleDownloadSelected(MyOffers $page, SupportCollection $records): void
     {
-        // TODO: Implement bulk download logic
+        $page->dispatch('zip-download', [
+            'assignmentIds' => $records->pluck('id')->values()->all(),
+        ]);
     }
 
     private function handleReturnSelected(SupportCollection $records): void
