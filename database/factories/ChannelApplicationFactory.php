@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Channel;
+use App\Models\ChannelApplication;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +12,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ChannelApplicationFactory extends Factory
 {
+
+    protected $model = ChannelApplication::class;
+
     /**
      * Define the model's default state.
      *
@@ -17,7 +23,25 @@ class ChannelApplicationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::factory(),
+            'channel_id' => null,
+            'status' => 'pending',
+            'note' => $this->faker->sentence(),
+            'meta' => [],
         ];
+    }
+
+    public function forExistingChannel(?Channel $channel = null): self
+    {
+        return $this->state(fn() => [
+            'channel_id' => $channel ?? Channel::factory(),
+        ]);
+    }
+
+    public function withMeta(array $meta): self
+    {
+        return $this->state(fn() => [
+            'meta' => $meta,
+        ]);
     }
 }
