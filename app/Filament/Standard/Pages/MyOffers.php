@@ -203,6 +203,7 @@ class MyOffers extends Page implements HasTable
         $this->dispatch('zip-download', [
             'assignmentIds' => $ids,
         ]);
+        $this->resetTable();
     }
 
     public function returnAssignments(SupportCollection $records): void
@@ -211,6 +212,7 @@ class MyOffers extends Page implements HasTable
         foreach ($records as $record) {
             $assignmentService->returnAssignment($record, auth()->user());
         }
+        $this->resetTable();
     }
 
 }
