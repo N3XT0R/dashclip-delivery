@@ -12,7 +12,6 @@ use App\Models\Channel;
 use App\Services\DownloadCacheService;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
-use ReflectionClass;
 use Tests\DatabaseTestCase;
 
 class ZipControllerTest extends DatabaseTestCase
@@ -45,11 +44,7 @@ class ZipControllerTest extends DatabaseTestCase
         ]);
 
         Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
-            $ref = new ReflectionClass($job);
-            $ids = $ref->getProperty('assignmentIds');
-            $ids->setAccessible(true);
-
-            return $ids->getValue($job) === [$assignment->id];
+            return $job->getAssignmentIds() === [$assignment->getKey()];
         });
     }
 
@@ -82,11 +77,7 @@ class ZipControllerTest extends DatabaseTestCase
         ]);
 
         Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
-            $ref = new ReflectionClass($job);
-            $ids = $ref->getProperty('assignmentIds');
-            $ids->setAccessible(true);
-
-            return $ids->getValue($job) === [$assignment->id];
+            return $job->getAssignmentIds() === [$assignment->getKey()];
         });
     }
 

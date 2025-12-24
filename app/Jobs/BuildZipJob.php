@@ -43,6 +43,11 @@ class BuildZipJob implements ShouldQueue
     ) {
     }
 
+    public function getAssignmentIds(): array
+    {
+        return $this->assignmentIds;
+    }
+
     /**
      * Execute the job.
      * @param AssignmentService $assignments
