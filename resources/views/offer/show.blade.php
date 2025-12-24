@@ -158,9 +158,12 @@
         @endforeach
     @endif
 @endsection
-<script>
-    function toggleRegisterDrawer() {
-        document.getElementById('registerDrawer')
-            .classList.toggle('open');
-    }
-</script>
+
+@push('scripts')
+    <script>
+        function toggleRegisterDrawer() {
+            document.getElementById('registerDrawer')
+                .classList.toggle('open');
+        }
+    </script>
+@endpush
