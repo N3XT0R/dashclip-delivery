@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\DTO;
+namespace Tests\Unit\DTO\Channel;
 
 use App\DTO\Channel\ApplicationMetaDto;
 use Carbon\Carbon;
