@@ -43,8 +43,6 @@ class ZipService
     ): string {
         if ($batch) {
             $jobId = $this->jobId($batch, $channel);
-        } elseif ($jobId === null) {
-            throw new \InvalidArgumentException('Either batch or jobId must be provided');
         }
 
         $downloadName = $this->downloadName($batch, $channel);

@@ -51,6 +51,7 @@ class BuildZipJob implements ShouldQueue
      */
     public function handle(AssignmentService $assignments, ZipService $svc): void
     {
+        $jobId = null;
         $batch = $this->batchId ? app(BatchRepository::class)->findById($this->batchId) : null;
         $channel = app(ChannelRepository::class)->findById($this->channelId);
 
@@ -67,10 +68,12 @@ class BuildZipJob implements ShouldQueue
                 $channel,
                 $assignmentIds
             );
+
+            $jobId = 'channel_' . $this->channelId . '_' . hash('sha256', implode('_', $this->assignmentIds));
         }
 
 
-        $svc->build($batch, $channel, $items, $this->ip, $this->userAgent ?? '');
+        $svc->build($batch, $channel, $items, $this->ip, $this->userAgent ?? '', $jobId);
         activity()
             ->causedBy(auth()?->user())
             ->performedOn($channel)

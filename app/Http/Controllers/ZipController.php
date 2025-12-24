@@ -16,7 +16,6 @@ use Filament\Facades\Filament;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ZipController extends Controller
 {
@@ -77,14 +76,13 @@ class ZipController extends Controller
             'assignment_ids' => ['required', 'array', 'min:1'],
         ]);
 
-        $jobId = $channel->getKey() . '_' . Str::uuid();
 
         $ids = collect($validated['assignment_ids'])
             ->filter(static fn($v) => ctype_digit((string)$v))
             ->map(static fn($v) => (int)$v)
             ->values();
 
-
+        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', $ids));
         $items = $this->assignmentRepository->fetchForZipForChannel($channel, $ids);
 
         if ($items->isEmpty()) {
