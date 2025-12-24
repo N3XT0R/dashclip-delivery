@@ -104,6 +104,28 @@ class ZipControllerTest extends DatabaseTestCase
         Queue::assertNothingPushed();
     }
 
+    public function testStartForChannelReturnsErrorWhenAssignmentsAreMissing(): void
+    {
+        Queue::fake();
+
+        $channel = Channel::factory()->create();
+
+        $downloadCache = Mockery::mock(DownloadCacheService::class);
+        $downloadCache->shouldReceive('init')->never();
+        $this->app->instance(DownloadCacheService::class, $downloadCache);
+
+        $response = $this->postJson("/zips/channel/{$channel->getKey()}", [
+            'assignment_ids' => [123],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'error' => 'Die Auswahl ist nicht mehr verfügbar.',
+        ]);
+
+        Queue::assertNothingPushed();
+    }
+
     public function testProgressReturnsCachedValues(): void
     {
         $downloadCache = Mockery::mock(DownloadCacheService::class);
