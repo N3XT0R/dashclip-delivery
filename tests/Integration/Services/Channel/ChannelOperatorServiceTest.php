@@ -41,7 +41,7 @@ final class ChannelOperatorServiceTest extends DatabaseTestCase
         );
     }
 
-    public function testAddUserToChannelRollbacksOnFailure(): void
+    public function testAddUserToChannelCleansUpWhenRoleAssignmentFails(): void
     {
         $user = User::factory()->create();
         $channel = Channel::factory()->create();
