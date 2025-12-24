@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Auth\Abilities;
 
+use App\Auth\Abilities\Contracts\AbilityContract;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Repository\ChannelRepository;
 use App\Repository\RoleRepository;
 
-final readonly class AccessChannelPageAbility
+final readonly class AccessChannelPageAbility implements AbilityContract
 {
     public function __construct(
         private RoleRepository $roles,
