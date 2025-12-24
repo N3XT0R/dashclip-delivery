@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
-use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
@@ -12,9 +11,6 @@ use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
-use App\Models\User;
-use App\Repository\ChannelRepository;
-use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Services\AssignmentService;
 use App\Services\LinkService;
@@ -74,19 +70,9 @@ class MyOffers extends Page implements HasTable
 
     public static function canAccess(): bool
     {
-        $roleRepository = app(RoleRepository::class);
-        $channelRepository = app(ChannelRepository::class);
-        /**
-         * @var User|null $user
-         */
         $user = Filament::auth()->user();
 
-        if (!$user) {
-            return false;
-        }
-
-        return $roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, Filament::getAuthGuard()) &&
-            $channelRepository->hasUserAccessToAnyChannel($user);
+        return $user?->can('page.my_offers.access') ?? false;
     }
 
     public function mount(): void

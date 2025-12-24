@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Models\Team;
 use App\Policies\TeamPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -14,5 +15,14 @@ class PolicyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Team::class, TeamPolicy::class);
+        $this->bootAbilities();
+    }
+
+    protected function bootAbilities(): void
+    {
+        Gate::define(
+            'page.my_offers.access',
+            static fn($user, $guard) => app(AccessChannelPageAbility::class)->check($user, $guard)
+        );
     }
 }
