@@ -190,4 +190,14 @@ final class ClipTest extends DatabaseTestCase
 
         $this->assertSame('1m 0s', $clip->human_readable_duration);
     }
+
+    public function testHumanReadableDurationReturnsNull(): void
+    {
+        $clip = new Clip([
+            'start_sec' => null,
+            'end_sec' => 100,
+        ]);
+
+        $this->assertNull($clip->human_readable_duration);
+    }
 }
