@@ -25,7 +25,6 @@ final class Columns
             $this->createdAt($page),
             $this->downloadedAt($page),
             $this->returnedAt($page),
-            //$this->returnReason($page),
         ];
     }
 
@@ -142,17 +141,6 @@ final class Columns
             ->label(__('my_offers.table.columns.returned_at'))
             ->dateTime('d.m.Y H:i')
             ->sortable()
-            ->visible(
-                fn(): bool => $page->activeTab === 'returned'
-            );
-    }
-
-    public function returnReason(MyOffers $page): TextColumn
-    {
-        return TextColumn::make('return_reason')
-            ->label(__('my_offers.table.columns.return_reason'))
-            ->default('—')
-            ->limit(50)
             ->visible(
                 fn(): bool => $page->activeTab === 'returned'
             );
