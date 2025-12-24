@@ -16,6 +16,7 @@ use App\Repository\UserRepository;
 use App\Services\AssignmentService;
 use App\Services\LinkService;
 use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
@@ -39,6 +40,7 @@ class MyOffers extends Page implements HasTable
     use InteractsWithTable;
     use InteractsWithActions;
     use HasTabs;
+    use HasPageShield;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
