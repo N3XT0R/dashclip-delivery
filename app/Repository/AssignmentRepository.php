@@ -99,6 +99,12 @@ class AssignmentRepository
             ->get();
     }
 
+    /**
+     * Retrieve assignments for zip download for a specific channel.
+     * @param Channel $channel
+     * @param Collection $ids
+     * @return EloquentCollection
+     */
     public function fetchForZipForChannel(Channel $channel, Collection $ids): EloquentCollection
     {
         return Assignment::with('video.clips')
