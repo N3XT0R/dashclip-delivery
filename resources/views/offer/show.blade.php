@@ -106,8 +106,9 @@
         <div class="register-callout">
             <h3>Zentraler Zugriff über das Portal</h3>
             <p>
-                Registrierte Kanalbetreiber verwalten ihre Angebote zentral im Portal.
-                Dort stehen alle aktuellen und zukünftigen Inhalte übersichtlich zur Verfügung.
+                Du kannst Angebote weiterhin wie gewohnt über diese Seite nutzen.
+                Viele Kanalbetreiber entscheiden sich später zusätzlich für ein Benutzerkonto,
+                um ihre Inhalte zentral und übersichtlich zu verwalten.
             </p>
             <ul class="register-benefits">
                 <li>✔ Zentrale Übersicht über alle Angebote, Downloads und Status</li>
