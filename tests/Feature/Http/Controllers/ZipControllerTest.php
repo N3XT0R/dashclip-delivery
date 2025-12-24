@@ -64,12 +64,12 @@ class ZipControllerTest extends DatabaseTestCase
             ->withBatch($batch)
             ->create();
 
-        $jobId = $channel->id;
+        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', [$assignment->getKey()]));
 
         $downloadCache = Mockery::mock(DownloadCacheService::class);
         $downloadCache->shouldReceive('init')
             ->once()
-            ->with($batch->id . '_' . $channel->id);
+            ->with($jobId);
         $this->app->instance(DownloadCacheService::class, $downloadCache);
 
         $response = $this->postJson("/zips/channel/{$channel->id}", [
