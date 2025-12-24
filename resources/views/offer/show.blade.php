@@ -113,8 +113,10 @@
 
             <ul class="register-benefits">
                 <li>✔ Geschützte Angebotslinks für registrierte Kanalbetreiber</li>
-                <li>✔ Zentrale Übersicht aller zugewiesenen Videos im Portal</li>
-                <li>✔ Freiwillig - bestehende E-Mail-Zugriffe bleiben erhalten</li>
+                <li>✔ Zentrale Übersicht über verfügbare, heruntergeladene und abgelaufene Angebote</li>
+                <li>✔ Download-Statistiken und Status auf einen Blick</li>
+                <li>✔ Alle Videos dauerhaft im persönlichen Portal abrufbar</li>
+                <li>✔ Freiwillig – bestehende Zugriffe per E-Mail bleiben erhalten</li>
             </ul>
 
             <div class="register-callout-actions">
