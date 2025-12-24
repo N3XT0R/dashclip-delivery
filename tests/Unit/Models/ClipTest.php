@@ -18,7 +18,6 @@ use Tests\TestCase;
 final class ClipTest extends TestCase
 {
 
-
     public function testStartTimeFormatsSecondsToMinutesAndSeconds(): void
     {
         $clip = new Clip([
