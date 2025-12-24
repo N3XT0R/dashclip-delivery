@@ -35,7 +35,7 @@ class AssignmentFactory extends Factory
         return $this->state(fn() => ['status' => StatusEnum::QUEUED->value]);
     }
 
-    public function withBatch(Batch $batch = null): static
+    public function withBatch(?Batch $batch = null): static
     {
         return $this->state(fn() => [
             'batch_id' => $batch?->getKey() ?? Batch::factory(),
