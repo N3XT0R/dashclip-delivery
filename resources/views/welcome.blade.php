@@ -13,8 +13,8 @@
             DashClip Delivery
         </h1>
         <p class="text-sm text-gray-500 text-center mb-6">
-            Seit Mitte 2025 produktiv im Einsatz bei mehreren Dashcam-Kanälen
-            (erste stabile Version veröffentlicht im August 2025).
+            Seit Mitte 2025 produktiv im Einsatz bei mehreren Dashcam-Kanälen,
+            erste stabile Version seit August 2025.
         </p>
         <p class="mb-6">
             DashClip Delivery ist eine zentrale Plattform für Einsender, die ihre Dashcam-Clips
