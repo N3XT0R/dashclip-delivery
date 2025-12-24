@@ -31,7 +31,7 @@ class ZipControllerTest extends DatabaseTestCase
         $downloadCache = Mockery::mock(DownloadCacheService::class);
         $downloadCache->shouldReceive('init')
             ->once()
-            ->with($batch->id.'_'.$channel->id);
+            ->with($batch->id . '_' . $channel->id);
         $this->app->instance(DownloadCacheService::class, $downloadCache);
 
         $response = $this->postJson("/zips/{$batch->id}/{$channel->id}", [
@@ -40,11 +40,48 @@ class ZipControllerTest extends DatabaseTestCase
 
         $response->assertOk();
         $response->assertJson([
-            'jobId' => $batch->id.'_'.$channel->id,
+            'jobId' => $batch->id . '_' . $channel->id,
             'status' => DownloadStatusEnum::QUEUED->value,
         ]);
 
-        Queue::assertPushed(BuildZipJob::class, function (BuildZipJob $job) use ($assignment) {
+        Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
+            $ref = new ReflectionClass($job);
+            $ids = $ref->getProperty('assignmentIds');
+            $ids->setAccessible(true);
+
+            return $ids->getValue($job) === [$assignment->id];
+        });
+    }
+
+    public function testStartForChannelDispatchesZipJobAndInitializesCache(): void
+    {
+        Queue::fake();
+
+        $batch = Batch::factory()->create();
+        $channel = Channel::factory()->create();
+        $assignment = Assignment::factory()
+            ->for($channel)
+            ->withBatch($batch)
+            ->create();
+
+        $jobId = $channel->id;
+
+        $downloadCache = Mockery::mock(DownloadCacheService::class);
+        $downloadCache->shouldReceive('init')
+            ->once()
+            ->with($batch->id . '_' . $channel->id);
+        $this->app->instance(DownloadCacheService::class, $downloadCache);
+
+        $response = $this->postJson("/zips/channel/{$channel->id}", [
+            'assignment_ids' => [$assignment->id, 'invalid'],
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'status' => DownloadStatusEnum::QUEUED->value,
+        ]);
+
+        Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
             $ref = new ReflectionClass($job);
             $ids = $ref->getProperty('assignmentIds');
             $ids->setAccessible(true);

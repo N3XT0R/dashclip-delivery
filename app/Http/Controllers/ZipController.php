@@ -85,7 +85,7 @@ class ZipController extends Controller
             ->values();
 
 
-        $items = $this->assignmentRepository->fetchForZipWithoutBatch($channel, $ids);
+        $items = $this->assignmentRepository->fetchForZipForChannel($channel, $ids);
 
         if ($items->isEmpty()) {
             return response()->json(['error' => 'Die Auswahl ist nicht mehr verfügbar.'], 422);

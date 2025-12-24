@@ -87,6 +87,7 @@ class AssignmentRepository
      * @param Channel $channel
      * @param Collection $ids
      * @return EloquentCollection<Assignment>
+     * @deprecated
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
     {
@@ -98,7 +99,7 @@ class AssignmentRepository
             ->get();
     }
 
-    public function fetchForZipWithoutBatch(Channel $channel, Collection $ids): EloquentCollection
+    public function fetchForZipForChannel(Channel $channel, Collection $ids): EloquentCollection
     {
         return Assignment::with('video.clips')
             ->where('channel_id', $channel->getKey())

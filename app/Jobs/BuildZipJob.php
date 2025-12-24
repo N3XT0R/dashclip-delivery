@@ -63,7 +63,7 @@ class BuildZipJob implements ShouldQueue
         if ($batch) {
             $items = $assignments->fetchForZip($batch, $channel, $assignmentIds);
         } else {
-            $items = app(AssignmentRepository::class)->fetchForZipWithoutBatch(
+            $items = app(AssignmentRepository::class)->fetchForZipForChannel(
                 $channel,
                 $assignmentIds
             );
