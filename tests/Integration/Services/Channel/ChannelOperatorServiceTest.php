@@ -8,6 +8,7 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\Channel;
 use App\Models\User;
+use App\Repository\RoleRepository;
 use App\Services\Channel\ChannelOperatorService;
 use Tests\DatabaseTestCase;
 
@@ -39,6 +40,37 @@ final class ChannelOperatorServiceTest extends DatabaseTestCase
             )
         );
     }
+
+    public function testAddUserToChannelRollbacksOnFailure(): void
+    {
+        $user = User::factory()->create();
+        $channel = Channel::factory()->create();
+
+        $roleRepo = $this->getMockBuilder(RoleRepository::class)
+            ->onlyMethods(['giveRoleToUser'])
+            ->enableOriginalConstructor()
+            ->getMock();
+
+        $roleRepo->expects($this->once())
+            ->method('giveRoleToUser')
+            ->willThrowException(new \Exception('Simulated failure'));
+
+        $this->app->instance(RoleRepository::class, $roleRepo);
+
+        $service = $this->app->make(ChannelOperatorService::class);
+
+        try {
+            $service->addUserToChannel($user, $channel);
+            $this->fail('Exception was expected');
+        } catch (\Exception) {
+            // expected
+        }
+
+        $this->assertFalse(
+            $user->channels()->whereKey($channel->getKey())->exists()
+        );
+    }
+
 
     public function testAddUserToChannelIsIdempotent(): void
     {

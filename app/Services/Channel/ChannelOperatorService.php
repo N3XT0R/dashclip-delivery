@@ -12,7 +12,7 @@ use App\Repository\ChannelRepository;
 use App\Repository\RoleRepository;
 use Throwable;
 
-final readonly class ChannelOperatorService
+readonly class ChannelOperatorService
 {
 
     public function __construct(
@@ -45,6 +45,10 @@ final readonly class ChannelOperatorService
                 $roleRepo->giveRoleToUser($user, $role, $guard);
             }
         } catch (Throwable $e) {
+            if ($channelRepo->hasUserAccessToChannel($user, $channel)) {
+                $channelRepo->unassignUserFromChannel($user, $channel);
+            }
+
             if (!$channelRepo->hasUserAccessToAnyChannel($user)) {
                 $roleRepo->removeRoleFromUser($user, $role, $guard);
             }
