@@ -26,4 +26,13 @@ final class VideoTest extends TestCase
 
         $this->assertSame('1 MB', $video->human_readable_size);
     }
+
+    public function testModelHumanReadableSizeReturnsNull(): void
+    {
+        $video = Video::factory()->make([
+            'bytes' => null
+        ]);
+
+        self::assertNull($video->human_readable_size);
+    }
 }
