@@ -196,4 +196,11 @@ class MyOffers extends Page implements HasTable
         return $user->channels()->firstOrFail();
     }
 
+    public function dispatchZipDownload(iterable $ids): void
+    {
+        $this->dispatch('zip-download', [
+            'assignmentIds' => $ids,
+        ]);
+    }
+
 }

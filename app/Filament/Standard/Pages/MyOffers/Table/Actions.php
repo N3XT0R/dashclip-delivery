@@ -59,9 +59,9 @@ final readonly class Actions
             ->label(__('my_offers.table.actions.download_again'))
             ->icon('heroicon-m-arrow-path')
             ->color('gray')
-            ->url(
-                fn(Assignment $record): string => '#'
-            ) // TODO: Implement download URL
+            ->action(
+                fn(Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
+            )
             ->openUrlInNewTab()
             ->visible(
                 fn(): bool => $page->activeTab === 'downloaded'
@@ -74,9 +74,9 @@ final readonly class Actions
             ->label(__('my_offers.table.actions.download'))
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
-            ->url(
-                fn(Assignment $record): string => '#'
-            ) // TODO: Implement download URL
+            ->action(
+                fn(Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
+            )
             ->openUrlInNewTab()
             ->visible(
                 fn(): bool => $page->activeTab === 'available'

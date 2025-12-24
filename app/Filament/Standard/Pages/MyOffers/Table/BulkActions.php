@@ -62,7 +62,7 @@ final readonly class BulkActions
             ->icon('heroicon-m-arrow-uturn-left')
             ->color('danger')
             ->action(
-                fn(SupportCollection $records) => $this->handleReturnSelected($records)
+                fn(SupportCollection $records) => $page->dispatchZipDownload($records->pluck('id')->values()->all())
             )
             ->successNotificationTitle(__('my_offers.table.bulk_actions.return_selected_notification'))
             ->requiresConfirmation()
