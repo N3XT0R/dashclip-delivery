@@ -112,7 +112,7 @@
             </p>
             <ul class="register-benefits">
                 <li>✔ Zentrale Übersicht über alle Angebote, Downloads und Status</li>
-                <li>✔ Dauerhafter Zugriff auf aktuelle und zukünftige Inhalte</li>
+                <li>✔ Dauerhafter Zugriff auf frühere, aktuelle und zukünftige Inhalte</li>
                 <li>✔ Mehr Sicherheit durch persönliches Benutzerkonto</li>
                 <li>✔ Perspektivisch: Automatisierte Anbindung an eigene Workflows und Systeme</li>
                 <li>✔ Bestehende Zugriffe per E-Mail bleiben weiterhin möglich</li>
