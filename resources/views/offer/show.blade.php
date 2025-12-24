@@ -112,7 +112,7 @@
             </p>
 
             <ul class="register-benefits">
-                <li>✔ Deutlich mehr Sicherheit durch persönliches Benutzerkonto und zusätzliche Schutzmechanismen</li>
+                <li>✔ Mehr Sicherheit und Kontrolle über deine Angebote durch persönliche Anmeldung</li>
                 <li>✔ Zentrale Übersicht über verfügbare, heruntergeladene und abgelaufene Angebote</li>
                 <li>✔ Transparente Download-Statistiken und Status auf einen Blick</li>
                 <li>✔ Alle Videos dauerhaft im persönlichen Portal abrufbar</li>
