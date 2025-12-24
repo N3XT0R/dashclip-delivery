@@ -62,7 +62,7 @@ final readonly class BulkActions
             ->icon('heroicon-m-arrow-uturn-left')
             ->color('danger')
             ->action(
-                fn(SupportCollection $records) => $page->dispatchZipDownload($records->pluck('id')->values()->all())
+                fn(SupportCollection $records) => $this->handleReturnSelected($records)
             )
             ->successNotificationTitle(__('my_offers.table.bulk_actions.return_selected_notification'))
             ->requiresConfirmation()
@@ -79,9 +79,7 @@ final readonly class BulkActions
 
     private function handleDownloadSelected(MyOffers $page, SupportCollection $records): void
     {
-        $page->dispatch('zip-download', [
-            'assignmentIds' => $records->pluck('id')->values()->all(),
-        ]);
+        $page->dispatchZipDownload($records->pluck('id')->values()->all());
     }
 
     private function handleReturnSelected(SupportCollection $records): void
