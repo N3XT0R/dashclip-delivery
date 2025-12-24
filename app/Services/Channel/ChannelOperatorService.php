@@ -12,7 +12,7 @@ use App\Repository\ChannelRepository;
 use App\Repository\RoleRepository;
 use Throwable;
 
-class ChannelOperatorService
+final readonly class ChannelOperatorService
 {
 
     public function __construct(
@@ -24,8 +24,8 @@ class ChannelOperatorService
 
     /**
      * Add user to channel and assign channel operator role
-     * @param  User  $user
-     * @param  Channel  $channel
+     * @param User $user
+     * @param Channel $channel
      * @return void
      * @throws Throwable
      */
