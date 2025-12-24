@@ -388,7 +388,7 @@ class AssignmentServiceTest extends DatabaseTestCase
             ->for(Channel::factory(), 'channel')
             ->for(Video::factory(), 'video')
             ->create([
-                'status' => StatusEnum::PICKEDUP->value,
+                'status' => StatusEnum::EXPIRED->value,
                 'expires_at' => now()->addHour(),
             ]);
 
