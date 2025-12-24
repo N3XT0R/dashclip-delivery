@@ -21,7 +21,7 @@ class AssignmentFactory extends Factory
         return [
             'video_id' => Video::factory(),
             'channel_id' => Channel::factory(),
-            'batch_id' => null, // or: Batch::factory()
+            'batch_id' => Batch::factory(),
             'status' => StatusEnum::QUEUED->value,
             'expires_at' => now()->addDays($this->faker->numberBetween(3, 14)),
             'attempts' => 0,
