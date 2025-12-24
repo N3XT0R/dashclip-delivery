@@ -131,4 +131,140 @@ final class AssignmentTest extends DatabaseTestCase
 
         $this->assertTrue($assignment->notification->is($notification));
     }
+
+    public function testHasChannelIdsScopeReturnsOnlyMatchingAssignments(): void
+    {
+        $channelA = Channel::factory()->create();
+        $channelB = Channel::factory()->create();
+
+        $assignmentA = Assignment::factory()
+            ->forChannel($channelA)
+            ->withBatch()
+            ->create();
+
+        Assignment::factory()
+            ->forChannel($channelB)
+            ->withBatch()
+            ->create();
+
+        $found = Assignment::query()
+            ->hasChannelIds([$channelA->getKey()])
+            ->get();
+
+        $this->assertCount(1, $found);
+        $this->assertTrue($found->first()->is($assignmentA));
+    }
+
+    public function testAvailableScopeReturnsOnlyQueuedOrNotifiedAndNotExpired(): void
+    {
+        Carbon::setTestNow($now = now());
+
+        try {
+            $availableQueued = Assignment::factory()->create([
+                'status' => StatusEnum::QUEUED->value,
+                'expires_at' => null,
+            ]);
+
+            $availableNotified = Assignment::factory()->create([
+                'status' => StatusEnum::NOTIFIED->value,
+                'expires_at' => $now->copy()->addDay(),
+            ]);
+
+            Assignment::factory()->create([
+                'status' => StatusEnum::EXPIRED->value,
+                'expires_at' => $now->copy()->subDay(),
+            ]);
+
+            Assignment::factory()->create([
+                'status' => StatusEnum::QUEUED->value,
+                'expires_at' => $now->copy()->subDay(),
+            ]);
+
+            $found = Assignment::query()->available()->get();
+
+            $this->assertTrue($found->contains($availableQueued));
+            $this->assertTrue($found->contains($availableNotified));
+            $this->assertCount(2, $found);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function testDownloadedScopeReturnsPickedUpAssignmentsWithDownloadsOrderedByLatest(): void
+    {
+        $assignmentOlder = Assignment::factory()->create([
+            'status' => StatusEnum::PICKEDUP->value,
+        ]);
+
+        Download::factory()->create([
+            'assignment_id' => $assignmentOlder->getKey(),
+            'downloaded_at' => now()->subDay(),
+        ]);
+
+        $assignmentNewer = Assignment::factory()->create([
+            'status' => StatusEnum::PICKEDUP->value,
+        ]);
+
+        Download::factory()->create([
+            'assignment_id' => $assignmentNewer->getKey(),
+            'downloaded_at' => now(),
+        ]);
+
+        Assignment::factory()->create([
+            'status' => StatusEnum::QUEUED->value,
+        ]);
+
+        $found = Assignment::query()->downloaded()->get();
+
+        $this->assertCount(2, $found);
+        $this->assertTrue($found->first()->is($assignmentNewer));
+        $this->assertTrue($found->last()->is($assignmentOlder));
+    }
+
+    public function testExpiredScopeReturnsOnlyExpiredAssignmentsOrderedByUpdatedAt(): void
+    {
+        $older = Assignment::factory()->create([
+            'status' => StatusEnum::EXPIRED->value,
+            'updated_at' => now()->subDay(),
+        ]);
+
+        $newer = Assignment::factory()->create([
+            'status' => StatusEnum::EXPIRED->value,
+            'updated_at' => now(),
+        ]);
+
+        Assignment::factory()->create([
+            'status' => StatusEnum::QUEUED->value,
+        ]);
+
+        $found = Assignment::query()->expired()->get();
+
+        $this->assertCount(2, $found);
+        $this->assertTrue($found->first()->is($newer));
+        $this->assertTrue($found->last()->is($older));
+    }
+
+    public function testReturnedScopeReturnsOnlyRejectedAssignmentsOrderedByUpdatedAt(): void
+    {
+        $older = Assignment::factory()->create([
+            'status' => StatusEnum::REJECTED->value,
+            'updated_at' => now()->subDay(),
+        ]);
+
+        $newer = Assignment::factory()->create([
+            'status' => StatusEnum::REJECTED->value,
+            'updated_at' => now(),
+        ]);
+
+        Assignment::factory()->create([
+            'status' => StatusEnum::QUEUED->value,
+        ]);
+
+        $found = Assignment::query()->returned()->get();
+
+        $this->assertCount(2, $found);
+        $this->assertTrue($found->first()->is($newer));
+        $this->assertTrue($found->last()->is($older));
+    }
+
 }
