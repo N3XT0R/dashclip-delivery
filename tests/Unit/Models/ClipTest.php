@@ -122,11 +122,21 @@ final class ClipTest extends TestCase
         $this->assertSame('01:00', $clip->human_readable_duration);
     }
 
-    public function testHumanReadableDurationReturnsNull(): void
+    public function testHumanReadableDurationReturnsNullOnNoStartSecPresent(): void
     {
         $clip = new Clip([
             'start_sec' => null,
             'end_sec' => 100,
+        ]);
+
+        $this->assertNull($clip->human_readable_duration);
+    }
+
+    public function testHumanReadableDurationReturnsNullOnNoEndSecPresent(): void
+    {
+        $clip = new Clip([
+            'start_sec' => 50,
+            'end_sec' => null,
         ]);
 
         $this->assertNull($clip->human_readable_duration);
