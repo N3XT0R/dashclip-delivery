@@ -44,7 +44,7 @@ final readonly class BulkActions
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
             ->action(function (SupportCollection $records) use ($page): void {
-                $this->handleDownloadSelected($page, $records);
+                $page->dispatchZipDownload($records->pluck('id')->values()->all());
             })
             ->visible(
                 fn(): bool => $page->activeTab === 'available'
@@ -62,30 +62,12 @@ final readonly class BulkActions
             ->icon('heroicon-m-arrow-uturn-left')
             ->color('danger')
             ->action(
-                fn(SupportCollection $records) => $this->handleReturnSelected($records)
+                fn(SupportCollection $records) => $page->returnAssignments($records)
             )
             ->successNotificationTitle(__('my_offers.table.bulk_actions.return_selected_notification'))
             ->requiresConfirmation()
             ->visible(
                 fn(): bool => $page->activeTab === 'available'
             );
-    }
-
-
-    /* -----------------------------------------------------------------
-     | Internal handlers
-     | -----------------------------------------------------------------
-     */
-
-    private function handleDownloadSelected(MyOffers $page, SupportCollection $records): void
-    {
-        $page->dispatchZipDownload($records->pluck('id')->values()->all());
-    }
-
-    private function handleReturnSelected(SupportCollection $records): void
-    {
-        foreach ($records as $record) {
-            $this->assignmentService->returnAssignment($record, auth()->user());
-        }
     }
 }

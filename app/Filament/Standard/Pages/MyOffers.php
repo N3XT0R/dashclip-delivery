@@ -13,6 +13,7 @@ use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Repository\UserRepository;
+use App\Services\AssignmentService;
 use App\Services\LinkService;
 use BackedEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -30,6 +31,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection as SupportCollection;
 use UnitEnum;
 
 class MyOffers extends Page implements HasTable
@@ -201,6 +203,14 @@ class MyOffers extends Page implements HasTable
         $this->dispatch('zip-download', [
             'assignmentIds' => $ids,
         ]);
+    }
+
+    public function returnAssignments(SupportCollection $records): void
+    {
+        $assignmentService = app(AssignmentService::class);
+        foreach ($records as $record) {
+            $assignmentService->returnAssignment($record, auth()->user());
+        }
     }
 
 }
