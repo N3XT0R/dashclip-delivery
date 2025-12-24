@@ -91,7 +91,7 @@ class RoleRepository
      * @param GuardEnum|string|null $guard
      * @return bool
      */
-    public function hasRole(User $user, RoleEnum $roleEnum, ?GuardEnum|string $guard = null): bool
+    public function hasRole(User $user, RoleEnum $roleEnum, GuardEnum|string|null $guard = null): bool
     {
         if ($guard instanceof GuardEnum) {
             $guard = $guard->value;

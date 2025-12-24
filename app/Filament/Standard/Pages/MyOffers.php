@@ -73,6 +73,7 @@ class MyOffers extends Page implements HasTable
     public static function canAccess(): bool
     {
         $roleRepository = app(RoleRepository::class);
+        $channelRepository = app(UserRepository::class);
         /**
          * @var \App\Models\User|null $user
          */
