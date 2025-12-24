@@ -87,7 +87,7 @@ class AssignmentRepository
      * @param Channel $channel
      * @param Collection $ids
      * @return EloquentCollection<Assignment>
-     * @deprecated
+     * @deprecated use fetchForZipForChannel instead
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
     {
