@@ -12,6 +12,7 @@ use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Models\User;
 use App\Repository\ChannelRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
@@ -76,7 +77,7 @@ class MyOffers extends Page implements HasTable
         $roleRepository = app(RoleRepository::class);
         $channelRepository = app(ChannelRepository::class);
         /**
-         * @var \App\Models\User|null $user
+         * @var User|null $user
          */
         $user = Filament::auth()->user();
 
