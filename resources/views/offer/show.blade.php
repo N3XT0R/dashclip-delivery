@@ -149,12 +149,14 @@
         </form>
     @endif
     <hr class="muted-separator">
-    <button
-        class="register-tab"
-        onclick="document.querySelector('.register-callout')?.scrollIntoView({behavior:'smooth'})"
-    >
-        Registrieren
-    </button>
+    @guest
+        <button
+            class="register-tab"
+            onclick="document.querySelector('.register-callout')?.scrollIntoView({behavior:'smooth'})"
+        >
+            Registrieren
+        </button>
+    @endguest
     @if($pickedUp->isNotEmpty())
         <h2 style="margin-bottom:12px;">Bereits heruntergeladen</h2>
 
