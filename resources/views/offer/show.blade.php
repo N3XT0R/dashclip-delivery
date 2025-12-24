@@ -112,7 +112,7 @@
             </p>
 
             <ul class="register-benefits">
-                <li>✔ Geschützte Angebotslinks für registrierte Kanalbetreiber</li>
+                <li>✔ Zusätzliche Sicherheit durch Anmeldung und Mehrfaktor-Authentifizierung</li>
                 <li>✔ Zentrale Übersicht über verfügbare, heruntergeladene und abgelaufene Angebote</li>
                 <li>✔ Download-Statistiken und Status auf einen Blick</li>
                 <li>✔ Alle Videos dauerhaft im persönlichen Portal abrufbar</li>
