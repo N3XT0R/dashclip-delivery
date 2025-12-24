@@ -26,7 +26,7 @@ class ChannelApplicationFactory extends Factory
         return [
             'user_id' => User::factory(),
             'channel_id' => null,
-            'status' => 'pending',
+            'status' => ApplicationEnum::PENDING->value,
             'note' => $this->faker->sentence(),
             'meta' => [],
         ];
