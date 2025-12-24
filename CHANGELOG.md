@@ -41,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Refactored client-side download handling to decouple it from backend route and domain changes.  
   Updated the JavaScript download logic to rely on stable job-based identifiers instead of batch-specific parameters.  
   Improved the robustness of the ZIP download flow by isolating frontend logic from backend routing details.
+- **Optional Portal-Based Access for Channel Operators**  
+  Channel operators can continue to access offers via existing links.
+  In addition, an optional portal-based workflow is now available, allowing registered
+  users to manage offers, downloads, and status information in a central location.
+  This provides a foundation for a more streamlined experience as the platform evolves.
 
 ### Fixed
 
