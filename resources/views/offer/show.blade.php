@@ -112,11 +112,11 @@
             </p>
 
             <ul class="register-benefits">
-                <li>✔ Zusätzliche Sicherheit durch Anmeldung und Mehrfaktor-Authentifizierung</li>
+                <li>✔ Deutlich mehr Sicherheit durch persönliches Benutzerkonto und zusätzliche Schutzmechanismen</li>
                 <li>✔ Zentrale Übersicht über verfügbare, heruntergeladene und abgelaufene Angebote</li>
-                <li>✔ Download-Statistiken und Status auf einen Blick</li>
+                <li>✔ Transparente Download-Statistiken und Status auf einen Blick</li>
                 <li>✔ Alle Videos dauerhaft im persönlichen Portal abrufbar</li>
-                <li>✔ Freiwillig – bestehende Zugriffe per E-Mail bleiben erhalten</li>
+                <li>✔ Freiwillig – bestehende Zugriffe per E-Mail bleiben vollständig erhalten</li>
             </ul>
 
             <div class="register-callout-actions">
