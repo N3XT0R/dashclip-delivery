@@ -47,7 +47,7 @@ class VideoResource extends Resource
             ->schema([
                 Grid::make()
                     ->columns([
-                        'lg' => 2,
+                        'md' => 2,
                     ])
                     ->schema([
                         ViewField::make('video_preview')
