@@ -104,17 +104,16 @@
 @section('content')
     @guest
         <div class="register-callout">
-            <h3>Mehr Zugriff erhalten</h3>
+            <h3>Zentraler Zugriff über das Portal</h3>
             <p>
-                Mit einer kostenlosen Registrierung erhältst du mehr Sicherheit und Übersicht für deine Kanalangebote
-                ohne Änderungen am bisherigen Ablauf.
+                Registrierte Kanalbetreiber verwalten ihre Angebote zentral im Portal.
+                Dort stehen alle aktuellen und zukünftigen Inhalte übersichtlich zur Verfügung.
             </p>
             <ul class="register-benefits">
-                <li>✔ Mehr Sicherheit und Kontrolle über deine Angebote durch persönliche Anmeldung</li>
-                <li>✔ Zentrale Übersicht über verfügbare, heruntergeladene und abgelaufene Angebote</li>
-                <li>✔ Transparente Download-Statistiken und Status auf einen Blick</li>
-                <li>✔ Alle Videos dauerhaft im persönlichen Portal abrufbar</li>
-                <li>✔ Freiwillig – bestehende Zugriffe per E-Mail bleiben vollständig erhalten</li>
+                <li>✔ Zentrale Übersicht über alle Angebote, Downloads und Status</li>
+                <li>✔ Dauerhafter Zugriff auf aktuelle und zukünftige Inhalte</li>
+                <li>✔ Mehr Sicherheit durch persönliches Benutzerkonto</li>
+                <li>✔ Bestehende Zugriffe per E-Mail bleiben weiterhin möglich</li>
             </ul>
             <div class="register-callout-actions">
                 <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
