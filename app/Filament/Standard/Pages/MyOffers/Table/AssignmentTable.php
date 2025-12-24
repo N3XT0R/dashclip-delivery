@@ -29,6 +29,7 @@ final readonly class AssignmentTable
             ->columns($this->columns->make($page))
             ->recordActions($this->actions->make($page))
             ->toolbarActions($this->bulkActions->make($page))
+            ->defaultPaginationPageOption(25)
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
             ->emptyStateDescription(
                 $this->emptyStateDescription($page)
