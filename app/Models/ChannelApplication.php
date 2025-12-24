@@ -56,6 +56,11 @@ class ChannelApplication extends Model
                 if (is_string($value)) {
                     $value = json_decode($value, true) ?? [];
                 }
+
+                if (!is_array($value)) {
+                    $value = [];
+                }
+
                 return ApplicationMetaDto::fromMetaArray($value ?? []);
             },
         );
