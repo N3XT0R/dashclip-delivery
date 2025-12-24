@@ -13,7 +13,7 @@
             DashClip Delivery
         </h1>
         <p class="text-sm text-gray-500 text-center mb-6">
-            Seit Mitte 2025 produktiv im Einsatz bei mehreren Dashcam-Kanälen.
+            Seit Mitte 2025 produktiv bei mehreren Dashcam-Kanälen im Einsatz.
         </p>
 
         <p class="mb-6">
