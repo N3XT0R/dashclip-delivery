@@ -82,7 +82,7 @@ class ZipController extends Controller
             ->map(static fn($v) => (int)$v)
             ->values();
 
-        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', $ids));
+        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', $ids->all()));
         $items = $this->assignmentRepository->fetchForZipForChannel($channel, $ids);
 
         if ($items->isEmpty()) {
