@@ -12,69 +12,100 @@
 @endsection
 @push('styles')
     <style>
-        .register-drawer {
+        /* === Register Callout ===================================== */
+        .register-callout {
+            max-width: 420px;
+            margin: 24px 0;
+
+            background: #ffffff;
+            border: 1px solid #e6e8ee;
+            border-radius: 10px;
+
+            padding: 16px 18px;
+
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .register-callout h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .register-callout p {
+            margin: 0 0 14px 0;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #4b5563;
+        }
+
+        .register-callout-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .register-callout .btn.primary {
+            padding: 8px 14px;
+        }
+
+        .register-callout .btn.subtle {
+            padding: 8px 14px;
+        }
+
+        .register-callout:hover {
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+        }
+
+        .register-tab {
             position: fixed;
-            right: 0;
-            top: 35%;
-            display: flex;
-            align-items: stretch;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
 
-            transform: translateX(260px);
-            transition: transform .25s ease;
-            z-index: 50;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
 
-            background: #fff;
-            box-shadow: -8px 0 24px rgba(0, 0, 0, .12);
-            border-radius: 8px 0 0 8px;
+            padding: 10px 8px;
+
+            background: #bec1c8;
+            border: 1px solid #e6e8ee;
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            color: #374151;
+
+            cursor: pointer;
+            z-index: 40;
         }
 
-        .register-drawer.open {
-            transform: translateX(0);
+        .register-tab:hover {
+            background: #e9edf5;
         }
 
-
-        .drawer-handle {
-            position: absolute;
-            left: -44px;
-            width: 44px;
-            height: 160px;
-
-            transform: rotate(-90deg);
-            transform-origin: top left;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 6px 6px 0 0;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, .08);
-        }
-
-        .drawer-content {
-            width: 260px;
-            padding: 16px;
-            background: inherit;
-        }
-
-        .drawer-handle {
-            position: absolute;
-            left: -120px;
-            width: 120px;
-        }
-
-        .drawer-handle:hover {
-            background: #f0f2f6;
-        }
-
-        .drawer-content {
-            width: 260px;
-            padding: 16px;
-        }
     </style>
 @endpush
 @section('content')
+    @guest
+        <div class="register-callout">
+            <h3>Mehr Zugriff erhalten</h3>
+            <p>
+                Registriere dich, um auf weitere Inhalte und Downloads zuzugreifen.
+            </p>
+
+            <div class="register-callout-actions">
+                <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
+                    Jetzt registrieren
+                </a>
+                <a href="{{ route('filament.standard.auth.login') }}" class="btn subtle">
+                    Login
+                </a>
+            </div>
+        </div>
+    @endguest
     @php
         // nach bundle_key gruppieren (Fallback "Einzeln")
         $byBundle = $items->groupBy(function($a){
@@ -118,26 +149,12 @@
         </form>
     @endif
     <hr class="muted-separator">
-    <div id="registerDrawer" class="register-drawer">
-        <button class="drawer-handle" type="button" onclick="toggleRegisterDrawer()">
-            Zugriff erweitern
-        </button>
-
-        <div class="drawer-content">
-            <h3>Mehr Zugriff erhalten</h3>
-            <p class="muted">
-                Registriere dich, um auf weitere Inhalte und Downloads zuzugreifen.
-            </p>
-
-            <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
-                Jetzt registrieren
-            </a>
-
-            <a href="{{ route('filament.standard.auth.login') }}" class="btn subtle">
-                Ich habe bereits ein Konto
-            </a>
-        </div>
-    </div>
+    <button
+        class="register-tab"
+        onclick="document.querySelector('.register-callout')?.scrollIntoView({behavior:'smooth'})"
+    >
+        Registrieren
+    </button>
     @if($pickedUp->isNotEmpty())
         <h2 style="margin-bottom:12px;">Bereits heruntergeladen</h2>
 
@@ -158,12 +175,3 @@
         @endforeach
     @endif
 @endsection
-
-@push('scripts')
-    <script>
-        function toggleRegisterDrawer() {
-            document.getElementById('registerDrawer')
-                .classList.toggle('open');
-        }
-    </script>
-@endpush
