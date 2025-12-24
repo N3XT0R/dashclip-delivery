@@ -14,8 +14,9 @@
     <style>
         /* === Register Callout ===================================== */
         .register-callout {
-            max-width: 420px;
-            margin: 24px 0;
+            width: 75%;
+            max-width: 900px;
+            margin: 32px auto;
 
             background: #ffffff;
             border: 1px solid #e6e8ee;
