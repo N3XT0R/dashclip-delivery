@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enum\Channel\ApplicationEnum;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;
@@ -42,6 +43,13 @@ class ChannelApplicationFactory extends Factory
     {
         return $this->state(fn() => [
             'meta' => $meta,
+        ]);
+    }
+
+    public function withStatus(ApplicationEnum $status): self
+    {
+        return $this->state(fn() => [
+            'status' => $status->value,
         ]);
     }
 }
