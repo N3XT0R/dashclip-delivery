@@ -72,7 +72,7 @@ class MyOffers extends Page implements HasTable
     {
         $user = Filament::auth()->user();
 
-        return $user?->can('page.my_offers.access') ?? false;
+        return $user?->can('page.channels.access') ?? false;
     }
 
     public function mount(): void

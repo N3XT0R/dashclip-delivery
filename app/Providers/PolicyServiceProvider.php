@@ -21,7 +21,7 @@ class PolicyServiceProvider extends ServiceProvider
     protected function bootAbilities(): void
     {
         Gate::define(
-            'page.my_offers.access',
+            'page.channels.access',
             static fn($user) => app(AccessChannelPageAbility::class)->check($user)
         );
     }
