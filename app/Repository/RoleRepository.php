@@ -15,8 +15,8 @@ class RoleRepository
 {
     /**
      * Get Role model by RoleEnum
-     * @param  RoleEnum  $roleEnum
-     * @param  string|null  $guard
+     * @param RoleEnum $roleEnum
+     * @param string|null $guard
      * @return Role
      */
     public function getRoleByRoleEnum(RoleEnum $roleEnum, ?string $guard = null): Role
@@ -29,7 +29,7 @@ class RoleRepository
 
     /**
      * Check if user has all roles to access everything
-     * @param  User  $user
+     * @param User $user
      * @return bool
      */
     public function canAccessEverything(User $user): bool
@@ -41,8 +41,8 @@ class RoleRepository
 
     /**
      * Check if user can access a given Filament panel
-     * @param  User  $user
-     * @param  Panel  $panel
+     * @param User $user
+     * @param Panel $panel
      * @return bool
      */
     public function canAccessPanel(User $user, Panel $panel): bool
@@ -56,9 +56,9 @@ class RoleRepository
 
     /**
      * Assign a role to a user
-     * @param  User  $user
-     * @param  RoleEnum  $roleEnum
-     * @param  GuardEnum|null  $guard
+     * @param User $user
+     * @param RoleEnum $roleEnum
+     * @param GuardEnum|null $guard
      * @return bool
      */
     public function giveRoleToUser(User $user, RoleEnum $roleEnum, ?GuardEnum $guard = null): bool
@@ -71,9 +71,9 @@ class RoleRepository
 
     /**
      * Remove a role from a user
-     * @param  User  $user
-     * @param  RoleEnum  $roleEnum
-     * @param  GuardEnum|null  $guard
+     * @param User $user
+     * @param RoleEnum $roleEnum
+     * @param GuardEnum|null $guard
      * @return bool
      */
     public function removeRoleFromUser(User $user, RoleEnum $roleEnum, ?GuardEnum $guard = null): bool
@@ -86,14 +86,18 @@ class RoleRepository
 
     /**
      * Check if user has a specific role
-     * @param  User  $user
-     * @param  RoleEnum  $roleEnum
-     * @param  GuardEnum|null  $guard
+     * @param User $user
+     * @param RoleEnum $roleEnum
+     * @param GuardEnum|string|null $guard
      * @return bool
      */
-    public function hasRole(User $user, RoleEnum $roleEnum, ?GuardEnum $guard = null): bool
+    public function hasRole(User $user, RoleEnum $roleEnum, ?GuardEnum|string $guard = null): bool
     {
-        $role = $this->getRoleByRoleEnum($roleEnum, $guard?->value ?? null);
+        if ($guard instanceof GuardEnum) {
+            $guard = $guard->value;
+        }
+
+        $role = $this->getRoleByRoleEnum($roleEnum, $guard ?? null);
         return $user->hasRole($role);
     }
 }

@@ -12,6 +12,7 @@ use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Services\AssignmentService;
 use App\Services\LinkService;
@@ -71,13 +72,17 @@ class MyOffers extends Page implements HasTable
 
     public static function canAccess(): bool
     {
+        $roleRepository = app(RoleRepository::class);
+        /**
+         * @var \App\Models\User|null $user
+         */
         $user = Filament::auth()->user();
 
         if (!$user) {
             return false;
         }
 
-        return $user->hasRole(RoleEnum::CHANNEL_OPERATOR->value);
+        return $roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, Filament::getAuthGuard());
     }
 
     public function mount(): void
