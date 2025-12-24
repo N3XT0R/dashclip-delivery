@@ -58,12 +58,13 @@ class VideoResource extends Resource
                         Grid::make()
                             ->schema([
                                 TextEntry::make('original_name')
-                                    ->label('Video-Titel')
-                                    ->extraAttributes(['class' => 'text-lg font-semibold']),
+                                    ->label('Video-Titel'),
                                 TextEntry::make('duration')
                                     ->label('Dauer')
                                     ->state(function (Video $record) {
-                                        return self::formatDuration($record->clips()?->first()?->getAttribute('duration'));
+                                        return self::formatDuration(
+                                            $record->clips()?->first()?->getAttribute('duration')
+                                        );
                                     }),
                                 TextEntry::make('bundle_key')
                                     ->label('Bundle')
@@ -173,12 +174,20 @@ class VideoResource extends Resource
                                             ->orWhere('expires_at', '>', now());
                                     });
                             }),
-                            'downloaded' => $query->whereHas('assignments',
-                                fn(Builder $assignmentQuery) => $assignmentQuery->where('status',
-                                    StatusEnum::PICKEDUP->value)),
-                            'expired' => $query->whereHas('assignments',
-                                fn(Builder $assignmentQuery) => $assignmentQuery->where('status',
-                                    StatusEnum::EXPIRED->value)),
+                            'downloaded' => $query->whereHas(
+                                'assignments',
+                                fn(Builder $assignmentQuery) => $assignmentQuery->where(
+                                    'status',
+                                    StatusEnum::PICKEDUP->value
+                                )
+                            ),
+                            'expired' => $query->whereHas(
+                                'assignments',
+                                fn(Builder $assignmentQuery) => $assignmentQuery->where(
+                                    'status',
+                                    StatusEnum::EXPIRED->value
+                                )
+                            ),
                             default => $query,
                         };
                     }),
@@ -226,10 +235,14 @@ class VideoResource extends Resource
                                 ->orWhere('expires_at', '>', now());
                         });
                 },
-                'assignments as expired_assignments_count' => fn(Builder $query) => $query->where('status',
-                    StatusEnum::EXPIRED->value),
-                'assignments as downloaded_assignments_count' => fn(Builder $query) => $query->where('status',
-                    StatusEnum::PICKEDUP->value),
+                'assignments as expired_assignments_count' => fn(Builder $query) => $query->where(
+                    'status',
+                    StatusEnum::EXPIRED->value
+                ),
+                'assignments as downloaded_assignments_count' => fn(Builder $query) => $query->where(
+                    'status',
+                    StatusEnum::PICKEDUP->value
+                ),
                 'assignments as assignments_count',
             ]);
     }
