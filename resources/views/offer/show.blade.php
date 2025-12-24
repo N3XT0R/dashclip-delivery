@@ -86,15 +86,35 @@
             background: #e9edf5;
         }
 
+        .register-benefits {
+            margin: 10px 0 14px 0;
+            padding-left: 0;
+            list-style: none;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .register-benefits li {
+            margin-bottom: 6px;
+        }
+
     </style>
 @endpush
 @section('content')
     @guest
         <div class="register-callout">
+
             <h3>Mehr Zugriff erhalten</h3>
             <p>
-                Registriere dich, um auf weitere Inhalte und Downloads zuzugreifen.
+                Mit einer kostenlosen Registrierung erhältst du mehr Sicherheit und Übersicht für deine Kanalangebote
+                ohne Änderungen am bisherigen Ablauf.
             </p>
+
+            <ul class="register-benefits">
+                <li>✔ Geschützte Angebotslinks für registrierte Kanalbetreiber</li>
+                <li>✔ Zentrale Übersicht aller zugewiesenen Videos im Portal</li>
+                <li>✔ Freiwillig - bestehende E-Mail-Zugriffe bleiben erhalten</li>
+            </ul>
 
             <div class="register-callout-actions">
                 <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
