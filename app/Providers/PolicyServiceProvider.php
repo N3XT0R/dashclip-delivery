@@ -22,7 +22,7 @@ class PolicyServiceProvider extends ServiceProvider
     {
         Gate::define(
             'page.my_offers.access',
-            static fn($user, $guard) => app(AccessChannelPageAbility::class)->check($user, $guard)
+            static fn($user) => app(AccessChannelPageAbility::class)->check($user)
         );
     }
 }

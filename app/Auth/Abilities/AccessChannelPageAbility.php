@@ -17,10 +17,10 @@ final readonly class AccessChannelPageAbility
     ) {
     }
 
-    public function check(User $user, string $guard): bool
+    public function check(User $user): bool
     {
         return
-            $this->roles->hasRole($user, RoleEnum::CHANNEL_OPERATOR, $guard)
+            $this->roles->hasRole($user, RoleEnum::CHANNEL_OPERATOR)
             && $this->channels->hasUserAccessToAnyChannel($user);
     }
 }
