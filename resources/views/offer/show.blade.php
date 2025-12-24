@@ -114,8 +114,8 @@
                 <li>✔ Zentrale Übersicht über alle Angebote, Downloads und Status</li>
                 <li>✔ Dauerhafter Zugriff auf aktuelle und zukünftige Inhalte</li>
                 <li>✔ Mehr Sicherheit durch persönliches Benutzerkonto</li>
-                <li>✔ Bestehende Zugriffe per E-Mail bleiben weiterhin möglich</li>
                 <li>✔ Perspektivisch: Automatisierte Anbindung an eigene Workflows und Systeme</li>
+                <li>✔ Bestehende Zugriffe per E-Mail bleiben weiterhin möglich</li>
             </ul>
             <div class="register-callout-actions">
                 <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
