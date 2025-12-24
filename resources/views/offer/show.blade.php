@@ -10,7 +10,70 @@
 @section('actions')
     {{-- optional --}}
 @endsection
+@push('styles')
+    <style>
+        .register-drawer {
+            position: fixed;
+            right: 0;
+            top: 35%;
+            display: flex;
+            align-items: stretch;
 
+            transform: translateX(260px);
+            transition: transform .25s ease;
+            z-index: 50;
+
+            background: #fff;
+            box-shadow: -8px 0 24px rgba(0, 0, 0, .12);
+            border-radius: 8px 0 0 8px;
+        }
+
+        .register-drawer.open {
+            transform: translateX(0);
+        }
+
+
+        .drawer-handle {
+            position: absolute;
+            left: -44px;
+            width: 44px;
+            height: 160px;
+
+            transform: rotate(-90deg);
+            transform-origin: top left;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px 6px 0 0;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, .08);
+        }
+
+        .drawer-content {
+            width: 260px;
+            padding: 16px;
+            background: inherit;
+        }
+
+        .drawer-handle {
+            position: absolute;
+            left: -120px;
+            width: 120px;
+        }
+
+        .drawer-handle:hover {
+            background: #f0f2f6;
+        }
+
+        .drawer-content {
+            width: 260px;
+            padding: 16px;
+        }
+    </style>
+@endpush
 @section('content')
     @php
         // nach bundle_key gruppieren (Fallback "Einzeln")
@@ -55,6 +118,26 @@
         </form>
     @endif
     <hr class="muted-separator">
+    <div id="registerDrawer" class="register-drawer">
+        <button class="drawer-handle" type="button" onclick="toggleRegisterDrawer()">
+            Zugriff erweitern
+        </button>
+
+        <div class="drawer-content">
+            <h3>Mehr Zugriff erhalten</h3>
+            <p class="muted">
+                Registriere dich, um auf weitere Inhalte und Downloads zuzugreifen.
+            </p>
+
+            <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
+                Jetzt registrieren
+            </a>
+
+            <a href="{{ route('filament.standard.auth.login') }}" class="btn subtle">
+                Ich habe bereits ein Konto
+            </a>
+        </div>
+    </div>
     @if($pickedUp->isNotEmpty())
         <h2 style="margin-bottom:12px;">Bereits heruntergeladen</h2>
 
@@ -75,3 +158,9 @@
         @endforeach
     @endif
 @endsection
+<script>
+    function toggleRegisterDrawer() {
+        document.getElementById('registerDrawer')
+            .classList.toggle('open');
+    }
+</script>
