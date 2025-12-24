@@ -8,7 +8,6 @@ use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Services\AssignmentService;
 use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 
@@ -68,9 +67,9 @@ final readonly class Actions
             );
     }
 
-    public function download(MyOffers $page): ViewAction
+    public function download(MyOffers $page): Action
     {
-        return ViewAction::make('download')
+        return Action::make('download')
             ->label(__('my_offers.table.actions.download'))
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
