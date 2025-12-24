@@ -29,7 +29,6 @@ final readonly class AssignmentTable
             ->columns($this->columns->make($page))
             ->recordActions($this->actions->make($page))
             ->toolbarActions($this->bulkActions->make($page))
-            ->selectCurrentPageOnly($page->activeTab === 'available')
             ->emptyStateHeading(__('my_offers.table.empty_state.heading'))
             ->emptyStateDescription(
                 $this->emptyStateDescription($page)
