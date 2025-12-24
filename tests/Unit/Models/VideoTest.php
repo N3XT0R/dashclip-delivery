@@ -98,15 +98,24 @@ final class VideoTest extends DatabaseTestCase
 
         $video = Video::factory()->create([
             'disk' => 'public',
-            'path' => 'videos/'.Str::random(8).'/'.Str::random(8).'.mp4',
+            'path' => 'videos/' . Str::random(8) . '/' . Str::random(8) . '.mp4',
         ]);
 
         $disk = $video->getDisk();
         $this->assertInstanceOf(Filesystem::class, $disk);
 
-        $testPath = 'probe/'.Str::random(12).'.txt';
+        $testPath = 'probe/' . Str::random(12) . '.txt';
         $this->assertTrue($disk->put($testPath, 'ok'));
 
         Storage::disk('public')->assertExists($testPath);
+    }
+
+    public function testModelHasHumanReadableSize(): void
+    {
+        $video = Video::factory()->create([
+            'bytes' => 1048576, // 1 MB
+        ]);
+
+        $this->assertSame('1 MB', $video->human_readable_size);
     }
 }
