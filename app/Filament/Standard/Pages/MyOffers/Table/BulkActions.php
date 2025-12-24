@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
 use App\Filament\Standard\Pages\MyOffers;
+use App\Services\AssignmentService;
 use Filament\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 
-final class BulkActions
+final readonly class BulkActions
 {
+
+    public function __construct(private AssignmentService $assignmentService)
+    {
+    }
+
     /**
      * @return array<int, BulkAction>
      */
@@ -80,5 +86,8 @@ final class BulkActions
 
     private function handleReturnSelected(SupportCollection $records): void
     {
+        foreach ($records as $record) {
+            $this->assignmentService->returnAssignment($record, auth()->user());
+        }
     }
 }
