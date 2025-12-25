@@ -12,8 +12,8 @@ class SendChannelAccessRequestedMail
     public function handle(ChannelAccessRequested $event): void
     {
         app(MailService::class)->sendChannelAccessApprovalRequestedMail(
-            $event->channelApplication->channel->email ?? '',
-            $event->channelApplication,
+            owner: $event->channelApplication->channel->email ?? '',
+            channelApplication: $event->channelApplication,
         );
     }
 }
