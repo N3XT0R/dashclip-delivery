@@ -6,9 +6,10 @@ namespace Tests\Integration\Observers;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
+use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\Role;
+use App\Observers\UserObserver;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\DatabaseTestCase;
 
@@ -47,7 +48,7 @@ final class UserObserverTest extends DatabaseTestCase
             'guard_name' => GuardEnum::DEFAULT->value,
         ]);
 
-        $user = User::withoutEvents(fn() => User::factory()->create([
+        $user = User::withoutEvents(static fn() => User::factory()->create([
             'name' => 'Observer User Roles',
         ]));
 
@@ -60,7 +61,7 @@ final class UserObserverTest extends DatabaseTestCase
             'model_type' => User::class,
         ]);
 
-        $observer = app()->make(\App\Observers\UserObserver::class);
+        $observer = app()->make(UserObserver::class);
         $observer->created($user);
 
         $freshUser = $user->fresh();
