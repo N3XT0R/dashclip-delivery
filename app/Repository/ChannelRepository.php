@@ -226,4 +226,9 @@ class ChannelRepository
     {
         return Channel::create($attributes);
     }
+
+    public function getChannelsForUser(User $user): SupportCollection
+    {
+        return $user->channels()->get();
+    }
 }

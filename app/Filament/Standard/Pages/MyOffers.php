@@ -11,6 +11,7 @@ use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Repository\ChannelRepository;
 use App\Repository\UserRepository;
 use App\Services\AssignmentService;
 use App\Services\LinkService;
@@ -192,11 +193,12 @@ class MyOffers extends Page implements HasTable
     protected function getCurrentChannel(): ?Channel
     {
         $user = app(UserRepository::class)->getCurrentUser();
-
         if (!$user) {
             return null;
         }
-        return $user->channels()->firstOrFail();
+
+        return app(ChannelRepository::class)
+            ->getChannelsForUser($user)->first();
     }
 
     public function dispatchZipDownload(iterable $ids): void
