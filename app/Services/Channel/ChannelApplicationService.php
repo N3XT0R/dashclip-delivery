@@ -27,6 +27,10 @@ readonly class ChannelApplicationService
             $channel = $channelApplication->channel;
         }
 
+        /**
+         * @todo implement assigning the channel to the application
+         */
+
         if ($user) {
             Activity::createActivityLog(
                 'channel_applications',
@@ -36,13 +40,11 @@ readonly class ChannelApplicationService
                     'channel_application_id' => $channelApplication->getKey(),
                     'channel_id' => $channel->getKey(),
                     'is_new_channel' => $isNewChannel,
+                    'applicant_user_id' => $applicant->getKey(),
                 ]
             );
         }
 
-        /**
-         * @todo implement assigning the channel to the application
-         */
 
         return $result;
     }
