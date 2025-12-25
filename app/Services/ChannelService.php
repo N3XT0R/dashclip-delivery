@@ -264,7 +264,7 @@ class ChannelService
         }
 
         return $this->channelRepository->createChannel([
-            'name' => $meta['name'] ?? 'Unnamed Channel',
+            'name' => $meta['name'],
             'creator_name' => $meta['creator_name'] ?? 'Unknown Creator',
             'email' => $meta['email'] ?? '',
             'youtube_name' => $meta['youtube_name'] ?? null,
