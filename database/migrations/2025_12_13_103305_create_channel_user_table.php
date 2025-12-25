@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('channel_user', static function (Blueprint $table) {
             $table->id();
+            $table->boolean('is_verified')->default(false);
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('channel_id')->constrained('channels')->onDelete('cascade');
             $table->unique(['user_id', 'channel_id']);
