@@ -42,13 +42,11 @@ readonly class ChannelApplicationService
                 $channel = $channelApplication->channel;
             }
 
-            if (!$this->channelRepository->assignUserToChannel($applicant, $channel)) {
+            if (!$this->channelRepository->assignUserToChannel($applicant, $channel, $isNewChannel)) {
                 throw new \RuntimeException('Failed to assign user to channel.');
             }
 
-            if ($isNewChannel) {
-                $this->channelRepository->setUserVerifiedForChannel($applicant, $channel);
-            } else {
+            if (!$isNewChannel) {
                 DB::afterCommit(static fn() => event(
                     new ChannelAccessRequested(
                         channelApplication: $channelApplication
