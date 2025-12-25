@@ -181,6 +181,13 @@ class ChannelRepository
             ->exists();
     }
 
+    /**
+     * Set the verification status of a user for a specific channel.
+     * @param User $user
+     * @param Channel $channel
+     * @param bool $isVerified
+     * @return bool
+     */
     public function setUserVerifiedForChannel(User $user, Channel $channel, bool $isVerified): bool
     {
         return $channel->channelUsers()
