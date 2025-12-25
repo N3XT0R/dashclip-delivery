@@ -25,9 +25,13 @@ readonly class ChannelApplicationService
      * @return bool
      * @throws Throwable
      */
-    public function approveChannelApplication(ChannelApplicationModel $channelApplication, ?User $user = null): bool
-    {
-        return DB::transaction(function () use ($channelApplication, $user) {
+    public function approveChannelApplication(
+        ChannelApplicationModel $channelApplication,
+        ?User $user = null
+    ): bool {
+        DB::beginTransaction();
+
+        try {
             $applicant = $channelApplication->user;
             $isNewChannel = $channelApplication->isNewChannel();
 
@@ -55,6 +59,13 @@ readonly class ChannelApplicationService
                     ]
                 );
             }
-        });
+
+            DB::commit();
+
+            return true;
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }
