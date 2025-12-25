@@ -10,7 +10,6 @@ class ChannelFactory extends EventAwareFactory
 {
     protected $model = Channel::class;
 
-    protected bool $withEvents = false;
 
     public function definition(): array
     {
