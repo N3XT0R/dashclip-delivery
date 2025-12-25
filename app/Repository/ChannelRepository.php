@@ -27,7 +27,7 @@ class ChannelRepository
 
     /**
      * Approve a channel by updating its status.
-     * @param  Channel  $channel
+     * @param Channel $channel
      * @return bool
      */
     public function approve(Channel $channel): bool
@@ -45,8 +45,8 @@ class ChannelRepository
      * in the SendChannelWelcomeMailCommand — but stripped of any business
      * or presentation logic. It simply builds and executes the query.
      *
-     * @param  string|null  $arg  Channel ID or e-mail address (optional)
-     * @param  bool  $force  If true, includes already approved channels
+     * @param string|null $arg Channel ID or e-mail address (optional)
+     * @param bool $force If true, includes already approved channels
      *
      * @return Collection<Channel>
      */
@@ -67,7 +67,7 @@ class ChannelRepository
     /**
      * Find a channel by its numeric ID.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Channel|null
      */
     public function findById(int $id): ?Channel
@@ -78,7 +78,7 @@ class ChannelRepository
     /**
      * Find a channel by its email address.
      *
-     * @param  string  $email
+     * @param string $email
      * @return Channel|null
      */
     public function findByEmail(string $email): ?Channel
@@ -90,7 +90,7 @@ class ChannelRepository
 
     /**
      * Get channels assigned to a specific team.
-     * @param  Team  $team
+     * @param Team $team
      * @return SupportCollection<Channel>
      */
     public function getTeamAssignedChannels(Team $team): SupportCollection
@@ -100,7 +100,7 @@ class ChannelRepository
 
     /**
      * Create a new channel application with the given attributes.
-     * @param  array  $attributes
+     * @param array $attributes
      * @return ChannelApplication
      */
     public function createApplication(array $attributes): ChannelApplication
@@ -110,8 +110,8 @@ class ChannelRepository
 
     /**
      * Get channel applications for a specific user, optionally filtered by status.
-     * @param  User  $user
-     * @param  ApplicationEnum|null  ...$byStatus
+     * @param User $user
+     * @param ApplicationEnum|null ...$byStatus
      * @return Collection<ChannelApplication>
      */
     public function getChannelApplicationsByUser(User $user, ?ApplicationEnum ...$byStatus): Collection
@@ -126,8 +126,8 @@ class ChannelRepository
 
     /**
      * Assign a user to a channel.
-     * @param  User  $user
-     * @param  Channel  $channel
+     * @param User $user
+     * @param Channel $channel
      * @return bool
      */
     public function assignUserToChannel(User $user, Channel $channel): bool
@@ -141,8 +141,8 @@ class ChannelRepository
 
     /**
      * Unassign a user from a channel.
-     * @param  User  $user
-     * @param  Channel  $channel
+     * @param User $user
+     * @param Channel $channel
      * @return bool
      */
     public function unassignUserFromChannel(User $user, Channel $channel): bool
@@ -156,8 +156,8 @@ class ChannelRepository
 
     /**
      * Check if a user has access to a specific channel.
-     * @param  User  $user
-     * @param  Channel  $channel
+     * @param User $user
+     * @param Channel $channel
      * @return bool
      */
     public function hasUserAccessToChannel(User $user, Channel $channel): bool
@@ -169,7 +169,7 @@ class ChannelRepository
 
     /**
      * Check if a user has access to any channel.
-     * @param  User  $user
+     * @param User $user
      * @return bool
      */
     public function hasUserAccessToAnyChannel(User $user): bool
@@ -179,7 +179,7 @@ class ChannelRepository
 
     /**
      * Find a channel by its name.
-     * @param  string  $name
+     * @param string $name
      * @return Channel|null
      */
     public function findByName(string $name): ?Channel
