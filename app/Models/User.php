@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\ChannelUserPivot;
 use App\Models\Pivots\ModelHasRoleTeam;
 use App\Repository\RoleRepository;
 use App\Repository\TeamRepository;
@@ -132,7 +133,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     }
 
     /**
-     * @param  array<string> | null  $codes
+     * @param array<string> | null $codes
      */
     public function saveAppAuthenticationRecoveryCodes(?array $codes): void
     {
@@ -217,6 +218,8 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function channels(): BelongsToMany
     {
         return $this->belongsToMany(Channel::class, 'channel_user')
+            ->using(ChannelUserPivot::class)
+            ->withPivot(['is_user_verified'])
             ->withTimestamps();
     }
 }

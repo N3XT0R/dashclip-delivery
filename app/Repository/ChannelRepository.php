@@ -177,7 +177,7 @@ class ChannelRepository
     {
         return $channel->channelUsers()
             ->where('user_id', $user->getKey())
-            ->where('is_user_verified', true)
+            ->wherePivot('is_user_verified', true)
             ->exists();
     }
 
