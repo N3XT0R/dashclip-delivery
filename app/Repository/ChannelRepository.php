@@ -128,9 +128,10 @@ class ChannelRepository
      * Assign a user to a channel.
      * @param User $user
      * @param Channel $channel
+     * @param bool $isUserVerified
      * @return bool
      */
-    public function assignUserToChannel(User $user, Channel $channel, $isUserVerified = false): bool
+    public function assignUserToChannel(User $user, Channel $channel, bool $isUserVerified = false): bool
     {
         $channel->channelUsers()->attach([$user->getKey()], ['is_user_verified' => $isUserVerified]);
 
