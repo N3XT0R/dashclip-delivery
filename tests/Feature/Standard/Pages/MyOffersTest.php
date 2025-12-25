@@ -26,9 +26,7 @@ final class MyOffersTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         config()->set('auth.defaults.guard', GuardEnum::STANDARD->value);
-
         Filament::setCurrentPanel(PanelEnum::STANDARD->value);
     }
 
