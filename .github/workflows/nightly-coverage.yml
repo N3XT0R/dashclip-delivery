@@ -1,4 +1,4 @@
-name: Nightly Path Coverage
+name: Nightly Coverage
 
 on:
   schedule:
