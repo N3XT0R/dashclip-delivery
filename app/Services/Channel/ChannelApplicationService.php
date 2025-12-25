@@ -9,6 +9,7 @@ use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
+use Illuminate\Support\Facades\DB;
 
 readonly class ChannelApplicationService
 {
@@ -16,34 +17,44 @@ readonly class ChannelApplicationService
     {
     }
 
+    /**
+     * Approve a channel application.
+     * @param ChannelApplicationModel $channelApplication
+     * @param User|null $user
+     * @return bool
+     * @throws \Throwable
+     */
     public function approveChannelApplication(ChannelApplicationModel $channelApplication, ?User $user = null): bool
     {
-        $applicant = $channelApplication->user;
-        $channelService = $this->channelService;
-        $isNewChannel = $channelApplication->isNewChannel();
-        if ($isNewChannel) {
-            $channel = $channelService->createNewChannelByChannelApplication($channelApplication);
-        } else {
-            $channel = $channelApplication->channel;
-        }
+        return DB::transaction(function () use ($channelApplication, $user) {
+            $applicant = $channelApplication->user;
+            $isNewChannel = $channelApplication->isNewChannel();
 
-        $result = $this->channelRepository->assignUserToChannel($applicant, $channel);
+            if ($isNewChannel) {
+                $channel = $this->channelService
+                    ->createNewChannelByChannelApplication($channelApplication);
+            } else {
+                $channel = $channelApplication->channel;
+            }
 
-        if ($user) {
-            Activity::createActivityLog(
-                'channel_applications',
-                $user,
-                'approved_channel_application',
-                [
-                    'channel_application_id' => $channelApplication->getKey(),
-                    'channel_id' => $channel->getKey(),
-                    'is_new_channel' => $isNewChannel,
-                    'applicant_user_id' => $applicant->getKey(),
-                ]
-            );
-        }
+            $result = $this->channelRepository
+                ->assignUserToChannel($applicant, $channel);
 
+            if ($user) {
+                Activity::createActivityLog(
+                    'channel_applications',
+                    $user,
+                    'approved_channel_application',
+                    [
+                        'channel_application_id' => $channelApplication->getKey(),
+                        'channel_id' => $channel->getKey(),
+                        'is_new_channel' => $isNewChannel,
+                        'applicant_user_id' => $applicant->getKey(),
+                    ]
+                );
+            }
 
-        return $result;
+            return $result;
+        });
     }
 }
