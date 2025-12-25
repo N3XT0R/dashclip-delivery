@@ -264,7 +264,7 @@ final class BuildZipJobTest extends DatabaseTestCase
             userAgent: null,
         );
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("Channel with ID {$nonExistingChannelId} not found");
 
         $job->handle($assignmentService, $zipSpy);
