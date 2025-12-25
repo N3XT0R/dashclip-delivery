@@ -134,6 +134,12 @@ class MyOffers extends Page implements HasTable
     {
         $channel = $this->getCurrentChannel();
 
+        if (
+            Filament::auth()->user()?->cannot('page.channels.access_for_channel', $channel)
+        ) {
+            $channel = null;
+        }
+
         $table = app(AssignmentTable::class)->make($table, $this, $channel);
         $table->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query));
 
