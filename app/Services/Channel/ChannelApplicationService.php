@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Channel;
 
+use App\Events\Channel\ChannelAccessRequested;
 use App\Facades\Activity;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
@@ -43,6 +44,16 @@ readonly class ChannelApplicationService
 
             if (!$this->channelRepository->assignUserToChannel($applicant, $channel)) {
                 throw new \RuntimeException('Failed to assign user to channel.');
+            }
+
+            if (!$isNewChannel) {
+                event(
+                    new ChannelAccessRequested(
+                        $channelApplication,
+                        $applicant,
+                        $channel
+                    )
+                );
             }
 
             if ($user) {
