@@ -7,6 +7,15 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Factory base class with explicit Eloquent event control.
+ *
+ * - Default: model events / observers are disabled
+ * - Opt-in via ->withEvents()
+ *
+ * Purpose:
+ *   Deterministic data creation without implicit side effects.
+ */
 abstract class EventAwareFactory extends Factory
 {
     protected bool $withEvents = false;
