@@ -181,6 +181,16 @@ class ChannelRepository
             ->exists();
     }
 
+    public function setUserVerifiedForChannel(User $user, Channel $channel, bool $isVerified): bool
+    {
+        return $channel->channelUsers()
+                ->updateExistingPivot($channel->getKey(), [
+                    'user_id' => $user->getKey(),
+                    'is_user_verified' => $isVerified,
+                    true
+                ]) > 0;
+    }
+
     /**
      * Check if a user has access to any channel.
      * @param User $user

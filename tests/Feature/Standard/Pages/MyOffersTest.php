@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Standard\Pages;
 
+use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Enum\Users\RoleEnum;
-use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\User;
+use App\Repository\TeamRepository;
 use App\Services\AssignmentService;
 use App\Services\LinkService;
-use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
-use Livewire\Livewire;
 use Illuminate\Support\Collection;
+use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 use Tests\DatabaseTestCase;
 
@@ -41,7 +41,7 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
 
         $channel = Channel::factory()->create();
-        $channel->channelUsers()->attach($user);
+        $channel->channelUsers()->attach($user, ['is_user_veerified' => true]);
 
         Filament::setTenant($team, true);
         Filament::auth()->login($user);
