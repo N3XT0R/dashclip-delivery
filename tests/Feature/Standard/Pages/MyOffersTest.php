@@ -70,7 +70,7 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
 
         $channel = Channel::factory()->create();
-        $channel->channelUsers()->attach($user);
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
 
         Filament::setTenant($team, true);
         Filament::auth()->login($user);
@@ -91,7 +91,7 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
 
         $channel = Channel::factory()->create();
-        $channel->channelUsers()->attach($user);
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
 
         Filament::setTenant($team, true);
         Filament::auth()->login($user);
@@ -109,7 +109,7 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
 
         $channel = Channel::factory()->create();
-        $channel->channelUsers()->attach($user);
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
 
         $assignment = Assignment::factory()
             ->withBatch()
@@ -149,7 +149,7 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
 
         $channel = Channel::factory()->create();
-        $channel->channelUsers()->attach($user);
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
 
         Assignment::factory()
             ->withBatch()
@@ -275,7 +275,7 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
 
         $channel = Channel::factory()->create();
-        $channel->channelUsers()->attach($user);
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
 
         Filament::setTenant($team, true);
         Filament::auth()->login($user);
