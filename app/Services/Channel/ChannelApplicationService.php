@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Channel;
 
 use App\Models\ChannelApplication as ChannelApplicationModel;
+use App\Models\User;
 use App\Services\ChannelService;
 
 class ChannelApplicationService
@@ -13,8 +14,9 @@ class ChannelApplicationService
     {
     }
 
-    public function approveChannelApplication(ChannelApplicationModel $channelApplication): bool
+    public function approveChannelApplication(ChannelApplicationModel $channelApplication, ?User $user = null): bool
     {
+        $result = false;
         $channelService = $this->channelService;
         $isNewChannel = $channelApplication->isNewChannel();
         if ($isNewChannel) {
@@ -22,5 +24,8 @@ class ChannelApplicationService
         } else {
             $channel = $channelApplication->channel;
         }
+
+
+        return $result;
     }
 }
