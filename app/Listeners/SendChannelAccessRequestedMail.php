@@ -12,6 +12,7 @@ class SendChannelAccessRequestedMail
     {
         $user = $event->applicant;
         $channel = $event->channel;
+        $channelOwnerMail = $channel->email;
         $application = $event->channelApplication;
     }
 }
