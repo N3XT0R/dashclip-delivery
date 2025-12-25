@@ -135,7 +135,7 @@ class ChannelRepository
         $channel->channelUsers()->attach([$user->getKey()]);
 
         return $channel->channelUsers()
-            ->where('user_id', $user->getKey())
+            ->wherePivot('user_id', $user->getKey())
             ->exists();
     }
 
@@ -150,7 +150,7 @@ class ChannelRepository
         $channel->channelUsers()->detach([$user->getKey()]);
 
         return !$channel->channelUsers()
-            ->where('user_id', $user->getKey())
+            ->wherePivot('user_id', $user->getKey())
             ->exists();
     }
 
@@ -163,7 +163,7 @@ class ChannelRepository
     public function hasUserAccessToChannel(User $user, Channel $channel): bool
     {
         return $channel->channelUsers()
-            ->where('user_id', $user->getKey())
+            ->wherePivot('user_id', $user->getKey())
             ->exists();
     }
 
@@ -176,7 +176,7 @@ class ChannelRepository
     public function isUserVerifiedForChannel(User $user, Channel $channel): bool
     {
         return $channel->channelUsers()
-            ->where('user_id', $user->getKey())
+            ->wherePivot('user_id', $user->getKey())
             ->wherePivot('is_user_verified', true)
             ->exists();
     }
@@ -206,7 +206,7 @@ class ChannelRepository
     public function hasUserAccessToAnyChannel(User $user): bool
     {
         return $user->channels()
-            ->where('is_user_verified', true)
+            ->wherePivot('is_user_verified', true)
             ->exists();
     }
 
