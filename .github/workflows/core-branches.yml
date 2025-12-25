@@ -2,7 +2,7 @@ name: Core Branches
 
 on:
   push:
-    branches: [ '*', '*/*' ]
+    branches: [ 'master', 'develop', 'release/*' ]
     tags: [ '*' ]
   pull_request:
     branches: [ 'master', 'develop', 'release/*' ]
