@@ -37,8 +37,7 @@ class ChannelApplication extends Model
     {
         return $this->channel_id === null;
     }
-
-    // Relationships
+    
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

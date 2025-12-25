@@ -18,6 +18,7 @@ readonly class ChannelApplicationService
     public function approveChannelApplication(ChannelApplicationModel $channelApplication, ?User $user = null): bool
     {
         $result = false;
+        $applicant = $channelApplication->user;
         $channelService = $this->channelService;
         $isNewChannel = $channelApplication->isNewChannel();
         if ($isNewChannel) {
@@ -39,6 +40,9 @@ readonly class ChannelApplicationService
             );
         }
 
+        /**
+         * @todo implement assigning the channel to the application
+         */
 
         return $result;
     }
