@@ -48,4 +48,4 @@ jobs:
         env:
           FFMPEG_BINARIES: ${{ env.FFMPEG_BINARIES }}
           FFPROBE_BINARIES: ${{ env.FFPROBE_BINARIES }}
-        run: XDEBUG_MODE=none php artisan test --parallel
+        run: php artisan test --parallel --no-coverage
