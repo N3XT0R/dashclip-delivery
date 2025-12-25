@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 readonly class ChannelApplicationService
 {
@@ -22,7 +23,7 @@ readonly class ChannelApplicationService
      * @param ChannelApplicationModel $channelApplication
      * @param User|null $user
      * @return bool
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function approveChannelApplication(ChannelApplicationModel $channelApplication, ?User $user = null): bool
     {
