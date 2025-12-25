@@ -18,7 +18,6 @@ final class NotifyRemindersTest extends DatabaseTestCase
     {
         parent::setUp();
         Cfg::set('email_reminder', true, 'email', 'bool');
-        Channel::flushEventListeners();
     }
 
     public function testQueuesReminderEmails(): void

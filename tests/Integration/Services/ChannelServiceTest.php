@@ -152,7 +152,6 @@ class ChannelServiceTest extends DatabaseTestCase
     {
         // Arrange
         Mail::fake();
-        Channel::flushEventListeners();
         Channel::query()->delete();
 
         $channels = Channel::factory()->count(2)->create();
