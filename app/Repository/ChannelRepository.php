@@ -168,13 +168,29 @@ class ChannelRepository
     }
 
     /**
+     * Check if a user is verified for a specific channel.
+     * @param User $user
+     * @param Channel $channel
+     * @return bool
+     */
+    public function isUserVerifiedForChannel(User $user, Channel $channel): bool
+    {
+        return $channel->channelUsers()
+            ->where('user_id', $user->getKey())
+            ->where('is_user_verified', true)
+            ->exists();
+    }
+
+    /**
      * Check if a user has access to any channel.
      * @param User $user
      * @return bool
      */
     public function hasUserAccessToAnyChannel(User $user): bool
     {
-        return $user->channels()->exists();
+        return $user->channels()
+            ->where('is_user_verified', true)
+            ->exists();
     }
 
     /**
