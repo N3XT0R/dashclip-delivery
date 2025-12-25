@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Channel;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
+use App\Observers\ChannelObserver;
 use App\Observers\TeamObserver;
 use App\Observers\UserObserver;
 use App\Observers\VideoObserver;
@@ -25,5 +27,6 @@ class ObserverServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Team::observe(TeamObserver::class);
         Video::observe(VideoObserver::class);
+        Channel::observe(ChannelObserver::class);
     }
 }
