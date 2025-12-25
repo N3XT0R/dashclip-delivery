@@ -93,6 +93,7 @@ final class NotifyRemindersTest extends DatabaseTestCase
             'finished_at' => now()->subDay(),
         ]);
 
+        Channel::flushEventListeners();
         $channel = Channel::factory()->create(['email' => 'test@example.test']);
         $video = Video::factory()->create();
 
