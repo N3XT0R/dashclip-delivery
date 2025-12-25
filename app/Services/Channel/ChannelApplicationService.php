@@ -37,8 +37,9 @@ readonly class ChannelApplicationService
                 $channel = $channelApplication->channel;
             }
 
-            $result = $this->channelRepository
-                ->assignUserToChannel($applicant, $channel);
+            if (!$this->channelRepository->assignUserToChannel($applicant, $channel)) {
+                throw new \RuntimeException('Failed to assign user to channel.');
+            }
 
             if ($user) {
                 Activity::createActivityLog(
@@ -53,8 +54,6 @@ readonly class ChannelApplicationService
                     ]
                 );
             }
-
-            return $result;
         });
     }
 }
