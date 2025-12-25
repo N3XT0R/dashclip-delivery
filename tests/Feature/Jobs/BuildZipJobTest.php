@@ -166,4 +166,81 @@ final class BuildZipJobTest extends DatabaseTestCase
         $this->assertSame('198.51.100.20', $zipSpy->seenIp);
         $this->assertSame('TestAgent/1.0', $zipSpy->seenUserAgent);
     }
+
+    public function testHandleWithoutBatchUsesChannelOnlyAndGeneratesJobId(): void
+    {
+        $batch = Batch::factory()->create([
+            'type' => 'assign',
+            'started_at' => now(),
+            'finished_at' => now(),
+        ]);
+
+        $channel = Channel::factory()->create();
+        $otherChannel = Channel::factory()->create();
+
+        $videoA = Video::factory()->create();
+        $videoB = Video::factory()->create();
+        $videoC = Video::factory()->create();
+
+        $a1 = Assignment::factory()->create([
+            'batch_id' => $batch->getKey(),
+            'channel_id' => $channel->getKey(),
+            'video_id' => $videoA->getKey(),
+            'status' => StatusEnum::QUEUED->value,
+        ]);
+
+        $a2 = Assignment::factory()->create([
+            'batch_id' => $batch->getKey(),
+            'channel_id' => $channel->getKey(),
+            'video_id' => $videoB->getKey(),
+            'status' => StatusEnum::NOTIFIED->value,
+        ]);
+
+        Assignment::factory()->create([
+            'batch_id' => $batch->getKey(),
+            'channel_id' => $channel->getKey(),
+            'video_id' => $videoC->getKey(),
+            'status' => StatusEnum::PICKEDUP->value,
+        ]);
+
+        Assignment::factory()->create([
+            'batch_id' => $batch->getKey(),
+            'channel_id' => $otherChannel->getKey(),
+            'video_id' => $videoA->getKey(),
+            'status' => StatusEnum::QUEUED->value,
+        ]);
+
+        $ids = [$a1->getKey(), $a2->getKey()];
+
+        $zipSpy = new SpyZipService();
+        $assignmentService = app(AssignmentService::class);
+
+        $job = new BuildZipJob(
+            batchId: null,
+            channelId: $channel->getKey(),
+            assignmentIds: $ids,
+            ip: '192.0.2.55',
+            userAgent: null,
+        );
+
+        $job->handle($assignmentService, $zipSpy);
+
+        $this->assertNull($zipSpy->seenBatchId);
+        $this->assertSame($channel->getKey(), $zipSpy->seenChannelId);
+
+        $this->assertEqualsCanonicalizing(
+            [$a1->getKey(), $a2->getKey()],
+            $zipSpy->seenAssignmentIds
+        );
+
+        $expectedJobId = 'channel_' . $channel->getKey() . '_' . hash(
+                'sha256',
+                implode('_', $ids)
+            );
+
+        $this->assertSame($expectedJobId, $zipSpy->seenJobId);
+        $this->assertSame('192.0.2.55', $zipSpy->seenIp);
+        $this->assertSame('', $zipSpy->seenUserAgent);
+    }
+
 }

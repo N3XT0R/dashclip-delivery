@@ -23,6 +23,8 @@ class SpyZipService extends ZipService
     public ?string $seenIp = null;
     public ?string $seenUserAgent = null;
 
+    public ?string $seenJobId = null;
+
     // Intentionally do not call the parent constructor; we don't need its dependencies.
     public function __construct()
     {
@@ -36,18 +38,17 @@ class SpyZipService extends ZipService
         ?string $userAgent,
         ?string $jobId = null
     ): string {
-        $this->seenBatchId = $batch->getKey();
+        $this->seenBatchId = $batch?->getKey();
         $this->seenChannelId = $channel->getKey();
         $this->seenAssignmentIds = $items->pluck('id')->all();
         $this->seenIp = $ip;
         $this->seenUserAgent = $userAgent;
+        $this->seenJobId = $jobId;
 
-        // We don't create an actual ZIP in tests.
         if ($batch) {
-            $result = 'zips/' . $batch->getKey() . '_' . $channel->getKey() . '.zip';
-        } else {
-            $result = 'zips/' . $jobId . '.zip';
+            return 'zips/' . $batch->getKey() . '_' . $channel->getKey() . '.zip';
         }
-        return $result;
+
+        return 'zips/' . $jobId . '.zip';
     }
 }
