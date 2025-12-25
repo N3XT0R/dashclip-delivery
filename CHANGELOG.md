@@ -46,6 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   In addition, an optional portal-based workflow is now available, allowing registered
   users to manage offers, downloads, and status information in a central location.
   This provides a foundation for a more streamlined experience as the platform evolves.
+- **ChannelCreated Event**
+    - Moved the `ChannelCreated` event dispatch from the `CreateChannel`-Page to
+      `ChannelObserver::created` to ensure consistent triggering across all
+      creation pathways.
 
 ### Fixed
 
