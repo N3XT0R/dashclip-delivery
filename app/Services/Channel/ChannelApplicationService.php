@@ -22,13 +22,12 @@ readonly class ChannelApplicationService
      * Approve a channel application.
      * @param ChannelApplicationModel $channelApplication
      * @param User|null $user
-     * @return bool
      * @throws Throwable
      */
     public function approveChannelApplication(
         ChannelApplicationModel $channelApplication,
         ?User $user = null
-    ): bool {
+    ): void {
         DB::beginTransaction();
 
         try {
@@ -61,8 +60,6 @@ readonly class ChannelApplicationService
             }
 
             DB::commit();
-
-            return true;
         } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
