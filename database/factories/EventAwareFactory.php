@@ -19,6 +19,14 @@ abstract class EventAwareFactory extends Factory
         return $clone;
     }
 
+    public function withoutEvents(): static
+    {
+        $clone = clone $this;
+        $clone->withEvents = false;
+
+        return $clone;
+    }
+
     public function create($attributes = [], ?Model $parent = null)
     {
         if ($this->withEvents) {
