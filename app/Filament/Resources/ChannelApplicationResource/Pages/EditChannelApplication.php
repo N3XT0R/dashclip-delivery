@@ -5,7 +5,7 @@ namespace App\Filament\Resources\ChannelApplicationResource\Pages;
 use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Resources\ChannelApplicationResource;
 use App\Models\ChannelApplication as ChannelApplicationModel;
-use App\Services\ChannelService;
+use App\Services\Channel\ChannelApplicationService;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,16 +34,8 @@ class EditChannelApplication extends EditRecord
         $record = $this->getRecord();
 
         if (ApplicationEnum::APPROVED === $record->status) {
-            $channelService = app(ChannelService::class);
-            $isNewChannel = $record->isNewChannel();
-            if ($isNewChannel) {
-                $channel = $channelService->createNewChannelByChannelApplication($record);
-            } else {
-                $channel = $record->channel;
-            }
+            $service = app(ChannelApplicationService::class);
+            $result = $service->approveChannelApplication($record);
         }
-        /**
-         * prepare to send notification or perform other actions based on status change
-         */
     }
 }
