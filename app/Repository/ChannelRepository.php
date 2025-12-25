@@ -188,4 +188,9 @@ class ChannelRepository
             ->where('name', trim($name))
             ->first();
     }
+
+    public function createChannel(array $attributes): Channel
+    {
+        return Channel::create($attributes);
+    }
 }

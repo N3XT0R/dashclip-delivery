@@ -26,9 +26,9 @@ class ChannelService
 
     /**
      * Prepare active channels, rotation pool, and quota mapping.
-     * @param  int|null  $quotaOverride
-     * @param  string  $uploaderType
-     * @param  string|int  $uploaderId
+     * @param int|null $quotaOverride
+     * @param string $uploaderType
+     * @param string|int $uploaderId
      * @return ChannelPoolDto
      */
     public function prepareChannelsAndPool(
@@ -93,8 +93,8 @@ class ChannelService
      * This applies the same selection logic that was previously
      * part of the console command, but isolated as pure business logic.
      *
-     * @param  string|null  $target  Channel ID or email address (optional)
-     * @param  bool  $force  Include already approved channels
+     * @param string|null $target Channel ID or email address (optional)
+     * @param bool $force Include already approved channels
      *
      * @return Collection<Channel>
      */
@@ -123,7 +123,7 @@ class ChannelService
      * The service layer handles the business logic and error handling,
      * while the repository is purely data access.
      *
-     * @param  Collection<Channel>  $channels
+     * @param Collection<Channel> $channels
      * @return array<string> List of email addresses that were successfully processed
      */
     public function sendWelcomeMails(Collection $channels): array
@@ -146,11 +146,11 @@ class ChannelService
     /**
      * Wählt einen Zielkanal im Round-Robin über den gewichteten Rotationspool.
      *
-     * @param  Collection<int,Video>  $group
-     * @param  Collection<int,Channel>  $rotationPool
-     * @param  array<int,int>  $quota  (by reference, wird nicht verändert – nur gelesen)
-     * @param  array<int,int>  $blockedChannelIds
-     * @param  array<int, Collection<int,int>>  $assignedChannelsByVideo
+     * @param Collection<int,Video> $group
+     * @param Collection<int,Channel> $rotationPool
+     * @param array<int,int> $quota (by reference, wird nicht verändert – nur gelesen)
+     * @param array<int,int> $blockedChannelIds
+     * @param array<int, Collection<int,int>> $assignedChannelsByVideo
      */
     public function pickTargetChannel(
         Collection $group,
@@ -197,8 +197,8 @@ class ChannelService
     /**
      * Create a channel access application for the user.
      *
-     * @param  ChannelApplicationRequestDto  $dto
-     * @param  User  $user
+     * @param ChannelApplicationRequestDto $dto
+     * @param User $user
      * @return ChannelApplication
      */
     public function applyForAccess(ChannelApplicationRequestDto $dto, User $user): ChannelApplication
@@ -242,7 +242,7 @@ class ChannelService
 
     /**
      * Create a new channel based on the channel application meta data.
-     * @param  ChannelApplication  $application
+     * @param ChannelApplication $application
      * @return Channel
      */
     public function createNewChannelByChannelApplication(ChannelApplication $application): Channel
@@ -254,19 +254,17 @@ class ChannelService
 
         $meta = $application->meta->channel ?? [];
 
-        $channel = Channel::create([
+        return $this->channelRepository->createChannel([
             'name' => $meta['name'] ?? 'Unnamed Channel',
             'creator_name' => $meta['creator_name'] ?? 'Unknown Creator',
             'email' => $meta['email'] ?? '',
             'youtube_name' => $meta['youtube_name'] ?? null,
         ]);
-
-        return $channel;
     }
 
     /**
      * Check if a channel exists by its name.
-     * @param  string  $name
+     * @param string $name
      * @return bool
      */
     public function existsChannelByName(string $name): bool
