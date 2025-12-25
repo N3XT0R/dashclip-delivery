@@ -125,7 +125,7 @@ class ChannelRepository
     }
 
     /**
-     * Assign a user to a channel.
+     * Assign a user to a channel with an optional verification status.
      * @param User $user
      * @param Channel $channel
      * @param bool $isUserVerified
