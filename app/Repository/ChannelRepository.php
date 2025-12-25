@@ -132,7 +132,7 @@ class ChannelRepository
      */
     public function assignUserToChannel(User $user, Channel $channel): bool
     {
-        $channel->channelUsers()->attach([$user->getKey()]);
+        $channel->channelUsers()->attach([$user->getKey()], ['is_user_verified' => false]);
 
         return $channel->channelUsers()
             ->wherePivot('user_id', $user->getKey())
