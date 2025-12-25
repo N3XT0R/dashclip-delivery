@@ -16,6 +16,13 @@ use Tests\DatabaseTestCase;
 
 class ZipControllerTest extends DatabaseTestCase
 {
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Channel::flushEventListeners();
+    }
+
     public function testStartDispatchesZipJobAndInitializesCache(): void
     {
         Queue::fake();

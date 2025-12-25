@@ -18,6 +18,7 @@ final class NotifyRemindersTest extends DatabaseTestCase
     {
         parent::setUp();
         Cfg::set('email_reminder', true, 'email', 'bool');
+        Channel::flushEventListeners();
     }
 
     public function testQueuesReminderEmails(): void
@@ -93,7 +94,7 @@ final class NotifyRemindersTest extends DatabaseTestCase
             'finished_at' => now()->subDay(),
         ]);
 
-        Channel::flushEventListeners();
+
         $channel = Channel::factory()->create(['email' => 'test@example.test']);
         $video = Video::factory()->create();
 
