@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ChannelApplicationResource\Pages;
 
+use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Resources\ChannelApplicationResource;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use Filament\Resources\Pages\EditRecord;
@@ -30,7 +31,12 @@ class EditChannelApplication extends EditRecord
          * @var ChannelApplicationModel $record
          */
         $record = $this->getRecord();
-        $isNewChannel = $record->isNewChannel();
+
+        if (ApplicationEnum::APPROVED === $record->status) {
+            $isNewChannel = $record->isNewChannel();
+            // Logic to create a new channel for the approved application
+            // e.g., Channel::create([...]);
+        }
         /**
          * prepare to send notification or perform other actions based on status change
          */
