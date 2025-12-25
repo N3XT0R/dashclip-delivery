@@ -28,7 +28,7 @@ readonly class ChannelApplicationService
         }
 
         /**
-         * @todo implement assigning the channel to the application
+         * @todo implement assigning the channel to the user
          */
 
         if ($user) {

@@ -253,6 +253,15 @@ class ChannelService
         }
 
         $meta = $application->meta->channel ?? [];
+        $channelName = $meta['name'] ?? '';
+
+        if (empty($channelName)) {
+            throw new \DomainException('Channel name cannot be empty.');
+        }
+
+        if ($this->existsChannelByName(trim($channelName))) {
+            throw new \DomainException('A channel with this name already exists.');
+        }
 
         return $this->channelRepository->createChannel([
             'name' => $meta['name'] ?? 'Unnamed Channel',
