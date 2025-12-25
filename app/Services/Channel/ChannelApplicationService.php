@@ -47,7 +47,7 @@ readonly class ChannelApplicationService
             }
 
             if (!$isNewChannel) {
-                DB::afterCommit(fn() => event(
+                DB::afterCommit(static fn() => event(
                     new ChannelAccessRequested(
                         $channelApplication,
                         $applicant,
