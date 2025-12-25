@@ -9,7 +9,7 @@ use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
 use App\Services\ChannelService;
 
-class ChannelApplicationService
+readonly class ChannelApplicationService
 {
     public function __construct(private ChannelService $channelService)
     {
