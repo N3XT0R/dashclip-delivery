@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Channel;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
 
-class ChannelFactory extends Factory
+class ChannelFactory extends EventAwareFactory
 {
     protected $model = Channel::class;
 
@@ -39,24 +37,5 @@ class ChannelFactory extends Factory
     public function paused(): static
     {
         return $this->state(fn() => ['is_video_reception_paused' => 1]);
-    }
-
-    public function withEvents(): static
-    {
-        $clone = clone $this;
-        $clone->withEvents = true;
-
-        return $clone;
-    }
-
-    public function create($attributes = [], ?Model $parent = null)
-    {
-        if ($this->withEvents) {
-            return parent::create($attributes, $parent);
-        }
-
-        return Model::withoutEvents(
-            fn() => parent::create($attributes, $parent)
-        );
     }
 }
