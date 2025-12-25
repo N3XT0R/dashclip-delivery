@@ -243,4 +243,31 @@ final class BuildZipJobTest extends DatabaseTestCase
         $this->assertSame('', $zipSpy->seenUserAgent);
     }
 
+    public function testHandleThrowsRuntimeExceptionWhenChannelDoesNotExist(): void
+    {
+        $batch = Batch::factory()->create([
+            'type' => 'assign',
+            'started_at' => now(),
+            'finished_at' => now(),
+        ]);
+
+        $nonExistingChannelId = 999999;
+
+        $assignmentService = app(AssignmentService::class);
+        $zipSpy = new SpyZipService();
+
+        $job = new BuildZipJob(
+            batchId: $batch->getKey(),
+            channelId: $nonExistingChannelId,
+            assignmentIds: [],
+            ip: '203.0.113.77',
+            userAgent: null,
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Channel with ID {$nonExistingChannelId} not found");
+
+        $job->handle($assignmentService, $zipSpy);
+    }
+
 }
