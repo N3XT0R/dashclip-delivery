@@ -7,17 +7,17 @@ namespace App\Services\Channel;
 use App\Facades\Activity;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
+use App\Repository\ChannelRepository;
 use App\Services\ChannelService;
 
 readonly class ChannelApplicationService
 {
-    public function __construct(private ChannelService $channelService)
+    public function __construct(private ChannelService $channelService, private ChannelRepository $channelRepository)
     {
     }
 
     public function approveChannelApplication(ChannelApplicationModel $channelApplication, ?User $user = null): bool
     {
-        $result = false;
         $applicant = $channelApplication->user;
         $channelService = $this->channelService;
         $isNewChannel = $channelApplication->isNewChannel();
@@ -27,9 +27,7 @@ readonly class ChannelApplicationService
             $channel = $channelApplication->channel;
         }
 
-        /**
-         * @todo implement assigning the channel to the user
-         */
+        $result = $this->channelRepository->assignUserToChannel($applicant, $channel);
 
         if ($user) {
             Activity::createActivityLog(
