@@ -8,7 +8,6 @@ use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\DTO\ChannelPoolDto;
 use App\Enum\Channel\ApplicationEnum;
 use App\Enum\TokenPurposeEnum;
-use App\Mail\ChannelWelcomeMail;
 use App\Models\ActionToken;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
@@ -18,7 +17,6 @@ use App\Repository\ActionTokenRepository;
 use App\Repository\ChannelRepository;
 use App\Repository\TeamRepository;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 
 class ChannelService
@@ -135,7 +133,7 @@ class ChannelService
 
         foreach ($channels as $channel) {
             try {
-                Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
+                app(MailService::class)->sendChannelWelcomeMail($channel);
                 $sent[] = $channel->email;
             } catch (\Throwable $e) {
                 report($e);
