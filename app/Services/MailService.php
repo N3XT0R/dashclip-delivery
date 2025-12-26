@@ -20,8 +20,8 @@ class MailService
             purpose: self::class,
             subject: $channelApplication,
             meta: [
-                'channel_application_id' => $channelApplication->getKey(),
                 'user_id' => $channelApplication->user->getKey(),
+                'channel_id' => $channelApplication->channel->getKey(),
                 'owner' => $owner,
             ],
         );
