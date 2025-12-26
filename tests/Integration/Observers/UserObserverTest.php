@@ -6,9 +6,10 @@ namespace Tests\Integration\Observers;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
+use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
-use App\Models\Role;
+use App\Observers\UserObserver;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\DatabaseTestCase;
 
@@ -18,7 +19,7 @@ final class UserObserverTest extends DatabaseTestCase
     {
         Role::query()->firstOrCreate([
             'name' => RoleEnum::REGULAR->value,
-            'guard_name' => GuardEnum::DEFAULT->value,
+            'guard_name' => GuardEnum::STANDARD->value,
         ]);
 
         $user = User::factory()->create([
@@ -27,7 +28,7 @@ final class UserObserverTest extends DatabaseTestCase
         ]);
 
         $this->assertTrue(
-            $user->hasRole(RoleEnum::REGULAR->value, GuardEnum::DEFAULT->value)
+            $user->hasRole(RoleEnum::REGULAR->value, GuardEnum::STANDARD->value)
         );
 
         $ownedTeam = Team::query()->where('owner_id', $user->getKey())->first();
@@ -39,15 +40,15 @@ final class UserObserverTest extends DatabaseTestCase
     {
         $defaultRole = Role::query()->firstOrCreate([
             'name' => RoleEnum::REGULAR->value,
-            'guard_name' => GuardEnum::DEFAULT->value,
+            'guard_name' => GuardEnum::STANDARD->value,
         ]);
 
         $existingRole = Role::query()->firstOrCreate([
             'name' => 'existing-role',
-            'guard_name' => GuardEnum::DEFAULT->value,
+            'guard_name' => GuardEnum::STANDARD->value,
         ]);
 
-        $user = User::withoutEvents(fn() => User::factory()->create([
+        $user = User::withoutEvents(static fn() => User::factory()->create([
             'name' => 'Observer User Roles',
         ]));
 
@@ -60,7 +61,7 @@ final class UserObserverTest extends DatabaseTestCase
             'model_type' => User::class,
         ]);
 
-        $observer = app()->make(\App\Observers\UserObserver::class);
+        $observer = $this->app->make(UserObserver::class);
         $observer->created($user);
 
         $freshUser = $user->fresh();
