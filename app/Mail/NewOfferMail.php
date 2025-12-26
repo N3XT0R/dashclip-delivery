@@ -19,6 +19,7 @@ class NewOfferMail extends AbstractLoggedMail
         public string $offerUrl,
         public Carbon $expiresAt,
         public string $unusedUrl,
+        public bool $isChannelOwner,
     ) {
     }
 
@@ -39,7 +40,7 @@ class NewOfferMail extends AbstractLoggedMail
 
         return new Envelope(
             bcc: $bcc,
-            subject: 'Neue Videos verfügbar – Batch #'.$this->batch->getKey(),
+            subject: 'Neue Videos verfügbar – Batch #' . $this->batch->getKey(),
         );
     }
 
@@ -63,7 +64,7 @@ class NewOfferMail extends AbstractLoggedMail
     {
         $mailTo = (string)Cfg::get('email_admin_mail', 'email');
         $notification = (bool)Cfg::get('email_get_bcc_notification', 'email');
-        $offerMail = $this->subject('Neue Videos verfügbar – Batch #'.$this->batch->getKey())
+        $offerMail = $this->subject('Neue Videos verfügbar – Batch #' . $this->batch->getKey())
             ->view('emails.new-offer');
 
         if (true === $notification && !empty($mailTo)) {

@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\{BatchTypeEnum, NotificationTypeEnum, StatusEnum};
-use App\Mail\NewOfferMail;
 use App\Models\{Assignment, Batch, Channel, Notification};
 use App\Services\Channel\ChannelOperatorService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\{Mail};
 
 class OfferNotifier
 {
 
     public function __construct(
         private BatchService $batchService,
-        private LinkService $linkService,
         private ChannelOperatorService $channelOperatorService
     ) {
     }
@@ -61,10 +58,6 @@ class OfferNotifier
 
     public function notifyChannel(Channel $channel, Batch $assignBatch, Carbon $expireDate): void
     {
-        $offerUrl = $this->linkService->getOfferUrl($assignBatch, $channel, $expireDate);
-        $unusedUrl = $this->linkService->getUnusedUrl($assignBatch, $channel, $expireDate);
-
-
         $assignments = Assignment::query()
             ->where('batch_id', $assignBatch->getKey())
             ->where('channel_id', $channel->getKey())
@@ -86,11 +79,8 @@ class OfferNotifier
             $assignment->save();
         }
 
-        if (false === $this->channelOperatorService->isChannelEmailOwnerChannelOperator($channel)) {
-            Mail::to($channel->getAttribute('email'))->queue(
-                new NewOfferMail($assignBatch, $channel, $offerUrl, $expireDate, $unusedUrl)
-            );
-        }
+        $isOperator = $this->channelOperatorService->isChannelEmailOwnerChannelOperator($channel);
+        app(MailService::class)->sendNewOfferMail($channel, $assignBatch, $expireDate, $isOperator);
     }
 }
 
