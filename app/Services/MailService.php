@@ -6,10 +6,10 @@ namespace App\Services;
 
 use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelAccessApprovalRequestedMail;
-use App\Mail\ChannelAccessApprovedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
+use App\Notifications\ChannelAccessApprovedNotification;
 use Illuminate\Support\Facades\Mail;
 
 class MailService
@@ -56,6 +56,7 @@ class MailService
      */
     public function sendChannelAccessApprovedMail(ChannelApplication $channelApplication): void
     {
-        Mail::to($channelApplication->user)->send(new ChannelAccessApprovedMail($channelApplication));
+        $user = $channelApplication->user;
+        $user->notify(new ChannelAccessApprovedNotification($channelApplication));
     }
 }
