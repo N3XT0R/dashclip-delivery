@@ -16,6 +16,11 @@ final readonly class HandleChannelAccessApproval
     ) {
     }
 
+    /**
+     * Handle the event.
+     * @param ActionTokenConsumed $event
+     * @return void
+     */
     public function handle(ActionTokenConsumed $event): void
     {
         $token = $event->token;
