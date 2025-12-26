@@ -27,6 +27,7 @@ class MailService
         $actionToken = $tokenService->issue(
             purpose: TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL,
             subject: $channelApplication,
+            expiresAt: now()->addMonth(),
             meta: [
                 'user_id' => $channelApplication->user->getKey(),
                 'channel_id' => $channelApplication->channel->getKey(),
