@@ -24,7 +24,7 @@ class MailService
         string $owner,
         ChannelApplication $channelApplication
     ): void {
-        $expireAt = Carbon::now()->addWeeks(2);
+        $expireAt = Carbon::now()->addMonth();
         $tokenService = app(ActionTokenService::class);
         $actionToken = $tokenService->issue(
             purpose: TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL,
