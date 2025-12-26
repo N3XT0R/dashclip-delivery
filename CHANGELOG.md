@@ -30,11 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Enables bulk download of selected offers via background ZIP generation with progress tracking.
     - Supports bulk downloads with asynchronous ZIP creation and real-time progress updates.
 
-- **Internationalization (i18n) Improvements**
-    - Translated existing German language files to English to establish a consistent English base locale.
-    - Began migrating previously hardcoded German UI texts to the i18n system to improve maintainability and future
-      multi-language support.
-    - Ensures clearer separation of presentation and logic while enabling scalable localization for additional locales.
+- **Internationalization (i18n) Foundation**
+    - Introduced English base language files.
+    - Started migrating hardcoded German UI strings to the i18n system.
 
 ### Changed
 
@@ -56,6 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Moved the `ChannelCreated` event dispatch from the `CreateChannel`-Page to
       `ChannelObserver::created` to ensure consistent triggering across all
       creation pathways.
+- **UI Text Handling**
+    - Migrated static German UI texts to the i18n system.
+    - Improved maintainability and consistency of user-facing strings.
 
 ### Fixed
 
