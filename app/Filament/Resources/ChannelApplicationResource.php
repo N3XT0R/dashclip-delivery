@@ -58,7 +58,7 @@ class ChannelApplicationResource extends Resource
                     ->translateLabel()
                     ->options(function () {
                         return collect(ApplicationEnum::all())->mapWithKeys(function ($value) {
-                            return [$value => __('filament.admin_channel_application.status.'.$value)];
+                            return [$value => __('filament.admin_channel_application.status.' . $value)];
                         });
                     }),
                 Section::make('existing_channel')
@@ -126,7 +126,7 @@ class ChannelApplicationResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('filament.admin_channel_application.table.columns.status')
                     ->formatStateUsing(function ($state) {
-                        return __('filament.channel_application.status.'.strtolower($state));
+                        return __('filament.channel_application.status.' . strtolower($state));
                     })
                     ->translateLabel()
                     ->searchable(),
@@ -140,7 +140,7 @@ class ChannelApplicationResource extends Resource
                     ->translateLabel()
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -154,13 +154,6 @@ class ChannelApplicationResource extends Resource
             ->toolbarActions([
             ])
             ->defaultSort('updated_at', 'desc');
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-
-        ];
     }
 
     public static function getPages(): array
