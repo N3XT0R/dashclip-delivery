@@ -53,5 +53,6 @@ Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zip
 Route::get('/channels/{channel}/approve/{token}', [ChannelApprovalController::class, 'approve'])
     ->name('channels.approve');
 
-Route::post('/action-token/approve/{actionToken}', [TokenApprovalController::class, 'update'])
-    ->name('action-tokens.approve-channel');
+Route::post('/action-tokens/approve/{token}', [TokenApprovalController::class, 'update'])
+    ->name('tokens.update');
+
