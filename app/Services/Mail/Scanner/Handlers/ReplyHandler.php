@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Services\Mail\Scanner\Handlers;
 
 use App\Enum\MailStatus;
-use App\Mail\NoReplyFAQMail;
 use App\Repository\MailRepository;
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
+use App\Services\MailService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Webklex\PHPIMAP\Exceptions\AuthFailedException;
 use Webklex\PHPIMAP\Exceptions\ConnectionFailedException;
 use Webklex\PHPIMAP\Exceptions\EventNotFoundException;
@@ -51,7 +50,7 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
     {
         if ($this->shouldIgnore($message)) {
             $message->setFlag('Seen');
-            Log::info('Message '.$message->getMessageId()->toString().' was ignored');
+            Log::info('Message ' . $message->getMessageId()->toString() . ' was ignored');
             return;
         }
         $from = $message->getFrom()[0]->mail ?? '';
@@ -67,8 +66,7 @@ class ReplyHandler implements MessageStrategyInterface, MoveToFolderInterface
         }
 
         if ($log->status !== MailStatus::Replied) {
-            $mail = new NoReplyFAQMail();
-            Mail::to($from)->queue($mail);
+            app(MailService::class)->sendFaqMail($from);
             $this->mailRepository->updateStatus($log, MailStatus::Replied);
             Log::info("Auto-reply sent to {$from}", ['to' => $from]);
         }

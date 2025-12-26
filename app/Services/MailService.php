@@ -8,6 +8,7 @@ use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Mail\NewOfferMail;
+use App\Mail\NoReplyFAQMail;
 use App\Mail\ReminderMail;
 use App\Mail\UserWelcomeMail;
 use App\Models\Assignment;
@@ -114,5 +115,10 @@ readonly class MailService
             $channel->email,
             new ReminderMail($channel, $offerUrl, $expireDate, $assignments)
         );
+    }
+
+    public function sendFaqMail(string $email): void
+    {
+        $this->queueMail($email, new NoReplyFAQMail());
     }
 }
