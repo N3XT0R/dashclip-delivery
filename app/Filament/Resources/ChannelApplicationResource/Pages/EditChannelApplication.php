@@ -35,7 +35,6 @@ class EditChannelApplication extends EditRecord
          * @var ChannelApplicationModel $record
          */
         $record = $this->getRecord();
-
         if (ApplicationEnum::APPROVED->value === $record->status) {
             /**
              * @var User $user
