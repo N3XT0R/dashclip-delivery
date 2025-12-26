@@ -84,9 +84,9 @@ final class ActionTokenRepository
 
     /**
      * Delete all expired action tokens.
-     * @return int
+     * @return bool
      */
-    public function deleteExpired(): int
+    public function deleteExpired(): bool
     {
         return ActionToken::whereNotNull('expires_at')
             ->where('expires_at', '<', now())
