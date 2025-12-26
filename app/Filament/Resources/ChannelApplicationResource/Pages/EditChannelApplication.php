@@ -45,7 +45,8 @@ class EditChannelApplication extends EditRecord
                 app(ApproveChannelApplication::class)->handle($record, $user);
             } catch (\Throwable $e) {
                 Notification::make()
-                    ->title('Failed to approve channel application: ' . $e->getMessage())
+                    ->title(__('errors.channel_application.approval_failed_notification'))
+                    ->body($e->getMessage())
                     ->danger()
                     ->send();
                 return;
