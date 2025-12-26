@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'common' => [
         'expires_at' => 'Dieser Link ist bis zum :date gültig.',
+        'unknown_user' => 'Unbekannter Nutzer',
     ],
     'channel_access_request' => [
         'subject' => 'Zugriff auf Kanal freigeben',
@@ -15,6 +16,7 @@ return [
 
         'intro' =>
             'für den folgenden Kanal wurde eine Zugriffsanfrage gestellt:',
+        'requested_by' => 'Zugriffsanfrage gestellt von:',
 
         'instruction' =>
             'Wenn du den Zugriff freigeben möchtest, bestätige dies bitte über den folgenden Button.',

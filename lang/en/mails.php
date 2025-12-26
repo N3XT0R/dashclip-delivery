@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'common' => [
         'expires_at' => 'This link will expire on :date.',
+        'unknown_user' => 'Unknown user',
     ],
     'channel_access_request' => [
         'subject' => 'Approve channel access',
@@ -15,6 +16,7 @@ return [
 
         'intro' =>
             'An access request has been submitted for the following channel:',
+        'requested_by' => 'Access request submitted by:',
 
         'instruction' =>
             'If you would like to approve this access, please confirm using the button below.',
