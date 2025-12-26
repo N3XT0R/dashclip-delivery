@@ -42,3 +42,4 @@ Schedule::command('dropbox:refresh-token')
 
 Schedule::command('mail:scan-replies')->everyTenMinutes();
 Schedule::command('clean:disk')->everyMinute();
+Schedule::command('clean:database')->dailyAt('02:00');

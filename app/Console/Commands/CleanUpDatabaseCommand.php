@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\ActionTokenService;
+use App\Application\Cleanup\CleanupDatabase;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -25,10 +25,10 @@ class CleanUpDatabaseCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(ActionTokenService $actionTokenService): int
+    public function handle(CleanupDatabase $cleanupDatabase): int
     {
         try {
-            $actionTokenService->cleanupExpired();
+            $cleanupDatabase->handle();
         } catch (\Throwable $e) {
             Log::error('Error during database cleanup: ' . $e->getMessage());
             return self::FAILURE;
