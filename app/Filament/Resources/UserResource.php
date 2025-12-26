@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\ChannelsRelationManager;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
@@ -72,6 +73,13 @@ class UserResource extends Resource
                 Forms\Components\Toggle::make('has_email_authentication')
                     ->required(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ChannelsRelationManager::class,
+        ];
     }
 
     public static function table(Table $table): Table
