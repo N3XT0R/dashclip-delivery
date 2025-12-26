@@ -26,4 +26,19 @@ return [
 
         'signature' => 'Best regards<br>Your :app team',
     ],
+    'channel_access_approved' => [
+        'subject' => 'Channel access approved',
+
+        'headline' => 'Access approved',
+
+        'greeting' => 'Hello :name,',
+
+        'intro' =>
+            'Your access request for the following channel has been approved:',
+
+        'access_notice' =>
+            'You can now access the channel according to the granted permissions.',
+
+        'signature' => 'Best regards<br>Your :app team',
+    ],
 ];
