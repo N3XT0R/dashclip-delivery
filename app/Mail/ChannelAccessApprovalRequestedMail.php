@@ -36,6 +36,7 @@ final class ChannelAccessApprovalRequestedMail extends AbstractLoggedMail
                 'purpose' => TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL->value,
                 'token' => $this->plainToken,
             ]),
+            'note' => $this->channelApplication->note ?? '',
         ];
     }
 }
