@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 return [
     'channel_access' => [
-        'title' => 'Zugriff bestätigt',
-        'subtitle' => 'Kanalzugriff',
-        'headline' => 'Zugriff erfolgreich bestätigt',
+        'title' => 'Access confirmed',
+        'subtitle' => 'Channel access',
+        'headline' => 'Access successfully confirmed',
 
-        'thanks' => 'Vielen Dank!',
+        'thanks' => 'Thank you!',
 
         'description' =>
-            'Die Zugriffsanfrage für den Kanal :channel wurde erfolgreich freigegeben.',
+            'The access request for the channel :channel has been successfully approved.',
 
         'access_granted' =>
-            'Die freigegebene Person kann den Kanal ab sofort gemäß den erteilten Berechtigungen nutzen.',
+            'The approved person can now access the channel according to the granted permissions.',
 
         'revoke_notice' =>
-            'Der Zugriff kann jederzeit durch den Kanalbetreiber oder berechtigte Teammitglieder widerrufen werden.',
+            'Access can be revoked at any time by the channel owner or authorized team members.',
 
-        'back' => 'Zur Startseite',
+        'back' => 'Back to home',
     ],
 ];
-
