@@ -14,7 +14,7 @@ class NotificationService
      * @param ChannelApplication $channelApplication
      * @return void
      */
-    public function sendChannelAccessApprovedNotification(ChannelApplication $channelApplication): void
+    public function notifyChannelAccessApproved(ChannelApplication $channelApplication): void
     {
         $user = $channelApplication->user;
         $user->notify(new ChannelAccessApprovedNotification($channelApplication));

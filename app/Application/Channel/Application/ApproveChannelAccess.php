@@ -22,6 +22,6 @@ final readonly class ApproveChannelAccess
             $channelApplication->user,
             $channelApplication->channel
         );
-        $this->notificationService->sendChannelAccessApprovedNotification($channelApplication);
+        $this->notificationService->notifyChannelAccessApproved($channelApplication);
     }
 }
