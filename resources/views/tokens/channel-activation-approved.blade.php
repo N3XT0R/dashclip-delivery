@@ -7,31 +7,36 @@
 
 @extends('layouts.app')
 
-@section('title', __('Teilnahme bestätigt'))
-@section('subtitle', $channel?->name ?? __('Kanalbestätigung'))
+@section('title', __('tokens.channel_activation.title'))
+@section('subtitle', $channel?->name ?? __('tokens.channel_activation.subtitle'))
 
 @section('content')
     <div class="panel" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 32px;">
         <h1 style="font-size: 22px; margin-bottom: 16px; color: var(--color-primary, #2563eb);">
-            {{ __('Teilnahme erfolgreich bestätigt') }}
+            {{ __('tokens.channel_activation.headline') }}
         </h1>
 
         <p style="margin-bottom: 16px;">
-            {{ __('Vielen Dank, :name!', ['name' => $channel?->name ?? __('liebes Team')]) }}
+            {{ __('tokens.channel_activation.thanks', [
+                'name' => $channel?->name ?? __('tokens.channel_activation.subtitle'),
+            ]) }}
         </p>
 
         <p style="line-height: 1.6;">
-            {{ __('Der Zugriff auf den Kanal wurde erfolgreich freigegeben.') }}
-            {{ __('Ab sofort steht der Kanal den berechtigten Nutzern vollständig zur Verfügung.') }}
+            {{ __('tokens.channel_activation.description') }}
+        </p>
+
+        <p style="margin-top: 16px;">
+            {{ __('tokens.channel_activation.availability_notice') }}
         </p>
 
         <p style="margin-top: 20px;">
-            {{ __('Die Freigabe kann jederzeit über das Benutzerkonto oder durch einen Administrator widerrufen werden.') }}
+            {{ __('tokens.channel_activation.revoke_notice') }}
         </p>
 
         <div style="margin-top: 24px;">
             <a href="{{ config('app.url') }}" class="btn" style="text-decoration: none;">
-                {{ __('Zur Startseite') }}
+                {{ __('tokens.channel_activation.back') }}
             </a>
         </div>
 
@@ -39,7 +44,9 @@
 
         <p class="muted" style="font-size: 13px; color: #64748b;">
             &copy; {{ date('Y') }} {{ config('app.name') }}
-            {{ Cfg::has('email_your_name', 'email') ? '/ ' . Cfg::get('email_your_name', 'email', '') : '' }}
+            {{ Cfg::has('email_your_name', 'email')
+                ? '/ ' . Cfg::get('email_your_name', 'email', '')
+                : '' }}
         </p>
     </div>
 @endsection
