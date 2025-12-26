@@ -64,7 +64,7 @@ final readonly class ActionTokenService
         $tokenHash = hash('sha256', $plainToken);
 
         $token = $this->repository->findValid(
-            purpose: $purpose,
+            purpose: $purpose->value,
             tokenHash: $tokenHash
         );
 
