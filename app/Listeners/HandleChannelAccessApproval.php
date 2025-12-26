@@ -8,9 +8,8 @@ use App\Application\Channel\Application\ApproveChannelAccess;
 use App\Enum\TokenPurposeEnum;
 use App\Events\ActionToken\ActionTokenConsumed;
 use App\Models\ChannelApplication;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-final readonly class HandleChannelAccessApproval implements ShouldQueue
+final readonly class HandleChannelAccessApproval
 {
     public function __construct(
         private ApproveChannelAccess $approveChannelAccess
