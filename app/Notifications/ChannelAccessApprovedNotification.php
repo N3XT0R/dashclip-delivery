@@ -16,6 +16,8 @@ class ChannelAccessApprovedNotification extends AbstractUserNotification
     implements HasToMailContract,
                HasToDatabaseContract
 {
+    protected bool $isConfigurable = false;
+
     public function __construct(
         public readonly ChannelApplication $channelApplication
     ) {
