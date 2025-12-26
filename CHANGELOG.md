@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.6] - 2025-12-26
 
+### Fixed
+
+- **User-Registration**
+    - Fixed an issue where newly registered users were wrong role was assigned to them.
+
 ## [3.1.5] - 2025-12-22
 
 ### Fixed
