@@ -12,10 +12,18 @@ class ActionTokenObserver extends BaseObserver
 {
     public function updated(ActionToken|Model $model): void
     {
-        if (
-            $model->used_at !== null &&
-            $model->wasChanged('used_at')) {
-            event(new ActionTokenConsumed($model));
+        if (!$model->wasChanged('used_at')) {
+            return;
         }
+
+        if ($model->used_at === null) {
+            return;
+        }
+
+        if ($model->getOriginal('used_at') !== null) {
+            return;
+        }
+
+        event(new ActionTokenConsumed($model));
     }
 }
