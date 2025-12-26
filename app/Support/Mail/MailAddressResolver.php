@@ -11,10 +11,10 @@ final class MailAddressResolver
     /**
      * Resolve a safe mail recipient address.
      *
-     * @param User|string $recipient
+     * @param User|string|null $recipient
      * @return string
      */
-    public function resolve(User|string $recipient): string
+    public function resolve(User|string|null $recipient): string
     {
         $email = $recipient instanceof User
             ? $recipient->getRawOriginal('email')
@@ -26,13 +26,13 @@ final class MailAddressResolver
     /**
      * Apply catch-all address in non-production environments.
      *
-     * @param string $email
+     * @param string|null $email
      * @return string
      */
-    private function applyCatchAll(string $email): string
+    private function applyCatchAll(?string $email): string
     {
         if (app()->environment('local', 'testing', 'staging')) {
-            return config('mail.catch_all') ?? $email;
+            return (string)(config('mail.catch_all') ?? $email);
         }
 
         return $email;

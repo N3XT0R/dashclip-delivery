@@ -11,16 +11,14 @@ use App\Mail\NewOfferMail;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
+use App\Models\User;
 use App\Support\Mail\MailAddressResolver;
 use Carbon\Carbon;
+use Illuminate\Contracts\Mail\Mailable as MailableContract;
 use Illuminate\Support\Facades\Mail;
 
 readonly class MailService
 {
-    public function __construct(private MailAddressResolver $addressResolver)
-    {
-    }
-
     /**
      * Send channel access approval requested mail to the channel owner.
      * @param string $owner
@@ -44,7 +42,8 @@ readonly class MailService
             ],
         );
 
-        Mail::to($this->addressResolver->resolve($owner))->send(
+        $this->queueMail(
+            $owner,
             new ChannelAccessApprovalRequestedMail(
                 $channelApplication,
                 $actionToken,
@@ -59,8 +58,7 @@ readonly class MailService
      */
     public function sendChannelWelcomeMail(Channel $channel): void
     {
-        $email = $this->addressResolver->resolve($channel->email);
-        Mail::to($email)->send(new ChannelWelcomeMail($channel));
+        $this->queueMail($channel->email, new ChannelWelcomeMail($channel));
     }
 
     public function sendNewOfferMail(
@@ -77,10 +75,17 @@ readonly class MailService
         }
 
         $unusedUrl = $linkService->getUnusedUrl($assignBatch, $channel, $expireDate);
-        $email = $this->addressResolver->resolve($channel->email);
 
-        Mail::to($email)->queue(
+        $this->queueMail(
+            $channel->email,
             new NewOfferMail($assignBatch, $channel, $offerUrl, $expireDate, $unusedUrl, $isChannelOperator)
         );
+    }
+
+
+    private function queueMail(string|User $mailable, MailableContract $mail): mixed
+    {
+        $email = (MailAddressResolver::class)->resolve($mailable);
+        return Mail::to($email)->queue($mail);
     }
 }
