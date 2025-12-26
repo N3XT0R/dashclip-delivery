@@ -31,14 +31,15 @@ class ChannelsRelationManager extends RelationManager
             ])
             ->recordActions([
                 Action::make('revokeAccess')
-                    ->label('Revoke Access')
+                    ->label(__('filament.user_revoke_channel_access.label'))
                     ->requiresConfirmation()
                     ->action(function (Channel $record): void {
                         app(RevokeChannelAccess::class)->handle(
                             auth()->user(),
                             $record
                         );
-                    }),
+                    })
+                    ->successNotificationTitle(__('filament.user_revoke_channel_access.success_notification_title')),
             ]);
     }
 }
