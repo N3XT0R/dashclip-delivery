@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'common' => [
+        'expires_at' => 'This link will expire on :date.',
+    ],
     'channel_access_request' => [
         'subject' => 'Approve channel access',
 

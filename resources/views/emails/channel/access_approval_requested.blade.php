@@ -48,6 +48,17 @@
                     {{ __('mails.channel_access_request.approve') }}
                 </a>
             </p>
+            @if (! empty($expireAt))
+                <p style="margin-top:16px; font-size:14px; color:#64748b;">
+                    {{ __('mails.channel_access_request.expires_at', [
+                        'date' => $expireAt
+                            ->timezone(config('app.timezone'))
+                            ->locale(app()->getLocale())
+                            ->translatedFormat('d. F Y H:i'),
+                    ]) }}
+                </p>
+            @endif
+
 
             <p>
                 {{ __('mails.channel_access_request.outro') }}

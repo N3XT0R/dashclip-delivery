@@ -9,6 +9,7 @@ use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 class MailService
@@ -23,11 +24,12 @@ class MailService
         string $owner,
         ChannelApplication $channelApplication
     ): void {
+        $expireAt = Carbon::now()->addWeeks(2);
         $tokenService = app(ActionTokenService::class);
         $actionToken = $tokenService->issue(
             purpose: TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL,
             subject: $channelApplication,
-            expiresAt: now()->addWeeks(2),
+            expiresAt: $expireAt,
             meta: [
                 'user_id' => $channelApplication->user->getKey(),
                 'channel_id' => $channelApplication->channel->getKey(),
@@ -36,7 +38,11 @@ class MailService
         );
 
         Mail::to($owner)->send(
-            new ChannelAccessApprovalRequestedMail($channelApplication, $actionToken)
+            new ChannelAccessApprovalRequestedMail(
+                $channelApplication,
+                $actionToken,
+                $expireAt
+            )
         );
     }
 

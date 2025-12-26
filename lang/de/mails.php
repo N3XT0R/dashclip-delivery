@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'common' => [
+        'expires_at' => 'Dieser Link ist bis zum :date gültig.',
+    ],
     'channel_access_request' => [
         'subject' => 'Zugriff auf Kanal freigeben',
 

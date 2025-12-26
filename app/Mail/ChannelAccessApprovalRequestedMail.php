@@ -6,6 +6,7 @@ namespace App\Mail;
 
 use App\Enum\TokenPurposeEnum;
 use App\Models\ChannelApplication;
+use Carbon\CarbonInterface;
 
 final class ChannelAccessApprovalRequestedMail extends AbstractLoggedMail
 {
@@ -14,6 +15,7 @@ final class ChannelAccessApprovalRequestedMail extends AbstractLoggedMail
     public function __construct(
         public ChannelApplication $channelApplication,
         public string $plainToken,
+        public CarbonInterface $expireAt,
     ) {
         $this->subjectLine = __('mails.channel_access_request.subject');
     }
@@ -28,6 +30,7 @@ final class ChannelAccessApprovalRequestedMail extends AbstractLoggedMail
         return [
             'application' => $this->channelApplication,
             'channel' => $this->channelApplication->channel,
+            'expireAt' => $this->expireAt,
             'approveUrl' => route('tokens.update', [
                 'purpose' => TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL->value,
                 'token' => $this->plainToken,
