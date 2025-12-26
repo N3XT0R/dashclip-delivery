@@ -57,6 +57,11 @@ class Channel extends Model
             ->withPivot('until');
     }
 
+    /**
+     * Generate an approval token for the channel.
+     * @return string
+     * @todo move to service at next version
+     */
     public function getApprovalToken(): string
     {
         return hash('sha256', $this->email . config('app.key'));

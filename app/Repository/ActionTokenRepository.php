@@ -59,6 +59,17 @@ final class ActionTokenRepository
             ->first();
     }
 
+    public function findByPurposeAndSubject(
+        string $purpose,
+        Model $subject
+    ): ?ActionToken {
+        return ActionToken::query()
+            ->where('purpose', $purpose)
+            ->where('subject_type', $subject->getMorphClass())
+            ->where('subject_id', $subject->getKey())
+            ->first();
+    }
+
     /**
      * Mark the given action token as used.
      * @param ActionToken $token

@@ -7,11 +7,14 @@ namespace App\Services;
 use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\DTO\ChannelPoolDto;
 use App\Enum\Channel\ApplicationEnum;
+use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelWelcomeMail;
+use App\Models\ActionToken;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;
 use App\Models\Video;
+use App\Repository\ActionTokenRepository;
 use App\Repository\ChannelRepository;
 use App\Repository\TeamRepository;
 use Illuminate\Support\Collection;
@@ -280,5 +283,31 @@ class ChannelService
     {
         $channel = $this->channelRepository->findByName($name);
         return $channel !== null;
+    }
+
+    /**
+     * Get or create an approval action token for the channel.
+     * @param Channel $channel
+     * @return ActionToken
+     * @throws \Random\RandomException
+     */
+    public function getApprovalTokenForChannel(Channel $channel): ActionToken
+    {
+        $purpose = TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL;
+        $actionTokenService = app(ActionTokenService::class);
+        $actionTokenRepo = app(ActionTokenRepository::class);
+
+        $actionToken = $actionTokenRepo->findByPurposeAndSubject($purpose->value, $channel);
+        if (null === $actionToken) {
+            return $actionTokenService->issue(
+                purpose: $purpose,
+                subject: $channel,
+                meta: [
+                    'channel_id' => $channel->getKey(),
+                ],
+            );
+        }
+
+        return $actionToken;
     }
 }
