@@ -9,7 +9,6 @@ use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
-use App\Notifications\ChannelAccessApprovedNotification;
 use Illuminate\Support\Facades\Mail;
 
 class MailService
@@ -47,16 +46,5 @@ class MailService
     public function sendChannelWelcomeMail(Channel $channel): void
     {
         Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
-    }
-
-    /**
-     * Send channel access approved mail to the applicant.
-     * @param ChannelApplication $channelApplication
-     * @return void
-     */
-    public function sendChannelAccessApprovedMail(ChannelApplication $channelApplication): void
-    {
-        $user = $channelApplication->user;
-        $user->notify(new ChannelAccessApprovedNotification($channelApplication));
     }
 }
