@@ -51,7 +51,7 @@ final class UserObserverTest extends DatabaseTestCase
             'name' => 'Observer User Roles',
         ]));
 
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->app->make(PermissionRegistrar::class)->forgetCachedPermissions();
         $user->assignRole($existingRole);
 
         $this->assertDatabaseHas('model_has_roles', [
