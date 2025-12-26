@@ -87,6 +87,6 @@ final readonly class ActionTokenService
         $expiredDeleted = $this->repository->deleteExpired();
         $orphansDeleted = $repo->deleteOrphans() > 0;
 
-        return $expiredDeleted || $orphansDeleted;
+        return $expiredDeleted + $orphansDeleted;
     }
 }
