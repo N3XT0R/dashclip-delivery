@@ -298,16 +298,12 @@ class ChannelService
         $actionTokenRepo = app(ActionTokenRepository::class);
 
         $actionToken = $actionTokenRepo->findByPurposeAndSubject($purpose->value, $channel);
-        if (null === $actionToken) {
-            return $actionTokenService->issue(
-                purpose: $purpose,
-                subject: $channel,
-                meta: [
-                    'channel_id' => $channel->getKey(),
-                ],
-            );
-        }
-
-        return $actionToken;
+        return $actionToken ?? $actionTokenService->issue(
+            purpose: $purpose,
+            subject: $channel,
+            meta: [
+                'channel_id' => $channel->getKey(),
+            ],
+        );
     }
 }
