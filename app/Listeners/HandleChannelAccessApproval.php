@@ -10,7 +10,7 @@ use App\Events\ActionToken\ActionTokenConsumed;
 use App\Models\ChannelApplication;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-final class HandleChannelAccessApproval implements ShouldQueue
+final readonly class HandleChannelAccessApproval implements ShouldQueue
 {
     public function __construct(
         private ApproveChannelAccess $approveChannelAccess
