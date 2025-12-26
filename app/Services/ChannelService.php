@@ -286,12 +286,12 @@ class ChannelService
     }
 
     /**
-     * Get or create an approval action token for the channel.
+     * Get or create an activation action token for the channel.
      * @param Channel $channel
      * @return ActionToken
      * @throws \Random\RandomException
      */
-    public function getApprovalTokenForChannel(Channel $channel): ActionToken
+    public function getActivationTokenForChannel(Channel $channel): ActionToken
     {
         $purpose = TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL;
         $actionTokenService = app(ActionTokenService::class);
