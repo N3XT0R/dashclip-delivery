@@ -9,7 +9,6 @@ use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Repository\RoleRepository;
 use Filament\Auth\Pages\Register as BaseRegister;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
@@ -38,7 +37,7 @@ class Register extends BaseRegister
         $tosText = __('auth.register.tos_link_text');
 
         $label = __('auth.register.accept_terms_label', [
-            'tos_link' => '<a href="'.$tosUrl.'" target="_blank" class="underline text-primary-600 hover:text-primary-700">'.$tosText.'</a>',
+            'tos_link' => '<a href="' . $tosUrl . '" target="_blank" class="underline text-primary-600 hover:text-primary-700">' . $tosText . '</a>',
         ]);
 
         return Checkbox::make('accept_terms')
@@ -65,10 +64,12 @@ class Register extends BaseRegister
         $roleRepository = app(RoleRepository::class);
 
         try {
+            /*
             $user->assignRole($roleRepository->getRoleByRoleEnum(
                 RoleEnum::REGULAR,
                 Filament::getCurrentPanel()?->getAuthGuard()
             ));
+            */
         } catch (\Throwable $e) {
             Log::error('Role assignment failed', ['exception' => $e, 'user' => $user]);
             $user->delete();
@@ -87,10 +88,12 @@ class Register extends BaseRegister
     {
         return Notification::make()
             ->title(__('auth.register.role_assignment_failed_title'))
-            ->body(__('auth.register.role_assignment_failed_body', [
-                'role' => $role,
-                'guard' => $guard?->value ?: 'web',
-            ]))
+            ->body(
+                __('auth.register.role_assignment_failed_body', [
+                    'role' => $role,
+                    'guard' => $guard?->value ?: 'web',
+                ])
+            )
             ->danger();
     }
 
