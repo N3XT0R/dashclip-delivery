@@ -30,8 +30,6 @@ readonly class MailService
      * @param string|User $mailable
      * @param MailableContract $mail
      * @return mixed
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     * @throws \Illuminate\Contracts\Container\CircularDependencyException
      */
     private function queueMail(string|User $mailable, MailableContract $mail): mixed
     {
