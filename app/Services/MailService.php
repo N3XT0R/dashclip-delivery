@@ -15,7 +15,7 @@ use App\Support\Mail\MailAddressResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
-class MailService
+readonly class MailService
 {
     public function __construct(private MailAddressResolver $addressResolver)
     {
