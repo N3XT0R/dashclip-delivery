@@ -46,7 +46,7 @@
                     {!!
                         str($note)
                         ->markdown(['renderer' => ['soft_break' => "<br />"]])
-                        ->replace('<p>', '<p style="margin:0;">')
+                        ->replace('<p>', '<p style="margin:0; background:#fff7ed;">')
                         ->sanitizeHtml()
                     !!}
                 </p>
