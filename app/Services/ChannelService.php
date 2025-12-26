@@ -130,10 +130,11 @@ class ChannelService
     public function sendWelcomeMails(Collection $channels): array
     {
         $sent = [];
+        $mailService = app()->get(MailService::class);
 
         foreach ($channels as $channel) {
             try {
-                app(MailService::class)->sendChannelWelcomeMail($channel);
+                $mailService->sendChannelWelcomeMail($channel);
                 $sent[] = $channel->email;
             } catch (\Throwable $e) {
                 report($e);
