@@ -20,10 +20,6 @@ final readonly class HandleChannelAccessApproval implements ShouldQueue
     public function handle(ActionTokenConsumed $event): void
     {
         $token = $event->token;
-        /**
-         * @var ChannelApplication $channelApplication
-         */
-        $channelApplication = $token->subject;
 
         if ($token->purpose !== TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL->value) {
             return;
@@ -34,7 +30,7 @@ final readonly class HandleChannelAccessApproval implements ShouldQueue
         }
 
         $this->approveChannelAccess->handle(
-            $channelApplication
+            $token->subject
         );
     }
 }
