@@ -43,7 +43,7 @@
             @if (! empty($note))
                 <p style="margin:12px 0; padding:12px; background:#fff7ed; border-radius:6px; font-size:15px;">
                     <strong>{{ __('mails.channel_access_request.note_label') }}</strong><br>
-                    {{ $note }}
+                    {{ str($note)->markdown()->sanitizeHtml()  }}
                 </p>
             @endif
             @if ($channel)
