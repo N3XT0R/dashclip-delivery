@@ -34,7 +34,7 @@ class ChannelAccessApprovedNotification extends AbstractUserNotification
             ->icon(Heroicon::OutlinedQueueList)
             ->body(
                 __('notifications.channel_access_approved.body', [
-                    'channel' => $this->channelApplication->channel->name,
+                    'channelName' => $this->channelApplication->channel->name,
                 ])
             )
             ->success()
