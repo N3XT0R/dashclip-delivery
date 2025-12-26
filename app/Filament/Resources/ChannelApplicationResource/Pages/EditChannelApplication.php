@@ -7,8 +7,8 @@ use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Resources\ChannelApplicationResource;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
-use App\Services\Channel\ChannelApplicationService;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -44,6 +44,11 @@ class EditChannelApplication extends EditRecord
             try {
                 app(ApproveChannelApplication::class)->handle($record, $user);
             } catch (\Throwable $e) {
+                Notification::make()
+                    ->title('Failed to approve channel application: ' . $e->getMessage())
+                    ->danger()
+                    ->send();
+                return;
             }
         }
     }
