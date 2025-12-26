@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\ActionToken;
 use App\Models\User;
 use App\Repository\ActionTokenRepository;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Random\RandomException;
 
@@ -22,7 +23,7 @@ final readonly class ActionTokenService
      * @param string $purpose
      * @param Model|null $subject
      * @param User|null $issuedForUser
-     * @param \DateTimeInterface|null $expiresAt
+     * @param DateTimeInterface|null $expiresAt
      * @param array|null $meta
      * @return string
      * @throws RandomException
@@ -31,7 +32,7 @@ final readonly class ActionTokenService
         string $purpose,
         ?Model $subject = null,
         ?User $issuedForUser = null,
-        ?\DateTimeInterface $expiresAt = null,
+        ?DateTimeInterface $expiresAt = null,
         ?array $meta = null
     ): string {
         $plainToken = bin2hex(random_bytes(32));
