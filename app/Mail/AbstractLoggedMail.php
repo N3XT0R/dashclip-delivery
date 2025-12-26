@@ -7,7 +7,6 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
@@ -42,7 +41,7 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Rewrite subject and recipient for local/testing environments.
+     * Rewrite subject for local/testing environments.
      * @codeCoverageIgnore
      * @param Envelope $envelope
      * @return Envelope
@@ -51,9 +50,6 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
     {
         if (!defined('IS_TESTING') && app()->environment('local', 'testing', 'staging')) {
             $envelope->subject = sprintf('[%s] %s', config('app.env'), $envelope->subject);
-            if ($catchAll = config('mail.catch_all')) {
-                $envelope->to = [new Address($catchAll)];
-            }
         }
 
         return $envelope;
