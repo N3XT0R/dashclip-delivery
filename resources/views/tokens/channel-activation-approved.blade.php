@@ -7,36 +7,36 @@
 
 @extends('layouts.app')
 
-@section('title', __('tokens.channel_activation.title'))
-@section('subtitle', $channel?->name ?? __('tokens.channel_activation.subtitle'))
+@section('title', __('action-tokens.channel_activation.title'))
+@section('subtitle', $channel?->name ?? __('action-tokens.channel_activation.subtitle'))
 
 @section('content')
     <div class="panel" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 32px;">
         <h1 style="font-size: 22px; margin-bottom: 16px; color: var(--color-primary, #2563eb);">
-            {{ __('tokens.channel_activation.headline') }}
+            {{ __('action-tokens.channel_activation.headline') }}
         </h1>
 
         <p style="margin-bottom: 16px;">
-            {{ __('tokens.channel_activation.thanks', [
-                'name' => $channel?->name ?? __('tokens.channel_activation.subtitle'),
+            {{ __('action-tokens.channel_activation.thanks', [
+                'name' => $channel?->name ?? __('action-tokens.channel_activation.subtitle'),
             ]) }}
         </p>
 
         <p style="line-height: 1.6;">
-            {{ __('tokens.channel_activation.description') }}
+            {{ __('action-tokens.channel_activation.description') }}
         </p>
 
         <p style="margin-top: 16px;">
-            {{ __('tokens.channel_activation.availability_notice') }}
+            {{ __('action-tokens.channel_activation.availability_notice') }}
         </p>
 
         <p style="margin-top: 20px;">
-            {{ __('tokens.channel_activation.revoke_notice') }}
+            {{ __('action-tokens.channel_activation.revoke_notice') }}
         </p>
 
         <div style="margin-top: 24px;">
             <a href="{{ config('app.url') }}" class="btn" style="text-decoration: none;">
-                {{ __('tokens.channel_activation.back') }}
+                {{ __('action-tokens.channel_activation.back') }}
             </a>
         </div>
 
