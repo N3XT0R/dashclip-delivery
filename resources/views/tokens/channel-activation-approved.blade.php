@@ -44,9 +44,6 @@
 
         <p class="muted" style="font-size: 13px; color: #64748b;">
             &copy; {{ date('Y') }} {{ config('app.name') }}
-            {{ Cfg::has('email_your_name', 'email')
-                ? '/ ' . Cfg::get('email_your_name', 'email', '')
-                : '' }}
         </p>
     </div>
 @endsection
