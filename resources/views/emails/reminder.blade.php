@@ -1,5 +1,5 @@
 @php use App\Facades\Cfg; @endphp
-        <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -16,7 +16,8 @@
                 Hallo {{ $channel->creator_name ?: 'Liebes Team' }} ({{ $channel->name }}),
             </p>
             <p style="margin:0 0 16px 0;">
-                deine aktuellen Links verfallen am {{ $expiresAt->timezone('Europe/Berlin')->format('d.m.Y, H:i') }}.
+                deine aktuellen Links verfallen
+                am {{ $expiresAt->timezone(config('app.timezone'))->format('d.m.Y, H:i') }}.
             </p>
             <p style="margin:0 0 20px 0;">Nutze den folgenden Button, um die Angebote noch einmal aufzurufen:</p>
             <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px 0;">

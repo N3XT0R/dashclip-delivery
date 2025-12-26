@@ -57,7 +57,8 @@
             </table>
 
             <p style="margin:0 0 12px 0;">
-                <strong>Gültig bis:</strong> {{ $expiresAt->timezone('Europe/Berlin')->format('d.m.Y, H:i') }}<br>
+                <strong>Gültig bis:</strong> {{ $expiresAt->timezone(config('app.timezone'))->format('d.m.Y, H:i') }}
+                <br>
                 Danach werden die Dateien automatisch aus unserem System entfernt.
             </p>
             @if($isChannelOwner === false)
