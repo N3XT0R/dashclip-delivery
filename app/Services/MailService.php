@@ -49,6 +49,11 @@ class MailService
         Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
     }
 
+    /**
+     * Send channel access approved mail to the applicant.
+     * @param ChannelApplication $channelApplication
+     * @return void
+     */
     public function sendChannelAccessApprovedMail(ChannelApplication $channelApplication): void
     {
         Mail::to($channelApplication->user)->send(new ChannelAccessApprovedMail($channelApplication));
