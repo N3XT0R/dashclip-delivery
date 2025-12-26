@@ -14,4 +14,8 @@ return [
         ],
 
     ],
+    'channel_access_approved' => [
+        'title' => 'Kanalzugriff genehmigt',
+        'body' => 'Ihr Zugriff auf den Kanal ":channelName" wurde genehmigt.',
+    ],
 ];

@@ -10,6 +10,8 @@ use App\Models\ChannelApplication;
 use App\Models\User;
 use App\Notifications\Contracts\HasToDatabaseContract;
 use App\Notifications\Contracts\HasToMailContract;
+use Filament\Notifications\Notification as FilamentNotification;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 
 class ChannelAccessApprovedNotification extends AbstractUserNotification
@@ -25,6 +27,19 @@ class ChannelAccessApprovedNotification extends AbstractUserNotification
 
     public function toDatabase(Model $notifiable): array
     {
+        FilamentNotification::make()
+            ->title(__('notifications.channel_access_approved.title'))
+            ->icon(Heroicon::OutlinedQueueList)
+            ->body(
+                __('notifications.channel_access_approved.body', [
+                    'channel' => $this->channelApplication->channel->name,
+                ])
+            )
+            ->success()
+            ->sendToDatabase($notifiable)
+            ->toBroadcast();
+
+
         return [
             'application' => $this->channelApplication,
             'channel' => $this->channelApplication->channel,
