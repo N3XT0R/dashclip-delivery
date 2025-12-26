@@ -199,6 +199,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Prevented silent failures where Spatie Permission rejected role assignment due to a guard mismatch.
     - Ensures that newly registered users can authenticate and access the panel without encountering unexpected `403`
       errors.
+- **Catch-All Mail Address Handling in Non-Production Environments**
+    - Fixed an issue where catch-all email addresses were appended instead of replacing original recipients in
+      local, testing, and staging environments.
+    - Centralized mail recipient resolution to ensure that all outgoing emails are safely redirected to the configured
+      `mail.catch_all` address outside of production.
+    - Prevented unintended delivery of test and development emails to real user inboxes while preserving production
+      behavior.
 
 ## [3.1.0-beta.2] - 2025-12-05
 
