@@ -9,7 +9,6 @@ use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
-use Illuminate\Mail\SentMessage;
 use Illuminate\Support\Facades\Mail;
 
 class MailService
@@ -18,13 +17,12 @@ class MailService
      * Send channel access approval requested mail to the channel owner.
      * @param string $owner
      * @param ChannelApplication $channelApplication
-     * @return SentMessage
      * @throws \Random\RandomException
      */
     public function sendChannelAccessApprovalRequestedMail(
         string $owner,
         ChannelApplication $channelApplication
-    ): SentMessage {
+    ): void {
         $tokenService = app(ActionTokenService::class);
         $actionToken = $tokenService->issue(
             purpose: TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL,
@@ -36,7 +34,7 @@ class MailService
             ],
         );
 
-        return Mail::to($owner)->send(
+        Mail::to($owner)->send(
             new ChannelAccessApprovalRequestedMail($channelApplication, $actionToken)
         );
     }
@@ -44,10 +42,9 @@ class MailService
     /**
      * Send channel welcome mail to the channel email.
      * @param Channel $channel
-     * @return SentMessage
      */
-    public function sendChannelWelcomeMail(Channel $channel): SentMessage
+    public function sendChannelWelcomeMail(Channel $channel): void
     {
-        return Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
+        Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
     }
 }
