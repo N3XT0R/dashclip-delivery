@@ -19,6 +19,9 @@ class ChannelsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('name')
                     ->label('Channel')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->label('email')
+                    ->searchable(),
 
                 Tables\Columns\IconColumn::make('pivot.is_user_verified')
                     ->label('Verified')
