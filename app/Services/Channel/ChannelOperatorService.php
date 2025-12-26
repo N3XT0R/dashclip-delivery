@@ -109,7 +109,7 @@ readonly class ChannelOperatorService
         $guard = GuardEnum::STANDARD;
         $role = RoleEnum::CHANNEL_OPERATOR;
 
-        return $channelRepo->hasUserAccessToChannel($user, $channel)
+        return $channelRepo->isUserVerifiedForChannel($user, $channel)
             && $roleRepo->hasRole($user, $role, $guard);
     }
 
