@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enum\TokenPurposeEnum;
 use App\Services\ActionTokenService;
-use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 final class TokenApprovalController extends Controller
 {
@@ -14,21 +15,36 @@ final class TokenApprovalController extends Controller
     ) {
     }
 
-    public function update(Request $request, string $token)
+    public function update(string $purpose, string $token)
     {
-        $actionToken = $this->actionTokenService->consume(
-            purpose: $request->get('purpose'),
-            plainToken: $token
-        );
-
-        if (!$actionToken) {
-            return redirect()
-                ->route('token.invalid')
-                ->with('error', __('This approval link is no longer valid.'));
+        $purposeEnum = TokenPurposeEnum::tryFrom($purpose);
+        if (!$purposeEnum) {
+            abort(Response::HTTP_NOT_FOUND);
         }
 
-        return redirect()
-            ->route('token.success')
-            ->with('success', __('Your approval has been confirmed.'));
+        $actionToken = $this->actionTokenService->consume($purposeEnum, $token);
+
+        if (!$actionToken) {
+            abort(Response::HTTP_GONE);
+        }
+
+        $view = $this->resolveViewForPurpose($purposeEnum);
+
+        if ($view && view()->exists($view)) {
+            return view($view, ['token' => $actionToken, 'purpose' => $purposeEnum]);
+        }
+
+        return response()->noContent();
+    }
+
+    private function resolveViewForPurpose(TokenPurposeEnum $purpose): ?string
+    {
+        return match ($purpose) {
+            TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL =>
+            'tokens.channel-access-approved',
+
+            TokenPurposeEnum::CHANNEL_ACTIVATION_APPROVAL =>
+            'tokens.channel-activation-approved',
+        };
     }
 }
