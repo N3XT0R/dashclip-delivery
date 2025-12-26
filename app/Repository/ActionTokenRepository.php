@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 final class ActionTokenRepository
 {
     /**
-     *
+     * Create a new action token record.
      * @param string $purpose
      * @param string $tokenHash
      * @param Model|null $subject
@@ -38,6 +38,12 @@ final class ActionTokenRepository
         ]);
     }
 
+    /**
+     * Find a valid (not used, not expired) action token by purpose and token hash.
+     * @param string $purpose
+     * @param string $tokenHash
+     * @return ActionToken|null
+     */
     public function findValid(
         string $purpose,
         string $tokenHash
@@ -53,6 +59,11 @@ final class ActionTokenRepository
             ->first();
     }
 
+    /**
+     * Mark the given action token as used.
+     * @param ActionToken $token
+     * @return void
+     */
     public function markUsed(ActionToken $token): void
     {
         $token->forceFill([
@@ -60,6 +71,10 @@ final class ActionTokenRepository
         ])->save();
     }
 
+    /**
+     * Delete all expired action tokens.
+     * @return int
+     */
     public function deleteExpired(): int
     {
         return ActionToken::whereNotNull('expires_at')

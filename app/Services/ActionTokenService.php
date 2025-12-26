@@ -18,7 +18,7 @@ final readonly class ActionTokenService
     }
 
     /**
-     *
+     * Issue a new action token.
      * @param string $purpose
      * @param Model|null $subject
      * @param User|null $issuedForUser
@@ -49,6 +49,12 @@ final readonly class ActionTokenService
         return $plainToken;
     }
 
+    /**
+     * Consume an action token.
+     * @param string $purpose
+     * @param string $plainToken
+     * @return ActionToken|null
+     */
     public function consume(
         string $purpose,
         string $plainToken
@@ -69,6 +75,10 @@ final readonly class ActionTokenService
         return $token;
     }
 
+    /**
+     * Cleanup expired action tokens.
+     * @return int
+     */
     public function cleanupExpired(): int
     {
         return $this->repository->deleteExpired();
