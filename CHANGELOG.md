@@ -33,9 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Started migrating hardcoded German UI strings to the i18n system.
 - **Application Use-Case Layer**
   Introduced a dedicated application/use-case layer to orchestrate complex
-  channel workflows (e.g. approvals, assignments, event dispatching).
-  This layer provides a single entry point for business workflows and can
-  be reused across UI pages and the REST API.
+  channel workflows such as approvals, assignments, and event dispatching.
+  This layer serves as a single entry point for business workflows and is
+  designed for reuse across UI pages and the REST API.
 
 ### Changed
 
@@ -60,11 +60,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **UI Text Handling**
     - Migrated static German UI texts to the i18n system.
     - Improved maintainability and consistency of user-facing strings.
-- **Channel Workflow Orchestration**
-  Refactored channel approval and access workflows to delegate orchestration
-  logic to the new application layer.
-  UI pages now act as thin entry points, improving separation of concerns,
-  testability, and long-term maintainability.
 
 ### Fixed
 
