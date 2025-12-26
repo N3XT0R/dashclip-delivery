@@ -57,6 +57,12 @@ readonly class ChannelOperatorService
         }
     }
 
+    /**
+     * Approve user access to channel
+     * @param User $user
+     * @param Channel $channel
+     * @return void
+     */
     public function approveUserChannelAccess(User $user, Channel $channel): void
     {
         $channelRepo = $this->channelRepository;
