@@ -21,7 +21,7 @@
 
             <p>
                 {{ __('mails.channel_access_request.greeting', [
-                    'name' => $channel->name ?? __('mails.channel_access.subtitle'),
+                    'name' => $channel->creator_name ?? $channel->name ?? __('mails.channel_access.subtitle'),
                 ]) }}
             </p>
 
