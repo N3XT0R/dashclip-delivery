@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Mail\UserUploadDuplicatedMail;
 use App\Models\User;
+use App\Notifications\Contracts\HasToArrayContract;
 use App\Notifications\Contracts\HasToDatabaseContract;
 use App\Notifications\Contracts\HasToMailContract;
 use Filament\Notifications\Notification as FilamentNotification;
@@ -13,7 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserUploadDuplicatedNotification extends AbstractUserNotification
     implements HasToMailContract,
-               HasToDatabaseContract
+               HasToDatabaseContract,
+               HasToArrayContract
 {
     use Queueable;
 

@@ -8,6 +8,7 @@ use App\Mail\AbstractLoggedMail;
 use App\Mail\ChannelAccessApprovedMail;
 use App\Models\ChannelApplication;
 use App\Models\User;
+use App\Notifications\Contracts\HasToArrayContract;
 use App\Notifications\Contracts\HasToDatabaseContract;
 use App\Notifications\Contracts\HasToMailContract;
 use Filament\Notifications\Notification as FilamentNotification;
@@ -16,7 +17,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChannelAccessApprovedNotification extends AbstractUserNotification
     implements HasToMailContract,
-               HasToDatabaseContract
+               HasToDatabaseContract,
+               HasToArrayContract
 {
     protected bool $isConfigurable = false;
 
@@ -39,16 +41,21 @@ class ChannelAccessApprovedNotification extends AbstractUserNotification
             ->sendToDatabase($notifiable)
             ->toBroadcast();
 
-
-        return [
-            'application' => $this->channelApplication,
-            'channel' => $this->channelApplication->channel,
-        ];
+        return $this->toArray($notifiable);
     }
 
     public function toMail(User $notifiable): AbstractLoggedMail
     {
         return new ChannelAccessApprovedMail($this->channelApplication)->to($notifiable);
     }
+
+    public function toArray(Model $notifiable): array
+    {
+        return [
+            'application' => $this->channelApplication->getKey(),
+            'channel' => $this->channelApplication->channel->getKey(),
+        ];
+    }
+
 
 }

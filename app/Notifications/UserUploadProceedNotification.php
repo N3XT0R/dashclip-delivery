@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Mail\UserUploadProceedMail;
 use App\Models\User;
+use App\Notifications\Contracts\HasToArrayContract;
 use App\Notifications\Contracts\HasToDatabaseContract;
 use App\Notifications\Contracts\HasToMailContract;
 use Filament\Notifications\Notification as FilamentNotification;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
 class UserUploadProceedNotification extends AbstractUserNotification
-    implements HasToMailContract, HasToDatabaseContract
+    implements HasToMailContract, HasToDatabaseContract, HasToArrayContract
 {
     use Queueable;
 
