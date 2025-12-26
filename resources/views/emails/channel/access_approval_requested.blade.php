@@ -53,7 +53,7 @@
             @endif
             @if ($channel)
                 <p style="font-weight:600; margin:12px 0;">
-                    {{__('mails.common.channel')}}: {{ $channel->name }}
+                    {{__('mails.common.channel')}} {{ $channel->name }}
                 </p>
             @endif
 
