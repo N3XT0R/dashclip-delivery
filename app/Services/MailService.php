@@ -85,7 +85,7 @@ readonly class MailService
 
     private function queueMail(string|User $mailable, MailableContract $mail): mixed
     {
-        $email = (MailAddressResolver::class)->resolve($mailable);
+        $email = app(MailAddressResolver::class)->resolve($mailable);
         return Mail::to($email)->queue($mail);
     }
 }
