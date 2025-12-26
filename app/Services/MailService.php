@@ -11,11 +11,16 @@ use App\Mail\NewOfferMail;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
+use App\Support\Mail\MailAddressResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 class MailService
 {
+    public function __construct(private MailAddressResolver $addressResolver)
+    {
+    }
+
     /**
      * Send channel access approval requested mail to the channel owner.
      * @param string $owner
@@ -39,7 +44,7 @@ class MailService
             ],
         );
 
-        Mail::to($owner)->send(
+        Mail::to($this->addressResolver->resolve($owner))->send(
             new ChannelAccessApprovalRequestedMail(
                 $channelApplication,
                 $actionToken,
@@ -54,7 +59,8 @@ class MailService
      */
     public function sendChannelWelcomeMail(Channel $channel): void
     {
-        Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
+        $email = $this->addressResolver->resolve($channel->email);
+        Mail::to($email)->send(new ChannelWelcomeMail($channel));
     }
 
     public function sendNewOfferMail(
@@ -69,9 +75,11 @@ class MailService
         } else {
             $offerUrl = $linkService->getOfferUrl($assignBatch, $channel, $expireDate);
         }
-        $unusedUrl = $linkService->getUnusedUrl($assignBatch, $channel, $expireDate);
 
-        Mail::to($channel->getAttribute('email'))->queue(
+        $unusedUrl = $linkService->getUnusedUrl($assignBatch, $channel, $expireDate);
+        $email = $this->addressResolver->resolve($channel->email);
+
+        Mail::to($email)->queue(
             new NewOfferMail($assignBatch, $channel, $offerUrl, $expireDate, $unusedUrl, $isChannelOperator)
         );
     }
