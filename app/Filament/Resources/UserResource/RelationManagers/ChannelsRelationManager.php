@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Application\Channel\Application\RevokeChannelAccess;
+use App\Enum\Guard\GuardEnum;
+use App\Enum\Users\RoleEnum;
 use App\Models\Channel;
+use App\Repository\RoleRepository;
 use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -31,6 +34,13 @@ class ChannelsRelationManager extends RelationManager
             ])
             ->recordActions([
                 Action::make('revokeAccess')
+                    ->visible(
+                        app(RoleRepository::class)->hasRole(
+                            auth()->user(),
+                            RoleEnum::SUPER_ADMIN,
+                            GuardEnum::DEFAULT
+                        )
+                    )
                     ->label(__('filament.user_revoke_channel_access.label'))
                     ->requiresConfirmation()
                     ->action(function (Channel $record): void {
