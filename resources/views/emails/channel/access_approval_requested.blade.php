@@ -50,7 +50,7 @@
             </p>
             @if (! empty($expireAt))
                 <p style="margin-top:16px; font-size:14px; color:#64748b;">
-                    {{ __('mails.channel_access_request.expires_at', [
+                    {{ __('mails.common.expires_at', [
                         'date' => $expireAt
                             ->timezone(config('app.timezone'))
                             ->locale(app()->getLocale())
