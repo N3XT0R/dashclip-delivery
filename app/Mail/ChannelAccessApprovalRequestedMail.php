@@ -30,6 +30,7 @@ final class ChannelAccessApprovalRequestedMail extends AbstractLoggedMail
         return [
             'application' => $this->channelApplication,
             'channel' => $this->channelApplication->channel,
+            'user' => $this->channelApplication->user,
             'expireAt' => $this->expireAt,
             'approveUrl' => route('tokens.update', [
                 'purpose' => TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL->value,
