@@ -86,6 +86,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The `/zips/{batch}/{channel}` route has been deprecated in favor of the new
   `/zips/channel/{channel}` route.
 
+## [3.1.6] - 2025-12-26
+
+### Fixed
+
+- **User-Registration**
+    - Filament's registration flow now correctly uses the panel's active guard (`standard`) when attaching the default
+      user role.
+
 ## [3.1.5] - 2025-12-22
 
 ### Fixed

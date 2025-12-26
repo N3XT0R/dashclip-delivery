@@ -66,7 +66,7 @@ final class UserObserverTest extends DatabaseTestCase
 
         $freshUser = $user->fresh();
 
-        $this->assertTrue($freshUser->hasRole($defaultRole->name, GuardEnum::DEFAULT->value));
-        $this->assertTrue($freshUser->hasRole($existingRole->name, GuardEnum::DEFAULT->value));
+        $this->assertTrue($freshUser->hasRole($defaultRole->name, GuardEnum::STANDARD->value));
+        $this->assertTrue($freshUser->hasRole($existingRole->name, GuardEnum::STANDARD->value));
     }
 }

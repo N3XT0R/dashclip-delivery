@@ -14,6 +14,7 @@ use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,7 +28,8 @@ use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery,
-                                              HasEmailAuthentication, MustVerifyEmail, HasTenants, HasDefaultTenant
+                                              HasEmailAuthentication, MustVerifyEmail, HasTenants, HasDefaultTenant,
+                                              HasLocalePreference
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -221,5 +223,10 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             ->using(ChannelUserPivot::class)
             ->withPivot(['is_user_verified'])
             ->withTimestamps();
+    }
+
+    public function preferredLocale(): string
+    {
+        return config('app.locale');
     }
 }
