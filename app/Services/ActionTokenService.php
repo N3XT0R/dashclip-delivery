@@ -78,7 +78,7 @@ final readonly class ActionTokenService
     }
 
     /**
-     * Cleanup expired action tokens.
+     * Cleanup expired and orphaned tokens.
      * @return bool
      */
     public function cleanupExpired(): bool
