@@ -34,8 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Application Use-Case Layer**
   Introduced a dedicated application/use-case layer to orchestrate complex
   channel workflows such as approvals, assignments, and event dispatching.
-  This layer serves as a single entry point for business workflows and is
-  designed for reuse across UI pages and the REST API.
+  This layer provides a single entry point for business workflows and
+  prepares the codebase for reuse across multiple entry points (e.g. UI pages).
 
 ### Changed
 
