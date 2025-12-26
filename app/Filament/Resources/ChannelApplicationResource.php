@@ -146,7 +146,7 @@ class ChannelApplicationResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->multiple()
                     ->options(ApplicationEnum::all())
-                    ->default(ApplicationEnum::nonRejected())
+                    ->default([ApplicationEnum::PENDING])
             ])
             ->recordActions([
                 Actions\EditAction::make(),
