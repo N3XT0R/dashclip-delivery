@@ -106,4 +106,8 @@ return [
             'rejected' => 'Rejected',
         ],
     ],
+    'user_revoke_channel_access' => [
+        'label' => 'Revoke Channel Access',
+        'success_notification_title' => 'Channel access has been revoked',
+    ],
 ];
