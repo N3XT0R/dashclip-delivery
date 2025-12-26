@@ -8,6 +8,7 @@ use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Mail\NewOfferMail;
+use App\Mail\UserWelcomeMail;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
@@ -19,6 +20,14 @@ use Illuminate\Support\Facades\Mail;
 
 readonly class MailService
 {
+
+    private function queueMail(string|User $mailable, MailableContract $mail): mixed
+    {
+        $email = app(MailAddressResolver::class)->resolve($mailable);
+        return Mail::to($email)->queue($mail);
+    }
+
+
     /**
      * Send channel access approval requested mail to the channel owner.
      * @param string $owner
@@ -82,10 +91,8 @@ readonly class MailService
         );
     }
 
-
-    private function queueMail(string|User $mailable, MailableContract $mail): mixed
+    public function sendUserWelcomeEmail(User $user, bool $fromBackend = false, ?string $plainPassword = null): void
     {
-        $email = app(MailAddressResolver::class)->resolve($mailable);
-        return Mail::to($email)->queue($mail);
+        $this->queueMail($user->email, new UserWelcomeMail($user, $fromBackend, $plainPassword));
     }
 }
