@@ -65,7 +65,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
     {
         $canAccess = self::canAccessShield();
         if ($canAccess) {
-            $canAccess = auth()->user()?->cannot('page.channels.access') ?? false;
+            $canAccess = auth()->user()?->cannot('page.channels.access') ?? true;
         }
 
         return $canAccess;
