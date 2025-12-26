@@ -20,7 +20,7 @@ class ChannelsRelationManager extends RelationManager
                     ->label('Channel')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('email')
+                    ->label('Email')
                     ->searchable(),
 
                 Tables\Columns\IconColumn::make('pivot.is_user_verified')
