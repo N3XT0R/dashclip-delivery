@@ -17,7 +17,9 @@ class CleanUpDatabaseCommand extends Command
         try {
             $cleanupDatabase->handle();
         } catch (\Throwable $e) {
-            Log::error('Error during database cleanup: ' . $e->getMessage());
+            Log::error('Error during database cleanup: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
             return self::FAILURE;
         }
 
