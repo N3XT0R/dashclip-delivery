@@ -41,7 +41,10 @@ class EditChannelApplication extends EditRecord
              * @var User $user
              */
             $user = Filament::auth()->user();
-            $result = app(ApproveChannelApplication::class)->handle($record, auth()->user());
+            try {
+                app(ApproveChannelApplication::class)->handle($record, $user);
+            } catch (\Throwable $e) {
+            }
         }
     }
 }
