@@ -8,7 +8,7 @@ use App\Models\ChannelApplication;
 
 class ApproveChannelAccess
 {
-    public function handle(ChannelApplication $channelApplication)
+    public function handle(ChannelApplication $channelApplication): void
     {
     }
 }
