@@ -11,7 +11,7 @@ class UserRepository
 {
     /**
      * Get a user by their display name.
-     * @param  string  $displayName
+     * @param string $displayName
      * @return User|null
      */
     public function getUserByDisplayName(string $displayName): ?User
@@ -47,6 +47,13 @@ class UserRepository
     public function getCurrentUser(): ?User
     {
         return auth()->user();
+    }
+
+    public function getUserByEmail(string $email): ?User
+    {
+        return User::query()
+            ->where('email', $email)
+            ->first();
     }
 
 }

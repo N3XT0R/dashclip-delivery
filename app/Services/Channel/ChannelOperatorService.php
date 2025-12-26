@@ -10,6 +10,7 @@ use App\Models\Channel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
 use App\Repository\RoleRepository;
+use App\Repository\UserRepository;
 use Throwable;
 
 readonly class ChannelOperatorService
@@ -93,5 +94,43 @@ readonly class ChannelOperatorService
         if (!$channelRepo->hasUserAccessToAnyChannel($user)) {
             $roleRepo->removeRoleFromUser($user, $role, $guard);
         }
+    }
+
+    /**
+     * Check if user is channel operator
+     * @param User $user
+     * @param Channel $channel
+     * @return bool
+     */
+    public function isUserChannelOperator(User $user, Channel $channel): bool
+    {
+        $channelRepo = $this->channelRepository;
+        $roleRepo = $this->roleRepository;
+        $guard = GuardEnum::STANDARD;
+        $role = RoleEnum::CHANNEL_OPERATOR;
+
+        return $channelRepo->hasUserAccessToChannel($user, $channel)
+            && $roleRepo->hasRole($user, $role, $guard);
+    }
+
+    /**
+     * Check if user by email is channel operator
+     * @param Channel $channel
+     * @return bool
+     */
+    public function isChannelEmailOwnerChannelOperator(Channel $channel): bool
+    {
+        $owner = $channel->email;
+
+        if ($owner === null) {
+            return false;
+        }
+
+        $user = app(UserRepository::class)->getUserByEmail($owner);
+        if ($user === null) {
+            return false;
+        }
+
+        return $this->isUserChannelOperator($owner, $channel);
     }
 }
