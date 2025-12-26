@@ -6,6 +6,7 @@ return [
     'common' => [
         'expires_at' => 'This link will expire on :date.',
         'unknown_user' => 'Unknown user',
+        'channel' => 'Channel:',
     ],
     'channel_access_request' => [
         'subject' => 'Approve channel access',

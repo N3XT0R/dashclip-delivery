@@ -6,6 +6,7 @@ return [
     'common' => [
         'expires_at' => 'Dieser Link ist bis zum :date gültig.',
         'unknown_user' => 'Unbekannter Nutzer',
+        'channel' => 'Kanal:',
     ],
     'channel_access_request' => [
         'subject' => 'Zugriff auf Kanal freigeben',
