@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Repository\RoleRepository;
@@ -23,7 +24,7 @@ class UserObserver extends BaseObserver
     {
         if (!$user->hasAnyRole()) {
             $repository = app(RoleRepository::class);
-            $user->assignRole($repository->getRoleByRoleEnum(RoleEnum::REGULAR));
+            $user->assignRole($repository->getRoleByRoleEnum(RoleEnum::REGULAR, GuardEnum::STANDARD->value));
         }
     }
 
