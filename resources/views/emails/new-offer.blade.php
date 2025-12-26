@@ -36,9 +36,6 @@
             <p style="margin:0 0 12px 0;">Klicke auf den Button, um:</p>
             <ul style="margin:0 0 20px 24px; padding:0;">
                 <li style="margin:0 0 8px 0;"><strong>alle verfügbaren Videos</strong> mit Vorschau zu sehen</li>
-                <li style="margin:0 0 8px 0;"> Previews ohne Ton zu schauen (der vollständige Clip enthält das
-                    Original-Audio)
-                </li>
                 <li style="margin:0 0 8px 0;"> optional <strong>eine ZIP-Datei mit ausgewählten Clips</strong>
                     herunterzuladen
                 </li>
