@@ -28,7 +28,18 @@
             <p>
                 {{ __('mails.channel_access_request.intro') }}
             </p>
-
+            @if (! empty($user))
+                <p style="margin:12px 0; padding:12px; background:#f8fafc; border-radius:6px;">
+                    <strong>{{ __('mails.channel_access_request.requested_by') }}</strong><br>
+                    {{ $user->name ?? __('mails.common.unknown_user') }}
+                    @if(! empty($user->email))
+                        <br>
+                        <a href="mailto:{{ $user->email }}" style="color:#0ea5e9; text-decoration:none;">
+                            {{ $user->email }}
+                        </a>
+                    @endif
+                </p>
+            @endif
             @if ($channel)
                 <p style="font-weight:600; margin:12px 0;">
                     {{ $channel->name }}
