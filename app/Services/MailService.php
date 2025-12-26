@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Mail;
 
 class MailService
 {
+    /**
+     * Send channel access approval requested mail to the channel owner.
+     * @param string $owner
+     * @param ChannelApplication $channelApplication
+     * @return SentMessage
+     * @throws \Random\RandomException
+     */
     public function sendChannelAccessApprovalRequestedMail(
         string $owner,
         ChannelApplication $channelApplication
