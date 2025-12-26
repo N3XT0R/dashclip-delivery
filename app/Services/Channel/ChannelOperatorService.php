@@ -73,6 +73,12 @@ readonly class ChannelOperatorService
         $channelRepo->setUserVerifiedForChannel($user, $channel);
     }
 
+    /**
+     * Revoke user access to channel and remove channel operator role if no channels left
+     * @param User $user
+     * @param Channel $channel
+     * @return void
+     */
     public function revokeUserChannelAccess(User $user, Channel $channel): void
     {
         $channelRepo = $this->channelRepository;
