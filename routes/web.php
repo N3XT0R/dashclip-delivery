@@ -35,7 +35,7 @@ Route::get('/offer/{batch}/{channel}/unused', [OfferController::class, 'showUnus
 Route::post('/offer/{batch}/{channel}/unused', [OfferController::class, 'storeUnused'])->name('offer.unused.store');
 
 /**
- * @deprecated  use ZipController instead
+ * @deprecated Use /zips/channel/{channel} instead
  */
 Route::get('/d/{assignment}', [AssignmentDownloadController::class, 'download'])->name('assignments.download');
 
