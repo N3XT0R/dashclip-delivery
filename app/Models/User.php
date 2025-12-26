@@ -13,6 +13,7 @@ use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,7 +27,8 @@ use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery,
-                                              HasEmailAuthentication, MustVerifyEmail, HasTenants, HasDefaultTenant
+                                              HasEmailAuthentication, MustVerifyEmail, HasTenants, HasDefaultTenant,
+                                              HasLocalePreference
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -132,7 +134,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     }
 
     /**
-     * @param  array<string> | null  $codes
+     * @param array<string> | null $codes
      */
     public function saveAppAuthenticationRecoveryCodes(?array $codes): void
     {
@@ -207,5 +209,10 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function getDefaultTenant(Panel $panel): ?Model
     {
         return app(TeamRepository::class)->getDefaultTeamForUser($this);
+    }
+
+    public function preferredLocale(): string
+    {
+        return 'de';
     }
 }
