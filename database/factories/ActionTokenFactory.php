@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\ActionToken;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class ActionTokenFactory extends Factory
+class ActionTokenFactory extends EventAwareFactory
 {
     protected $model = ActionToken::class;
 
