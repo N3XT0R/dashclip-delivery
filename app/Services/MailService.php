@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Models\ChannelApplication;
 use Illuminate\Mail\SentMessage;
@@ -24,7 +25,7 @@ class MailService
     ): SentMessage {
         $tokenService = app(ActionTokenService::class);
         $actionToken = $tokenService->issue(
-            purpose: self::class,
+            purpose: TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL,
             subject: $channelApplication,
             meta: [
                 'user_id' => $channelApplication->user->getKey(),

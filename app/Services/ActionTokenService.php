@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enum\TokenPurposeEnum;
 use App\Models\ActionToken;
 use App\Models\User;
 use App\Repository\ActionTokenRepository;
@@ -29,7 +30,7 @@ final readonly class ActionTokenService
      * @throws RandomException
      */
     public function issue(
-        string $purpose,
+        TokenPurposeEnum $purpose,
         ?Model $subject = null,
         ?User $issuedForUser = null,
         ?DateTimeInterface $expiresAt = null,
@@ -39,7 +40,7 @@ final readonly class ActionTokenService
         $tokenHash = hash('sha256', $plainToken);
 
         $this->repository->create(
-            purpose: $purpose,
+            purpose: $purpose->value,
             tokenHash: $tokenHash,
             subject: $subject,
             issuedForUserId: $issuedForUser?->getKey(),
