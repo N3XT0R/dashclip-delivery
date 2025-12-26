@@ -21,6 +21,7 @@ class ChannelsRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
+        dump($pageClass);
         return __('filament.user_resource.channels_relation_manager.title');
     }
 

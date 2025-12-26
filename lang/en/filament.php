@@ -106,10 +106,10 @@ return [
             'rejected' => 'Rejected',
         ],
     ],
-    'user_resource' => [
-        'channels_relation_manager' => [
+    'relation_manager' => [
+        \App\Filament\Resources\UserResource\Pages\EditUser::class => [
             'title' => 'Assigned Channels',
-        ],
+        ]
     ],
     'user_revoke_channel_access' => [
         'label' => 'Revoke Channel Access',
