@@ -65,10 +65,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
     {
         $canAccess = self::canAccessShield();
         if ($canAccess) {
-            $canAccess = static::getChannelRepository()->getChannelApplicationsByUser(
-                auth()->user(),
-                ApplicationEnum::APPROVED)
-                ->isEmpty();
+            $canAccess = auth()->user()?->cannot('page.channels.access') ?? false;
         }
 
         return $canAccess;
@@ -165,7 +162,7 @@ class ChannelApplication extends Page implements HasForms, HasTable
                 TextColumn::make('status')
                     ->label(__('filament.channel_application.table.columns.status'))
                     ->formatStateUsing(function ($state) {
-                        return __('filament.channel_application.status.'.strtolower($state));
+                        return __('filament.channel_application.status.' . strtolower($state));
                     }),
                 TextColumn::make('created_at')
                     ->label(__('filament.channel_application.table.columns.submitted_at'))
