@@ -53,12 +53,12 @@ final readonly class ActionTokenService
 
     /**
      * Consume an action token.
-     * @param string $purpose
+     * @param TokenPurposeEnum $purpose
      * @param string $plainToken
      * @return ActionToken|null
      */
     public function consume(
-        string $purpose,
+        TokenPurposeEnum $purpose,
         string $plainToken
     ): ?ActionToken {
         $tokenHash = hash('sha256', $plainToken);
