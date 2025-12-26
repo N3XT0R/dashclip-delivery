@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\ChannelApplicationResource\Pages;
 
+use App\Application\Channel\ApproveChannelApplication;
 use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Resources\ChannelApplicationResource;
 use App\Models\ChannelApplication as ChannelApplicationModel;
+use App\Models\User;
 use App\Services\Channel\ChannelApplicationService;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,8 +37,11 @@ class EditChannelApplication extends EditRecord
         $record = $this->getRecord();
 
         if (ApplicationEnum::APPROVED === $record->status) {
-            $service = app(ChannelApplicationService::class);
-            $result = $service->approveChannelApplication($record);
+            /**
+             * @var User $user
+             */
+            $user = Filament::auth()->user();
+            $result = app(ApproveChannelApplication::class)->handle($record, auth()->user());
         }
     }
 }
