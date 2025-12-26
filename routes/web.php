@@ -55,7 +55,5 @@ Route::get('/channels/{channel}/approve/{token}', [ChannelApprovalController::cl
 
 Route::get('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'update'])
     ->name('tokens.update');
-Route::post('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'update'])
-    ->name('tokens.update');
 
 
