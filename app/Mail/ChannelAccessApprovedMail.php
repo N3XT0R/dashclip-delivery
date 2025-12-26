@@ -13,7 +13,7 @@ final class ChannelAccessApprovedMail extends AbstractLoggedMail
     public function __construct(
         public ChannelApplication $channelApplication
     ) {
-        $this->subjectLine = __('tokens.channel_access_approved.subject');
+        $this->subjectLine = __('mails.channel_access_approved.subject');
     }
 
     protected function viewName(): string
