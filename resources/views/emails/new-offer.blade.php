@@ -48,17 +48,10 @@
             <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 0 0 20px 0;">
                 <tr>
                     <td align="center" style="border-radius:4px; background:#22c55e;">
-                        @if($isChannelOwner)
-                            <a href="{{ route('filament.standard.auth.login') }}" target="_blank"
-                               style="display:inline-block; padding:12px 20px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">
-                                Zu den Videos
-                            </a>
-                        @else
-                            <a href="{{ $offerUrl }}" target="_blank"
-                               style="display:inline-block; padding:12px 20px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">
-                                Zu den Videos
-                            </a>
-                        @endif
+                        <a href="{{ $offerUrl }}" target="_blank"
+                           style="display:inline-block; padding:12px 20px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">
+                            Zu den Videos
+                        </a>
                     </td>
                 </tr>
             </table>

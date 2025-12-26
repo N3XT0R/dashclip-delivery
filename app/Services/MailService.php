@@ -64,7 +64,11 @@ class MailService
         bool $isChannelOperator
     ): void {
         $linkService = app(LinkService::class);
-        $offerUrl = $linkService->getOfferUrl($assignBatch, $channel, $expireDate);
+        if ($isChannelOperator) {
+            $offerUrl = route('filament.standard.auth.login');
+        } else {
+            $offerUrl = $linkService->getOfferUrl($assignBatch, $channel, $expireDate);
+        }
         $unusedUrl = $linkService->getUnusedUrl($assignBatch, $channel, $expireDate);
 
         Mail::to($channel->getAttribute('email'))->queue(
