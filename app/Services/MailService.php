@@ -25,6 +25,14 @@ use Illuminate\Support\Facades\Mail;
 readonly class MailService
 {
 
+    /**
+     * Queue the given mail to the given mailable.
+     * @param string|User $mailable
+     * @param MailableContract $mail
+     * @return mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Illuminate\Contracts\Container\CircularDependencyException
+     */
     private function queueMail(string|User $mailable, MailableContract $mail): mixed
     {
         $email = app(MailAddressResolver::class)->resolve($mailable);
@@ -74,6 +82,13 @@ readonly class MailService
         $this->queueMail($channel->email, new ChannelWelcomeMail($channel));
     }
 
+    /**
+     * Send new offer mail to the channel email.
+     * @param Channel $channel
+     * @param Batch $assignBatch
+     * @param Carbon $expireDate
+     * @param bool $isChannelOperator
+     */
     public function sendNewOfferMail(
         Channel $channel,
         Batch $assignBatch,
@@ -95,11 +110,23 @@ readonly class MailService
         );
     }
 
+    /**
+     * Send user welcome mail to the user email.
+     * @param User $user
+     * @param bool $fromBackend
+     * @param string|null $plainPassword
+     * @return void
+     */
     public function sendUserWelcomeEmail(User $user, bool $fromBackend = false, ?string $plainPassword = null): void
     {
         $this->queueMail($user->email, new UserWelcomeMail($user, $fromBackend, $plainPassword));
     }
 
+    /**
+     * Send reminder mail to the channel email.
+     * @param Channel $channel
+     * @param Collection<int, Assignment> $assignments
+     */
     public function sendReminderMail(Channel $channel, Collection $assignments): void
     {
         $linkService = app(LinkService::class);
@@ -117,6 +144,11 @@ readonly class MailService
         );
     }
 
+    /**
+     * Send FAQ no-reply mail to the given email address.
+     * @param string $email
+     * @return void
+     */
     public function sendFaqMail(string $email): void
     {
         $this->queueMail($email, new NoReplyFAQMail());
