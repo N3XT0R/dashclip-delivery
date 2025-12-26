@@ -107,7 +107,7 @@ return [
         ],
     ],
     'relation_manager' => [
-        \App\Filament\Resources\UserResource\Pages\EditUser::class => [
+        'channels' => [
             'title' => 'Assigned Channels',
         ]
     ],
