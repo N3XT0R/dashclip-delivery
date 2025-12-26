@@ -125,6 +125,20 @@ class ChannelRepository
     }
 
     /**
+     * @param User $user
+     * @param int $channelId
+     * @return bool
+     */
+    public function hasPendingApplicationForChannel(User $user, int $channelId): bool
+    {
+        return ChannelApplication::query()
+            ->where('user_id', $user->getKey())
+            ->where('channel_id', $channelId)
+            ->where('status', ApplicationEnum::PENDING->value)
+            ->exists();
+    }
+
+    /**
      * Assign a user to a channel with an optional verification status.
      * @param User $user
      * @param Channel $channel

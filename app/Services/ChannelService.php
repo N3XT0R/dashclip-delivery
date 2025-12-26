@@ -217,13 +217,10 @@ class ChannelService
             ],
         ];
         if (!$dto->otherChannelRequest && $dto->channelId) {
-            $existing = $user->channelApplications()
-                ->where('channel_id', $dto->channelId)
-                ->whereIn('status', ApplicationEnum::nonRejected())
-                ->first();
+            $existing = $this->channelRepository->hasPendingApplicationForChannel($user, $dto->channelId);
 
             if ($existing) {
-                throw new \DomainException(__('filament.channel_application.messages.success.already_applied'));
+                throw new \DomainException(__('filament.channel_application.messages.error.already_applied'));
             }
 
             return $this->channelRepository->createApplication($data);
