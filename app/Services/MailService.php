@@ -10,6 +10,7 @@ use App\Mail\ChannelWelcomeMail;
 use App\Mail\NewOfferMail;
 use App\Mail\ReminderMail;
 use App\Mail\UserWelcomeMail;
+use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
@@ -102,7 +103,7 @@ readonly class MailService
     {
         $linkService = app(LinkService::class);
         /**
-         * @var \App\Models\Assignment $first
+         * @var Assignment $first
          */
         $first = $assignments->first();
         $batch = $first->batch;
