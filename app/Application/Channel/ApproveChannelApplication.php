@@ -24,7 +24,7 @@ final readonly class ApproveChannelApplication
     public function handle(
         ChannelApplicationModel $application,
         ?User $approvedBy
-    ) {
+    ): void {
         DB::beginTransaction();
 
         try {
