@@ -23,13 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       access requests and legal acceptance.  
       This addition improves security for channel assets, clarifies account/channel responsibility, and streamlines the
       onboarding of new partners.
-
 - **Channel Owner Dashboard**
     - Added a dedicated dashboard for channel owners to manage and review offered video clips.
     - Provides a tab-based overview of available, downloaded, expired, and returned offers.
     - Enables bulk download of selected offers via background ZIP generation with progress tracking.
     - Supports bulk downloads with asynchronous ZIP creation and real-time progress updates.
-
 - **Internationalization (i18n) Foundation**
     - Introduced English base language files.
     - Started migrating hardcoded German UI strings to the i18n system.
