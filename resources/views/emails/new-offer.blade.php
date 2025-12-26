@@ -70,9 +70,6 @@
             @endif
             <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
 
-            <p style="margin:0 0 16px 0;"><em>P.S.: Falls dir mal langweilig ist, schau doch mal auf unsere Startseite.
-                    😉</em></p>
-
             <p style="margin:0 0 24px 0;">
                 Viele Grüße<br>Dein {{ config('app.name') }}-Team
             </p>
