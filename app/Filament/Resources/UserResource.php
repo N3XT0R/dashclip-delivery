@@ -117,7 +117,7 @@ class UserResource extends Resource
                         $password = Str::password(12);
                         $record->update(['password' => bcrypt($password)]);
                         Notification::make()
-                            ->title('Password reset to "'.$password.'"')
+                            ->title('Password reset to "' . $password . '"')
                             ->success()
                             ->send();
                     })
@@ -127,13 +127,6 @@ class UserResource extends Resource
                     Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
