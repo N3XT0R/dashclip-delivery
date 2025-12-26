@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **User-Registration**
-    - Fixed an issue where newly registered users were wrong role was assigned to them.
+    - Filament's registration flow now correctly uses the panel's active guard (`standard`) when attaching the default
+      user role.
 
 ## [3.1.5] - 2025-12-22
 
