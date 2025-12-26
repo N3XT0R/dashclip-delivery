@@ -30,6 +30,7 @@ return [
             'Access can be revoked at any time by authorized persons.',
 
         'signature' => 'Best regards<br>Your :app team',
+        'note_label' => 'Message from the applicant:',
     ],
     'channel_access_approved' => [
         'subject' => 'Channel access approved',

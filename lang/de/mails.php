@@ -30,6 +30,7 @@ return [
             'Der Zugriff kann später jederzeit durch berechtigte Personen widerrufen werden.',
 
         'signature' => 'Viele Grüße<br>Dein :app-Team',
+        'note_label' => 'Nachricht des Antragstellers:',
     ],
     'channel_access_approved' => [
         'subject' => 'Zugriff auf Kanal freigegeben',

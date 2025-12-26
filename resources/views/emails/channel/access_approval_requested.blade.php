@@ -40,6 +40,12 @@
                     @endif
                 </p>
             @endif
+            @if (! empty($note))
+                <p style="margin:12px 0; padding:12px; background:#fff7ed; border-radius:6px; font-size:15px;">
+                    <strong>{{ __('mails.channel_access_request.note_label') }}</strong><br>
+                    {{ $note }}
+                </p>
+            @endif
             @if ($channel)
                 <p style="font-weight:600; margin:12px 0;">
                     {{ $channel->name }}
