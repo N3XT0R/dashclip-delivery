@@ -92,4 +92,34 @@ final class ActionTokenRepository
             ->where('expires_at', '<', now())
             ->delete();
     }
+
+    /**
+     * Delete orphaned action tokens (tokens with subjects that no longer exist).
+     * @return int Number of tokens removed
+     */
+    public function deleteOrphans(): int
+    {
+        return ActionToken::query()
+            ->whereNotNull('subject_type')
+            ->whereNotNull('subject_id')
+            ->get()
+            ->filter(function (ActionToken $token): bool {
+                $class = $token->subject_type;
+
+                if (!class_exists($class)) {
+                    return true;
+                }
+
+                if (!is_subclass_of($class, Model::class)) {
+                    return true;
+                }
+
+                return !$class::query()
+                    ->whereKey($token->subject_id)
+                    ->exists();
+            })
+            ->each
+            ->delete()
+            ->count();
+    }
 }

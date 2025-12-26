@@ -79,10 +79,14 @@ final readonly class ActionTokenService
 
     /**
      * Cleanup expired action tokens.
-     * @return int
+     * @return bool
      */
-    public function cleanupExpired(): int
+    public function cleanupExpired(): bool
     {
-        return $this->repository->deleteExpired();
+        $repo = $this->repository;
+        $expiredDeleted = $this->repository->deleteExpired();
+        $orphansDeleted = $repo->deleteOrphans() > 0;
+
+        return $expiredDeleted || $orphansDeleted;
     }
 }
