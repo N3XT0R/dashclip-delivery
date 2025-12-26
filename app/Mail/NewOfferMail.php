@@ -19,7 +19,7 @@ class NewOfferMail extends AbstractLoggedMail
         public string $offerUrl,
         public Carbon $expiresAt,
         public string $unusedUrl,
-        public bool $isChannelOperator,
+        public bool $isChannelOperator = false,
     ) {
     }
 

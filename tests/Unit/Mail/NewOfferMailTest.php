@@ -32,11 +32,11 @@ final class NewOfferMailTest extends DatabaseTestCase
         Cfg::set('email_get_bcc_notification', 1, 'email', 'bool');
 
         // Act: build the mailable (no actual send)
-        $mailable = (new NewOfferMail($batch, $channel, $offerUrl, $expiresAt, $unusedUrl))->build();
+        $mailable = new NewOfferMail($batch, $channel, $offerUrl, $expiresAt, $unusedUrl, false)->build();
 
         // Assert: subject is set as expected
         $this->assertSame(
-            'Neue Videos verfügbar – Batch #'.$batch->getKey(),
+            'Neue Videos verfügbar – Batch #' . $batch->getKey(),
             $mailable->subject
         );
 
@@ -69,7 +69,7 @@ final class NewOfferMailTest extends DatabaseTestCase
 
         // Act: queue the mailable to the channel's email
         Mail::to($channel->email)->queue(
-            new NewOfferMail($batch, $channel, $offerUrl, $expiresAt, $unusedUrl)
+            new NewOfferMail($batch, $channel, $offerUrl, $expiresAt, $unusedUrl, false)
         );
 
         // Assert: one NewOfferMail queued to the correct recipient
@@ -81,7 +81,7 @@ final class NewOfferMailTest extends DatabaseTestCase
 
             return $mail->hasTo($channel->email)
                 && $mail->hasBcc($email)
-                && $mail->subject === 'Neue Videos verfügbar – Batch #'.$batch->getKey();
+                && $mail->subject === 'Neue Videos verfügbar – Batch #' . $batch->getKey();
         });
     }
 }

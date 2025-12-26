@@ -36,6 +36,7 @@ class NewOfferMailTest extends TestCase
             'https://example.com/offers/7',
             Carbon::parse('2024-10-05 12:00:00'),
             'https://example.com/offers/7/unused',
+            false
         );
 
         $envelope = $mail->envelope();
@@ -66,6 +67,7 @@ class NewOfferMailTest extends TestCase
             'https://example.com/offers/9',
             $expiresAt,
             'https://example.com/offers/9/unused',
+            false
         );
 
         $content = $mail->content();
