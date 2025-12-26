@@ -61,7 +61,7 @@
                 <br>
                 Danach werden die Dateien automatisch aus unserem System entfernt.
             </p>
-            @if($isChannelOwner === false)
+            @if($isChannelOperator === false)
                 <p style="margin:0 0 16px 0;">
                     <a href="{{ $unusedUrl }}" target="_blank" style="color:#0ea5e9; text-decoration:underline;">
                         Willst du diese Videos nicht verwenden? Sei so fair und gib sie zurück

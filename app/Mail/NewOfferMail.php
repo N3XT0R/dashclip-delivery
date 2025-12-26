@@ -19,7 +19,7 @@ class NewOfferMail extends AbstractLoggedMail
         public string $offerUrl,
         public Carbon $expiresAt,
         public string $unusedUrl,
-        public bool $isChannelOwner,
+        public bool $isChannelOperator,
     ) {
     }
 
@@ -52,7 +52,7 @@ class NewOfferMail extends AbstractLoggedMail
             'offerUrl' => $this->offerUrl,
             'expiresAt' => $this->expiresAt,
             'unusedUrl' => $this->unusedUrl,
-            'isChannelOwner' => $this->isChannelOwner,
+            'isChannelOperator' => $this->isChannelOperator,
         ];
     }
 
