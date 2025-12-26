@@ -1,5 +1,5 @@
 @php use App\Facades\Cfg; @endphp
-        <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -48,10 +48,17 @@
             <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 0 0 20px 0;">
                 <tr>
                     <td align="center" style="border-radius:4px; background:#22c55e;">
-                        <a href="{{ $offerUrl }}" target="_blank"
-                           style="display:inline-block; padding:12px 20px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">
-                            Zu den Videos
-                        </a>
+                        @if($isChannelOwner)
+                            <a href="{{ route('filament.standard.auth.login') }}" target="_blank"
+                               style="display:inline-block; padding:12px 20px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">
+                                Zu den Videos
+                            </a>
+                        @else
+                            <a href="{{ $offerUrl }}" target="_blank"
+                               style="display:inline-block; padding:12px 20px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none;">
+                                Zu den Videos
+                            </a>
+                        @endif
                     </td>
                 </tr>
             </table>
@@ -60,14 +67,14 @@
                 <strong>Gültig bis:</strong> {{ $expiresAt->timezone('Europe/Berlin')->format('d.m.Y, H:i') }}<br>
                 Danach werden die Dateien automatisch aus unserem System entfernt.
             </p>
-
-            <p style="margin:0 0 16px 0;">
-                <a href="{{ $unusedUrl }}" target="_blank" style="color:#0ea5e9; text-decoration:underline;">
-                    Willst du diese Videos nicht verwenden? Sei so fair und gib sie zurück
-                </a>
-                – so können andere Kanäle profitieren und das Material nutzen.
-            </p>
-
+            @if($isChannelOwner === false)
+                <p style="margin:0 0 16px 0;">
+                    <a href="{{ $unusedUrl }}" target="_blank" style="color:#0ea5e9; text-decoration:underline;">
+                        Willst du diese Videos nicht verwenden? Sei so fair und gib sie zurück
+                    </a>
+                    – so können andere Kanäle profitieren und das Material nutzen.
+                </p>
+            @endif
             <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
 
             <p style="margin:0 0 16px 0;"><em>P.S.: Falls dir mal langweilig ist, schau doch mal auf unsere Startseite.
