@@ -3,8 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ChannelCreated;
-use App\Mail\ChannelWelcomeMail;
-use Illuminate\Support\Facades\Mail;
+use App\Services\MailService;
 
 class SendChannelCreatedNotification
 {
@@ -27,6 +26,6 @@ class SendChannelCreatedNotification
             return;
         }
 
-        Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
+        app(MailService::class)->sendChannelWelcomeMail($channel);
     }
 }

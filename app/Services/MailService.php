@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelAccessApprovalRequestedMail;
+use App\Mail\ChannelWelcomeMail;
+use App\Models\Channel;
 use App\Models\ChannelApplication;
 use Illuminate\Mail\SentMessage;
 use Illuminate\Support\Facades\Mail;
@@ -37,5 +39,15 @@ class MailService
         return Mail::to($owner)->send(
             new ChannelAccessApprovalRequestedMail($channelApplication, $actionToken)
         );
+    }
+
+    /**
+     * Send channel welcome mail to the channel email.
+     * @param Channel $channel
+     * @return SentMessage
+     */
+    public function sendChannelWelcomeMail(Channel $channel): SentMessage
+    {
+        return Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
     }
 }
