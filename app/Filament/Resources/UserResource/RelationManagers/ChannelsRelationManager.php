@@ -13,10 +13,16 @@ use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class ChannelsRelationManager extends RelationManager
 {
     protected static string $relationship = 'channels';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('filament.user_resource.channels_relation_manager.title');
+    }
 
     public function table(Table $table): Table
     {

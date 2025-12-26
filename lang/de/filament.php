@@ -106,6 +106,11 @@ return [
             'rejected' => 'Abgelehnt',
         ],
     ],
+    'user_resource' => [
+        'channels_relation_manager' => [
+            'title' => 'Zugewiesene Kanäle',
+        ],
+    ],
     'user_revoke_channel_access' => [
         'label' => 'Kanalzugriff entziehen',
         'success_notification_title' => 'Kanalzugriff wurde entzogen',
