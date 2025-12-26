@@ -12,6 +12,5 @@ return [
             UserUploadDuplicatedNotification::class => 'Notify on duplicated entries',
             UserUploadProceedNotification::class => 'Notify when user upload is processed',
         ],
-
     ],
 ];
