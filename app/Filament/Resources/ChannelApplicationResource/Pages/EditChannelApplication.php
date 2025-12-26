@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\ChannelApplicationResource\Pages;
 
-use App\Application\Channel\ApproveChannelApplication;
+use App\Application\Channel\Application\ApproveChannelApplication;
 use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Resources\ChannelApplicationResource;
 use App\Models\ChannelApplication as ChannelApplicationModel;

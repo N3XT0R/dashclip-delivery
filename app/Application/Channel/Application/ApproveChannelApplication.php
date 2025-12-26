@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Channel;
+namespace App\Application\Channel\Application;
 
 use App\Events\Channel\ChannelAccessRequested;
 use App\Facades\Activity;
