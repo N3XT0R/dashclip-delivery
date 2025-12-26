@@ -26,4 +26,19 @@ return [
 
         'signature' => 'Viele Grüße<br>Dein :app-Team',
     ],
+    'channel_access_approved' => [
+        'subject' => 'Zugriff auf Kanal freigegeben',
+
+        'headline' => 'Zugriff freigegeben',
+
+        'greeting' => 'Hallo :name,',
+
+        'intro' =>
+            'deine Anfrage für den folgenden Kanal wurde genehmigt:',
+
+        'access_notice' =>
+            'Du kannst den Kanal ab sofort gemäß den erteilten Berechtigungen nutzen.',
+
+        'signature' => 'Viele Grüße<br>Dein :app-Team',
+    ],
 ];
