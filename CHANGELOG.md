@@ -36,6 +36,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   channel workflows such as approvals, assignments, and event dispatching.
   This layer provides a single entry point for business workflows and
   prepares the codebase for reuse across multiple entry points (e.g. UI pages).
+- **Channel Access Approval Notifications & Workflow Completion**
+    - Completed the end-to-end channel access approval lifecycle, covering application submission, approval decision,
+      and
+      post-approval communication.
+    - Introduced a secure, purpose-bound action token mechanism to validate and process approval actions via one-time
+      links.
+    - Added email notifications to channel owners or authorized team members when a channel access request is submitted.
+    - Approval links are secured using single-use, time-limited tokens and trigger the approval workflow via a dedicated
+      confirmation endpoint.
+    - Introduced user notifications to inform applicants when their channel access request has been approved.
+    - Notifications are delivered via email and in-app (Filament) notifications and are informational only (no further
+      action required).
+    - Implemented an event-driven approval flow using domain events and listeners to decouple token consumption,
+      access assignment, and notification dispatching.
+    - Ensures consistent behavior across all approval paths and supports future extensibility of approval-based
+      workflows.
 
 ### Changed
 
