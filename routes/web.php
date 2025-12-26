@@ -4,6 +4,7 @@ use App\Http\Controllers\AssignmentDownloadController;
 use App\Http\Controllers\ChannelApprovalController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\TokenApprovalController;
 use App\Http\Controllers\ZipController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -49,5 +50,5 @@ Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zip
 Route::get('/channels/{channel}/approve/{token}', [ChannelApprovalController::class, 'approve'])
     ->name('channels.approve');
 
-Route::post('/action-token/approve/{actionToken}', [\App\Http\Controllers\TokenApprovalController::class, 'update'])
+Route::post('/action-token/approve/{actionToken}', [TokenApprovalController::class, 'update'])
     ->name('action-tokens.approve-channel');
