@@ -60,7 +60,8 @@ class ChannelApplicationResource extends Resource
                         return collect(ApplicationEnum::all())->mapWithKeys(function ($value) {
                             return [$value => __('filament.admin_channel_application.status.' . $value)];
                         });
-                    }),
+                    })
+                    ->disabled(fn($record) => ApplicationEnum::APPROVED->value === $record->status),
                 Section::make('existing_channel')
                     ->heading(false)
                     ->hidden(fn($record) => filled($record->meta->channel['name'] ?? null))
