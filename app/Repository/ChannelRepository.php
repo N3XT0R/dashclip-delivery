@@ -193,14 +193,16 @@ class ChannelRepository
      * @param bool $isVerified
      * @return bool
      */
-    public function setUserVerifiedForChannel(User $user, Channel $channel, bool $isVerified = true): bool
-    {
+    public function setUserVerifiedForChannel(
+        User $user,
+        Channel $channel,
+        bool $isVerified = true
+    ): bool {
         return $channel->channelUsers()
-                ->updateExistingPivot($channel->getKey(), [
-                    'user_id' => $user->getKey(),
-                    'is_user_verified' => $isVerified,
-                    true
-                ]) > 0;
+                ->updateExistingPivot(
+                    $user->getKey(),
+                    ['is_user_verified' => $isVerified]
+                ) > 0;
     }
 
     /**
