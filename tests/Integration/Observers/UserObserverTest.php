@@ -19,7 +19,7 @@ final class UserObserverTest extends DatabaseTestCase
     {
         Role::query()->firstOrCreate([
             'name' => RoleEnum::REGULAR->value,
-            'guard_name' => GuardEnum::DEFAULT->value,
+            'guard_name' => GuardEnum::STANDARD->value,
         ]);
 
         $user = User::factory()->create([
@@ -28,7 +28,7 @@ final class UserObserverTest extends DatabaseTestCase
         ]);
 
         $this->assertTrue(
-            $user->hasRole(RoleEnum::REGULAR->value, GuardEnum::DEFAULT->value)
+            $user->hasRole(RoleEnum::REGULAR->value, GuardEnum::STANDARD->value)
         );
 
         $ownedTeam = Team::query()->where('owner_id', $user->getKey())->first();
@@ -40,12 +40,12 @@ final class UserObserverTest extends DatabaseTestCase
     {
         $defaultRole = Role::query()->firstOrCreate([
             'name' => RoleEnum::REGULAR->value,
-            'guard_name' => GuardEnum::DEFAULT->value,
+            'guard_name' => GuardEnum::STANDARD->value,
         ]);
 
         $existingRole = Role::query()->firstOrCreate([
             'name' => 'existing-role',
-            'guard_name' => GuardEnum::DEFAULT->value,
+            'guard_name' => GuardEnum::STANDARD->value,
         ]);
 
         $user = User::withoutEvents(static fn() => User::factory()->create([
@@ -66,7 +66,7 @@ final class UserObserverTest extends DatabaseTestCase
 
         $freshUser = $user->fresh();
 
-        $this->assertTrue($freshUser->hasRole($defaultRole->name, GuardEnum::DEFAULT->value));
-        $this->assertTrue($freshUser->hasRole($existingRole->name, GuardEnum::DEFAULT->value));
+        $this->assertTrue($freshUser->hasRole($defaultRole->name, GuardEnum::STANDARD->value));
+        $this->assertTrue($freshUser->hasRole($existingRole->name, GuardEnum::STANDARD->value));
     }
 }
