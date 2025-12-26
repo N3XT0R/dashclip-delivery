@@ -213,6 +213,6 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function preferredLocale(): string
     {
-        return 'de';
+        return config('app.locale');
     }
 }
