@@ -72,4 +72,20 @@ readonly class ChannelOperatorService
 
         $channelRepo->setUserVerifiedForChannel($user, $channel);
     }
+
+    public function revokeUserChannelAccess(User $user, Channel $channel): void
+    {
+        $channelRepo = $this->channelRepository;
+        $roleRepo = $this->roleRepository;
+        $guard = GuardEnum::STANDARD;
+        $role = RoleEnum::CHANNEL_OPERATOR;
+
+        if ($channelRepo->hasUserAccessToChannel($user, $channel)) {
+            $channelRepo->unassignUserFromChannel($user, $channel);
+        }
+
+        if (!$channelRepo->hasUserAccessToAnyChannel($user)) {
+            $roleRepo->removeRoleFromUser($user, $role, $guard);
+        }
+    }
 }
