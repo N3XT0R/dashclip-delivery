@@ -52,6 +52,7 @@ class NewOfferMail extends AbstractLoggedMail
             'offerUrl' => $this->offerUrl,
             'expiresAt' => $this->expiresAt,
             'unusedUrl' => $this->unusedUrl,
+            'isChannelOwner' => $this->isChannelOwner,
         ];
     }
 
