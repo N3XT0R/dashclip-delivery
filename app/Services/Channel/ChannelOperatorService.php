@@ -56,4 +56,14 @@ readonly class ChannelOperatorService
             throw $e;
         }
     }
+
+    public function approveUserChannelAccess(User $user, Channel $channel): void
+    {
+        $channelRepo = $this->channelRepository;
+        if (!$channelRepo->hasUserAccessToChannel($user, $channel)) {
+            throw new \DomainException('User does not have access to the channel.');
+        }
+
+        $channelRepo->setUserVerifiedForChannel($user, $channel);
+    }
 }
