@@ -5,7 +5,7 @@ on:
     branches: [ 'master', 'develop', 'release/*', 'tests/*' ]
     tags: [ '*' ]
   pull_request:
-    branches: [ 'master', 'develop', 'release/*', 'tests/*' ]
+    branches: [ 'master', 'develop', 'release/*', 'tests/*', '*' ]
 
 jobs:
   ci:
