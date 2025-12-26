@@ -8,6 +8,7 @@ use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Mail\NewOfferMail;
+use App\Mail\ReminderMail;
 use App\Mail\UserWelcomeMail;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -16,6 +17,7 @@ use App\Models\User;
 use App\Support\Mail\MailAddressResolver;
 use Carbon\Carbon;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 
 readonly class MailService
@@ -94,5 +96,22 @@ readonly class MailService
     public function sendUserWelcomeEmail(User $user, bool $fromBackend = false, ?string $plainPassword = null): void
     {
         $this->queueMail($user->email, new UserWelcomeMail($user, $fromBackend, $plainPassword));
+    }
+
+    public function sendReminderMail(Channel $channel, Collection $assignments): void
+    {
+        $linkService = app(LinkService::class);
+        /**
+         * @var \App\Models\Assignment $first
+         */
+        $first = $assignments->first();
+        $batch = $first->batch;
+        $expireDate = $first->expires_at;
+        $offerUrl = $linkService->getOfferUrl($batch, $channel, $expireDate);
+
+        $this->queueMail(
+            $channel->email,
+            new ReminderMail($channel, $offerUrl, $expireDate, $assignments)
+        );
     }
 }

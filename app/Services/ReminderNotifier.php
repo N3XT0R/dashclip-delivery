@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\{NotificationTypeEnum, StatusEnum};
-use App\Mail\ReminderMail;
 use App\Models\{Assignment, Channel, Notification};
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Mail;
 
+/**
+ * @deprecated no replacement
+ */
 class ReminderNotifier
 {
-    public function __construct(private LinkService $linkService)
-    {
-    }
-
     /**
      * Send reminder emails for assignments expiring in given days.
      *
@@ -49,11 +46,6 @@ class ReminderNotifier
 
     public function notifyChannel(Channel $channel, Collection $assignments): void
     {
-        $first = $assignments->first();
-        $batch = $first->batch;
-        $expireDate = $first->expires_at;
-        $offerUrl = $this->linkService->getOfferUrl($batch, $channel, $expireDate);
-
         /**
          * @var Notification $notification
          * @deprecated will be removed in next major release
@@ -69,8 +61,6 @@ class ReminderNotifier
             $assignment->save();
         }
 
-        Mail::to($channel->getAttribute('email'))->queue(
-            new ReminderMail($channel, $offerUrl, $expireDate, $assignments)
-        );
+        app(MailService::class)->sendReminderMail($channel, $assignments);
     }
 }
