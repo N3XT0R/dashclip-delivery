@@ -8,6 +8,7 @@ use App\Events\Channel\ChannelAccessRequested;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
+use App\Services\Channel\ChannelOperatorService;
 use App\Services\ChannelService;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -16,6 +17,7 @@ final readonly class ApproveChannelApplication
 {
     public function __construct(
         private ChannelService $channelService,
+        private ChannelOperatorService $channelOperatorService,
         private ChannelRepository $channelRepository,
     ) {
     }
@@ -37,7 +39,7 @@ final readonly class ApproveChannelApplication
                 $channel = $application->channel;
             }
 
-            if (!$this->channelService->addUserToChannel($applicant, $channel, $isNewChannel)) {
+            if (!$this->channelOperatorService->addUserToChannel($applicant, $channel, $isNewChannel)) {
                 throw new \RuntimeException('Failed to assign user to channel.');
             }
 

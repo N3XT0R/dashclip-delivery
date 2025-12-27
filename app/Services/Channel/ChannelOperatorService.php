@@ -27,10 +27,11 @@ readonly class ChannelOperatorService
      * Add user to channel and assign channel operator role
      * @param User $user
      * @param Channel $channel
-     * @return void
+     * @param bool $isUserVerified
+     * @return bool
      * @throws Throwable
      */
-    public function addUserToChannel(User $user, Channel $channel, bool $isUserVerified = false): void
+    public function addUserToChannel(User $user, Channel $channel, bool $isUserVerified = false): bool
     {
         $guard = GuardEnum::STANDARD;
         $role = RoleEnum::CHANNEL_OPERATOR;
@@ -45,6 +46,8 @@ readonly class ChannelOperatorService
             if (!$roleRepo->hasRole($user, $role, $guard)) {
                 $roleRepo->giveRoleToUser($user, $role, $guard);
             }
+
+            return true;
         } catch (Throwable $e) {
             if ($channelRepo->hasUserAccessToChannel($user, $channel)) {
                 $channelRepo->unassignUserFromChannel($user, $channel);
