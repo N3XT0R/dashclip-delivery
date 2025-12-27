@@ -15,6 +15,12 @@ class CreateChannelApplication
     {
     }
 
+    /**
+     * Handle the creation of a channel application.
+     * @param array $data
+     * @param User $user
+     * @return void
+     */
     public function handle(array $data, User $user): void
     {
         $dto = new ChannelApplicationRequestDto(
