@@ -37,7 +37,7 @@ final readonly class ApproveChannelApplication
                 $channel = $application->channel;
             }
 
-            if (!$this->channelRepository->assignUserToChannel($applicant, $channel, $isNewChannel)) {
+            if (!$this->channelService->addUserToChannel($applicant, $channel, $isNewChannel)) {
                 throw new \RuntimeException('Failed to assign user to channel.');
             }
 

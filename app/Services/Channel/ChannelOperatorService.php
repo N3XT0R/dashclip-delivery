@@ -30,7 +30,7 @@ readonly class ChannelOperatorService
      * @return void
      * @throws Throwable
      */
-    public function addUserToChannel(User $user, Channel $channel): void
+    public function addUserToChannel(User $user, Channel $channel, bool $isUserVerified = false): void
     {
         $guard = GuardEnum::STANDARD;
         $role = RoleEnum::CHANNEL_OPERATOR;
@@ -40,7 +40,7 @@ readonly class ChannelOperatorService
 
         try {
             if (!$channelRepo->hasUserAccessToChannel($user, $channel)) {
-                $channelRepo->assignUserToChannel($user, $channel);
+                $channelRepo->assignUserToChannel($user, $channel, $isUserVerified);
             }
             if (!$roleRepo->hasRole($user, $role, $guard)) {
                 $roleRepo->giveRoleToUser($user, $role, $guard);
