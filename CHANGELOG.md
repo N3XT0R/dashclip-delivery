@@ -109,6 +109,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The `/zips/{batch}/{channel}` route has been deprecated in favor of the new
   `/zips/channel/{channel}` route.
 
+### Security
+
+- **Composer Packages**
+    - upgraded packages to newest version (e.g. laravel)
+
 ## [3.1.6] - 2025-12-26
 
 ### Fixed
