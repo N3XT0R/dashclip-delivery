@@ -167,23 +167,6 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         );
     }
 
-    /**
-     * Get the user's email address, applying a catch-all in non-production environments.
-     * @return Attribute
-     */
-    protected function email(): Attribute
-    {
-        return Attribute::make(
-            get: static function (string $value) {
-                if (app()->environment('local', 'testing', 'staging')) {
-                    return config('mail.catch_all') ?? $value;
-                }
-
-                return $value;
-            }
-        );
-    }
-
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(
