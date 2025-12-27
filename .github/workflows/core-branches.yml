@@ -48,7 +48,7 @@ jobs:
         env:
           FFMPEG_BINARIES: ${{ env.FFMPEG_BINARIES }}
           FFPROBE_BINARIES: ${{ env.FFPROBE_BINARIES }}
-        run: php artisan test --parallel --coverage-clover=coverage/clover.xml --min=87
+        run: php artisan test --parallel --coverage-clover=coverage/clover.xml --min=90
 
       - uses: qltysh/qlty-action/coverage@v1
         with:
