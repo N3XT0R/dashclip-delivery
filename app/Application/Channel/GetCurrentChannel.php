@@ -17,6 +17,11 @@ readonly class GetCurrentChannel
     ) {
     }
 
+    /**
+     * Get the current channel for the given user or the current authenticated user.
+     * @param User|null $user
+     * @return Channel|null
+     */
     public function handle(?User $user = null): ?Channel
     {
         if (!$user) {
