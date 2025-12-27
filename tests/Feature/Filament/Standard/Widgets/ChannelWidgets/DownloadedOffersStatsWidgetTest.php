@@ -50,7 +50,7 @@ final class DownloadedOffersStatsWidgetTest extends DatabaseTestCase
             'created_at' => $now->copy()->subDays(6),
         ]);
 
-        $recentDownload = $now;
+        $recentDownload = $now->copy();;
         $yesterdayDownload = $now->copy()->subDay();
         $olderDownload = $now->copy()->subDays(5);
 
@@ -75,9 +75,17 @@ final class DownloadedOffersStatsWidgetTest extends DatabaseTestCase
         }
 
         $this->assertSame('3', $stats[0]->getValue());
-        $weeklyCount = collect([$recentDownload, $yesterdayDownload])
-            ->filter(fn(Carbon $downloadDate) => $downloadDate->greaterThanOrEqualTo($now->copy()->startOfWeek()))
+        $startOfWeek = $now->copy()->startOfWeek();
+
+        $weeklyCount = collect([
+            $recentDownload,
+            $yesterdayDownload,
+            $olderDownload,
+        ])
+            ->filter(fn(Carbon $downloadDate) => $downloadDate->greaterThanOrEqualTo($startOfWeek)
+            )
             ->count();
+
 
         $this->assertSame((string)$weeklyCount, $stats[1]->getValue());
         $averageDaysQuery = Assignment::query()
@@ -87,7 +95,9 @@ final class DownloadedOffersStatsWidgetTest extends DatabaseTestCase
             ->join('downloads', 'assignments.id', '=', 'downloads.assignment_id');
 
         $calculatedAverage = (float)$averageDaysQuery
-            ->selectRaw("AVG((strftime('%s', 'now') - strftime('%s', downloads.downloaded_at)) / 86400) as avg_days_ago")
+            ->selectRaw(
+                "AVG((strftime('%s', 'now') - strftime('%s', downloads.downloaded_at)) / 86400) as avg_days_ago"
+            )
             ->value('avg_days_ago');
 
         $this->assertSame((string)(int)round($calculatedAverage ?: 0.0), $stats[2]->getValue());
