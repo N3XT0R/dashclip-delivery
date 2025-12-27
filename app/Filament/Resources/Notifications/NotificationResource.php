@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Notifications;
 use App\Filament\Resources\Notifications\Pages\ListNotifications;
 use App\Models\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -25,11 +24,6 @@ class NotificationResource extends Resource
     protected static ?string $modelLabel = 'Notification';
 
     protected static ?string $pluralModelLabel = 'Notifications';
-
-    public static function form(Schema $schema): Schema
-    {
-        return $schema->components([]);
-    }
 
     public static function table(Table $table): Table
     {
