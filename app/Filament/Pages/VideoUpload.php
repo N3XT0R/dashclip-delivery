@@ -42,8 +42,6 @@ class VideoUpload extends Page implements HasForms
 
     public ?array $data = [];
 
-    private const string UPLOAD_DISK_CONFIG_KEY = 'uploads.disk';
-
 
     public static function getNavigationGroup(): string
     {
@@ -108,7 +106,7 @@ class VideoUpload extends Page implements HasForms
         return FileUpload::make('file')
             ->label('Video')
             ->required()
-            ->disk(config(self::UPLOAD_DISK_CONFIG_KEY))
+            ->disk(config(UploadVideo::UPLOAD_DISK_CONFIG_KEY))
             ->directory(config('uploads.directory'))
             ->acceptedFileTypes([
                 'video/mp4',
