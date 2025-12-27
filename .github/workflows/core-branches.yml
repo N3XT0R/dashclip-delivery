@@ -44,11 +44,11 @@ jobs:
         with:
           composer-options: --no-progress --no-interaction --prefer-dist
 
-      - name: Run PHPUnit Tests
+      - name: Run PHPUnit Tests with min coverage
         env:
           FFMPEG_BINARIES: ${{ env.FFMPEG_BINARIES }}
           FFPROBE_BINARIES: ${{ env.FFPROBE_BINARIES }}
-        run: php artisan test --parallel --coverage-clover=coverage/clover.xml
+        run: php artisan test --parallel --coverage-clover=coverage/clover.xml --min=85
 
       - uses: qltysh/qlty-action/coverage@v1
         with:
