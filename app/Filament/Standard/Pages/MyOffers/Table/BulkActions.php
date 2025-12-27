@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
+use App\Application\Offer\ReturnAssignment;
 use App\Filament\Standard\Pages\MyOffers;
 use Filament\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
@@ -56,7 +57,7 @@ final readonly class BulkActions
             ->icon('heroicon-m-arrow-uturn-left')
             ->color('danger')
             ->action(
-                fn(SupportCollection $records) => $page->returnAssignments($records)
+                fn(SupportCollection $records) => app(ReturnAssignment::class)->handle($records)
             )
             ->successNotificationTitle(__('my_offers.table.bulk_actions.return_selected_notification'))
             ->requiresConfirmation()
