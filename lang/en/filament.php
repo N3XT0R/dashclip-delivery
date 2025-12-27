@@ -115,4 +115,19 @@ return [
         'label' => 'Revoke Channel Access',
         'success_notification_title' => 'Channel access has been revoked',
     ],
+    'video_resource' => [
+        'view' => [
+            'fields' => [
+                'video_preview' => 'Preview',
+                'original_name' => 'Video Title',
+                'bundle_key' => 'Bundle',
+                'created_at' => 'Uploaded on',
+                'available_assignments_count' => 'Available Offers',
+                'expired_assignments_count' => 'Expired Offers',
+                'status' => 'Status',
+                'duration' => 'Duration',
+                'note' => 'Comment from the Channel Owner',
+            ],
+        ],
+    ],
 ];
