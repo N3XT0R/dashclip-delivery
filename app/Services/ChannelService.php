@@ -75,6 +75,12 @@ class ChannelService
         );
     }
 
+    /**
+     * @param Channel $channel
+     * @param string $approvalToken
+     * @return void
+     * @deprecated use ActionTokenService instead
+     */
     public function approve(Channel $channel, string $approvalToken): void
     {
         $expected = $channel->getApprovalToken();
