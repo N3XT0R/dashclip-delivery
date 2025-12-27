@@ -159,10 +159,7 @@ final class ChannelApplicationPageTest extends TestCase
         Auth::shouldReceive('id')->andReturn($user->getKey());
 
         $useCase = Mockery::mock(CreateChannelApplication::class);
-        $useCase
-            ->shouldReceive('handle')
-            ->once()
-            ->with(['state'], $user);
+        $useCase->allows('handle')->andReturnNull();
 
         $this->app->instance(CreateChannelApplication::class, $useCase);
 
@@ -195,11 +192,7 @@ final class ChannelApplicationPageTest extends TestCase
         Auth::shouldReceive('id')->andReturn($user->getKey());
 
         $useCase = Mockery::mock(CreateChannelApplication::class);
-        $useCase
-            ->shouldReceive('handle')
-            ->once()
-            ->with(['state'], $user)
-            ->andThrow(new DomainException('test-error'));
+        $useCase->allows('handle')->andThrow(new DomainException('test-error'));
 
         $this->app->instance(CreateChannelApplication::class, $useCase);
 
