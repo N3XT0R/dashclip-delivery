@@ -59,6 +59,7 @@ return [
             'download' => 'Download',
             'download_again' => 'Download again',
             'return_offer' => 'Reject',
+            'save_notes' => 'Save comment',
         ],
         'bulk_actions' => [
             'download_all' => 'Download all',

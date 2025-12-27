@@ -59,6 +59,7 @@ return [
             'download' => 'Herunterladen',
             'download_again' => 'Erneut laden',
             'return_offer' => 'Zurückweisen',
+            'save_notes' => 'Kommentar speichern',
         ],
         'bulk_actions' => [
             'download_all' => 'Alle herunterladen',
