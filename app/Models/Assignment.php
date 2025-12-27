@@ -25,6 +25,7 @@ class Assignment extends Model
         'attempts',
         'last_notified_at',
         'download_token',
+        'note',
         'notification_id'
     ];
     protected $casts = [
