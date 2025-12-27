@@ -35,12 +35,6 @@ class VideoResource extends Resource
         return __('nav.media');
     }
 
-    public static function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([]);
-    }
-
     public static function infolist(Schema $schema): Schema
     {
         return $schema
