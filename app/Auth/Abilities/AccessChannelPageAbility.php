@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Auth\Abilities;
 
 use App\Auth\Abilities\Contracts\AbilityContract;
-use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\Channel;
 use App\Models\User;
@@ -23,7 +22,7 @@ final readonly class AccessChannelPageAbility implements AbilityContract
     public function check(User $user): bool
     {
         return
-            $this->roles->hasRole($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD)
+            $this->roles->hasRole($user, RoleEnum::CHANNEL_OPERATOR)
             && $this->channels->hasUserAccessToAnyChannel($user);
     }
 
@@ -34,7 +33,7 @@ final readonly class AccessChannelPageAbility implements AbilityContract
         }
 
         return
-            $this->roles->hasRole($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD)
+            $this->roles->hasRole($user, RoleEnum::CHANNEL_OPERATOR)
             && $this->channels->isUserVerifiedForChannel($user, $channel);
     }
 }
