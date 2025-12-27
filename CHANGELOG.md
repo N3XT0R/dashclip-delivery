@@ -108,6 +108,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Zip Download Route**  
   The `/zips/{batch}/{channel}` route has been deprecated in favor of the new
   `/zips/channel/{channel}` route.
+- **Channel-Approval**
+    - the `/channels/{channel}/approve/{token}` route has been deprecated in favor of
+      `/action-tokens/approve/{purpose}/{token}`.
 
 ### Security
 
