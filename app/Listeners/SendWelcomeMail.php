@@ -11,14 +11,10 @@ class SendWelcomeMail
 {
     public function handle(UserCreated $event): void
     {
-        try {
-            app(MailService::class)->sendUserWelcomeEmail(
-                user: $event->user,
-                fromBackend: $event->fromBackend,
-                plainPassword: $event->plainPassword
-            );
-        } catch (\Throwable $e) {
-            report($e);
-        }
+        app(MailService::class)->sendUserWelcomeEmail(
+            user: $event->user,
+            fromBackend: $event->fromBackend,
+            plainPassword: $event->plainPassword
+        );
     }
 }
