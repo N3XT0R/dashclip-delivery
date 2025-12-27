@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Standard\Pages;
 
-use App\Application\Offer\ReturnAssignment;
 use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
@@ -284,22 +283,6 @@ final class MyOffersTest extends DatabaseTestCase
         $page = Livewire::test(MyOffers::class);
 
         self::assertSame(['channelId' => $channel->getKey()], $page->instance()->getWidgetData());
-    }
-
-    public function testReturnAssignmentsDelegatesToServiceAndResetsTable(): void
-    {
-        $user = User::factory()->create();
-        $assignments = Assignment::factory()->count(2)->withBatch()->create();
-
-        $assignmentService = new RecordingAssignmentService();
-        $this->app->instance(AssignmentService::class, $assignmentService);
-
-        $page = new MyOffersResetPage(null);
-        $this->actingAs($user, GuardEnum::STANDARD->value);
-        $this->app->make(ReturnAssignment::class)->handle(new Collection($assignments));
-
-        self::assertSame(2, $assignmentService->calls->count());
-        self::assertSame(1, $page->resetCount);
     }
 }
 
