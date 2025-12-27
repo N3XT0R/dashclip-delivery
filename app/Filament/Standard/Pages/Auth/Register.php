@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\Auth;
 
-use App\Enum\Guard\GuardEnum;
-use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Support\FilamentComponents;
 use Filament\Auth\Pages\Register as BaseRegister;
-use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\ValidationException;
 
@@ -44,18 +41,4 @@ class Register extends BaseRegister
         $user = parent::handleRegistration($data);
         return $user;
     }
-
-    protected function getRoleAssignmentFailedNotification(RoleEnum $role, ?GuardEnum $guard = null): Notification
-    {
-        return Notification::make()
-            ->title(__('auth.register.role_assignment_failed_title'))
-            ->body(
-                __('auth.register.role_assignment_failed_body', [
-                    'role' => $role,
-                    'guard' => $guard?->value ?: 'web',
-                ])
-            )
-            ->danger();
-    }
-
 }
