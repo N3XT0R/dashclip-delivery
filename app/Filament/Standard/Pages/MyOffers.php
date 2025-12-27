@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
+use App\Application\Offer\DispatchZipDownload;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
@@ -203,9 +204,7 @@ class MyOffers extends Page implements HasTable
 
     public function dispatchZipDownload(iterable $ids): void
     {
-        $this->dispatch('zip-download', [
-            'assignmentIds' => $ids,
-        ]);
+        app(DispatchZipDownload::class)->handle($this, $ids);
         $this->resetTable();
     }
 
