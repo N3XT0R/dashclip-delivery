@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Channel\Application;
 
 use App\Events\Channel\ChannelAccessRequested;
-use App\Facades\Activity;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
@@ -51,17 +50,16 @@ final readonly class ApproveChannelApplication
             }
 
             if ($approvedBy) {
-                Activity::createActivityLog(
-                    'channel_applications',
-                    $approvedBy,
-                    'approved_channel_application',
-                    [
+                \activity('channel_applications')
+                    ->event('approved_channel_application')
+                    ->causedBy($approvedBy)
+                    ->performedOn($application)
+                    ->withProperties([
                         'channel_application_id' => $application->getKey(),
                         'channel_id' => $channel->getKey(),
                         'is_new_channel' => $isNewChannel,
                         'applicant_user_id' => $applicant->getKey(),
-                    ]
-                );
+                    ]);
             }
 
             DB::commit();

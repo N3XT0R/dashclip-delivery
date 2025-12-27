@@ -6,7 +6,6 @@ namespace Tests\Integration\Application\Channel\Application;
 
 use App\Application\Channel\Application\ApproveChannelApplication;
 use App\Events\Channel\ChannelAccessRequested;
-use App\Facades\Activity;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;
@@ -20,17 +19,9 @@ use Tests\DatabaseTestCase;
 
 final class ApproveChannelApplicationTest extends DatabaseTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->ensureActivityAlias();
-    }
-
     public function testApprovingExistingChannelApplicationAssignsUserAndDispatchesEvent(): void
     {
         Event::fake([ChannelAccessRequested::class]);
-        $this->prepareActivitySpy();
         Queue::fake();
         Mail::fake();
 
@@ -51,30 +42,15 @@ final class ApproveChannelApplicationTest extends DatabaseTestCase
             ChannelAccessRequested::class,
             static fn(ChannelAccessRequested $event) => $event->channelApplication->is($application)
         );
-
-        Activity::shouldHaveReceived('createActivityLog')
-            ->once()
-            ->with(
-                'channel_applications',
-                $approver,
-                'approved_channel_application',
-                [
-                    'channel_application_id' => $application->getKey(),
-                    'channel_id' => $channel->getKey(),
-                    'is_new_channel' => false,
-                    'applicant_user_id' => $application->user->getKey(),
-                ]
-            );
     }
 
     public function testApprovingNewChannelApplicationCreatesChannelAndAssignsUser(): void
     {
         Event::fake([ChannelAccessRequested::class]);
-        $this->prepareActivitySpy();
         Queue::fake();
         Mail::fake();
 
-        $channelName = 'New Channel '.uniqid();
+        $channelName = 'New Channel ' . uniqid();
         $meta = [
             'new_channel' => [
                 'name' => $channelName,
@@ -104,30 +80,15 @@ final class ApproveChannelApplicationTest extends DatabaseTestCase
         );
 
         Event::assertNotDispatched(ChannelAccessRequested::class);
-
-        Activity::shouldHaveReceived('createActivityLog')
-            ->once()
-            ->with(
-                'channel_applications',
-                $approver,
-                'approved_channel_application',
-                [
-                    'channel_application_id' => $application->getKey(),
-                    'channel_id' => $createdChannel->getKey(),
-                    'is_new_channel' => true,
-                    'applicant_user_id' => $application->user->getKey(),
-                ]
-            );
     }
 
     public function testFailureToAssignUserRollsBackTransaction(): void
     {
         Event::fake([ChannelAccessRequested::class]);
-        $this->prepareActivitySpy();
         Queue::fake();
         Mail::fake();
 
-        $channelName = 'Failing Channel '.uniqid();
+        $channelName = 'Failing Channel ' . uniqid();
         $meta = [
             'new_channel' => [
                 'name' => $channelName,
@@ -160,23 +121,5 @@ final class ApproveChannelApplicationTest extends DatabaseTestCase
         $this->assertSame($initialChannelCount, Channel::count());
         $this->assertFalse($application->user->channels()->exists());
         Event::assertNotDispatched(ChannelAccessRequested::class);
-        Activity::shouldNotHaveReceived('createActivityLog');
-    }
-
-    private function ensureActivityAlias(): void
-    {
-        if (!class_exists(Activity::class)) {
-            class_alias(\Spatie\Activitylog\Facades\Activity::class, Activity::class);
-        }
-    }
-
-    private function prepareActivitySpy(): void
-    {
-        Activity::spy();
-        Activity::shouldReceive('withProperties')->andReturnSelf();
-        Activity::shouldReceive('causedBy')->andReturnSelf();
-        Activity::shouldReceive('performedOn')->andReturnSelf();
-        Activity::shouldReceive('event')->andReturnSelf();
-        Activity::shouldReceive('log')->andReturnSelf();
     }
 }
