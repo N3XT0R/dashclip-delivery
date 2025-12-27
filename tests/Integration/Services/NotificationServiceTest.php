@@ -24,17 +24,14 @@ class NotificationServiceTest extends DatabaseTestCase
 
     public function testItSendsChannelAccessApprovedNotificationToUser(): void
     {
-        // Arrange
         $user = User::factory()->create();
 
         $channelApplication = ChannelApplication::factory()->create([
             'user_id' => $user->getKey(),
         ]);
 
-        // Act
         $this->notificationService->notifyChannelAccessApproved($channelApplication);
 
-        // Assert
         Notification::assertSentTo(
             $user,
             ChannelAccessApprovedNotification::class,
