@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
+use App\Application\Channel\GetCurrentChannel;
 use App\Application\Offer\DispatchZipDownload;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
@@ -58,7 +59,7 @@ class MyOffers extends Page implements HasTable
 
     public function getSubheading(): string|Htmlable|null
     {
-        return trans('common.channel') . ': ' . $this->getCurrentChannel()?->name;
+        return trans('common.channel') . ': ' . app(GetCurrentChannel::class)->handle()?->name;
     }
 
     public function getTitle(): string
