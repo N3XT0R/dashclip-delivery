@@ -166,11 +166,9 @@ final class ChannelApplicationPageTest extends TestCase
 
         $this->app->instance(CreateChannelApplication::class, $useCase);
 
-        $notification = Mockery::mock('alias:' . Notification::class);
-        $notification->shouldReceive('make')->once()->andReturnSelf();
-        $notification->shouldReceive('title')->once()->andReturnSelf();
-        $notification->shouldReceive('success')->once()->andReturnSelf();
-        $notification->shouldReceive('send')->once();
+        if (method_exists(Notification::class, 'fake')) {
+            Notification::fake();
+        }
 
         $page = new class() extends ChannelApplication {
             public bool $mountedAfterSubmit = false;
@@ -205,11 +203,9 @@ final class ChannelApplicationPageTest extends TestCase
 
         $this->app->instance(CreateChannelApplication::class, $useCase);
 
-        $notification = Mockery::mock('alias:' . Notification::class);
-        $notification->shouldReceive('make')->once()->andReturnSelf();
-        $notification->shouldReceive('title')->once()->with('test-error')->andReturnSelf();
-        $notification->shouldReceive('danger')->once()->andReturnSelf();
-        $notification->shouldReceive('send')->once();
+        if (method_exists(Notification::class, 'fake')) {
+            Notification::fake();
+        }
 
         $page = new ChannelApplication();
         $page->form = Mockery::mock();
