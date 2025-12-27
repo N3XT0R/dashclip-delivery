@@ -45,43 +45,58 @@ class VideoResource extends Resource
                     ])
                     ->schema([
                         ViewField::make('video_preview')
-                            ->label('Preview')
+                            ->label('filament.video_resource.view.fields.video_preview')
+                            ->translateLabel()
                             ->view('filament.forms.components.video-preview')
                             ->columnSpan(1)
                             ->extraAttributes(['class' => 'rounded-lg shadow-md w-full max-w-xs']),
                         Grid::make()
                             ->schema([
                                 TextEntry::make('original_name')
-                                    ->label('Video-Titel'),
+                                    ->label('filament.video_resource.view.fields.original_name')
+                                    ->translateLabel(),
                                 TextEntry::make('duration')
-                                    ->label('Dauer')
+                                    ->label('filament.video_resource.view.fields.duration')
+                                    ->translateLabel()
                                     ->state(function (Video $record) {
                                         return self::formatDuration(
                                             $record->clips()?->first()?->getAttribute('duration')
                                         );
                                     }),
                                 TextEntry::make('bundle_key')
-                                    ->label('Bundle')
+                                    ->label('filament.video_resource.view.fields.bundle_key')
+                                    ->translateLabel()
                                     ->state(function (Video $record) {
                                         return $record->clips()?->first()?->getAttribute('bundle_key');
                                     })
                                     ->extraAttributes(['class' => 'text-lg font-semibold']),
                                 TextEntry::make('created_at')
-                                    ->label('Upload am')
+                                    ->label('filament.video_resource.view.fields.created_at')
+                                    ->translateLabel()
                                     ->dateTime('d.m.Y, H:i'),
                                 TextEntry::make('status_label')
-                                    ->label('Status')
+                                    ->label('filament.video_resource.view.fields.status')
+                                    ->translateLabel()
                                     ->badge()
                                     ->state(fn(Video $record) => self::determineStatusLabel($record))
                                     ->color(fn(Video $record) => self::statusColor(self::determineStatusLabel($record)))
                                     ->icon(fn(Video $record) => self::statusIcon(self::determineStatusLabel($record))),
                                 TextEntry::make('available_assignments_count')
-                                    ->label('Verfügbare Offers'),
+                                    ->label('filament.video_resource.view.fields.available_assignments_count')
+                                    ->translateLabel(),
                                 TextEntry::make('expired_assignments_count')
-                                    ->label('Abgelaufene Offers'),
+                                    ->label('filament.video_resource.view.fields.expired_assignments_count')
+                                    ->translateLabel(),
                             ])
                             ->columns(2),
                     ]),
+                Grid::make()
+                    ->schema([
+                        TextEntry::make('assignmentWithNote.note')
+                            ->label('filament.video_resource.view.fields.note')
+                            ->visible(fn(Video $record) => !empty($record->assignmentWithNote?->note))
+                            ->translateLabel(),
+                    ])
             ]);
     }
 

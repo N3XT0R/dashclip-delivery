@@ -115,4 +115,19 @@ return [
         'label' => 'Kanalzugriff entziehen',
         'success_notification_title' => 'Kanalzugriff wurde entzogen',
     ],
+    'video_resource' => [
+        'view' => [
+            'fields' => [
+                'video_preview' => 'Vorschau',
+                'original_name' => 'Video-Titel',
+                'bundle_key' => 'Bundle',
+                'created_at' => 'Upload am',
+                'available_assignments_count' => 'Verfügbare Angebote',
+                'expired_assignments_count' => 'Abgelaufene Angebote',
+                'status' => 'Status',
+                'duration' => 'Dauer',
+                'note' => 'Kommentar vom Kanalbetreiber',
+            ],
+        ],
+    ],
 ];
