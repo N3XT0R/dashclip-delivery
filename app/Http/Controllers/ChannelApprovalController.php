@@ -8,6 +8,9 @@ use App\Models\Channel;
 use App\Services\ChannelService;
 use Throwable;
 
+/**
+ * @deprecated use TokenApprovalController instead
+ */
 class ChannelApprovalController extends Controller
 {
     public function __construct(private readonly ChannelService $channelService)
