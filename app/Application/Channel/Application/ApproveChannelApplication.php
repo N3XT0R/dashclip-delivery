@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Application\Channel\Application;
 
 use App\Events\Channel\ChannelAccessRequested;
+use App\Facades\Activity;
 use App\Models\ChannelApplication as ChannelApplicationModel;
 use App\Models\User;
 use App\Repository\ChannelRepository;
-use App\Services\Channel\ChannelOperatorService;
 use App\Services\ChannelService;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -17,7 +17,6 @@ final readonly class ApproveChannelApplication
 {
     public function __construct(
         private ChannelService $channelService,
-        private ChannelOperatorService $channelOperatorService,
         private ChannelRepository $channelRepository,
     ) {
     }
@@ -39,7 +38,7 @@ final readonly class ApproveChannelApplication
                 $channel = $application->channel;
             }
 
-            if (!$this->channelOperatorService->addUserToChannel($applicant, $channel, $isNewChannel)) {
+            if (!$this->channelRepository->assignUserToChannel($applicant, $channel, $isNewChannel)) {
                 throw new \RuntimeException('Failed to assign user to channel.');
             }
 
@@ -52,16 +51,17 @@ final readonly class ApproveChannelApplication
             }
 
             if ($approvedBy) {
-                \activity('channel_applications')
-                    ->event('approved_channel_application')
-                    ->causedBy($approvedBy)
-                    ->performedOn($application)
-                    ->withProperties([
+                Activity::createActivityLog(
+                    'channel_applications',
+                    $approvedBy,
+                    'approved_channel_application',
+                    [
                         'channel_application_id' => $application->getKey(),
                         'channel_id' => $channel->getKey(),
                         'is_new_channel' => $isNewChannel,
                         'applicant_user_id' => $applicant->getKey(),
-                    ]);
+                    ]
+                );
             }
 
             DB::commit();
