@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Tests\Integration\Application\Channel\Application;
 
 use App\Application\Channel\Application\ApproveChannelAccess;
+use App\Enum\Guard\GuardEnum;
+use App\Enum\Users\RoleEnum;
 use App\Models\ChannelApplication;
+use App\Repository\RoleRepository;
 use App\Services\Channel\ChannelOperatorService;
 use App\Services\NotificationService;
 use Tests\DatabaseTestCase;
@@ -28,7 +31,12 @@ final class ApproveChannelAccessTest extends DatabaseTestCase
             ->method('approveUserChannelAccess')
             ->with($channelApplication->user, $channelApplication->channel);
 
-        $useCase = new ApproveChannelAccess($notificationService, $channelOperatorService);
+        $roleRepository = $this->createMock(RoleRepository::class);
+        $roleRepository->expects($this->once())
+            ->method('giveRoleToUser')
+            ->with($channelApplication->user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD);
+
+        $useCase = new ApproveChannelAccess($notificationService, $channelOperatorService, $roleRepository);
         $useCase->handle($channelApplication);
     }
 }
