@@ -13,8 +13,6 @@ use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
 use App\Models\Channel;
-use App\Repository\ChannelRepository;
-use App\Repository\UserRepository;
 use App\Services\LinkService;
 use BackedEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -59,7 +57,7 @@ class MyOffers extends Page implements HasTable
 
     public function getSubheading(): string|Htmlable|null
     {
-        return trans('common.channel') . ': ' . app(GetCurrentChannel::class)->handle()?->name;
+        return trans('common.channel') . ': ' . $this->getCurrentChannel()?->name;
     }
 
     public function getTitle(): string
@@ -192,13 +190,7 @@ class MyOffers extends Page implements HasTable
 
     protected function getCurrentChannel(): ?Channel
     {
-        $user = app(UserRepository::class)->getCurrentUser();
-        if (!$user) {
-            return null;
-        }
-
-        return app(ChannelRepository::class)
-            ->getChannelsForUser($user)->first();
+        return app(GetCurrentChannel::class)->handle();
     }
 
     public function dispatchZipDownload(iterable $ids): void
