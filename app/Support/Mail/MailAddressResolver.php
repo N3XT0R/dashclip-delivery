@@ -35,6 +35,6 @@ final class MailAddressResolver
             return (string)(config('mail.catch_all') ?? $email);
         }
 
-        return $email;
+        return (string)$email;
     }
 }
