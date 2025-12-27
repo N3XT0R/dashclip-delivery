@@ -131,6 +131,6 @@ readonly class ChannelOperatorService
             return false;
         }
 
-        return $this->isUserChannelOperator($owner, $channel);
+        return $this->isUserChannelOperator($user, $channel);
     }
 }
