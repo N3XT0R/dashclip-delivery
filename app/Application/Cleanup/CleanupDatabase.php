@@ -6,7 +6,7 @@ namespace App\Application\Cleanup;
 
 use App\Repository\ActionTokenRepository;
 
-final readonly class CleanupDatabase
+class CleanupDatabase
 {
     public function __construct(private ActionTokenRepository $actionTokenRepository)
     {
