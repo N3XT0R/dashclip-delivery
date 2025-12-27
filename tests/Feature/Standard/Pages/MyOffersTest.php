@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Standard\Pages;
 
+use App\Application\Offer\ReturnAssignment;
 use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
@@ -294,10 +295,8 @@ final class MyOffersTest extends DatabaseTestCase
         $this->app->instance(AssignmentService::class, $assignmentService);
 
         $page = new MyOffersResetPage(null);
-
         $this->actingAs($user, GuardEnum::STANDARD->value);
-
-        $page->returnAssignments(new Collection($assignments));
+        $this->app->make(ReturnAssignment::class)->handle(new Collection($assignments));
 
         self::assertSame(2, $assignmentService->calls->count());
         self::assertSame(1, $page->resetCount);
