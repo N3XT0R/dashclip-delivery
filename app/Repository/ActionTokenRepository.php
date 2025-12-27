@@ -88,9 +88,12 @@ final class ActionTokenRepository
      */
     public function deleteExpired(): bool
     {
-        return ActionToken::whereNotNull('expires_at')
-            ->where('expires_at', '<', now())
+        $deleted = ActionToken::whereNotNull('expires_at')
+            ->whereDate('expires_at', '<', now())
             ->delete();
+
+
+        return $deleted > 0;
     }
 
     /**

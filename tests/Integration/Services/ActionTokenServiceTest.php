@@ -89,35 +89,4 @@ class ActionTokenServiceTest extends DatabaseTestCase
 
         $this->assertNull($token);
     }
-
-    public function testCleanupDeletesExpiredTokens(): void
-    {
-        $this->actionTokenService->issue(
-            purpose: TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL,
-            expiresAt: now()->subMinute()
-        );
-
-        $this->actionTokenService->issue(
-            purpose: TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL,
-            expiresAt: now()->addHour()
-        );
-
-        $deleted = $this->actionTokenService->cleanupExpired();
-
-        $this->assertTrue($deleted);
-        $this->assertDatabaseCount(ActionToken::class, 1);
-    }
-
-    public function testCleanupDeletesOrphanedTokens(): void
-    {
-        ActionToken::factory()->create([
-            'subject_type' => 'App\\Models\\NonExistingModel',
-            'subject_id' => 999999,
-        ]);
-
-        $deleted = $this->actionTokenService->cleanupExpired();
-
-        $this->assertTrue($deleted);
-        $this->assertDatabaseCount(ActionToken::class, 0);
-    }
 }

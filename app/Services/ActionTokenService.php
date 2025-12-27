@@ -76,17 +76,4 @@ final readonly class ActionTokenService
 
         return $token;
     }
-
-    /**
-     * Cleanup expired and orphaned tokens.
-     * @return bool
-     */
-    public function cleanupExpired(): bool
-    {
-        $repo = $this->repository;
-        $expiredDeleted = $this->repository->deleteExpired();
-        $orphansDeleted = $repo->deleteOrphans() > 0;
-
-        return $expiredDeleted + $orphansDeleted;
-    }
 }
