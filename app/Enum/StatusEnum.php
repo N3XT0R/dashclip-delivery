@@ -47,4 +47,9 @@ enum StatusEnum: string
     {
         return self::getReturnableStatuses();
     }
+
+    public static function isEditableStatus(string $status): bool
+    {
+        return in_array($status, self::getEditableStatuses(), true);
+    }
 }

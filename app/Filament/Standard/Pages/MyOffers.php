@@ -186,10 +186,7 @@ class MyOffers extends Page implements HasTable
                             ->placeholder(__('my_offers.modal.note.placeholder'))
                             ->helperText(__('my_offers.modal.note.helper_text'))
                             ->disabled(function () use ($assignment): bool {
-                                if (in_array($assignment->status, StatusEnum::getEditableStatuses(), true)) {
-                                    return false;
-                                }
-                                return true;
+                                return false === StatusEnum::isEditableStatus($assignment->status);
                             })
                             ->rows(5),
                     ])
