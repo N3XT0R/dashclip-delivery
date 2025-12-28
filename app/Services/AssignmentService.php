@@ -180,6 +180,13 @@ readonly class AssignmentService
         return $result;
     }
 
+    /**
+     * Update the note for an assignment.
+     * @param Assignment $assignment
+     * @param string|null $note
+     * @param User|null $user
+     * @return bool
+     */
     public function updateNote(Assignment $assignment, ?string $note, ?User $user = null): bool
     {
         $assignment->note = $note;
