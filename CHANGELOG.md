@@ -103,6 +103,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **UI Text Handling**
     - Migrated static German UI texts to the i18n system.
     - Improved maintainability and consistency of user-facing strings.
+- **Offer Notification Mail Handling**  
+  Adjusted the notification logic so that emails about new offers are no longer sent when no offers are available.  
+  This prevents misleading or empty notifications and aligns outbound communication with actual offer availability.
 
 ### Fixed
 
