@@ -58,14 +58,22 @@ final class StatusEnumTest extends TestCase
         );
     }
 
-    public function testIsEditableStatusReturnsTrueForEditableStatuses(): void
+    #[DataProvider('editableStatusProvider')]
+    public function testIsEditableStatusReturnsTrueForEditableStatuses(string $status): void
     {
-        foreach (StatusEnum::getEditableStatuses() as $status) {
-            $this->assertTrue(
-                StatusEnum::isEditableStatus($status),
-                sprintf('Expected status "%s" to be editable.', $status)
-            );
-        }
+        $this->assertTrue(
+            StatusEnum::isEditableStatus($status),
+            sprintf('Expected status "%s" to be editable.', $status)
+        );
+    }
+
+    public static function editableStatusProvider(): array
+    {
+        return [
+            'queued status' => [StatusEnum::QUEUED->value],
+            'notified status' => [StatusEnum::NOTIFIED->value],
+            'picked up status' => [StatusEnum::PICKEDUP->value],
+        ];
     }
 
     #[DataProvider('nonEditableStatusProvider')]
