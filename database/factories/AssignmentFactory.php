@@ -21,7 +21,7 @@ class AssignmentFactory extends Factory
         return [
             'video_id' => Video::factory(),
             'channel_id' => Channel::factory(),
-            'batch_id' => null, // or: Batch::factory()
+            'batch_id' => Batch::factory(),
             'status' => StatusEnum::QUEUED->value,
             'expires_at' => now()->addDays($this->faker->numberBetween(3, 14)),
             'attempts' => 0,
@@ -35,7 +35,7 @@ class AssignmentFactory extends Factory
         return $this->state(fn() => ['status' => StatusEnum::QUEUED->value]);
     }
 
-    public function withBatch(Batch $batch = null): static
+    public function withBatch(?Batch $batch = null): static
     {
         return $this->state(fn() => [
             'batch_id' => $batch?->getKey() ?? Batch::factory(),

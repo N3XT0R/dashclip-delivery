@@ -9,6 +9,13 @@ use App\Models\Batch;
 
 class BatchRepository
 {
+    /**
+     * Mark the given assigned batch as finished.
+     * @param  Batch  $batch
+     * @param  int  $assigned
+     * @param  int  $skipped
+     * @return bool
+     */
     public function markAssignedBatchAsFinished(Batch $batch, int $assigned, int $skipped): bool
     {
         return $batch->update([
@@ -20,6 +27,10 @@ class BatchRepository
         ]);
     }
 
+    /**
+     * Get the last finished assign batch.
+     * @return Batch|null
+     */
     public function getLastFinishedAssignBatch(): ?Batch
     {
         return Batch::query()
@@ -27,5 +38,16 @@ class BatchRepository
             ->whereNotNull('finished_at')
             ->orderByDesc('finished_at')
             ->first();
+    }
+
+    /**
+     * Find a batch by its ID.
+     * @param  int  $id
+     * @return Batch|null
+     */
+    public function findById(int $id): ?Batch
+    {
+        return Batch::query()
+            ->find($id);
     }
 }

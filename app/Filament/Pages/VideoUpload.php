@@ -3,9 +3,7 @@
 namespace App\Filament\Pages;
 
 use AllowDynamicProperties;
-use App\DTO\FileInfoDto;
-use App\Facades\Cfg;
-use App\Jobs\ProcessUploadedVideo;
+use App\Application\Video\UploadVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\CarbonInterval;
@@ -26,7 +24,6 @@ use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 /**
  * @property array|null $data
@@ -39,14 +36,18 @@ class VideoUpload extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::ArrowUpTray;
     protected static ?string $navigationLabel = 'Video Upload';
-    protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected ?string $subheading = 'Diese Seite ist noch experementell';
     protected static ?string $title = 'Video Upload (alpha)';
     protected string $view = 'filament.pages.video-upload';
 
     public ?array $data = [];
 
-    private const string UPLOAD_DISK_CONFIG_KEY = 'uploads.disk';
+
+    public static function getNavigationGroup(): string
+    {
+        return __('nav.media');
+    }
+
 
     public function mount(): void
     {
@@ -84,13 +85,17 @@ class VideoUpload extends Page implements HasForms
                             ->all()
                     )
                     ->trim()
-                    ->helperText('Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.'),
+                    ->helperText(
+                        'Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.'
+                    ),
                 TextInput::make('role')->label('Rolle')
                     ->datalist([
                         'F' => 'Front',
                         'R' => 'Rear',
                     ])
-                    ->helperText('Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R).')
+                    ->helperText(
+                        'Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R).'
+                    )
                     ->trim(),
             ])
             ->statePath('data');
@@ -101,7 +106,7 @@ class VideoUpload extends Page implements HasForms
         return FileUpload::make('file')
             ->label('Video')
             ->required()
-            ->disk(config(self::UPLOAD_DISK_CONFIG_KEY))
+            ->disk(config(UploadVideo::UPLOAD_DISK_CONFIG_KEY))
             ->directory(config('uploads.directory'))
             ->acceptedFileTypes([
                 'video/mp4',
@@ -177,8 +182,12 @@ class VideoUpload extends Page implements HasForms
                             }
 
                             if ($duration !== null && $endValue > (int)$duration) {
-                                $fail(sprintf('Das Ende darf nicht hinter der Videolänge von %s liegen.',
-                                    CarbonInterval::seconds($duration)->cascade()->format('%I:%S')));
+                                $fail(
+                                    sprintf(
+                                        'Das Ende darf nicht hinter der Videolänge von %s liegen.',
+                                        CarbonInterval::seconds($duration)->cascade()->format('%I:%S')
+                                    )
+                                );
                             }
                         };
                     })
@@ -214,29 +223,9 @@ class VideoUpload extends Page implements HasForms
     public function submit(): void
     {
         $this->form->validate();
-        $clip = $this->form->getState();
-        $user = Auth::user();
-        $targetDisk = Cfg::get('default_file_system', 'default', 'dropbox');
-
-        $file = $clip['file'] ?? '';
-        $fileInfoDto = new FileInfoDto(
-            $file,
-            Str::afterLast($file, '/'),
-            Str::afterLast($file, '.'),
-            $clip['original_name'] ?? null,
-        );
-
-        ProcessUploadedVideo::dispatch(
-            user: $user,
-            fileInfoDto: $fileInfoDto,
-            targetDisk: $targetDisk,
-            sourceDisk: config(self::UPLOAD_DISK_CONFIG_KEY),
-            start: (int)($clip['start_sec'] ?? 0),
-            end: (int)($clip['end_sec'] ?? 0),
-            submittedBy: $user?->display_name,
-            note: $clip['note'] ?? null,
-            bundleKey: $clip['bundle_key'] ?? null,
-            role: $clip['role'] ?? null,
+        app(UploadVideo::class)->handle(
+            user: Auth::user(),
+            clip: $this->form->getState(),
             team: Filament::getTenant()
         );
 

@@ -41,18 +41,15 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Rewrite subject and recipient for local/testing environments.
+     * Rewrite subject for local/testing environments.
      * @codeCoverageIgnore
-     * @param  Envelope  $envelope
+     * @param Envelope $envelope
      * @return Envelope
      */
     private function rewriteEnvelope(Envelope $envelope): Envelope
     {
         if (!defined('IS_TESTING') && app()->environment('local', 'testing', 'staging')) {
             $envelope->subject = sprintf('[%s] %s', config('app.env'), $envelope->subject);
-            if ($catchAll = config('mail.catch_all')) {
-                $envelope->to = [$catchAll];
-            }
         }
 
         return $envelope;
@@ -74,7 +71,9 @@ abstract class AbstractLoggedMail extends Mailable implements ShouldQueue
             'X-App-Message-ID' => (string)Str::uuid(),
             'Auto-Submitted' => 'auto-generated',
             // Easter egg header for the curious ones
-            'X-System-Meta' => 'trace-id='.bin2hex(random_bytes(4)).'; note="If you are reading this, you are way too curious"',
+            'X-System-Meta' => 'trace-id=' . bin2hex(
+                    random_bytes(4)
+                ) . '; note="If you are reading this, you are way too curious"',
         ];
 
         if ($this->isAutoResponder) {

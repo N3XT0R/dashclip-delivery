@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\ChannelUserPivot;
 use App\Models\Pivots\ModelHasRoleTeam;
 use App\Repository\RoleRepository;
 use App\Repository\TeamRepository;
@@ -214,6 +215,19 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     public function getDefaultTenant(Panel $panel): ?Model
     {
         return app(TeamRepository::class)->getDefaultTeamForUser($this);
+    }
+
+    public function channelApplications(): HasMany
+    {
+        return $this->hasMany(ChannelApplication::class);
+    }
+
+    public function channels(): BelongsToMany
+    {
+        return $this->belongsToMany(Channel::class, 'channel_user')
+            ->using(ChannelUserPivot::class)
+            ->withPivot(['is_user_verified'])
+            ->withTimestamps();
     }
 
     public function preferredLocale(): string

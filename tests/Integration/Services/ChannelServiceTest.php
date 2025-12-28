@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\DTO\Channel\ApplicationMetaDto;
+use App\DTO\Channel\ChannelApplicationRequestDto;
+use App\Enum\Channel\ApplicationEnum;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
+use App\Models\User;
 use App\Services\ChannelService;
 use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
@@ -177,4 +181,153 @@ class ChannelServiceTest extends DatabaseTestCase
         // Assert
         $this->assertSame([], $result, 'Should return empty array when sending fails');
     }
+
+    public function testApplyForAccessCreatesApplicationForExistingChannel(): void
+    {
+        $user = User::factory()->create();
+        $channel = Channel::factory()->create();
+
+        $dto = new ChannelApplicationRequestDto(
+            channelId: $channel->id,
+            note: 'Bitte freischalten',
+            otherChannelRequest: false,
+            newChannelName: null,
+            newChannelCreatorName: null,
+            newChannelEmail: null,
+            newChannelYoutubeName: null
+        );
+
+        $application = $this->channelService->applyForAccess($dto, $user);
+
+        $this->assertNotNull($application);
+        $this->assertSame($user->id, $application->user_id);
+        $this->assertSame($channel->id, $application->channel_id);
+        $this->assertSame('Bitte freischalten', $application->note);
+        $this->assertEquals('pending', $application->status);
+        $this->assertTrue($application->meta->tosAccepted);
+        $this->assertNotNull($application->meta->tosAcceptedAt);
+    }
+
+    public function testApplyForAccessThrowsForDuplicateApplication(): void
+    {
+        $user = User::factory()->create();
+        $channel = Channel::factory()->create();
+
+        $user->channelApplications()->create([
+            'channel_id' => $channel->getKey(),
+            'note' => 'Test',
+            'status' => ApplicationEnum::PENDING->value,
+            'meta' => [],
+        ]);
+
+        $dto = new ChannelApplicationRequestDto(
+            channelId: $channel->id,
+            note: 'Bitte nochmal',
+            otherChannelRequest: false,
+            newChannelName: null,
+            newChannelCreatorName: null,
+            newChannelEmail: null,
+            newChannelYoutubeName: null
+        );
+
+        $this->expectException(\DomainException::class);
+
+        $this->channelService->applyForAccess($dto, $user);
+    }
+
+    public function testApplyForAccessCreatesApplicationForNewChannel(): void
+    {
+        $user = User::factory()->create();
+
+        $dto = new ChannelApplicationRequestDto(
+            channelId: null,
+            note: 'Neuer Kanal gewünscht',
+            otherChannelRequest: true,
+            newChannelName: 'MegaTV',
+            newChannelCreatorName: 'Max Mustermann',
+            newChannelEmail: 'tv@example.org',
+            newChannelYoutubeName: 'megachannel'
+        );
+
+        $application = $this->channelService->applyForAccess($dto, $user);
+
+        $this->assertNotNull($application);
+        $this->assertNull($application->channel_id);
+        $meta = $application->meta;
+        $this->assertInstanceOf(ApplicationMetaDto::class, $meta);
+        $this->assertTrue($meta->tosAccepted);
+        $this->assertNotNull($meta->tosAcceptedAt);
+        $this->assertEquals('MegaTV', $meta->channel['name']);
+        $this->assertEquals('Max Mustermann', $meta->channel['creator_name']);
+        $this->assertEquals('tv@example.org', $meta->channel['email']);
+        $this->assertEquals('megachannel', $meta->channel['youtube_name']);
+    }
+
+    public function testCreateNewChannelByChannelApplicationCreatesChannelFromMeta(): void
+    {
+        $user = User::factory()->create();
+
+        $application = $user->channelApplications()->create([
+            'channel_id' => null,
+            'note' => 'Neuer Kanal',
+            'status' => ApplicationEnum::PENDING->value,
+            'meta' => [
+                'tos_accepted' => true,
+                'tos_accepted_at' => now()->toDateTimeString(),
+                'new_channel' => [
+                    'name' => 'MegaTV',
+                    'creator_name' => 'Max Mustermann',
+                    'email' => 'tv@example.org',
+                    'youtube_name' => 'megachannel',
+                ],
+            ],
+        ]);
+
+        $channel = $this->channelService->createNewChannelByChannelApplication($application);
+
+        $this->assertNotNull($channel);
+        $this->assertSame('MegaTV', $channel->name);
+        $this->assertSame('Max Mustermann', $channel->creator_name);
+        $this->assertSame('tv@example.org', $channel->email);
+        $this->assertSame('megachannel', $channel->youtube_name);
+    }
+
+    public function testCreateNewChannelByChannelApplicationThrowsWhenNoNewChannelMetaExists(): void
+    {
+        $user = User::factory()->create();
+
+        $application = $user->channelApplications()->create([
+            'channel_id' => null,
+            'note' => 'Kein neuer Kanal',
+            'status' => ApplicationEnum::PENDING->value,
+            'meta' => [
+                'tos_accepted' => true,
+                'tos_accepted_at' => now()->toDateTimeString(),
+            ],
+        ]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('No new channel request found in application meta.');
+
+        $this->channelService->createNewChannelByChannelApplication($application);
+    }
+
+    public function testExistsChannelByNameReturnsTrueWhenChannelExists(): void
+    {
+        Channel::factory()->create([
+            'name' => 'ExistingChannel',
+        ]);
+
+        $exists = $this->channelService->existsChannelByName('ExistingChannel');
+
+        $this->assertTrue($exists);
+    }
+
+    public function testExistsChannelByNameReturnsFalseWhenChannelDoesNotExist(): void
+    {
+        $exists = $this->channelService->existsChannelByName('NonExistingChannel');
+
+        $this->assertFalse($exists);
+    }
+
 }

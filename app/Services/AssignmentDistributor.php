@@ -15,6 +15,7 @@ use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
 use App\ValueObjects\AssignmentRun;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 /**
@@ -35,7 +36,7 @@ readonly class AssignmentDistributor
     /**
      * Distribute new and requeueable videos across channels.
      *
-     * @param  int|null  $quotaOverride  optional quota per channel
+     * @param int|null $quotaOverride optional quota per channel
      * @return array{assigned:int, skipped:int}
      */
     public function distribute(?int $quotaOverride = null): array
@@ -72,36 +73,42 @@ readonly class AssignmentDistributor
             $uploaderId = $uploaderPool->id;
 
             // 3) Kanäle + Rotationspool + Quotas
-            $channelPoolDto = $this->prepareChannelsOrAbort(
-                $quotaOverride,
-                $batch,
-                $uploaderType,
-                $uploaderId
-            );
+            try {
+                $channelPoolDto = $this->prepareChannelsOrAbort(
+                    $quotaOverride,
+                    $batch,
+                    $uploaderType,
+                    $uploaderId
+                );
 
-            // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
-            $groups = $this->buildGroups($videosOfUploader);
+                // 4) Gruppenbildung (Videos, die zu einem Bundle gehören, bleiben zusammen)
+                $groups = $this->buildGroups($videosOfUploader);
 
-            // 5) Preloads zur Minimierung von N+1
-            $blockedByVideo = $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader);
-            $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($videosOfUploader);
+                // 5) Preloads zur Minimierung von N+1
+                $blockedByVideo = $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader);
+                $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($videosOfUploader);
 
-            // 6) ValueObject
-            $run = new AssignmentRun(
-                groups: $groups,
-                channelPool: $channelPoolDto,
-                blockedByVideo: $blockedByVideo,
-                assignedChannelsByVideo: $assignedChannelsByVideo,
-                batch: $batch,
-                uploaderType: $uploaderType,
-                uploaderId: $uploaderId
-            );
+                // 6) ValueObject
+                $run = new AssignmentRun(
+                    groups: $groups,
+                    channelPool: $channelPoolDto,
+                    blockedByVideo: $blockedByVideo,
+                    assignedChannelsByVideo: $assignedChannelsByVideo,
+                    batch: $batch,
+                    uploaderType: $uploaderType,
+                    uploaderId: $uploaderId
+                );
 
-            // 7) Verteilung
-            [$assigned, $skipped] = $this->assignGroups($run);
-
-            $totalAssigned += $assigned;
-            $totalSkipped += $skipped;
+                // 7) Verteilung
+                [$assigned, $skipped] = $this->assignGroups($run);
+                $totalAssigned += $assigned;
+                $totalSkipped += $skipped;
+            } catch (\Throwable $e) {
+                Log::warning(
+                    'Fehler bei der Verteilung für Uploader ' . $uploaderType . '#' . $uploaderId . ': ' . $e->getMessage(
+                    )
+                );
+            }
         }
 
         $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped);
@@ -194,7 +201,7 @@ readonly class AssignmentDistributor
 
 
     /**
-     * @param  Collection<Video>  $poolVideos
+     * @param Collection<Video> $poolVideos
      * @return Collection
      */
     public function buildGroups(Collection $poolVideos): Collection

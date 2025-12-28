@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Pivots\ChannelUserPivot;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,9 +57,14 @@ class Channel extends Model
             ->withPivot('until');
     }
 
+    /**
+     * Generate an approval token for the channel.
+     * @return string
+     * @todo move to service at next version
+     */
     public function getApprovalToken(): string
     {
-        return sha1($this->email.config('app.key'));
+        return hash('sha256', $this->email . config('app.key'));
     }
 
     public function getApprovalUrl(): string
@@ -71,7 +77,16 @@ class Channel extends Model
 
     public function assignedTeams(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)
+        return $this->belongsToMany(Team::class, 'channel_team')
+            ->withPivot(['quota'])
+            ->withTimestamps();
+    }
+
+    public function channelUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'channel_user')
+            ->using(ChannelUserPivot::class)
+            ->withPivot(['is_user_verified'])
             ->withTimestamps();
     }
 

@@ -29,6 +29,7 @@ final class ActivityResourceTest extends DatabaseTestCase
         // Authenticate as a user (User::canAccessPanel returns true)
         $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
+        Activity::query()->delete();
     }
 
     public function testRegularUserHasNoAccess(): void

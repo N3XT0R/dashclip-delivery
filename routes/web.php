@@ -4,6 +4,7 @@ use App\Http\Controllers\AssignmentDownloadController;
 use App\Http\Controllers\ChannelApprovalController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\TokenApprovalController;
 use App\Http\Controllers\ZipController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -33,15 +34,26 @@ Route::get('/offer/{batch}/{channel}', [OfferController::class, 'show'])->name('
 Route::get('/offer/{batch}/{channel}/unused', [OfferController::class, 'showUnused'])->name('offer.unused.show');
 Route::post('/offer/{batch}/{channel}/unused', [OfferController::class, 'storeUnused'])->name('offer.unused.store');
 
+/**
+ * @deprecated Use /zips/channel/{channel} instead
+ */
 Route::get('/d/{assignment}', [AssignmentDownloadController::class, 'download'])->name('assignments.download');
 
 
 Route::get('/dropbox/connect', [DropboxController::class, 'connect'])->name('dropbox.connect');
 Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('dropbox.callback');
-
+Route::post('/zips/channel/{channel}', [ZipController::class, 'startForChannel'])->name('zips.channel.start');
+/**
+ * @deprecated Use /zips/channel/{channel} instead
+ */
 Route::post('/zips/{batch}/{channel}', [ZipController::class, 'start'])->name('zips.start');
 Route::get('/zips/{id}/progress', [ZipController::class, 'progress'])->name('zips.progress');
 Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zips.download');
 
 Route::get('/channels/{channel}/approve/{token}', [ChannelApprovalController::class, 'approve'])
     ->name('channels.approve');
+
+Route::get('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'update'])
+    ->name('tokens.update');
+
+

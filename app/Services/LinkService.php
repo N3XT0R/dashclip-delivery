@@ -43,6 +43,16 @@ class LinkService
         return URL::temporarySignedRoute(
             'zips.start',
             $expireDate,
-            ['batch' => $batch->getKey(), 'channel' => $channel->getKey()]);
+            ['batch' => $batch->getKey(), 'channel' => $channel->getKey()]
+        );
+    }
+
+    public function getZipSelectedUrlForChannel(Channel $channel, Carbon $expireDate): string
+    {
+        return URL::temporarySignedRoute(
+            'zips.channel.start',
+            $expireDate,
+            ['channel' => $channel->getKey()]
+        );
     }
 }

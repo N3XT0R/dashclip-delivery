@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enum\StatusEnum;
-use App\Models\{Assignment, Batch, Channel, Video};
+use App\Models\{Assignment, Batch, Channel, User, Video};
 use App\Repository\AssignmentRepository;
 use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
@@ -29,9 +29,9 @@ readonly class AssignmentService
     }
 
     /**
-     * @param  Batch  $batch
-     * @param  Channel  $channel
-     * @param  Collection  $ids
+     * @param Batch $batch
+     * @param Channel $channel
+     * @param Collection $ids
      * @return EloquentCollection<Assignment>
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
@@ -86,9 +86,9 @@ readonly class AssignmentService
 
     /**
      * Assign group To Channel Assignment
-     * @param  Collection<Video>  $group
-     * @param  Channel  $channel
-     * @param  AssignmentRun  $run
+     * @param Collection<Video> $group
+     * @param Channel $channel
+     * @param AssignmentRun $run
      * @return int
      */
     public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): int
@@ -107,7 +107,7 @@ readonly class AssignmentService
 
     /**
      * Ensure that all videos belonging to a bundle are included whenever one of them is present in the pool.
-     * @param  Collection<Video>  $poolVideos
+     * @param Collection<Video> $poolVideos
      * @return Collection<Video>
      */
     public function expandBundles(Collection $poolVideos): Collection
@@ -129,6 +129,83 @@ readonly class AssignmentService
         $bundleVideos = app(VideoRepository::class)->getVideosByIds($bundleVideoIds);
 
         return $poolVideos->concat($bundleVideos)->unique('id');
+    }
+
+    /**
+     * Determine if an assignment can be returned.
+     * @param Assignment|null $assignment
+     * @return bool
+     */
+    public function canReturnAssignment(?Assignment $assignment): bool
+    {
+        if (null === $assignment) {
+            return false;
+        }
+
+        if ($assignment->expires_at->isPast()) {
+            return false;
+        }
+
+        return in_array($assignment->status, StatusEnum::getReturnableStatuses(), true);
+    }
+
+    /**
+     * Return an assignment.
+     * @param Assignment $assignment
+     * @param User|null $user
+     * @return bool
+     */
+    public function returnAssignment(Assignment $assignment, ?User $user = null): bool
+    {
+        if (false === $this->canReturnAssignment($assignment)) {
+            return false;
+        }
+
+        $assignment->status = StatusEnum::REJECTED->value;
+
+        $result = $assignment->save();
+        if ($result) {
+            activity('assignments')
+                ->causedBy($user)
+                ->performedOn($assignment)
+                ->withProperties([
+                    'assignment_id' => $assignment->getKey(),
+                    'channel_id' => $assignment->channel_id,
+                    'video_name' => $assignment->video->original_name,
+                    'returned_at' => now()->toDateTimeString(),
+                ])
+                ->log('Assignment rejected by channel');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Update the note for an assignment.
+     * @param Assignment $assignment
+     * @param string|null $note
+     * @param User|null $user
+     * @return bool
+     */
+    public function updateNote(Assignment $assignment, ?string $note, ?User $user = null): bool
+    {
+        $assignment->note = $note;
+
+        $result = $assignment->save();
+        if ($result) {
+            activity('assignments')
+                ->causedBy($user)
+                ->performedOn($assignment)
+                ->withProperties([
+                    'assignment_id' => $assignment->getKey(),
+                    'channel_id' => $assignment->channel_id,
+                    'video_name' => $assignment->video->original_name,
+                    'note_updated_at' => now()->toDateTimeString(),
+                ])
+                ->log('Assignment note updated by channel');
+        }
+
+        return $result;
     }
 }
 

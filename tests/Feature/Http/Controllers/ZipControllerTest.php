@@ -12,11 +12,16 @@ use App\Models\Channel;
 use App\Services\DownloadCacheService;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
-use ReflectionClass;
 use Tests\DatabaseTestCase;
 
 class ZipControllerTest extends DatabaseTestCase
 {
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
+
     public function testStartDispatchesZipJobAndInitializesCache(): void
     {
         Queue::fake();
@@ -31,7 +36,7 @@ class ZipControllerTest extends DatabaseTestCase
         $downloadCache = Mockery::mock(DownloadCacheService::class);
         $downloadCache->shouldReceive('init')
             ->once()
-            ->with($batch->id.'_'.$channel->id);
+            ->with($batch->id . '_' . $channel->id);
         $this->app->instance(DownloadCacheService::class, $downloadCache);
 
         $response = $this->postJson("/zips/{$batch->id}/{$channel->id}", [
@@ -40,16 +45,45 @@ class ZipControllerTest extends DatabaseTestCase
 
         $response->assertOk();
         $response->assertJson([
-            'jobId' => $batch->id.'_'.$channel->id,
+            'jobId' => $batch->id . '_' . $channel->id,
             'status' => DownloadStatusEnum::QUEUED->value,
         ]);
 
-        Queue::assertPushed(BuildZipJob::class, function (BuildZipJob $job) use ($assignment) {
-            $ref = new ReflectionClass($job);
-            $ids = $ref->getProperty('assignmentIds');
-            $ids->setAccessible(true);
+        Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
+            return $job->getAssignmentIds() === [$assignment->getKey()];
+        });
+    }
 
-            return $ids->getValue($job) === [$assignment->id];
+    public function testStartForChannelDispatchesZipJobAndInitializesCache(): void
+    {
+        Queue::fake();
+
+        $batch = Batch::factory()->create();
+        $channel = Channel::factory()->create();
+        $assignment = Assignment::factory()
+            ->for($channel)
+            ->withBatch($batch)
+            ->create();
+
+        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', [$assignment->getKey()]));
+
+        $downloadCache = Mockery::mock(DownloadCacheService::class);
+        $downloadCache->shouldReceive('init')
+            ->once()
+            ->with($jobId);
+        $this->app->instance(DownloadCacheService::class, $downloadCache);
+
+        $response = $this->postJson("/zips/channel/{$channel->id}", [
+            'assignment_ids' => [$assignment->id, 'invalid'],
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'status' => DownloadStatusEnum::QUEUED->value,
+        ]);
+
+        Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
+            return $job->getAssignmentIds() === [$assignment->getKey()];
         });
     }
 
@@ -65,6 +99,28 @@ class ZipControllerTest extends DatabaseTestCase
         $this->app->instance(DownloadCacheService::class, $downloadCache);
 
         $response = $this->postJson("/zips/{$batch->id}/{$channel->id}", [
+            'assignment_ids' => [123],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'error' => 'Die Auswahl ist nicht mehr verfügbar.',
+        ]);
+
+        Queue::assertNothingPushed();
+    }
+
+    public function testStartForChannelReturnsErrorWhenAssignmentsAreMissing(): void
+    {
+        Queue::fake();
+
+        $channel = Channel::factory()->create();
+
+        $downloadCache = Mockery::mock(DownloadCacheService::class);
+        $downloadCache->shouldReceive('init')->never();
+        $this->app->instance(DownloadCacheService::class, $downloadCache);
+
+        $response = $this->postJson("/zips/channel/{$channel->getKey()}", [
             'assignment_ids' => [123],
         ]);
 

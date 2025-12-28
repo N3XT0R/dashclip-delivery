@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Channel;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
-class ChannelFactory extends Factory
+class ChannelFactory extends EventAwareFactory
 {
     protected $model = Channel::class;
+
 
     public function definition(): array
     {

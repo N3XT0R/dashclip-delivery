@@ -9,9 +9,11 @@ use App\Jobs\BuildZipJob;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Repository\AssignmentRepository;
 use App\Services\AssignmentService;
 use App\Services\DownloadCacheService;
 use Filament\Facades\Filament;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,19 +21,28 @@ class ZipController extends Controller
 {
     public function __construct(
         private AssignmentService $assignments,
-        private DownloadCacheService $cache
+        private DownloadCacheService $cache,
+        private AssignmentRepository $assignmentRepository,
     ) {
     }
 
+    /**
+     * Starts a zip creation job for the given batch and channel.
+     * @param Request $req
+     * @param Batch $batch
+     * @param Channel $channel
+     * @return JsonResponse
+     * @deprecated use startForChannel instead
+     */
     // POST /zips/{batch}/{channel} -> Starts Job
-    public function start(Request $req, Batch $batch, Channel $channel)
+    public function start(Request $req, Batch $batch, Channel $channel): JsonResponse
     {
         $validated = $req->validate([
             'assignment_ids' => ['required', 'array', 'min:1'],
         ]);
 
         $batchId = $batch->getKey();
-        $jobId = $batchId.'_'.$channel->getKey();
+        $jobId = $batchId . '_' . $channel->getKey();
 
         $ids = collect($validated['assignment_ids'])
             ->filter(static fn($v) => ctype_digit((string)$v))
@@ -49,6 +60,45 @@ class ZipController extends Controller
         $this->cache->init($jobId);
 
         BuildZipJob::dispatch($batchId, $channel->getKey(), $ids->all(), $req->ip(), $req->userAgent());
+
+        return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
+    }
+
+    /**
+     * Start a zip creation job for the given channel without a batch.
+     * @param Request $req
+     * @param Channel $channel
+     * @return JsonResponse
+     */
+    public function startForChannel(Request $req, Channel $channel): JsonResponse
+    {
+        $validated = $req->validate([
+            'assignment_ids' => ['required', 'array', 'min:1'],
+        ]);
+
+
+        $ids = collect($validated['assignment_ids'])
+            ->filter(static fn($v) => ctype_digit((string)$v))
+            ->map(static fn($v) => (int)$v)
+            ->values();
+
+        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', $ids->all()));
+        $items = $this->assignmentRepository->fetchForZipForChannel($channel, $ids);
+
+        if ($items->isEmpty()) {
+            return response()->json(['error' => 'Die Auswahl ist nicht mehr verfügbar.'], 422);
+        }
+
+        // initialer Status
+        $this->cache->init($jobId);
+
+        BuildZipJob::dispatch(
+            batchId: null,
+            channelId: $channel->getKey(),
+            assignmentIds: $ids->all(),
+            ip: $req->ip(),
+            userAgent: $req->userAgent(),
+        );
 
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
     }

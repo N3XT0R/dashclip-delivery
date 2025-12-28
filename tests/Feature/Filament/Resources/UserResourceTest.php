@@ -82,6 +82,14 @@ final class UserResourceTest extends DatabaseTestCase
         $this->assertSame((string)User::count(), $badge);
     }
 
+    public function testSuperAdminCanAccessResource(): void
+    {
+        $this->actingAs($this->admin);
+
+        $this->assertTrue(UserResource::canAccess());
+        $this->assertTrue(UserResource::shouldRegisterNavigation());
+    }
+
     public function testRegularUserCannotAccessResource(): void
     {
         $user = User::factory()->standard()->create();
@@ -89,5 +97,13 @@ final class UserResourceTest extends DatabaseTestCase
 
         $this->assertFalse(UserResource::canAccess());
         $this->assertFalse(UserResource::shouldRegisterNavigation());
+    }
+
+    public function testNavigationBadgeHiddenForNonSuperAdmin(): void
+    {
+        $user = User::factory()->standard()->create();
+        $this->actingAs($user);
+
+        $this->assertNull(UserResource::getNavigationBadge());
     }
 }

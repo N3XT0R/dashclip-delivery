@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Repository;
 
+use App\Enum\Channel\ApplicationEnum;
 use App\Models\Channel;
+use App\Models\ChannelApplication;
+use App\Models\User;
 use App\Repository\ChannelRepository;
 use Tests\DatabaseTestCase;
 
@@ -196,6 +199,136 @@ class ChannelRepositoryTest extends DatabaseTestCase
 
         // Assert
         $this->assertNull($result, 'Should return null when no channel with given email exists');
+    }
+
+    public function testGetChannelApplicationsByUserWithoutStatusReturnsAll(): void
+    {
+        ChannelApplication::query()->delete();
+        User::query()->delete();
+
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $a1 = ChannelApplication::factory()->create([
+            'user_id' => $user->id,
+            'status' => ApplicationEnum::PENDING->value,
+        ]);
+
+        $a2 = ChannelApplication::factory()->create([
+            'user_id' => $user->id,
+            'status' => ApplicationEnum::APPROVED->value,
+        ]);
+        
+        // Should NOT match
+        ChannelApplication::factory()->create([
+            'user_id' => $otherUser->id,
+            'status' => ApplicationEnum::APPROVED->value,
+        ]);
+
+        $result = $this->channelRepository->getChannelApplicationsByUser($user);
+
+        $this->assertCount(2, $result);
+        $this->assertTrue($result->contains($a1));
+        $this->assertTrue($result->contains($a2));
+    }
+
+    public function testGetChannelApplicationsByUserWithSingleStatus(): void
+    {
+        ChannelApplication::query()->delete();
+        User::query()->delete();
+
+        $user = User::factory()->create();
+
+        $pending = ChannelApplication::factory()->create([
+            'user_id' => $user->id,
+            'status' => ApplicationEnum::PENDING->value,
+        ]);
+
+        // Should NOT match
+        ChannelApplication::factory()->create([
+            'user_id' => $user->id,
+            'status' => ApplicationEnum::APPROVED->value,
+        ]);
+
+        $result = $this->channelRepository->getChannelApplicationsByUser(
+            $user,
+            ApplicationEnum::PENDING
+        );
+
+        $this->assertCount(1, $result);
+        $this->assertTrue($result->contains($pending));
+    }
+
+    public function testGetChannelApplicationsByUserWithMultipleStatuses(): void
+    {
+        ChannelApplication::query()->delete();
+        User::query()->delete();
+
+        $user = User::factory()->create();
+
+        $pending = ChannelApplication::factory()->create([
+            'user_id' => $user->getKey(),
+            'status' => ApplicationEnum::PENDING->value,
+        ]);
+
+        $approved = ChannelApplication::factory()->create([
+            'user_id' => $user->getKey(),
+            'status' => ApplicationEnum::APPROVED->value,
+        ]);
+
+        // Should not match
+        ChannelApplication::factory()->create([
+            'user_id' => $user->getKey(),
+            'status' => ApplicationEnum::REJECTED->value,
+        ]);
+
+        $result = $this->channelRepository->getChannelApplicationsByUser(
+            $user,
+            ApplicationEnum::PENDING,
+            ApplicationEnum::APPROVED
+        );
+
+        $this->assertCount(2, $result);
+        $this->assertTrue($result->contains($pending));
+        $this->assertTrue($result->contains($approved));
+    }
+
+    public function testGetChannelApplicationsByUserWithEmptyStatusVariadicDoesNotFilter(): void
+    {
+        ChannelApplication::query()->delete();
+        User::query()->delete();
+
+        $user = User::factory()->create();
+
+        $a1 = ChannelApplication::factory()->create([
+            'user_id' => $user->getKey(),
+            'status' => ApplicationEnum::PENDING->value,
+        ]);
+
+        $a2 = ChannelApplication::factory()->create([
+            'user_id' => $user->getKey(),
+            'status' => ApplicationEnum::APPROVED->value,
+        ]);
+
+        // IMPORTANT:
+        // Calling method WITHOUT variadic params means $byStatus = []
+        $result = $this->channelRepository->getChannelApplicationsByUser($user, ...[]);
+
+        $this->assertCount(2, $result);
+        $this->assertTrue($result->contains($a1));
+        $this->assertTrue($result->contains($a2));
+    }
+
+    public function testGetChannelApplicationsByUserReturnsEmptyForUserWithoutApplications(): void
+    {
+        ChannelApplication::query()->delete();
+        User::query()->delete();
+
+        $user = User::factory()->create();
+
+        $result = $this->channelRepository->getChannelApplicationsByUser($user);
+
+        $this->assertTrue($result->isEmpty());
     }
 
 }

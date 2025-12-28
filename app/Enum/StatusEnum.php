@@ -29,4 +29,27 @@ enum StatusEnum: string
             self::REJECTED->value,
         ];
     }
+
+    public static function getReturnableStatuses(): array
+    {
+        return [
+            self::PICKEDUP->value,
+            self::NOTIFIED->value,
+            self::QUEUED->value,
+        ];
+    }
+
+    /**
+     * Alias for getReturnableStatuses.
+     * @return array
+     */
+    public static function getEditableStatuses(): array
+    {
+        return self::getReturnableStatuses();
+    }
+
+    public static function isEditableStatus(string $status): bool
+    {
+        return in_array($status, self::getEditableStatuses(), true);
+    }
 }

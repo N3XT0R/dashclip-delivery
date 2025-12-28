@@ -24,16 +24,27 @@ class ZipService
     }
 
     /**
-     * @param  Batch  $batch
-     * @param  Channel  $channel
-     * @param  Collection<Assignment>  $items
-     * @param  string  $ip
-     * @param  string|null  $userAgent
+     *
+     * @param Batch|null $batch
+     * @param Channel $channel
+     * @param Collection<Assignment> $items
+     * @param string $ip
+     * @param string|null $userAgent
+     * @param string|null $jobId
      * @return string
      */
-    public function build(Batch $batch, Channel $channel, Collection $items, string $ip, ?string $userAgent): string
-    {
-        $jobId = $this->jobId($batch, $channel);
+    public function build(
+        ?Batch $batch,
+        Channel $channel,
+        Collection $items,
+        string $ip,
+        ?string $userAgent,
+        ?string $jobId = null
+    ): string {
+        if ($batch) {
+            $jobId = $this->jobId($batch, $channel);
+        }
+
         $downloadName = $this->downloadName($batch, $channel);
         $tmpPath = $this->zipPath($jobId);
 
@@ -56,14 +67,16 @@ class ZipService
 
     private function jobId(Batch $batch, Channel $channel): string
     {
-        return $batch->getKey().'_'.$channel->getKey();
+        return $batch->getKey() . '_' . $channel->getKey();
     }
 
-    private function downloadName(Batch $batch, Channel $channel): string
+    private function downloadName(?Batch $batch, Channel $channel): string
     {
+        $id = $batch ? $batch->getKey() : Str::uuid();
+
         return sprintf(
             'videos_%s_%s_selected.zip',
-            $batch->getKey(),
+            $id,
             Str::slug((string)$channel->getAttribute('name')),
         );
     }
@@ -80,7 +93,7 @@ class ZipService
     }
 
     /**
-     * @param  Collection<Assignment>  $items
+     * @param Collection<Assignment> $items
      */
     private function createZipArchive(string $tmpPath, Collection $items): ZipArchive
     {
@@ -92,7 +105,7 @@ class ZipService
     }
 
     /**
-     * @param  Collection<Assignment>  $items
+     * @param Collection<Assignment> $items
      * @return array<int, string>  temporary files created during download
      */
     private function addAssignmentsToZip(
@@ -117,7 +130,7 @@ class ZipService
     }
 
     /**
-     * @param  array<int, string>  $tmpFiles
+     * @param array<int, string> $tmpFiles
      */
     private function processAssignment(
         ZipArchive $zip,
@@ -172,7 +185,7 @@ class ZipService
     }
 
     /**
-     * @param  array<int, string>  $tmpFiles
+     * @param array<int, string> $tmpFiles
      */
     private function localVideoPath(
         Video $video,
@@ -203,7 +216,7 @@ class ZipService
             return null;
         }
 
-        $tmpFile = 'zips/tmp/'.Str::uuid()->toString();
+        $tmpFile = 'zips/tmp/' . Str::uuid()->toString();
         $tmpFiles[] = $tmpFile;
         $localPath = Storage::path($tmpFile);
         $localHandle = fopen($localPath, 'w+b');
@@ -243,7 +256,7 @@ class ZipService
     }
 
     /**
-     * @param  array<int, string>  $tmpFiles
+     * @param array<int, string> $tmpFiles
      */
     private function finalizeZip(
         ZipArchive $zip,

@@ -14,6 +14,8 @@ abstract class AbstractUserNotification extends Notification implements ShouldQu
 {
     use Queueable;
 
+    protected bool $isConfigurable = true;
+
     protected function notificationKey(): string
     {
         return static::class;
@@ -33,11 +35,13 @@ abstract class AbstractUserNotification extends Notification implements ShouldQu
             return $channels;
         }
 
-        $mailAllowed = app(UserMailConfigRepository::class)
-            ->isAllowed($notifiable, $this->notificationKey());
+        if ($this->isConfigurable) {
+            $mailAllowed = app(UserMailConfigRepository::class)
+                ->isAllowed($notifiable, $this->notificationKey());
 
-        if (!$mailAllowed) {
-            $channels = array_filter($channels, fn($channel) => $channel !== 'mail');
+            if (!$mailAllowed) {
+                $channels = array_filter($channels, fn($channel) => $channel !== 'mail');
+            }
         }
 
 

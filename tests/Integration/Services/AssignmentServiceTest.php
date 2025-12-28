@@ -229,9 +229,11 @@ class AssignmentServiceTest extends DatabaseTestCase
         $this->assertTrue($assignment->fresh()->expires_at->isSameSecond(now()->addDays($ttlDays)->endOfDay()));
 
         // verify the signature is valid for the generated URL
-        $this->assertTrue(URL::hasValidSignature(
-            Request::create($url)
-        ));
+        $this->assertTrue(
+            URL::hasValidSignature(
+                Request::create($url)
+            )
+        );
     }
 
 
@@ -358,6 +360,100 @@ class AssignmentServiceTest extends DatabaseTestCase
             [$v1->id, $v2->id],
             $result->pluck('id')->sort()->values()->all()
         );
+    }
+
+    public function testCanReturnAssignmentReturnsFalseForNull(): void
+    {
+        $this->assertFalse($this->service->canReturnAssignment(null));
+    }
+
+    public function testCanReturnAssignmentReturnsFalseWhenExpired(): void
+    {
+        $assignment = Assignment::factory()
+            ->for(Batch::factory()->type('assign')->finished(), 'batch')
+            ->for(Channel::factory(), 'channel')
+            ->for(Video::factory(), 'video')
+            ->create([
+                'status' => StatusEnum::NOTIFIED->value,
+                'expires_at' => now()->subMinute(),
+            ]);
+
+        $this->assertFalse($this->service->canReturnAssignment($assignment));
+    }
+
+    public function testCanReturnAssignmentReturnsFalseForNonReturnableStatus(): void
+    {
+        $assignment = Assignment::factory()
+            ->for(Batch::factory()->type('assign')->finished(), 'batch')
+            ->for(Channel::factory(), 'channel')
+            ->for(Video::factory(), 'video')
+            ->create([
+                'status' => StatusEnum::EXPIRED->value,
+                'expires_at' => now()->addHour(),
+            ]);
+
+        $this->assertFalse($this->service->canReturnAssignment($assignment));
+    }
+
+    public function testCanReturnAssignmentReturnsTrueForAllReturnableStatuses(): void
+    {
+        foreach (StatusEnum::getReturnableStatuses() as $status) {
+            $assignment = Assignment::factory()
+                ->for(Batch::factory()->type('assign')->finished(), 'batch')
+                ->for(Channel::factory(), 'channel')
+                ->for(Video::factory(), 'video')
+                ->create([
+                    'status' => $status,
+                    'expires_at' => now()->addHour(),
+                ]);
+
+            $this->assertTrue(
+                $this->service->canReturnAssignment($assignment),
+                "Status {$status} should be returnable"
+            );
+        }
+    }
+
+    public function testReturnAssignmentSetsStatusRejectedAndReturnsTrue(): void
+    {
+        $assignment = Assignment::factory()
+            ->for(Batch::factory()->type('assign')->finished(), 'batch')
+            ->for(Channel::factory(), 'channel')
+            ->for(Video::factory(), 'video')
+            ->create([
+                'status' => StatusEnum::NOTIFIED->value,
+                'expires_at' => now()->addHour(),
+            ]);
+
+        $result = $this->service->returnAssignment($assignment);
+
+        $this->assertTrue($result);
+        $this->assertSame(StatusEnum::REJECTED->value, $assignment->fresh()->status);
+    }
+
+    public function testReturnAssignmentLogsActivityWhenUserIsProvided(): void
+    {
+        $user = \App\Models\User::factory()->create();
+
+        $assignment = Assignment::factory()
+            ->for(Batch::factory()->type('assign')->finished(), 'batch')
+            ->for(Channel::factory(), 'channel')
+            ->for(Video::factory(), 'video')
+            ->create([
+                'status' => StatusEnum::NOTIFIED->value,
+                'expires_at' => now()->addHour(),
+            ]);
+
+        $result = $this->service->returnAssignment($assignment, $user);
+
+        $this->assertTrue($result);
+
+        $this->assertDatabaseHas('activity_log', [
+            'subject_id' => $assignment->getKey(),
+            'subject_type' => Assignment::class,
+            'causer_id' => $user->getKey(),
+            'description' => 'Assignment rejected by channel',
+        ]);
     }
 
 }

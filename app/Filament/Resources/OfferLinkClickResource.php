@@ -6,7 +6,6 @@ use App\Filament\Resources\OfferLinkClickResource\Pages;
 use App\Models\OfferLinkClick;
 use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,14 +18,6 @@ class OfferLinkClickResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Media';
     protected static ?string $label = 'Offer Link Clicks';
-
-    public static function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                //
-            ]);
-    }
 
     public static function table(Table $table): Table
     {

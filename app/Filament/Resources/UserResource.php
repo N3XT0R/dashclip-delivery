@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\ChannelsRelationManager;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
@@ -56,8 +57,7 @@ class UserResource extends Resource
                     ->required(),
                 Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required(),
+                    ->password(),
                 Forms\Components\Select::make('roles')
                     ->label('Roles')
                     ->multiple()
@@ -73,6 +73,13 @@ class UserResource extends Resource
                 Forms\Components\Toggle::make('has_email_authentication')
                     ->required(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ChannelsRelationManager::class,
+        ];
     }
 
     public static function table(Table $table): Table
@@ -117,7 +124,7 @@ class UserResource extends Resource
                         $password = Str::password(12);
                         $record->update(['password' => bcrypt($password)]);
                         Notification::make()
-                            ->title('Password reset to "'.$password.'"')
+                            ->title('Password reset to "' . $password . '"')
                             ->success()
                             ->send();
                     })
@@ -127,13 +134,6 @@ class UserResource extends Resource
                     Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

@@ -1,4 +1,4 @@
-[![CI](https://github.com/N3XT0R/dashclip-delivery/actions/workflows/ci.yml/badge.svg)](https://github.com/N3XT0R/dashclip-delivery/actions/workflows/ci.yml)
+[![CI](https://github.com/N3XT0R/dashclip-delivery/actions/workflows/core-branches.yml/badge.svg)](https://github.com/N3XT0R/dashclip-delivery/actions/workflows/ci.yml)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/dashclip-delivery/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/dashclip-delivery)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/dashclip-delivery/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/dashclip-delivery)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=N3XT0R_dashclip-delivery&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=N3XT0R_dashclip-delivery)

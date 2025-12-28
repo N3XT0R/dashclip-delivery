@@ -5,19 +5,16 @@ declare(strict_types=1);
 namespace App\Listeners;
 
 use App\Events\User\UserCreated;
-use App\Mail\UserWelcomeMail;
-use Illuminate\Support\Facades\Mail;
+use App\Services\MailService;
 
 class SendWelcomeMail
 {
     public function handle(UserCreated $event): void
     {
-        try {
-            Mail::to($event->user->email)->queue(
-                new UserWelcomeMail($event->user, $event->fromBackend, $event->plainPassword)
-            );
-        } catch (\Throwable $e) {
-            report($e);
-        }
+        app(MailService::class)->sendUserWelcomeEmail(
+            user: $event->user,
+            fromBackend: $event->fromBackend,
+            plainPassword: $event->plainPassword
+        );
     }
 }

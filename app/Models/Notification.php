@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @deprecated will be removed in next major release
+ * @note replaced by mail notifications
+ */
 class Notification extends Model
 {
     use HasFactory;

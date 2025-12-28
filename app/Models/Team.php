@@ -42,6 +42,10 @@ class Team extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * The channels assigned to this team.
+     * @return BelongsToMany<Channel>
+     */
     public function assignedChannels(): BelongsToMany
     {
         return $this->belongsToMany(Channel::class)

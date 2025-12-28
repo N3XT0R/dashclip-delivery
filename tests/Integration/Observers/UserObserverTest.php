@@ -61,7 +61,7 @@ final class UserObserverTest extends DatabaseTestCase
             'model_type' => User::class,
         ]);
 
-        $observer = app()->make(UserObserver::class);
+        $observer = $this->app->make(UserObserver::class);
         $observer->created($user);
 
         $freshUser = $user->fresh();

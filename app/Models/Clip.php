@@ -28,6 +28,7 @@ class Clip extends Model
         'start_time',
         'end_time',
         'duration',
+        'human_readable_duration',
     ];
 
     public function video(): BelongsTo
@@ -68,6 +69,15 @@ class Clip extends Model
         return Attribute::get(
             fn() => ($this->start_sec !== null && $this->end_sec !== null)
                 ? $this->end_sec - $this->start_sec
+                : null,
+        );
+    }
+
+    protected function humanReadableDuration(): Attribute
+    {
+        return Attribute::get(
+            fn() => ($this->start_sec !== null && $this->end_sec !== null)
+                ? gmdate('i:s', (int)($this->end_sec - $this->start_sec))
                 : null,
         );
     }

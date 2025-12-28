@@ -7,7 +7,6 @@ use App\Models\Activity;
 use BackedEnum;
 use Filament\Actions;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -29,13 +28,6 @@ class ActivityResource extends Resource
         return ['description', 'event', 'subject_type', 'causer.name'];
     }
 
-    public static function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -47,8 +39,11 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('event')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subject')
-                    ->formatStateUsing(fn(Model $state) => sprintf('%s (%s)', $state->getKey() ?? '-',
-                        get_class($state)))
+                    ->formatStateUsing(fn(Model $state) => sprintf(
+                        '%s (%s)',
+                        $state->getKey() ?? '-',
+                        get_class($state)
+                    ))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('causer')
                     ->formatStateUsing(fn(Model $state) => sprintf('%s (%s)', $state['name'] ?? '-', get_class($state)))

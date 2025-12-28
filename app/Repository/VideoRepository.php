@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\DTO\UploaderPoolInfo;
 use App\Enum\StatusEnum;
+use App\Enum\UploaderTypeEnum;
 use App\Models\Clip;
 use App\Models\Team;
 use App\Models\User;
@@ -122,21 +123,23 @@ class VideoRepository
             ->groupBy(function (Video $video) {
                 $video->loadMissing(['team', 'clips']);
                 if ($video->team && $video->team->slug) {
-                    return 'team:' . $video->team->slug;
+                    return UploaderTypeEnum::TEAM->value . ':' . $video->team->slug;
                 }
+
+                $userString = UploaderTypeEnum::USER->value;
 
                 // Fallback: Uploader (Clip → user_id)
                 $uploaderId = $video->clips->first()?->user_id;
                 if ($uploaderId) {
-                    return 'user:' . $uploaderId;
+                    return $userString . ':' . $uploaderId;
                 }
-                return 'user:0';
+                return $userString . ':0';
             });
 
         return $grouped
             ->map(function (Collection $videosOfUploader, string $key) {
                 [$type, $id] = explode(':', $key, 2);
-                $id = $type === 'user' && is_numeric($id) ? (int)$id : $id;
+                $id = $type === UploaderTypeEnum::USER->value && is_numeric($id) ? (int)$id : $id;
 
                 return new UploaderPoolInfo($type, $id, $videosOfUploader);
             })

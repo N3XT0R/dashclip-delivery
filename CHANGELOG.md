@@ -7,6 +7,149 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Channel Access Application Workflow for Channel Operators**  
+  Introduced a new Filament page that enables channel operators to request access to their video pool via a guided
+  application form.  
+  The process supports both existing and new channels:
+    - Users can select their channel from a searchable list or submit detailed information for a new channel that is not
+      yet present in the system.
+    - Applications for new channels collect all necessary data for direct approval and automated channel creation in the
+      admin backend.
+    - A mandatory "Terms of Service" acceptance checkbox enforces explicit consent to platform usage conditions at the
+      time of channel access request, independent of generic registration.
+    - The workflow is fully permissioned and compatible with audit logging, enabling precise compliance tracking of
+      access requests and legal acceptance.  
+      This addition improves security for channel assets, clarifies account/channel responsibility, and streamlines the
+      onboarding of new partners.
+- **Channel Owner Dashboard**
+    - Added a dedicated dashboard for channel owners to manage and review offered video clips.
+    - Provides a tab-based overview of available, downloaded, expired, and returned offers.
+    - Enables bulk download of selected offers via background ZIP generation with progress tracking.
+    - Supports bulk downloads with asynchronous ZIP creation and real-time progress updates.
+- **Internationalization (i18n) Foundation**
+    - Introduced English base language files.
+    - Started migrating hardcoded German UI strings to the i18n system.
+- **Application Use-Case Layer**
+  Introduced a dedicated application/use-case layer to orchestrate complex
+  channel workflows such as approvals, assignments, and event dispatching.
+  This layer provides a single entry point for business workflows and
+  prepares the codebase for reuse across multiple entry points (e.g. UI pages).
+- **Channel Access Approval Notifications & Workflow Completion**
+    - Completed the end-to-end channel access approval lifecycle, covering application submission, approval decision,
+      and
+      post-approval communication.
+    - Introduced a secure, purpose-bound action token mechanism to validate and process approval actions via one-time
+      links.
+    - Added email notifications to channel owners or authorized team members when a channel access request is submitted.
+    - Approval links are secured using single-use, time-limited tokens and trigger the approval workflow via a dedicated
+      confirmation endpoint.
+    - Introduced user notifications to inform applicants when their channel access request has been approved.
+    - Notifications are delivered via email and in-app (Filament) notifications and are informational only (no further
+      action required).
+    - Implemented an event-driven approval flow using domain events and listeners to decouple token consumption,
+      access assignment, and notification dispatching.
+    - Ensures consistent behavior across all approval paths and supports future extensibility of approval-based
+      workflows.
+- **Offer Comments for Channel Operators**  
+  Enabled channel operators to add an internal comment to an offer.  
+  This allows channel owners to attach contextual or editorial notes to a submitted video, for example:
+    - planned usage context (e.g. “Video will be featured in episode XY”)
+    - internal editorial or organizational remarks  
+      The comment can be edited via the offer detail view and is stored together with the offer record, ensuring that
+      the
+      information remains available throughout the entire offer lifecycle (available, downloaded, returned).  
+      This feature improves editorial planning, internal communication, and contextual clarity without affecting the
+      original video submission or its metadata.
+- **SEO & OpenGraph Metadata Foundation**
+  Introduced a dedicated SEO metadata structure to improve search engine indexing
+  and link preview quality across public-facing pages.
+    - Added a page-level SEO slot to allow explicit control over meta titles,
+      descriptions, canonical URLs, and OpenGraph metadata.
+    - Optimized the landing page title and heading structure to clearly reflect
+      the platform’s primary use case and target audience.
+    - Introduced OpenGraph metadata for improved link previews in messaging and
+      collaboration tools (e.g. WhatsApp, Slack, Discord).
+    - Ensured SEO metadata is defined per page without coupling content logic
+      to layout templates, preserving clean separation of concerns.
+    - Prepared the frontend architecture for future extensions such as
+      structured data (Schema.org) and multilingual SEO.
+
+      This addition improves discoverability, link sharing quality, and
+      long-term maintainability of SEO-related concerns without introducing
+      marketing-driven coupling into the codebase.
+
+### Changed
+
+- **Approval Token Hashing Algorithm**  
+  Updated the hashing algorithm for channel approval tokens from `sha1` to `sha256` to enhance security and align with
+  modern cryptographic standards.  
+  The stronger hashing mechanism reduces the risk of collision attacks and improves overall integrity of the approval
+  workflow.
+- **Download Workflow Refactoring**  
+  Refactored client-side download handling to decouple it from backend route and domain changes.  
+  Updated the JavaScript download logic to rely on stable job-based identifiers instead of batch-specific parameters.  
+  Improved the robustness of the ZIP download flow by isolating frontend logic from backend routing details.
+- **Optional Portal-Based Access for Channel Operators**  
+  Channel operators can continue to access offers via existing links.
+  In addition, an optional portal-based workflow is now available, allowing registered
+  users to manage offers, downloads, and status information in a central location.
+  This provides a foundation for a more streamlined experience as the platform evolves.
+- **ChannelCreated Event**
+    - Moved the `ChannelCreated` event dispatch from the `CreateChannel`-Page to
+      `ChannelObserver::created` to ensure consistent triggering across all
+      creation pathways.
+- **UI Text Handling**
+    - Migrated static German UI texts to the i18n system.
+    - Improved maintainability and consistency of user-facing strings.
+- **Offer Notification Mail Handling**  
+  Adjusted the notification logic so that emails about new offers are no longer sent when no offers are available.  
+  This prevents misleading or empty notifications and aligns outbound communication with actual offer availability.
+
+### Fixed
+
+- **Incorrect Membership Check Affecting Channel Access Application State**  
+  Fixed an issue where the `channel_id` field in the Filament v4 channel access application form was always submitted as
+  `null`, even when a valid channel was selected.  
+  The underlying cause was an invalid relation check using `has($model)` on a BelongsToMany relation, which resulted in
+  a framework-level exception and prevented the form state from hydrating correctly.  
+  The method was updated to use a proper pivot-aware membership check via  
+  `wherePivot('user_id', $user->getKey())`, ensuring reliable evaluation of team membership without interrupting the
+  request lifecycle.  
+  As a result, all form fields — including dynamically displayed Select components — now hydrate and persist correctly,
+  ensuring complete and accurate application data for review and approval.
+- **Catch-All Mail Address Handling in Non-Production Environments**
+    - Fixed an issue where catch-all email addresses were appended instead of replacing original recipients in
+      local, testing, and staging environments.
+    - Centralized mail recipient resolution to ensure that all outgoing emails are safely redirected to the configured
+      `mail.catch_all` address outside of production.
+    - Prevented unintended delivery of test and development emails to real user inboxes while preserving production
+      behavior.
+- **Assignment Requeue Logic**
+    - Fixed an edge case where expired assignments with existing downloads were incorrectly requeued by excluding
+      assignments in `expired` state when valid downloads are already present.
+
+### Deprecated
+
+- **Notification-table Resource**  
+  The `NotificationTableResource` and `Notification`-Model has been deprecated and will be removed in a future
+  release.  
+  Users are encouraged to transition to the new user notification center available in the `/standard` panel, which
+  provides a more robust and user-friendly interface for managing notifications. Mails are logged by default in the new
+  system.
+- **Zip Download Route**  
+  The `/zips/{batch}/{channel}` route has been deprecated in favor of the new
+  `/zips/channel/{channel}` route.
+- **Channel-Approval**
+    - the `/channels/{channel}/approve/{token}` route has been deprecated in favor of
+      `/action-tokens/approve/{purpose}/{token}`.
+
+### Security
+
+- **Composer Packages**
+    - upgraded packages to newest version (e.g. laravel)
+
 ## [3.1.7] - 2025-12-28
 
 ### Fixed

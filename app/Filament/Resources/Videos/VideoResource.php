@@ -13,7 +13,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -31,14 +30,6 @@ class VideoResource extends Resource
     protected static ?string $pluralModelLabel = 'Videos';
 
     protected static bool $isScopedToTenant = false;
-
-    public static function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                //
-            ]);
-    }
 
     public static function table(Table $table): Table
     {

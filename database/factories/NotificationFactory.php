@@ -8,7 +8,11 @@ use App\Enum\NotificationTypeEnum;
 use App\Models\{Channel, Notification};
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @extends Factory<Notification> */
+/**
+ * @extends Factory<Notification>
+ * @deprecated will be removed in next major release
+ * @note replaced by mail notifications
+ */
 class NotificationFactory extends Factory
 {
     protected $model = Notification::class;

@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\DTO\ChannelPoolDto;
-use App\Mail\ChannelWelcomeMail;
+use App\Enum\Channel\ApplicationEnum;
+use App\Enum\UploaderTypeEnum;
 use App\Models\Channel;
-use App\Models\Team;
+use App\Models\ChannelApplication;
+use App\Models\User;
 use App\Models\Video;
 use App\Repository\ChannelRepository;
+use App\Repository\TeamRepository;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 
 class ChannelService
@@ -22,9 +25,9 @@ class ChannelService
 
     /**
      * Prepare active channels, rotation pool, and quota mapping.
-     * @param  int|null  $quotaOverride
-     * @param  string  $uploaderType
-     * @param  string|int  $uploaderId
+     * @param int|null $quotaOverride
+     * @param string $uploaderType
+     * @param string|int $uploaderId
      * @return ChannelPoolDto
      */
     public function prepareChannelsAndPool(
@@ -32,37 +35,31 @@ class ChannelService
         string $uploaderType,
         string|int $uploaderId,
     ): ChannelPoolDto {
+        $teamRepository = app(TeamRepository::class);
         $channels = $this->channelRepository->getActiveChannels();
-
-        $rotationPool = collect();
-        foreach ($channels as $channel) {
-            $rotationPool = $rotationPool->merge(
-                array_fill(0, max(1, (int)$channel->weight), $channel)
-            );
-        }
 
         /** @var array<int,int> $quota */
         $quota = $channels
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
 
-        if ($uploaderType === 'team') {
-            $team = Team::query()->where('slug', $uploaderId)->first();
+        if ($uploaderType === UploaderTypeEnum::TEAM->value) {
+            $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
 
             if ($team) {
-                $teamChannels = $team->assignedChannels()->get();
-
-                $teamQuotas = $teamChannels
-                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot->quota])
+                $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
+                $quota = $teamChannels
+                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot?->quota])
                     ->all();
-
-                foreach ($teamQuotas as $channelId => $teamQuota) {
-                    $quota[$channelId] = $teamQuota;
-                }
-
-                // Only use team channels in this case
                 $channels = $teamChannels;
             }
+        }
+
+        $rotationPool = collect();
+        foreach ($channels as $channel) {
+            $rotationPool = $rotationPool->merge(
+                array_fill(0, max(1, (int)$channel->weight), $channel)
+            );
         }
 
         return new ChannelPoolDto(
@@ -72,6 +69,12 @@ class ChannelService
         );
     }
 
+    /**
+     * @param Channel $channel
+     * @param string $approvalToken
+     * @return void
+     * @deprecated use ActionTokenService instead
+     */
     public function approve(Channel $channel, string $approvalToken): void
     {
         $expected = $channel->getApprovalToken();
@@ -88,8 +91,8 @@ class ChannelService
      * This applies the same selection logic that was previously
      * part of the console command, but isolated as pure business logic.
      *
-     * @param  string|null  $target  Channel ID or email address (optional)
-     * @param  bool  $force  Include already approved channels
+     * @param string|null $target Channel ID or email address (optional)
+     * @param bool $force Include already approved channels
      *
      * @return Collection<Channel>
      */
@@ -118,16 +121,17 @@ class ChannelService
      * The service layer handles the business logic and error handling,
      * while the repository is purely data access.
      *
-     * @param  Collection<Channel>  $channels
+     * @param Collection<Channel> $channels
      * @return array<string> List of email addresses that were successfully processed
      */
     public function sendWelcomeMails(Collection $channels): array
     {
         $sent = [];
+        $mailService = app()->get(MailService::class);
 
         foreach ($channels as $channel) {
             try {
-                Mail::to($channel->email)->send(new ChannelWelcomeMail($channel));
+                $mailService->sendChannelWelcomeMail($channel);
                 $sent[] = $channel->email;
             } catch (\Throwable $e) {
                 report($e);
@@ -141,11 +145,11 @@ class ChannelService
     /**
      * Wählt einen Zielkanal im Round-Robin über den gewichteten Rotationspool.
      *
-     * @param  Collection<int,Video>  $group
-     * @param  Collection<int,Channel>  $rotationPool
-     * @param  array<int,int>  $quota  (by reference, wird nicht verändert – nur gelesen)
-     * @param  array<int,int>  $blockedChannelIds
-     * @param  array<int, Collection<int,int>>  $assignedChannelsByVideo
+     * @param Collection<int,Video> $group
+     * @param Collection<int,Channel> $rotationPool
+     * @param array<int,int> $quota (by reference, wird nicht verändert – nur gelesen)
+     * @param array<int,int> $blockedChannelIds
+     * @param array<int, Collection<int,int>> $assignedChannelsByVideo
      */
     public function pickTargetChannel(
         Collection $group,
@@ -189,4 +193,88 @@ class ChannelService
         return null;
     }
 
+    /**
+     * Create a channel access application for the user.
+     *
+     * @param ChannelApplicationRequestDto $dto
+     * @param User $user
+     * @return ChannelApplication
+     */
+    public function applyForAccess(ChannelApplicationRequestDto $dto, User $user): ChannelApplication
+    {
+        $data = [
+            'user_id' => $user->getKey(),
+            'channel_id' => $dto->channelId,
+            'note' => $dto->note,
+            'status' => ApplicationEnum::PENDING->value,
+            'meta' => [
+                'tos_accepted' => true,
+                'tos_accepted_at' => now()->toDateTimeString(),
+            ],
+        ];
+        if (!$dto->otherChannelRequest && $dto->channelId) {
+            $existing = $this->channelRepository->hasPendingApplicationForChannel($user, $dto->channelId);
+
+            if ($existing) {
+                throw new \DomainException(__('filament.channel_application.messages.error.already_applied'));
+            }
+
+            return $this->channelRepository->createApplication($data);
+        }
+
+        $data = array_merge_recursive($data, [
+            'meta' => [
+                'new_channel' => [
+                    'name' => $dto->newChannelName,
+                    'creator_name' => $dto->newChannelCreatorName,
+                    'email' => $dto->newChannelEmail,
+                    'youtube_name' => $dto->newChannelYoutubeName,
+                ],
+            ],
+        ]);
+
+        return $this->channelRepository->createApplication($data);
+    }
+
+    /**
+     * Create a new channel based on the channel application meta data.
+     * @param ChannelApplication $application
+     * @return Channel
+     */
+    public function createNewChannelByChannelApplication(ChannelApplication $application): Channel
+    {
+        $hasNewChannelRequest = filled($application->meta?->channel['name'] ?? null);
+        if (!$hasNewChannelRequest) {
+            throw new InvalidArgumentException('No new channel request found in application meta.');
+        }
+
+        $meta = $application->meta->channel ?? [];
+        $channelName = $meta['name'] ?? '';
+
+        if (empty($channelName)) {
+            throw new \DomainException('Channel name cannot be empty.');
+        }
+
+        if ($this->existsChannelByName(trim($channelName))) {
+            throw new \DomainException('A channel with this name already exists.');
+        }
+
+        return $this->channelRepository->createChannel([
+            'name' => $meta['name'],
+            'creator_name' => $meta['creator_name'] ?? 'Unknown Creator',
+            'email' => $meta['email'] ?? '',
+            'youtube_name' => $meta['youtube_name'] ?? null,
+        ]);
+    }
+
+    /**
+     * Check if a channel exists by its name.
+     * @param string $name
+     * @return bool
+     */
+    public function existsChannelByName(string $name): bool
+    {
+        $channel = $this->channelRepository->findByName($name);
+        return $channel !== null;
+    }
 }

@@ -1,5 +1,5 @@
 @php use App\Facades\Cfg; @endphp
-        <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -36,9 +36,6 @@
             <p style="margin:0 0 12px 0;">Klicke auf den Button, um:</p>
             <ul style="margin:0 0 20px 24px; padding:0;">
                 <li style="margin:0 0 8px 0;"><strong>alle verfügbaren Videos</strong> mit Vorschau zu sehen</li>
-                <li style="margin:0 0 8px 0;"> Previews ohne Ton zu schauen (der vollständige Clip enthält das
-                    Original-Audio)
-                </li>
                 <li style="margin:0 0 8px 0;"> optional <strong>eine ZIP-Datei mit ausgewählten Clips</strong>
                     herunterzuladen
                 </li>
@@ -57,21 +54,17 @@
             </table>
 
             <p style="margin:0 0 12px 0;">
-                <strong>Gültig bis:</strong> {{ $expiresAt->timezone('Europe/Berlin')->format('d.m.Y, H:i') }}<br>
-                Danach werden die Dateien automatisch aus unserem System entfernt.
+                <strong>Gültig bis:</strong> {{ $expiresAt->timezone(config('app.timezone'))->format('d.m.Y, H:i') }}
             </p>
-
-            <p style="margin:0 0 16px 0;">
-                <a href="{{ $unusedUrl }}" target="_blank" style="color:#0ea5e9; text-decoration:underline;">
-                    Willst du diese Videos nicht verwenden? Sei so fair und gib sie zurück
-                </a>
-                – so können andere Kanäle profitieren und das Material nutzen.
-            </p>
-
+            @if($isChannelOperator === false)
+                <p style="margin:0 0 16px 0;">
+                    <a href="{{ $unusedUrl }}" target="_blank" style="color:#0ea5e9; text-decoration:underline;">
+                        Willst du diese Videos nicht verwenden? Sei so fair und gib sie zurück
+                    </a>
+                    – so können andere Kanäle profitieren und das Material nutzen.
+                </p>
+            @endif
             <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
-
-            <p style="margin:0 0 16px 0;"><em>P.S.: Falls dir mal langweilig ist, schau doch mal auf unsere Startseite.
-                    😉</em></p>
 
             <p style="margin:0 0 24px 0;">
                 Viele Grüße<br>Dein {{ config('app.name') }}-Team

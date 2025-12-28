@@ -2,14 +2,17 @@
 
 namespace App\Filament\Resources\Notifications;
 
-use App\Filament\Resources\NotificationResource\Pages;
 use App\Filament\Resources\Notifications\Pages\ListNotifications;
 use App\Models\Notification;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+/**
+ * @extends Resource<Notification>
+ * @deprecated will be removed in next major release
+ * @note replaced by mail notifications
+ */
 class NotificationResource extends Resource
 {
     protected static ?string $model = Notification::class;
@@ -21,11 +24,6 @@ class NotificationResource extends Resource
     protected static ?string $modelLabel = 'Notification';
 
     protected static ?string $pluralModelLabel = 'Notifications';
-
-    public static function form(Schema $schema): Schema
-    {
-        return $schema->components([]);
-    }
 
     public static function table(Table $table): Table
     {

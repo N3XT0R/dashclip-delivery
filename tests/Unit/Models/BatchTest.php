@@ -65,7 +65,6 @@ final class BatchTest extends DatabaseTestCase
 
     public function testFactoryStatesProduceValidValues(): void
     {
-        // If your factory defines state helpers like ->type('assign') and ->finished()
         $batch = Batch::factory()->type('assign')->finished()->create();
 
         $this->assertSame('assign', $batch->type);
