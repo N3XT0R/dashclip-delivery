@@ -94,7 +94,7 @@ class BatchService
      *  - unassigned videos (ever)
      *  - or newly added since the last completed assign batch
      *  - plus re-queueable ones (expired / returned / etc.)
-     * @param  Batch|null  $lastFinished
+     * @param Batch|null $lastFinished
      * @return Collection<Video>
      */
     public function collectPoolVideos(?Batch $lastFinished): Collection
@@ -111,6 +111,7 @@ class BatchService
         // Requeue-Fälle (z. B. expired)
         $requeueIds = Assignment::query()
             ->whereIn('status', StatusEnum::getRequeueStatuses())
+            ->whereDoesntHave('downloads')
             ->pluck('video_id')
             ->unique();
 
