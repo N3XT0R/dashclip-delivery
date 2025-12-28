@@ -49,8 +49,8 @@ final readonly class Actions
                 fn(?Assignment $record): ?Schema => $record !== null ? $page->getDetailsInfolist($record) : null
             )
             ->modalFooterActions([
-                $this->returnOffer($page),
                 $this->submit($page),
+                $this->returnOffer($page),
             ])
             ->modalSubmitActionLabel(__('common.save'))
             ->modalCancelActionLabel(__('common.close'));
