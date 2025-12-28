@@ -44,6 +44,13 @@ class AssignmentRepository
             ->all();
     }
 
+    /**
+     * Mark assignments as unused (rejected) for a given batch and channel.
+     * @param Batch $batch
+     * @param Channel $channel
+     * @param Collection $ids
+     * @return bool
+     */
     public function markUnused(Batch $batch, Channel $channel, Collection $ids): bool
     {
         return Assignment::query()
@@ -59,6 +66,13 @@ class AssignmentRepository
                 ]) > 0;
     }
 
+    /**
+     * Mark an assignment as downloaded and create a download record.
+     * @param Assignment $assignment
+     * @param string $ip
+     * @param string|null $userAgent
+     * @return Download
+     */
     public function markDownloaded(Assignment $assignment, string $ip, ?string $userAgent): Download
     {
         $assignment->update(['status' => StatusEnum::PICKEDUP->value]);
@@ -72,6 +86,12 @@ class AssignmentRepository
         ]);
     }
 
+    /**
+     * Retrieve assignments that have been picked up by a channel.
+     * @param Batch $batch
+     * @param Channel $channel
+     * @return EloquentCollection
+     */
     public function fetchPickedUp(Batch $batch, Channel $channel): EloquentCollection
     {
         return Assignment::with('video.clips')
@@ -127,7 +147,11 @@ class AssignmentRepository
             ->get();
     }
 
-
+    /**
+     * Get the count of available offers for a user.
+     * @param User $user
+     * @return int
+     */
     public function getAvailableOffersCountForUser(User $user): int
     {
         return Assignment::query()->hasUsersClips($user)
@@ -140,6 +164,11 @@ class AssignmentRepository
             ->count();
     }
 
+    /**
+     * Get the count of expired offers for a user.
+     * @param User $user
+     * @return int
+     */
     public function getExpiredOffersCountForUser(User $user): int
     {
         return Assignment::query()->hasUsersClips($user)
@@ -147,6 +176,11 @@ class AssignmentRepository
             ->count();
     }
 
+    /**
+     * Get the query builder for available offers for a channel.
+     * @param Channel $channel
+     * @return Builder
+     */
     private function getAvailableOfferQueryForChannel(Channel $channel): Builder
     {
         return Assignment::query()
@@ -158,6 +192,11 @@ class AssignmentRepository
             });
     }
 
+    /**
+     * Get the count of downloaded offers for a channel.
+     * @param Channel|null $channel
+     * @return int
+     */
     public function getDownloadedOffersCountForChannel(?Channel $channel = null): int
     {
         if (null === $channel) {
@@ -169,6 +208,11 @@ class AssignmentRepository
             ->count();
     }
 
+    /**
+     * Get the count of expired offers for a channel.
+     * @param Channel|null $channel
+     * @return int
+     */
     public function getExpiredOffersCountForChannel(?Channel $channel = null): int
     {
         if (null === $channel) {
@@ -180,6 +224,11 @@ class AssignmentRepository
             ->count();
     }
 
+    /**
+     * Get the count of returned (rejected) offers for a channel.
+     * @param Channel|null $channel
+     * @return int
+     */
     public function getReturnedOffersCountForChannel(?Channel $channel = null): int
     {
         if (null === $channel) {
@@ -191,6 +240,11 @@ class AssignmentRepository
             ->count();
     }
 
+    /**
+     * Get the count of available offers for a channel.
+     * @param Channel|null $channel
+     * @return int
+     */
     public function getAvailableOffersCountForChannel(?Channel $channel = null): int
     {
         if (null === $channel) {
@@ -199,6 +253,11 @@ class AssignmentRepository
         return $this->getAvailableOfferQueryForChannel($channel)->count();
     }
 
+    /**
+     * Get the count of picked up offers for a user.
+     * @param User $user
+     * @return int
+     */
     public function getPickedUpOffersCountForUser(User $user): int
     {
         return Assignment::query()->hasUsersClips($user)
