@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2025-12-28
+
 ### Added
 
 - **Channel Access Application Workflow for Channel Operators**  
