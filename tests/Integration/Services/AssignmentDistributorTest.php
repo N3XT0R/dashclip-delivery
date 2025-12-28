@@ -4,7 +4,6 @@ namespace Tests\Integration\Services;
 
 use App\Models\{Assignment, Channel, Clip, Video};
 use App\Services\AssignmentDistributor;
-use RuntimeException;
 use Tests\DatabaseTestCase;
 use Tests\Integration\Services\Stubs\FakeDistributorDependencies;
 
@@ -44,7 +43,7 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->assertDatabaseHas('assignments', ['video_id' => $video->getKey()]);
     }
 
-    public function testPrepareChannelsOrAbortThrowsWhenNoChannelsExist(): void
+    public function testDistributorReturnsWithoutAssignmentsWhenNoChannelsExist(): void
     {
         // Arrange
         Channel::query()->delete();
@@ -53,11 +52,12 @@ class AssignmentDistributorTest extends DatabaseTestCase
 
         $distributor = $this->assignmentDistributor;
 
-        // Act + Assert
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Keine Kanäle konfiguriert.');
+        // Act
+        $result = $distributor->distribute();
 
-        $distributor->distribute();
+        // Assert: distributor catches the missing-channel exception and finishes the batch gracefully
+        $this->assertSame(['assigned' => 0, 'skipped' => 0], $result);
+        $this->assertDatabaseCount('assignments', 0);
     }
 
     public function testDistributorUsesTeamSlugForPartitioning(): void
