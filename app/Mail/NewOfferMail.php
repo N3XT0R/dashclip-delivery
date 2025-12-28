@@ -55,24 +55,4 @@ class NewOfferMail extends AbstractLoggedMail
             'isChannelOperator' => $this->isChannelOperator,
         ];
     }
-
-
-    /**
-     * @return NewOfferMail
-     * @deprecated Use envelope() and content() instead.
-     */
-    public function build(): NewOfferMail
-    {
-        $mailTo = (string)Cfg::get('email_admin_mail', 'email');
-        $notification = (bool)Cfg::get('email_get_bcc_notification', 'email');
-        $offerMail = $this->subject('Neue Videos verfügbar – Batch #' . $this->batch->getKey())
-            ->view('emails.new-offer');
-
-        if (true === $notification && !empty($mailTo)) {
-            $offerMail = $offerMail
-                ->bcc($mailTo);
-        }
-
-        return $offerMail;
-    }
 }
