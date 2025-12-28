@@ -17,7 +17,6 @@ return [
         'expired' => 'Abgelaufen',
         'returned' => 'Zurückgewiesen',
     ],
-
     'stats' => [
         'available' => [
             'label' => 'Verfügbare Angebote',
@@ -84,6 +83,12 @@ return [
             'file_size' => 'Dateigröße',
             'duration' => 'Länge',
             'filename' => 'Dateiname',
+        ],
+        'note' => [
+            'heading' => 'Nachricht an den Einsender',
+            'label' => 'Kommentar vom Kanalbetreiber',
+            'placeholder' => 'Geben Sie hier Ihren Kommentar ein...',
+            'helper_text' => 'Dieser Kommentar wird zusammen mit dem Angebot gespeichert und dem Einsender angezeigt.',
         ],
         'clips' => [
             'heading' => 'Clip-Informationen',

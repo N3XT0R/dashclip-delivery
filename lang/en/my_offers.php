@@ -85,6 +85,12 @@ return [
             'duration' => 'Duration',
             'filename' => 'Filename',
         ],
+        'note' => [
+            'heading' => 'Message to the submitter',
+            'label' => 'Comment from the channel owner',
+            'placeholder' => 'Enter your comment here...',
+            'helper_text' => 'This comment will be saved with the offer and shown to the submitter.',
+        ],
         'clips' => [
             'heading' => 'Clip Information',
             'role' => 'Role',

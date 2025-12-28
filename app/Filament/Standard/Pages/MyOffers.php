@@ -179,10 +179,12 @@ class MyOffers extends Page implements HasTable
                             ->default('—'),
                     ])
                     ->columns(3),
-                Section::make('Nachricht an den Einsender')
+                Section::make(__('my_offers.modal.note.heading'))
                     ->schema([
                         Textarea::make('note')
-                            ->label('Kommentar vom Kanalbetreiber')
+                            ->label(__('my_offers.modal.note.label'))
+                            ->placeholder(__('my_offers.modal.note.placeholder'))
+                            ->helperText(__('my_offers.modal.note.helper_text'))
                             ->disabled(function () use ($assignment): bool {
                                 if (in_array($assignment->status, StatusEnum::getReadyStatus(), true)) {
                                     return false;
