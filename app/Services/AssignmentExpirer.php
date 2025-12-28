@@ -18,9 +18,9 @@ class AssignmentExpirer
         $batch = Batch::query()->create(['type' => BatchTypeEnum::ASSIGN->value, 'started_at' => now()]);
         $cnt = 0;
 
-        Assignment::query()
-            ->whereIn('status', StatusEnum::expirableStatuses())
+        Assignment::query()->where('status', StatusEnum::NOTIFIED->value)
             ->where('expires_at', '<', now())
+            ->whereNot('status', StatusEnum::PICKEDUP->value)
             ->chunkById(500, function ($items) use (&$cnt, $cooldownDays) {
                 foreach ($items as $a) {
                     $a->update(['status' => StatusEnum::EXPIRED->value]);

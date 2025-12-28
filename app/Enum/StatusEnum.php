@@ -35,7 +35,6 @@ enum StatusEnum: string
         return [
             self::QUEUED->value,
             self::NOTIFIED->value,
-            self::REJECTED->value,
         ];
     }
 
