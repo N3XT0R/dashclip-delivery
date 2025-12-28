@@ -39,10 +39,12 @@ enum StatusEnum: string
         ];
     }
 
+    /**
+     * Alias for getReturnableStatuses.
+     * @return array
+     */
     public static function getEditableStatuses(): array
     {
-        $statuses = self::getReadyStatus();
-        $statuses[] = self::PICKEDUP->value;
-        return $statuses;
+        return self::getReturnableStatuses();
     }
 }
