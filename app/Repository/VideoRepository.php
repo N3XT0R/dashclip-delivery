@@ -79,8 +79,8 @@ class VideoRepository
     }
 
     /**
-     * @param  Collection<Video>  $pool
-     * @param  iterable  $ids
+     * @param Collection<Video> $pool
+     * @param iterable $ids
      * @return Collection
      */
     public function getVideosByIdsFromPool(Collection $pool, iterable $ids): Collection
@@ -98,7 +98,7 @@ class VideoRepository
      * Partitions videos by uploader (Clip → user_id).
      * Videos without uploader are grouped under key "0".
      *
-     * @param  Collection<Video>  $videos
+     * @param Collection<Video> $videos
      * @return array<int, Collection<Video>>
      */
     public function partitionByUploader(Collection $videos): array
@@ -112,7 +112,7 @@ class VideoRepository
      * Partitions videos by team slug, or by uploader (Clip → user_id) if no team is assigned.
      * Videos without team and uploader are grouped under key "user:0".
      *
-     * @param  Collection<Video>  $videos
+     * @param Collection<Video> $videos
      * @return array<int, UploaderPoolInfo>
      */
     public function partitionByTeamOrUploader(Collection $videos): array
@@ -122,13 +122,13 @@ class VideoRepository
             ->groupBy(function (Video $video) {
                 $video->loadMissing(['team', 'clips']);
                 if ($video->team && $video->team->slug) {
-                    return 'team:'.$video->team->slug;
+                    return 'team:' . $video->team->slug;
                 }
 
                 // Fallback: Uploader (Clip → user_id)
                 $uploaderId = $video->clips->first()?->user_id;
                 if ($uploaderId) {
-                    return 'user:'.$uploaderId;
+                    return 'user:' . $uploaderId;
                 }
                 return 'user:0';
             });
@@ -153,5 +153,15 @@ class VideoRepository
     public function getVideosCountForTeam(Team $team): int
     {
         return Video::query()->where('team_id', $team->getKey())->count();
+    }
+
+    public function getVideosWithoutTeam(): Collection
+    {
+        return Video::query()->whereNull('team_id')->get();
+    }
+
+    public function update(Video $video, array $data): void
+    {
+        $video->update($data);
     }
 }
