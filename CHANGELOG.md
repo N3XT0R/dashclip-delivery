@@ -52,6 +52,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       access assignment, and notification dispatching.
     - Ensures consistent behavior across all approval paths and supports future extensibility of approval-based
       workflows.
+- **Offer Comments for Channel Operators**  
+  Enabled channel operators to add an internal comment to an offer.  
+  This allows channel owners to attach contextual or editorial notes to a submitted video, for example:
+    - planned usage context (e.g. “Video will be featured in episode XY”)
+    - internal editorial or organizational remarks  
+      The comment can be edited via the offer detail view and is stored together with the offer record, ensuring that
+      the
+      information remains available throughout the entire offer lifecycle (available, downloaded, returned).  
+      This feature improves editorial planning, internal communication, and contextual clarity without affecting the
+      original video submission or its metadata.
 
 ### Changed
 
