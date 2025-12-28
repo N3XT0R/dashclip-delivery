@@ -18,7 +18,6 @@ class AssignVideosToTeams extends Command
             $videos = $videoRepository->getVideosWithoutTeam();
             foreach ($videos as $video) {
                 $assignVideoToTeam->handle($video);
-                $this->info("Assigned video ID {$video->id} to team.");
             }
             return self::SUCCESS;
         } catch (\Throwable $e) {

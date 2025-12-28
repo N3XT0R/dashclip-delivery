@@ -160,8 +160,8 @@ class VideoRepository
         return Video::query()->whereNull('team_id')->get();
     }
 
-    public function update(Video $video, array $data): void
+    public function update(Video $video, array $data): bool
     {
-        $video->update($data);
+        return $video->update($data);
     }
 }
