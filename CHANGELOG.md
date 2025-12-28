@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.7] - 2025-12-28
+
+### Fixed
+
+- **Video-Team Assignment**
+    - Videos without an assigned team are now automatically processed via a scheduled command, ensuring proper team
+      assignment and preventing delivery and permission issues.
+
 ## [3.1.6] - 2025-12-26
 
 ### Fixed
