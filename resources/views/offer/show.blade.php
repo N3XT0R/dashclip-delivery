@@ -1,5 +1,5 @@
 @php
-    use Illuminate\Support\Facades\Storage;use Illuminate\Support\Number;
+    use App\Enum\Users\RoleEnum;use Illuminate\Support\Facades\Storage;use Illuminate\Support\Number;
 @endphp
 
 @extends('layouts.app')
@@ -102,7 +102,7 @@
     </style>
 @endpush
 @section('content')
-    @guest
+    @if(null === auth()->user() || !auth()->user()?->hasRole(RoleEnum::CHANNEL_OPERATOR->value))
         <div class="register-callout">
             <h3>Zentraler Zugriff über das Portal</h3>
             <p>
@@ -126,7 +126,7 @@
                 </a>
             </div>
         </div>
-    @endguest
+    @endif
     @php
         // nach bundle_key gruppieren (Fallback "Einzeln")
         $byBundle = $items->groupBy(function($a){
