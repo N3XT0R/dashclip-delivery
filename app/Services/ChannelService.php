@@ -56,7 +56,7 @@ class ChannelService
             if ($team) {
                 $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
                 $quota = $teamChannels
-                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => $channel->weekly_quota])
+                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot->quota])
                     ->all();
                 $channels = $teamChannels;
             }
