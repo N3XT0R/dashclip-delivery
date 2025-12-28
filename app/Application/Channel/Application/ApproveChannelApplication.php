@@ -36,10 +36,7 @@ final readonly class ApproveChannelApplication
             if ($isNewChannel) {
                 $channel = $this->channelService
                     ->createNewChannelByChannelApplication($application);
-                $roleRepository = app(RoleRepository::class);
-                if (!$roleRepository->hasRole($applicant, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD)) {
-                    $roleRepository->giveRoleToUser($applicant, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD);
-                }
+                $this->giveChannelOperatorRoleToUser($applicant);
             } else {
                 $channel = $application->channel;
             }
@@ -73,6 +70,14 @@ final readonly class ApproveChannelApplication
         } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
+        }
+    }
+
+    private function giveChannelOperatorRoleToUser(User $user): void
+    {
+        $roleRepository = app(RoleRepository::class);
+        if (!$roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD)) {
+            $roleRepository->giveRoleToUser($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD);
         }
     }
 }
