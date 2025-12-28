@@ -39,19 +39,13 @@ class ChannelService
         $channels = $this->channelRepository->getActiveChannels();
 
         /** @var array<int,int> $quota */
-        $quota = $channels
-            ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
-            ->all();
+
 
         if ($uploaderType === UploaderTypeEnum::TEAM->value) {
             $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
 
             if ($team) {
-                $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
-                $quota = $teamChannels
-                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => $channel->weekly_quota])
-                    ->all();
-                $channels = $teamChannels;
+                $channels = $this->channelRepository->getTeamAssignedChannels($team);
             }
         }
 
@@ -61,6 +55,10 @@ class ChannelService
                 array_fill(0, max(1, (int)$channel->weight), $channel)
             );
         }
+
+        $quota = $channels
+            ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
+            ->all();
 
         return new ChannelPoolDto(
             channels: $channels,
