@@ -17,6 +17,13 @@ use Illuminate\Support\Collection;
 
 class AssignmentRepository
 {
+    /**
+     * Create a new assignment linking a video to a channel within a batch.
+     * @param Video $video
+     * @param Channel $channel
+     * @param Batch $batch
+     * @return Assignment
+     */
     public function createAssignment(Video $video, Channel $channel, Batch $batch): Assignment
     {
         return Assignment::query()->create([
