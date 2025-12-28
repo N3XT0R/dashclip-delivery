@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Enum\Assignment;
 
 use App\Enum\StatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class StatusEnumTest extends TestCase
@@ -67,19 +68,21 @@ final class StatusEnumTest extends TestCase
         }
     }
 
-    public function testIsEditableStatusReturnsFalseForNonEditableStatuses(): void
+    #[DataProvider('nonEditableStatusProvider')]
+    public function testIsEditableStatusReturnsFalseForNonEditableStatuses(string $status): void
     {
-        $nonEditableStatuses = [
-            StatusEnum::EXPIRED->value,
-            StatusEnum::REJECTED->value,
-            'unknown_status',
-        ];
+        $this->assertFalse(
+            StatusEnum::isEditableStatus($status),
+            sprintf('Expected status "%s" to be non-editable.', $status)
+        );
+    }
 
-        foreach ($nonEditableStatuses as $status) {
-            $this->assertFalse(
-                StatusEnum::isEditableStatus($status),
-                sprintf('Expected status "%s" to be non-editable.', $status)
-            );
-        }
+    public static function nonEditableStatusProvider(): array
+    {
+        return [
+            'expired status' => [StatusEnum::EXPIRED->value],
+            'rejected status' => [StatusEnum::REJECTED->value],
+            'unknown status' => ['unknown_status'],
+        ];
     }
 }
