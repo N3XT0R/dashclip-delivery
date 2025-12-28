@@ -38,4 +38,11 @@ enum StatusEnum: string
             self::QUEUED->value,
         ];
     }
+
+    public static function getEditableStatuses(): array
+    {
+        $statuses = self::getReadyStatus();
+        $statuses[] = self::PICKEDUP->value;
+        return $statuses;
+    }
 }
