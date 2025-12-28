@@ -36,6 +36,22 @@ class ChannelService
     ): ChannelPoolDto {
         $teamRepository = app(TeamRepository::class);
         $channels = $this->channelRepository->getActiveChannels();
+        $teamQuotas = [];
+
+        if ($uploaderType === 'team') {
+            $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
+
+            if ($team) {
+                $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
+
+                $teamQuotas = $teamChannels
+                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot->quota])
+                    ->all();
+
+                // Only use team channels in this case
+                $channels = $teamChannels;
+            }
+        }
 
         $rotationPool = collect();
         foreach ($channels as $channel) {
@@ -49,23 +65,8 @@ class ChannelService
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
 
-        if ($uploaderType === 'team') {
-            $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
-
-            if ($team) {
-                $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
-
-                $teamQuotas = $teamChannels
-                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot->quota])
-                    ->all();
-
-                foreach ($teamQuotas as $channelId => $teamQuota) {
-                    $quota[$channelId] = $teamQuota;
-                }
-
-                // Only use team channels in this case
-                $channels = $teamChannels;
-            }
+        foreach ($teamQuotas as $channelId => $teamQuota) {
+            $quota[$channelId] = $teamQuota;
         }
 
         return new ChannelPoolDto(
