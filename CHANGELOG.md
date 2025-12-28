@@ -62,6 +62,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       information remains available throughout the entire offer lifecycle (available, downloaded, returned).  
       This feature improves editorial planning, internal communication, and contextual clarity without affecting the
       original video submission or its metadata.
+- **SEO & OpenGraph Metadata Foundation**
+  Introduced a dedicated SEO metadata structure to improve search engine indexing
+  and link preview quality across public-facing pages.
+    - Added a page-level SEO slot to allow explicit control over meta titles,
+      descriptions, canonical URLs, and OpenGraph metadata.
+    - Optimized the landing page title and heading structure to clearly reflect
+      the platform’s primary use case and target audience.
+    - Introduced OpenGraph metadata for improved link previews in messaging and
+      collaboration tools (e.g. WhatsApp, Slack, Discord).
+    - Ensured SEO metadata is defined per page without coupling content logic
+      to layout templates, preserving clean separation of concerns.
+    - Prepared the frontend architecture for future extensions such as
+      structured data (Schema.org) and multilingual SEO.
+
+      This addition improves discoverability, link sharing quality, and
+      long-term maintainability of SEO-related concerns without introducing
+      marketing-driven coupling into the codebase.
 
 ### Changed
 
