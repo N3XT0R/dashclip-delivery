@@ -79,6 +79,10 @@ class OfferNotifier
             $assignment->save();
         }
 
+        if ($assignments->isEmpty()) {
+            return;
+        }
+
         $isOperator = $this->channelOperatorService->isChannelEmailOwnerChannelOperator($channel);
         app(MailService::class)->sendNewOfferMail($channel, $assignBatch, $expireDate, $isOperator);
     }
