@@ -7,4 +7,5 @@ namespace App\Enum;
 enum UploaderTypeEnum: string
 {
     case TEAM = 'team';
+    case USER = 'user';
 }
