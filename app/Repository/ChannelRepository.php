@@ -10,6 +10,7 @@ use App\Models\ChannelApplication;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Collection as SupportCollection;
 
 class ChannelRepository
@@ -91,7 +92,7 @@ class ChannelRepository
     /**
      * Get channels assigned to a specific team.
      * @param Team $team
-     * @return SupportCollection<Channel>
+     * @return SupportCollection<Channel&Pivot>
      */
     public function getTeamAssignedChannels(Team $team): SupportCollection
     {
