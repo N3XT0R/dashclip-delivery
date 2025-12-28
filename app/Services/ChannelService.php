@@ -15,6 +15,7 @@ use App\Models\Video;
 use App\Repository\ChannelRepository;
 use App\Repository\TeamRepository;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class ChannelService
@@ -50,7 +51,7 @@ class ChannelService
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
 
-        if ($uploaderType === UploaderTypeEnum::TEAM->value) {
+        if (Str::startsWith($uploaderType, UploaderTypeEnum::TEAM->value)) {
             $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
 
             if ($team) {
