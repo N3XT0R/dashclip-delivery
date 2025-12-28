@@ -14,7 +14,9 @@
           content="Einmaliger Upload von Dashcam-Clips für mehrere YouTube-Kanäle. Faire, transparente Verteilung ohne Mehrfachformulare.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:image" content="{{ asset('images/og-image.png') }}">
+    <meta property="og:image" content="{{ asset('images/logo.png') }}">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
 @endsection
 @section('subtitle', null)
 
