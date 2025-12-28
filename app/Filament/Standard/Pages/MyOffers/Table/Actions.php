@@ -113,8 +113,7 @@ final readonly class Actions
     public function submit(MyOffers $page): Action
     {
         return Action::make('submit')
-            ->label('common.submit')
-            ->translateLabel()
+            ->label(__('common.save'))
             ->color('primary')
             ->visible(function (?Assignment $record) use ($page): bool {
                 $tabs = ['available', 'downloaded'];
