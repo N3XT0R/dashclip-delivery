@@ -123,6 +123,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `mail.catch_all` address outside of production.
     - Prevented unintended delivery of test and development emails to real user inboxes while preserving production
       behavior.
+- **Assignment Requeue Logic**
+    - Fixed an edge case where expired assignments with existing downloads were incorrectly requeued by excluding
+      assignments in `expired` state when valid downloads are already present.
 
 ### Deprecated
 
