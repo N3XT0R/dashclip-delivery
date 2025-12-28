@@ -6,4 +6,5 @@ return [
     'no' => 'Nein',
     'expired' => 'Abgelaufen',
     'close' => 'Schließen',
+    'save' => 'Speichern',
 ];

@@ -6,4 +6,5 @@ return [
     'no' => 'No',
     'expired' => 'Expired',
     'close' => 'Close',
+    'save' => 'Save',
 ];
