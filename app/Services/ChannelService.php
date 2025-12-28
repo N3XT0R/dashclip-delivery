@@ -15,7 +15,6 @@ use App\Models\Video;
 use App\Repository\ChannelRepository;
 use App\Repository\TeamRepository;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class ChannelService
@@ -39,19 +38,12 @@ class ChannelService
         $teamRepository = app(TeamRepository::class);
         $channels = $this->channelRepository->getActiveChannels();
 
-        $rotationPool = collect();
-        foreach ($channels as $channel) {
-            $rotationPool = $rotationPool->merge(
-                array_fill(0, max(1, (int)$channel->weight), $channel)
-            );
-        }
-
         /** @var array<int,int> $quota */
         $quota = $channels
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
 
-        if (Str::startsWith($uploaderType, UploaderTypeEnum::TEAM->value)) {
+        if ($uploaderType === UploaderTypeEnum::TEAM->value) {
             $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
 
             if ($team) {
@@ -61,6 +53,13 @@ class ChannelService
                     ->all();
                 $channels = $teamChannels;
             }
+        }
+
+        $rotationPool = collect();
+        foreach ($channels as $channel) {
+            $rotationPool = $rotationPool->merge(
+                array_fill(0, max(1, (int)$channel->weight), $channel)
+            );
         }
 
         return new ChannelPoolDto(
