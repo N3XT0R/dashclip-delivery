@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Enum\Channel\ApplicationEnum;
+use App\Enum\Guard\GuardEnum;
+use App\Enum\Users\RoleEnum;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\Team;
@@ -152,6 +154,13 @@ class ChannelRepository
                 'is_user_verified' => $isUserVerified,
             ],
         ]);
+
+        if ($isUserVerified) {
+            $roleRepository = app(RoleRepository::class);
+            if (!$roleRepository->hasRole($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD)) {
+                $roleRepository->giveRoleToUser($user, RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD);
+            }
+        }
 
         return $channel->channelUsers()
             ->wherePivot('user_id', $user->getKey())
