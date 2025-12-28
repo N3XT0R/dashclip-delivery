@@ -30,6 +30,15 @@ enum StatusEnum: string
         ];
     }
 
+    public static function expirableStatuses(): array
+    {
+        return [
+            self::QUEUED->value,
+            self::NOTIFIED->value,
+            self::REJECTED->value,
+        ];
+    }
+
     public static function getReturnableStatuses(): array
     {
         return [
