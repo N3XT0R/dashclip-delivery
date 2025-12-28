@@ -73,4 +73,21 @@ readonly class VideoService
         return $this->videoRepository->getClipForVideo($video, $startSec, $endSec);
     }
 
+    public function assignVideoToOwnTeam(Video $video): bool
+    {
+        $result = false;
+        $firstClip = $video->clips()->first();
+        if ($firstClip !== null) {
+            $user = $firstClip->user;
+            $team = $user->ownTeams->first();
+            if ($team !== null) {
+                $result = $this->videoRepository->update($video, [
+                    'team_id' => $team->getKey()
+                ]);
+            }
+        }
+
+        return $result;
+    }
+
 }

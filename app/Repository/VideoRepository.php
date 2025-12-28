@@ -157,4 +157,14 @@ class VideoRepository
     {
         return Video::query()->where('team_id', $team->getKey())->count();
     }
+
+    public function getVideosWithoutTeam(): Collection
+    {
+        return Video::query()->whereNull('team_id')->get();
+    }
+
+    public function update(Video $video, array $data): bool
+    {
+        return $video->update($data);
+    }
 }

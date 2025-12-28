@@ -175,6 +175,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         )->withTimestamps();
     }
 
+    public function ownTeams(): BelongsToMany
+    {
+        return $this->teams()->where('owner_id', $this->getKey());
+    }
+
     public function getTenants(Panel $panel): Collection
     {
         return $this->teams()->get();
