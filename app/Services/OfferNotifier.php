@@ -63,6 +63,10 @@ class OfferNotifier
             ->where('channel_id', $channel->getKey())
             ->get();
 
+        if ($assignments->isEmpty()) {
+            return;
+        }
+
         /**
          * @var Notification $notification
          * @deprecated will be removed in next major
@@ -79,9 +83,6 @@ class OfferNotifier
             $assignment->save();
         }
 
-        if ($assignments->isEmpty()) {
-            return;
-        }
 
         $isOperator = $this->channelOperatorService->isChannelEmailOwnerChannelOperator($channel);
         app(MailService::class)->sendNewOfferMail($channel, $assignBatch, $expireDate, $isOperator);
