@@ -6,6 +6,7 @@ namespace App\Filament\Standard\Pages;
 
 use App\Application\Channel\GetCurrentChannel;
 use App\Application\Offer\DispatchZipDownload;
+use App\Enum\StatusEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
@@ -17,6 +18,7 @@ use App\Services\LinkService;
 use BackedEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
@@ -43,6 +45,8 @@ class MyOffers extends Page implements HasTable
     protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
 
     protected static ?int $navigationSort = 10;
+
+    public ?string $note = null;
 
 
     public static function getNavigationLabel(): string
@@ -152,6 +156,7 @@ class MyOffers extends Page implements HasTable
             ->state([
                 'video' => $assignment->video,
                 'clips' => $assignment->video->clips,
+                'note' => $assignment->note,
             ])
             ->schema([
                 Section::make(__('my_offers.modal.preview.heading'))
@@ -174,7 +179,19 @@ class MyOffers extends Page implements HasTable
                             ->default('—'),
                     ])
                     ->columns(3),
-
+                Section::make('Nachricht an den Einsender')
+                    ->schema([
+                        Textarea::make('note')
+                            ->label('Kommentar vom Kanalbetreiber')
+                            ->disabled(function () use ($assignment): bool {
+                                if (in_array($assignment->status, StatusEnum::getReadyStatus(), true)) {
+                                    return false;
+                                }
+                                return true;
+                            })
+                            ->rows(5),
+                    ])
+                    ->collapsible(),
                 Section::make(__('my_offers.modal.clips.heading'))
                     ->schema([
                         ViewField::make('clips')

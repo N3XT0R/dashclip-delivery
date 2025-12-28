@@ -6,7 +6,11 @@ return [
     'title' => 'My Offers',
     'navigation_label' => 'My Offers',
     'navigation_group' => 'Media',
-
+    'notifications' => [
+        'note_updated' => [
+            'title' => 'Comment saved',
+        ],
+    ],
     'tabs' => [
         'available' => 'Available',
         'downloaded' => 'Downloaded',

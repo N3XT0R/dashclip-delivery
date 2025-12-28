@@ -179,5 +179,26 @@ readonly class AssignmentService
 
         return $result;
     }
+
+    public function updateNote(Assignment $assignment, ?string $note, ?User $user = null): bool
+    {
+        $assignment->note = $note;
+
+        $result = $assignment->save();
+        if ($result) {
+            activity('assignments')
+                ->causedBy($user)
+                ->performedOn($assignment)
+                ->withProperties([
+                    'assignment_id' => $assignment->getKey(),
+                    'channel_id' => $assignment->channel_id,
+                    'video_name' => $assignment->video->original_name,
+                    'note_updated_at' => now()->toDateTimeString(),
+                ])
+                ->log('Assignment note updated by channel');
+        }
+
+        return $result;
+    }
 }
 

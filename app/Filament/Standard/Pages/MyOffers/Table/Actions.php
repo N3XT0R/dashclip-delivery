@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
+use App\Application\Assignment\UpdateAssignmentNote;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Services\AssignmentService;
 use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 
@@ -37,7 +40,7 @@ final readonly class Actions
 
     public function viewDetails(MyOffers $page): Action
     {
-        return Action::make('view_details')
+        return EditAction::make('view_details')
             ->label(__('my_offers.table.actions.view_details'))
             ->icon('heroicon-m-eye')
             ->modalHeading(__('my_offers.modal.title'))
@@ -45,10 +48,11 @@ final readonly class Actions
             ->schema(
                 fn(?Assignment $record): ?Schema => $record !== null ? $page->getDetailsInfolist($record) : null
             )
-            ->modalSubmitAction(false)
             ->modalFooterActions([
                 $this->returnOffer($page),
+                $this->submit($page),
             ])
+            ->modalSubmitActionLabel(__('common.save'))
             ->modalCancelActionLabel(__('common.close'));
     }
 
@@ -103,6 +107,33 @@ final readonly class Actions
             ->action(function (Assignment $record) use ($page) {
                 $this->assignmentService->returnAssignment($record, auth()->user());
                 $page->resetTable();
+            });
+    }
+
+    public function submit(MyOffers $page): Action
+    {
+        return Action::make('submit')
+            ->label('common.submit')
+            ->translateLabel()
+            ->color('primary')
+            ->visible(function (?Assignment $record) use ($page): bool {
+                $tabs = ['available', 'downloaded'];
+                if ($record === null) {
+                    return false;
+                }
+
+                if (!in_array($page->activeTab, $tabs, true)) {
+                    return false;
+                }
+
+                return $this->assignmentService->canReturnAssignment($record);
+            })
+            ->action(function (Assignment $record) use ($page): void {
+                app(UpdateAssignmentNote::class)->handle($record, $page->note, auth()->user());
+                Notification::make()
+                    ->title(__('my_offers.notifications.note_updated.title'))
+                    ->success()
+                    ->send();
             });
     }
 }
