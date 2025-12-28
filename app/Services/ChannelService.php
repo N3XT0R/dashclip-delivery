@@ -38,17 +38,6 @@ class ChannelService
         $teamRepository = app(TeamRepository::class);
         $channels = $this->channelRepository->getActiveChannels();
 
-        /** @var array<int,int> $quota */
-
-
-        if ($uploaderType === UploaderTypeEnum::TEAM->value) {
-            $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
-
-            if ($team) {
-                $channels = $this->channelRepository->getTeamAssignedChannels($team);
-            }
-        }
-
         $rotationPool = collect();
         foreach ($channels as $channel) {
             $rotationPool = $rotationPool->merge(
@@ -56,9 +45,22 @@ class ChannelService
             );
         }
 
+        /** @var array<int,int> $quota */
         $quota = $channels
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
+
+        if ($uploaderType === UploaderTypeEnum::TEAM->value) {
+            $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
+
+            if ($team) {
+                $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
+                $quota = $teamChannels
+                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => $channel->weekly_quota])
+                    ->all();
+                $channels = $teamChannels;
+            }
+        }
 
         return new ChannelPoolDto(
             channels: $channels,
