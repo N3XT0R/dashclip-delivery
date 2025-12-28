@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DTO\Channel\ChannelApplicationRequestDto;
 use App\DTO\ChannelPoolDto;
 use App\Enum\Channel\ApplicationEnum;
+use App\Enum\UploaderTypeEnum;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;
@@ -49,21 +50,14 @@ class ChannelService
             ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
             ->all();
 
-        if ($uploaderType === 'team') {
+        if ($uploaderType === UploaderTypeEnum::TEAM->value) {
             $team = $teamRepository->getTeamByUniqueSlug($uploaderId);
 
             if ($team) {
                 $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
-
-                $teamQuotas = $teamChannels
-                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot->quota])
+                $quota = $teamChannels
+                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => $channel->weekly_quota])
                     ->all();
-
-                foreach ($teamQuotas as $channelId => $teamQuota) {
-                    $quota[$channelId] = $teamQuota;
-                }
-
-                // Only use team channels in this case
                 $channels = $teamChannels;
             }
         }
