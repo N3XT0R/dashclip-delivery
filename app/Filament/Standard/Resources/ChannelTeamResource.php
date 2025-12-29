@@ -74,11 +74,11 @@ class ChannelTeamResource extends Resource
                 Tables\Columns\TextColumn::make('channel.youtube_name')
                     ->label('Youtube-Kanal')
                     ->inline()
-                    ->formatStateUsing(fn($state) => $state ? '@'.$state : '-')
+                    ->formatStateUsing(fn($state) => $state ? '@' . $state : '-')
                     ->url(function (ChannelTeamPivot $record) {
                         $channel = $record->channel;
                         if ($channel->youtube_name) {
-                            return 'https://www.youtube.com/@'.$record->youtube_name;
+                            return 'https://www.youtube.com/@' . $channel->youtube_name;
                         }
 
                         return null;

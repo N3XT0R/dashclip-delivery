@@ -37,17 +37,14 @@ class ChannelResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('creator_name'),
                 Forms\Components\TextInput::make('email')
-                    ->label('Email address')
+                    ->label(__('common.email'))
                     ->email()
                     ->required(),
-                Forms\Components\TextInput::make('youtube_name'),
-                Forms\Components\TextInput::make('weight')
-                    ->required()
-                    ->numeric()
-                    ->default(1),
+                Forms\Components\TextInput::make('youtube_name')
+                    ->label(__('common.youtube_name')),
                 Forms\Components\Toggle::make('is_video_reception_paused')
+                    ->label(__('common.is_video_reception_paused'))
                     ->required(),
-                Forms\Components\DateTimePicker::make('approved_at'),
             ]);
     }
 
@@ -83,6 +80,13 @@ class ChannelResource extends Resource
                 Tables\Columns\TextColumn::make('youtube_name')
                     ->label(__('common.youtube_name'))
                     ->formatStateUsing(fn($state) => $state ? '@' . $state : '-')
+                    ->url(function (Channel $record) {
+                        if ($record->youtube_name) {
+                            return 'https://www.youtube.com/@' . $record->youtube_name;
+                        }
+
+                        return null;
+                    })
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
