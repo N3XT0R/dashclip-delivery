@@ -36,6 +36,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       The addition enhances operational awareness for administrators and improves the overall efficiency of channel
       access management.
 
+### Fixed
+
+- **Incorrect User Removal During Channel Access Revocation in Admin Panel**  
+  Fixed an issue in the admin panel where revoking channel access from the user management interface always removed the
+  currently authenticated user instead of the selected channel user (owner record).  
+  The revocation logic has been corrected to consistently operate on the relation manager’s owner record, ensuring that
+  access removal actions now target the intended user:
+    - Channel access is now revoked for the selected user in the table, not implicitly for the active administrator.
+    - The fix prevents accidental self-removal and ensures predictable, role-safe behavior during administrative
+      access management.
+    - The corrected behavior aligns the revoke process with the displayed UI context and audit expectations.  
+      This fix improves reliability and safety of channel access management within the admin panel.
+
 ## [3.2.0] - 2025-12-28
 
 ### Added
