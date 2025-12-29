@@ -26,9 +26,14 @@ class ChannelConfig extends Model
     protected function value(): Attribute
     {
         return Attribute::make(
-            get: fn($value, array $attributes) => ConfigCaster::toPhp($attributes['type'] ?? 'string', $value),
-
-            set: fn($value, array $attributes) => ConfigCaster::toStorage($attributes['type'] ?? 'string', $value),
+            get: static fn($value, array $attributes) => ConfigCaster::toPhp(
+                $attributes['type'] ?? 'string',
+                $value
+            ),
+            set: static fn($value, array $attributes) => ConfigCaster::toStorage(
+                $attributes['type'] ?? 'string',
+                $value
+            ),
         );
     }
 }
