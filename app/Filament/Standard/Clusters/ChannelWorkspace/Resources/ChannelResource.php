@@ -63,7 +63,7 @@ class ChannelResource extends Resource
                         }
 
                         return null;
-                    })
+                    }, true)
                     ->placeholder('-'),
                 Infolists\Components\IconEntry::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
@@ -93,7 +93,7 @@ class ChannelResource extends Resource
                         }
 
                         return null;
-                    })
+                    }, true)
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
