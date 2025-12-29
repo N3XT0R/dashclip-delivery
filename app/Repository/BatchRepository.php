@@ -11,9 +11,9 @@ class BatchRepository
 {
     /**
      * Mark the given assigned batch as finished.
-     * @param  Batch  $batch
-     * @param  int  $assigned
-     * @param  int  $skipped
+     * @param Batch $batch
+     * @param int $assigned
+     * @param int $skipped
      * @return bool
      */
     public function markAssignedBatchAsFinished(Batch $batch, int $assigned, int $skipped): bool
@@ -42,12 +42,22 @@ class BatchRepository
 
     /**
      * Find a batch by its ID.
-     * @param  int  $id
+     * @param int $id
      * @return Batch|null
      */
     public function findById(int $id): ?Batch
     {
         return Batch::query()
             ->find($id);
+    }
+
+    public function create(array $data): Batch
+    {
+        return Batch::create($data);
+    }
+
+    public function update(Batch $batch, array $data): bool
+    {
+        return $batch->update($data);
     }
 }

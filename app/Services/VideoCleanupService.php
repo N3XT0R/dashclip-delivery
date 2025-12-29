@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\BatchTypeEnum;
-use App\Models\Batch;
+use App\Repository\BatchRepository;
 use App\Repository\DownloadRepository;
 use App\Repository\VideoRepository;
 use Illuminate\Support\Carbon;
@@ -15,12 +15,13 @@ class VideoCleanupService
     public function __construct(
         private DownloadRepository $downloads,
         private VideoRepository $videos,
+        private BatchRepository $batchRepository
     ) {
     }
 
     public function cleanup(int $subWeeks = 1): int
     {
-        $batch = Batch::query()->create([
+        $batch = $this->batchRepository->create([
             'type' => BatchTypeEnum::REMOVE->value,
             'started_at' => now(),
         ]);
@@ -31,7 +32,7 @@ class VideoCleanupService
         $names = $this->videos->fetchOriginalNames($deletable);
         $deleted = $this->videos->deleteVideosByIds($deletable);
 
-        $batch->update([
+        $this->batchRepository->update($batch, [
             'finished_at' => now(),
             'stats' => [
                 'removed' => $deleted,
