@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources\UserResource\RelationManagers;
 
+use App\Application\Channel\Application\RevokeChannelAccess;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\UserResource\Pages\EditUser;
