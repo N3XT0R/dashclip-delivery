@@ -15,4 +15,9 @@ class ChannelGeneralSettings extends AbstractChannelOwnerPage
     {
         return __('channel-workspace.channel_general_settings.title');
     }
+
+    public function getTitle(): string
+    {
+        return __('channel-workspace.channel_general_settings.title');
+    }
 }
