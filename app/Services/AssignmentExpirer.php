@@ -6,16 +6,25 @@ namespace App\Services;
 
 use App\Enum\BatchTypeEnum;
 use App\Enum\StatusEnum;
-use App\Models\{Assignment, Batch, ChannelVideoBlock};
+use App\Models\{Assignment, ChannelVideoBlock};
+use App\Repository\BatchRepository;
 
 class AssignmentExpirer
 {
+    public function __construct(private BatchRepository $batchRepository)
+    {
+    }
+
+
     /**
      * Expire assignments that have passed their TTL and apply cooldown blocks.
      */
     public function expire(int $cooldownDays): int
     {
-        $batch = Batch::query()->create(['type' => BatchTypeEnum::ASSIGN->value, 'started_at' => now()]);
+        $batch = $this->batchRepository->create([
+            'type' => BatchTypeEnum::ASSIGN->value,
+            'started_at' => now()
+        ]);
         $count = 0;
 
         Assignment::query()->where('status', StatusEnum::NOTIFIED->value)
@@ -32,7 +41,10 @@ class AssignmentExpirer
                 }
             });
 
-        $batch->update(['finished_at' => now(), 'stats' => ['expired' => $count]]);
+        $this->batchRepository->update($batch, [
+            'finished_at' => now(),
+            'stats' => ['expired' => $count]
+        ]);
         return $count;
     }
 }
