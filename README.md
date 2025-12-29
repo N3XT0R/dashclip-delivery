@@ -124,4 +124,4 @@ See the respective license files for details.
 ## Copyright
 
 Copyright (c) 2025 Ilya Beliaev
-This project includes code licensed under AGPL-3.0. Commercial licensing available separately.
+This project includes code licensed under AGPL-3.0.
