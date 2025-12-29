@@ -15,7 +15,6 @@ use App\Models\Assignment;
 use App\Services\LinkService;
 use BackedEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
@@ -125,14 +124,7 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
 
     public function table(Table $table): Table
     {
-        $channel = $this->getCurrentChannel();
-
-        if (
-            Filament::auth()->user()?->cannot('page.channels.access_for_channel', $channel)
-        ) {
-            $channel = null;
-        }
-
+        $channel = $this->getCurrentChannelOnlyIfHaveAccess();
         $table = app(AssignmentTable::class)->make($table, $this, $channel);
         $table->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query));
 

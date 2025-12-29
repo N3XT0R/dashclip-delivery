@@ -21,4 +21,22 @@ trait ChannelOwnerContextTrait
     {
         return app(GetCurrentChannel::class)->handle();
     }
+
+    /**
+     * Get the current channel only if the user has access to it.
+     * @return Channel|null
+     * @throws \Exception
+     */
+    protected function getCurrentChannelOnlyIfHaveAccess(): ?Channel
+    {
+        $channel = $this->getCurrentChannel();
+        if (null === $channel) {
+            return null;
+        }
+        $user = auth()->user();
+        if (null === $user || !$user->can('page.channels.access_for_channel', $channel)) {
+            return null;
+        }
+        return $channel;
+    }
 }
