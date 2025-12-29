@@ -174,6 +174,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fixed an edge case where expired assignments with existing downloads were incorrectly requeued by excluding
       assignments in `expired` state when valid downloads are already present.
 
+### Changed
+
+- **Refactored Channel Access Checks into Reusable Traits**  
+  Moved channel access verification logic out of the `MyOffers` page into dedicated, reusable traits to ensure
+  consistent
+  and maintainable access control across the application.  
+  The refactor centralizes channel permission checks and decouples access logic from individual pages:
+    - Channel access validation is now implemented once and shared across all channel-related pages and components.
+    - This change eliminates duplicated access checks and reduces the risk of inconsistent authorization behavior.
+    - The new trait-based approach improves code reuse, testability, and long-term maintainability of channel access
+      logic.  
+      As a result, channel access enforcement is now clearer, more robust, and easier to extend as additional
+      channel-scoped features are introduced.
+
 ### Deprecated
 
 - **Notification-table Resource**  
