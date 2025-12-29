@@ -13,24 +13,27 @@ use Illuminate\Support\Carbon;
 class VideoCleanupService
 {
     public function __construct(
-        private DownloadRepository $downloads,
-        private VideoRepository $videos,
+        private DownloadRepository $downloadRepository,
+        private VideoRepository $videoRepository,
         private BatchRepository $batchRepository
     ) {
     }
 
     public function cleanup(int $subWeeks = 1): int
     {
-        $batch = $this->batchRepository->create([
+        $batchRepository = $this->batchRepository;
+        $downloadRepository = $this->downloadRepository;
+        $videoRepository = $this->videoRepository;
+        $batch = $batchRepository->create([
             'type' => BatchTypeEnum::REMOVE->value,
             'started_at' => now(),
         ]);
 
         $threshold = Carbon::now()->subWeeks($subWeeks);
-        $candidates = $this->downloads->fetchDownloadedVideoIds($threshold);
-        $deletable = $this->videos->filterDeletableVideoIds($candidates, $threshold);
-        $names = $this->videos->fetchOriginalNames($deletable);
-        $deleted = $this->videos->deleteVideosByIds($deletable);
+        $candidates = $downloadRepository->fetchDownloadedVideoIds($threshold);
+        $deletable = $videoRepository->filterDeletableVideoIds($candidates, $threshold);
+        $names = $videoRepository->fetchOriginalNames($deletable);
+        $deleted = $videoRepository->deleteVideosByIds($deletable);
 
         $this->batchRepository->update($batch, [
             'finished_at' => now(),
