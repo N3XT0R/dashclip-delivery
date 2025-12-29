@@ -16,23 +16,23 @@ class AssignmentExpirer
     public function expire(int $cooldownDays): int
     {
         $batch = Batch::query()->create(['type' => BatchTypeEnum::ASSIGN->value, 'started_at' => now()]);
-        $cnt = 0;
+        $count = 0;
 
         Assignment::query()->where('status', StatusEnum::NOTIFIED->value)
             ->where('expires_at', '<', now())
             ->whereNot('status', StatusEnum::PICKEDUP->value)
-            ->chunkById(500, function ($items) use (&$cnt, $cooldownDays) {
-                foreach ($items as $a) {
-                    $a->update(['status' => StatusEnum::EXPIRED->value]);
+            ->chunkById(500, function ($items) use (&$count, $cooldownDays) {
+                foreach ($items as $assignment) {
+                    $assignment->update(['status' => StatusEnum::EXPIRED->value]);
                     ChannelVideoBlock::query()->updateOrCreate(
-                        ['channel_id' => $a->channel_id, 'video_id' => $a->video_id],
+                        ['channel_id' => $assignment->channel_id, 'video_id' => $assignment->video_id],
                         ['until' => now()->addDays($cooldownDays)]
                     );
-                    $cnt++;
+                    $count++;
                 }
             });
 
-        $batch->update(['finished_at' => now(), 'stats' => ['expired' => $cnt]]);
-        return $cnt;
+        $batch->update(['finished_at' => now(), 'stats' => ['expired' => $count]]);
+        return $count;
     }
 }
