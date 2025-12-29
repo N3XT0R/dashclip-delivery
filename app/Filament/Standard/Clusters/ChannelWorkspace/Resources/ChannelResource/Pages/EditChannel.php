@@ -14,8 +14,6 @@ class EditChannel extends EditRecord
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
-                ->requiresConfirmation(),
         ];
     }
 }
