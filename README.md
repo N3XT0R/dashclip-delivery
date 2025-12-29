@@ -102,6 +102,10 @@ Detailed explanations of structure and usage can be found in the [`docs`](docs) 
 
 ## Tests
 
+This project is tested with BrowserStack.
+
+Local unit and feature tests:
+
 ```bash
 composer test
 ```
@@ -111,7 +115,7 @@ composer test
 This project is dual-licensed:
 
 - **[AGPL-3.0-or-later](LICENSE)** - Free for open source use
-- **[Commercial License](LICENSE-COMMERCIAL.md)** - For proprietary use
+- **[Commercial License](COMMERCIAL.md)** - For proprietary use
 
 See the respective license files for details.
 
@@ -120,4 +124,4 @@ See the respective license files for details.
 ## Copyright
 
 Copyright (c) 2025 Ilya Beliaev
-This project includes code licensed under AGPL-3.0. Commercial licensing available separately.
+This project includes code licensed under AGPL-3.0.
