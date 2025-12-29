@@ -36,6 +36,13 @@ class Channel extends Model
         return $query->where('is_video_reception_paused', false);
     }
 
+    public function scopeUserHasAccess(Builder $query, User $user): Builder
+    {
+        return $query->whereHas('channelUsers', function (Builder $q) use ($user) {
+            $q->where('user_id', $user->getKey());
+        });
+    }
+
     public function assignments(): HasMany
     {
         return $this->hasMany(Assignment::class);

@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ChannelResource extends Resource
 {
@@ -55,17 +56,14 @@ class ChannelResource extends Resource
         return $schema
             ->components([
                 Infolists\Components\TextEntry::make('name'),
-                Infolists\Components\TextEntry::make('creator_name')
-                    ->placeholder('-'),
                 Infolists\Components\TextEntry::make('email')
-                    ->label('Email address'),
+                    ->label(__('common.email')),
                 Infolists\Components\TextEntry::make('youtube_name')
+                    ->label(__('common.youtube_name'))
                     ->placeholder('-'),
                 Infolists\Components\IconEntry::make('is_video_reception_paused')
+                    ->label(__('common.is_video_reception_paused'))
                     ->boolean(),
-                Infolists\Components\TextEntry::make('approved_at')
-                    ->dateTime()
-                    ->placeholder('-'),
                 Infolists\Components\TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),
@@ -126,5 +124,15 @@ class ChannelResource extends Resource
             'view' => Pages\ViewChannel::route('/{record}'),
             'edit' => Pages\EditChannel::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        /**
+         * @var Builder<Channel> $parent
+         */
+        $parent = parent::getEloquentQuery();
+
+        return $parent->userHasAccess(auth()->user());
     }
 }
