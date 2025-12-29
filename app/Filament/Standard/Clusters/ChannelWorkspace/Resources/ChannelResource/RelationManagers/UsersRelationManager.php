@@ -38,7 +38,7 @@ class UsersRelationManager extends RelationManager
             ])
             ->recordActions([
                 Action::make('revokeAccess')
-                    ->visible()
+                    ->visible(fn(User $record): bool => auth()->user()->getKey() !== $record->getKey())
                     ->label(__('filament.user_revoke_channel_access.label'))
                     ->requiresConfirmation()
                     ->action(function (User $record): void {
