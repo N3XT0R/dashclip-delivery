@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Channel Management Interface for Channel Operators**  
+  Introduced a new Filament-based management interface that allows channel operators to independently manage their own
+  channel configuration and access control within the platform.  
+  The interface provides a dedicated workspace for channel-level administration:
+    - Channel operators can edit general channel settings (e.g. name, visibility, and operational status) via a
+      permission-restricted edit view tied directly to the active channel context.
+    - A user management section enables channel operators and administrators to review all users with access to the
+      channel, including verification status and role-based permissions.
+    - Authorized users can revoke channel access directly from the interface, ensuring immediate enforcement of access
+      changes without requiring global administrative intervention.
+    - All actions are integrated with the existing permission and audit infrastructure, enabling traceable and
+      compliant management of channel ownership and user access.  
+      This addition strengthens channel-level autonomy, improves operational security, and provides a clear,
+      self-service management model for channel operators while maintaining full administrative oversight.
+
 ## [3.2.0] - 2025-12-28
 
 ### Added
