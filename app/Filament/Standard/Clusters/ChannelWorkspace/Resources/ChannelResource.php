@@ -56,7 +56,14 @@ class ChannelResource extends Resource
                 Infolists\Components\TextEntry::make('email')
                     ->label(__('common.email')),
                 Infolists\Components\TextEntry::make('youtube_name')
-                    ->label(__('common.youtube_name'))
+                    ->formatStateUsing(fn($state) => $state ? '@' . $state : '-')
+                    ->url(function (Channel $record) {
+                        if ($record->youtube_name) {
+                            return 'https://www.youtube.com/@' . $record->youtube_name;
+                        }
+
+                        return null;
+                    })
                     ->placeholder('-'),
                 Infolists\Components\IconEntry::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
