@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages\Traits;
 
+use App\Models\User;
+
 trait UserAccessChannelTrait
 {
-    protected function userCanAccessChannelPage(): bool
+    protected function userCanAccessChannelPage(?User $user = null): bool
     {
-        return self::userCanAccessChannelPageStatic();
+        return self::userCanAccessChannelPageStatic($user);
     }
 
-    public static function userCanAccessChannelPageStatic(): bool
+    public static function userCanAccessChannelPageStatic(?User $user = null): bool
     {
-        $user = auth()->user();
-
+        $user ??= auth()->user();
         return $user?->can('page.channels.access') ?? false;
     }
 }
