@@ -8,7 +8,9 @@ use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\VideoUpload;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
+use App\Filament\Standard\Pages\ChannelApplication;
 use App\Filament\Standard\Pages\Dashboard;
+use App\Filament\Standard\Pages\MyOffers;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Filament\Standard\Widgets\OnboardingWizard;
 use App\Models\Team;
@@ -21,6 +23,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
@@ -59,7 +62,12 @@ class PanelUserPanelProvider extends PanelProvider
         $panel->navigationGroups([
             __('nav.media'),
             __('nav.settings'),
-            __('nav.channel_owner'),
+            NavigationGroup::make('channel_owner')
+                ->label(__('nav.channel_owner'))
+                ->items([
+                    ChannelApplication::class,
+                    MyOffers::class,
+                ]),
         ]);
         return $panel;
     }
@@ -128,7 +136,8 @@ class PanelUserPanelProvider extends PanelProvider
                     return null;
                 }
                 return view('partials.footer')->render();
-            });
+            }
+        );
     }
 
     protected function addMiddlewares(Panel $panel): Panel
