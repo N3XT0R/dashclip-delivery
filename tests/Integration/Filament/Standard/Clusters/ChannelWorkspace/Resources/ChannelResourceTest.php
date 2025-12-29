@@ -12,6 +12,7 @@ use App\Filament\Standard\Clusters\ChannelWorkspace\Resources\ChannelResource\Re
 use App\Models\Channel;
 use App\Models\User;
 use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;
 use Tests\DatabaseTestCase;
@@ -70,6 +71,25 @@ final class ChannelResourceTest extends DatabaseTestCase
         self::assertSame(Pages\ListChannels::class, $pages['index']->getPage());
         self::assertSame(Pages\ViewChannel::class, $pages['view']->getPage());
         self::assertSame(Pages\EditChannel::class, $pages['edit']->getPage());
+    }
+
+    public function testTableConfigurationIncludesColumnsAndRecordActions(): void
+    {
+        $table = ChannelResource::table(Table::make());
+
+        $columns = array_values($table->getColumns());
+
+        self::assertSame([
+            'name',
+            'youtube_name',
+            'is_video_reception_paused',
+        ], array_map(fn($column) => $column->getName(), $columns));
+
+        $recordActions = array_values($table->getRecordActions());
+
+        self::assertSame(['view', 'edit'], array_map(fn($action) => $action->getName(), $recordActions));
+        self::assertSame(ChannelResource::getRecordTitleAttribute(), $table->getRecordTitleAttribute());
+        self::assertCount(0, $table->getToolbarActions());
     }
 
     public function testEloquentQueryReturnsChannelsUserCanAccess(): void
