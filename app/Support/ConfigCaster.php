@@ -38,6 +38,9 @@ class ConfigCaster
         'datetime' => ConfigTypeEnum::DATETIME,
         'date' => ConfigTypeEnum::DATETIME,
 
+        // encrypted
+        'encrypted' => ConfigTypeEnum::ENCRYPTED,
+
     ];
 
     /**

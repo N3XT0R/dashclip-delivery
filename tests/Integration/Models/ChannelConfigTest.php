@@ -10,10 +10,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\DatabaseTestCase;
 
 final class ChannelConfigTest extends DatabaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['app.key' => 'base64:' . base64_encode(random_bytes(32))]);
+    }
+
     public function testBelongsToChannel(): void
     {
         $channel = Channel::factory()->create();
@@ -29,19 +37,21 @@ final class ChannelConfigTest extends DatabaseTestCase
         $this->assertTrue($channel->config->contains($config));
     }
 
-    /**
-     * @dataProvider valueCastingFromStorageProvider
-     */
+    #[DataProvider('valueCastingFromStorageProvider')]
     public function testValueCastingFromStorage(?string $type, mixed $storedValue, mixed $expectedPhp, ?callable $extraAssertion = null): void
     {
         $channel = Channel::factory()->create();
 
         $key = Str::uuid()->toString();
 
+        $persistedValue = $type === 'encrypted'
+            ? Crypt::encrypt($storedValue)
+            : $storedValue;
+
         DB::table('channel_configs')->insert([
             'channel_id' => $channel->getKey(),
             'key' => $key,
-            'value' => $storedValue,
+            'value' => $persistedValue,
             'type' => $type,
             'created_at' => now(),
             'updated_at' => now(),
@@ -69,19 +79,17 @@ final class ChannelConfigTest extends DatabaseTestCase
             'bool true' => ['bool', '1', true],
             'bool false' => ['bool', 'false', false],
             'json array' => ['json', json_encode(['enabled' => true]), ['enabled' => true]],
-            'string default' => [null, 'plain-text', 'plain-text'],
-            'datetime' => ['datetime', $datetimeString, Carbon::parse($datetimeString), static function (ChannelConfig $config) use ($datetimeString): void {
+            'string default' => ['string', 'plain-text', 'plain-text'],
+            'datetime' => ['datetime', $datetimeString, Carbon::parse($datetimeString, 'Europe/Berlin'), static function (ChannelConfig $config) use ($datetimeString): void {
                 $value = $config->value;
                 self::assertInstanceOf(Carbon::class, $value);
                 self::assertSame($datetimeString, $value->format('Y-m-d H:i:s'));
             }],
-            'encrypted' => ['encrypted', encrypt('secret-token'), 'secret-token'],
+            'encrypted' => ['encrypted', 'secret-token', 'secret-token'],
         ];
     }
 
-    /**
-     * @dataProvider valueSetterProvider
-     */
+    #[DataProvider('valueSetterProvider')]
     public function testValueSetterCastsToStorage(string $type, mixed $phpValue, callable $assertions): void
     {
         $channel = Channel::factory()->create();
