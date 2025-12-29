@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Resources\ChannelApplicationResource\Pages;
 use App\Models\ChannelApplication;
+use App\Repository\ChannelRepository;
 use BackedEnum;
 use Filament\Actions;
 use Filament\Forms;
@@ -36,6 +37,11 @@ class ChannelApplicationResource extends Resource
     public static function canCreate(): bool
     {
         return false;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return app(ChannelRepository::class)->getChannelApplicationPendingAmount();
     }
 
     public static function form(Schema $schema): Schema

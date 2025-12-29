@@ -200,6 +200,13 @@ class ChannelRepository
             ->exists();
     }
 
+    public function getChannelApplicationPendingAmount(): int
+    {
+        return ChannelApplication::query()
+            ->where('status', ApplicationEnum::PENDING->value)
+            ->count();
+    }
+
     /**
      * Set the verification status of a user for a specific channel.
      * @param User $user
