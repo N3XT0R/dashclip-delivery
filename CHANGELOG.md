@@ -35,6 +35,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       administrative workflows.  
       The addition enhances operational awareness for administrators and improves the overall efficiency of channel
       access management.
+- **Introduced `channel_configs` for Typed, Channel-Scoped Configuration**  
+  Added a new `channel_configs` table to support flexible, castable configuration values scoped to individual
+  channels.  
+  The new configuration system is designed to store typed key–value pairs (e.g. booleans, datetimes, JSON) and serves as
+  a foundation for future channel-specific settings:
+    - Configuration entries are stored per channel and support explicit type casting to ensure reliable and predictable
+      access in application logic.
+    - The system is intended to power upcoming channel-level features without requiring schema changes for each new
+      setting.
+    - A user-facing interface will be introduced in a future release, allowing channel operators to manage their own
+      configurations, such as defining vacation periods during which no videos should be assigned to the channel.  
+      This addition establishes a scalable and extensible configuration layer for channel-specific behavior and future
+      automation features.
+
+### Changed
+
+- **Refactored Channel Access Checks into Reusable Traits**  
+  Moved channel access verification logic out of the `MyOffers` page into dedicated, reusable traits to ensure
+  consistent
+  and maintainable access control across the application.  
+  The refactor centralizes channel permission checks and decouples access logic from individual pages:
+    - Channel access validation is now implemented once and shared across all channel-related pages and components.
+    - This change eliminates duplicated access checks and reduces the risk of inconsistent authorization behavior.
+    - The new trait-based approach improves code reuse, testability, and long-term maintainability of channel access
+      logic.  
+      As a result, channel access enforcement is now clearer, more robust, and easier to extend as additional
+      channel-scoped features are introduced.
 
 ### Fixed
 
@@ -173,20 +200,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Assignment Requeue Logic**
     - Fixed an edge case where expired assignments with existing downloads were incorrectly requeued by excluding
       assignments in `expired` state when valid downloads are already present.
-
-### Changed
-
-- **Refactored Channel Access Checks into Reusable Traits**  
-  Moved channel access verification logic out of the `MyOffers` page into dedicated, reusable traits to ensure
-  consistent
-  and maintainable access control across the application.  
-  The refactor centralizes channel permission checks and decouples access logic from individual pages:
-    - Channel access validation is now implemented once and shared across all channel-related pages and components.
-    - This change eliminates duplicated access checks and reduces the risk of inconsistent authorization behavior.
-    - The new trait-based approach improves code reuse, testability, and long-term maintainability of channel access
-      logic.  
-      As a result, channel access enforcement is now clearer, more robust, and easier to extend as additional
-      channel-scoped features are introduced.
 
 ### Deprecated
 
