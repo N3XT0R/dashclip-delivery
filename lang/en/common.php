@@ -10,4 +10,6 @@ return [
     'email' => 'Email',
     'youtube_name' => 'YouTube Name',
     'is_video_reception_paused' => 'Is Video Reception Paused',
+    'created_at' => 'Created At',
+    'updated_at' => 'Updated At',
 ];

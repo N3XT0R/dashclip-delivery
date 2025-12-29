@@ -70,9 +70,11 @@ class ChannelResource extends Resource
                     ->label(__('common.is_video_reception_paused'))
                     ->boolean(),
                 Infolists\Components\TextEntry::make('created_at')
+                    ->label(__('common.created_at'))
                     ->dateTime()
                     ->placeholder('-'),
                 Infolists\Components\TextEntry::make('updated_at')
+                    ->label(__('common.updated_at'))
                     ->dateTime()
                     ->placeholder('-'),
             ]);
