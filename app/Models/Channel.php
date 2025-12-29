@@ -90,4 +90,8 @@ class Channel extends Model
             ->withTimestamps();
     }
 
+    public function config(): HasMany
+    {
+        return $this->hasMany(ChannelConfig::class);
+    }
 }
