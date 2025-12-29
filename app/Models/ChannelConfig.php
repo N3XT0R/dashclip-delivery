@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Crypt;
 
 class ChannelConfig extends Model
 {
@@ -39,7 +40,7 @@ class ChannelConfig extends Model
             'int' => (int)$value,
             'json' => $value !== null ? json_decode($value, true) : null,
             'datetime' => $value !== null ? Carbon::parse($value) : null,
-            'encrypted' => $value !== null ? decrypt($value) : null,
+            'encrypted' => $value !== null ? Crypt::decrypt($value) : null,
             default => $value,
         };
     }
@@ -52,7 +53,7 @@ class ChannelConfig extends Model
             'datetime' => $value instanceof \DateTimeInterface
                 ? $value->format('Y-m-d H:i:s')
                 : (string)$value,
-            'encrypted' => encrypt($value),
+            'encrypted' => Crypt::encrypt($value),
             default => (string)$value,
         };
     }
