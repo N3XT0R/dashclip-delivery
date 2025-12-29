@@ -115,7 +115,7 @@ composer test
 This project is dual-licensed:
 
 - **[AGPL-3.0-or-later](LICENSE)** - Free for open source use
-- **[Commercial License](LICENSE-COMMERCIAL.md)** - For proprietary use
+- **[Commercial License](COMMERCIAL.md)** - For proprietary use
 
 See the respective license files for details.
 
