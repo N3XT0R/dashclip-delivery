@@ -23,6 +23,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       compliant management of channel ownership and user access.  
       This addition strengthens channel-level autonomy, improves operational security, and provides a clear,
       self-service management model for channel operators while maintaining full administrative oversight.
+- **Pending Channel Access Request Badge in Admin Interface**  
+  Introduced a visual badge indicator in the admin area that displays the current number of pending channel access
+  requests.  
+  The badge is integrated directly into the channel access request navigation entry and updates dynamically based on
+  request status:
+    - Administrators can immediately see how many channel access applications are awaiting review without navigating
+      into the request list.
+    - The badge reflects only requests in a pending state, ensuring a clear and accurate signal for required action.
+    - This improvement reduces response time for access approvals and helps prevent overlooked requests during daily
+      administrative workflows.  
+      The addition enhances operational awareness for administrators and improves the overall efficiency of channel
+      access management.
 
 ## [3.2.0] - 2025-12-28
 
