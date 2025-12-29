@@ -26,6 +26,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
@@ -104,6 +105,9 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
         ];
     }
 
+    /**
+     * @throws \Exception
+     */
     public function getWidgetData(): array
     {
         return [
@@ -111,6 +115,9 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
         ];
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function getTabs(): array
     {
         $channel = $this->getCurrentChannel();

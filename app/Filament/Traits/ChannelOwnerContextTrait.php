@@ -29,14 +29,15 @@ trait ChannelOwnerContextTrait
      * @return Channel|null
      * @throws \Exception
      */
-    protected function getCurrentChannelOnlyIfHaveAccess(): ?Channel
+    protected function getCurrentChannelOnlyIfHaveAccess(?User $user = null): ?Channel
     {
+        $user ??= auth()->user();
         $channel = $this->getCurrentChannel();
         if (null === $channel) {
             return null;
         }
-        $user = auth()->user();
-        if (static::userHasAccessToChannel($user) === false) {
+
+        if (static::userHasAccessToChannel($channel, $user) === false) {
             return null;
         }
         return $channel;
@@ -44,15 +45,16 @@ trait ChannelOwnerContextTrait
 
     /**
      * Check if the user has access to the given channel.
-     * @param Channel|Model|null $channel
+     * @param Channel|Model $channel
      * @param User|null $user
      * @return bool
      */
-    public static function userHasAccessToChannel(Channel|Model|null $channel, ?User $user = null): bool
+    public static function userHasAccessToChannel(Channel|Model $channel, ?User $user = null): bool
     {
-        if ($channel instanceof Channel == false) {
+        if ($channel instanceof Channel === false) {
             return false;
         }
+
 
         $user ??= auth()->user();
         return !(null === $user || !$user->can('page.channels.access_for_channel', $channel));
