@@ -13,10 +13,16 @@ class ChannelWorkspace extends Cluster
 
     protected static string|UnitEnum|null $navigationGroup = 'nav.channel_owner';
 
+
     protected static ?int $navigationSort = 100;
 
     public static function getNavigationGroup(): string|UnitEnum|null
     {
         return __(static::$navigationGroup);
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('channel-workspace.title');
     }
 }
