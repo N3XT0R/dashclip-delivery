@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('channel_configs', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('channel_id')->constrained('channels')->cascadeOnDelete();
             $table->string('key');
             $table->text('value')->nullable();
             $table->string('type')->default('bool');
