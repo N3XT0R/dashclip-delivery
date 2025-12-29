@@ -8,6 +8,7 @@ use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Models\ChannelVideoBlock;
 use App\Models\Download;
 use App\Models\User;
 use App\Models\Video;
@@ -270,5 +271,30 @@ class AssignmentRepository
         return Assignment::query()->hasUsersClips($user)
             ->where('status', StatusEnum::PICKEDUP->value)
             ->count();
+    }
+
+    /**
+     * Expire assignments that have passed their TTL and apply cooldown blocks.
+     * @param int $cooldownDays
+     * @return int
+     */
+    public function expireAssignments(int $cooldownDays): int
+    {
+        $count = 0;
+        Assignment::query()->where('status', StatusEnum::NOTIFIED->value)
+            ->where('expires_at', '<', now())
+            ->whereNot('status', StatusEnum::PICKEDUP->value)
+            ->chunkById(500, function ($items) use (&$count, $cooldownDays) {
+                foreach ($items as $assignment) {
+                    $assignment->update(['status' => StatusEnum::EXPIRED->value]);
+                    ChannelVideoBlock::query()->updateOrCreate(
+                        ['channel_id' => $assignment->channel_id, 'video_id' => $assignment->video_id],
+                        ['until' => now()->addDays($cooldownDays)]
+                    );
+                    $count++;
+                }
+            });
+
+        return $count;
     }
 }

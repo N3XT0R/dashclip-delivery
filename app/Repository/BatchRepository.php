@@ -51,11 +51,22 @@ class BatchRepository
             ->find($id);
     }
 
+    /**
+     * Create a new batch with the provided data.
+     * @param array $data
+     * @return Batch
+     */
     public function create(array $data): Batch
     {
         return Batch::create($data);
     }
 
+    /**
+     * Update the given batch with the provided data.
+     * @param Batch $batch
+     * @param array $data
+     * @return bool
+     */
     public function update(Batch $batch, array $data): bool
     {
         return $batch->update($data);
