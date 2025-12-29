@@ -4,7 +4,7 @@ namespace App\Filament\Standard\Clusters\ChannelWorkspace\Resources;
 
 use App\Filament\Standard\Clusters\ChannelWorkspace\ChannelWorkspace;
 use App\Filament\Standard\Clusters\ChannelWorkspace\Resources\ChannelResource\Pages;
-use App\Filament\Standard\Pages\Traits\ChannelOwnerContextTrait;
+use App\Filament\Traits\ChannelOwnerContextTrait;
 use App\Models\Channel;
 use BackedEnum;
 use Filament\Actions;

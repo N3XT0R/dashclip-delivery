@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
-use App\Filament\Standard\Pages\Traits\ChannelOwnerContextTrait;
-use App\Filament\Standard\Pages\Traits\UserAccessChannelTrait;
+use App\Filament\Traits\ChannelOwnerContextTrait;
+use App\Filament\Traits\UserAccessChannelTrait;
 use Filament\Pages\Page;
 
 /**

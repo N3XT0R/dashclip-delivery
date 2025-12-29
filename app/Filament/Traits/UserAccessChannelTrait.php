@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Standard\Pages\Traits;
+namespace App\Filament\Traits;
 
 use App\Models\User;
 
