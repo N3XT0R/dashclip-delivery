@@ -87,14 +87,6 @@ class ChannelResource extends Resource
                 Tables\Columns\IconColumn::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
