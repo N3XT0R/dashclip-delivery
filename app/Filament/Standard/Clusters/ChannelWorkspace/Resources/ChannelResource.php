@@ -35,7 +35,8 @@ class ChannelResource extends Resource
             ->components([
                 Forms\Components\TextInput::make('name')
                     ->required(),
-                Forms\Components\TextInput::make('creator_name'),
+                Forms\Components\TextInput::make('creator_name')
+                    ->label(__('channel-workspace.channel_resource.creator_name')),
                 Forms\Components\TextInput::make('email')
                     ->label(__('common.email'))
                     ->email()

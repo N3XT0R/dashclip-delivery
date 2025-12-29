@@ -3,7 +3,7 @@
 declare(strict_types=1);
 return [
     'title' => 'Kanaleinstellungen',
-    'channel_general_settings' => [
-        'title' => 'Allgemeine Einstellungen',
+    'channel_resource' => [
+        'creator_name' => 'Name des Creators',
     ],
 ];
