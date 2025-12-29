@@ -10,7 +10,7 @@ use App\Repository\DownloadRepository;
 use App\Repository\VideoRepository;
 use Illuminate\Support\Carbon;
 
-class VideoCleanupService
+readonly class VideoCleanupService
 {
     public function __construct(
         private DownloadRepository $downloadRepository,
