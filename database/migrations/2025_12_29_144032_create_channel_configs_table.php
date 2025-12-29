@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('channel_id')->constrained('channels')->cascadeOnDelete();
             $table->string('key');
             $table->text('value')->nullable();
-            $table->string('type')->default('bool');
+            $table->string('type')->default('string');
             $table->timestamps();
 
             $table->unique(['channel_id', 'key']);
