@@ -25,4 +25,14 @@ class ChannelWorkspace extends Cluster
     {
         return __('channel-workspace.title');
     }
+
+    public function getTitle(): string
+    {
+        return __('channel-workspace.title');
+    }
+
+    public static function getClusterBreadcrumb(): string
+    {
+        return __('channel-workspace.title');
+    }
 }
