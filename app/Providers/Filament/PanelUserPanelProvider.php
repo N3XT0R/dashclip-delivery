@@ -120,6 +120,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Standard/Widgets'), for: 'App\Filament\Standard\Widgets')
             ->discoverResources(in: app_path('Filament/Standard/Resources'), for: 'App\Filament\Standard\Resources')
             ->discoverPages(in: app_path('Filament/Standard/Pages'), for: 'App\Filament\Standard\Pages')
+            ->discoverClusters(in: app_path('Filament/Standard/Clusters'), for: 'App\\Filament\\Standard\\Clusters')
             ->passwordReset()
             ->authMiddleware([
                 Authenticate::class,
