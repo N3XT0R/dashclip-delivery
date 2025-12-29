@@ -2,5 +2,5 @@
 
 declare(strict_types=1);
 return [
-    'title' => 'Arbeitsbereich Kanal',
+    'title' => 'Channel Settings',
 ];
