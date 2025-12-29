@@ -24,4 +24,14 @@ trait HasChannelAuthorizationTrait
     {
         return static::userHasAccessToChannel($record);
     }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        return static::userHasAccessToChannel($record);
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return static::userHasAccessToChannel($record);
+    }
 }
