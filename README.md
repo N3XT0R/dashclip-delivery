@@ -104,6 +104,8 @@ Detailed explanations of structure and usage can be found in the [`docs`](docs) 
 
 This project is tested with BrowserStack.
 
+Local unit and feature tests:
+
 ```bash
 composer test
 ```
