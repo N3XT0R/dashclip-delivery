@@ -18,5 +18,14 @@ final readonly class RevokeChannelAccess
     public function handle(User $user, Channel $channel): void
     {
         $this->channelOperatorService->revokeUserChannelAccess($user, $channel);
+        activity('channel_access_revoked')
+            ->event('revoked')
+            ->performedOn($channel)
+            ->causedBy($user)
+            ->withProperties([
+                'channel_id' => $channel->id,
+                'user_id' => $user->id,
+            ])
+            ->log('Channel access revoked from user');
     }
 }
