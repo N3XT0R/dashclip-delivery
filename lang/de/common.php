@@ -7,4 +7,7 @@ return [
     'expired' => 'Abgelaufen',
     'close' => 'Schließen',
     'save' => 'Speichern',
+    'email' => 'E-Mail',
+    'youtube_name' => 'YouTube-Name',
+    'is_video_reception_paused' => 'Videoempfang pausiert',
 ];

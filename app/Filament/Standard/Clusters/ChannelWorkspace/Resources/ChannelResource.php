@@ -23,7 +23,10 @@ class ChannelResource extends Resource
 
     protected static ?string $cluster = ChannelWorkspace::class;
 
-    protected static ?string $recordTitleAttribute = 'Panel ';
+    public static function getRecordTitleAttribute(): ?string
+    {
+        return __('common.channel');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -41,10 +44,6 @@ class ChannelResource extends Resource
                     ->required()
                     ->numeric()
                     ->default(1),
-                Forms\Components\TextInput::make('weekly_quota')
-                    ->required()
-                    ->numeric()
-                    ->default(5),
                 Forms\Components\Toggle::make('is_video_reception_paused')
                     ->required(),
                 Forms\Components\DateTimePicker::make('approved_at'),
@@ -62,10 +61,6 @@ class ChannelResource extends Resource
                     ->label('Email address'),
                 Infolists\Components\TextEntry::make('youtube_name')
                     ->placeholder('-'),
-                Infolists\Components\TextEntry::make('weight')
-                    ->numeric(),
-                Infolists\Components\TextEntry::make('weekly_quota')
-                    ->numeric(),
                 Infolists\Components\IconEntry::make('is_video_reception_paused')
                     ->boolean(),
                 Infolists\Components\TextEntry::make('approved_at')
@@ -83,28 +78,17 @@ class ChannelResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('Panel ')
+            ->recordTitleAttribute(self::getRecordTitleAttribute())
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('creator_name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('youtube_name')
+                    ->label(__('common.youtube_name'))
+                    ->formatStateUsing(fn($state) => $state ? '@' . $state : '-')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('weight')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('weekly_quota')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_video_reception_paused')
+                    ->label(__('common.is_video_reception_paused'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('approved_at')
-                    ->dateTime()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -139,7 +123,6 @@ class ChannelResource extends Resource
     {
         return [
             'index' => Pages\ListChannels::route('/'),
-            'create' => Pages\CreateChannel::route('/create'),
             'view' => Pages\ViewChannel::route('/{record}'),
             'edit' => Pages\EditChannel::route('/{record}/edit'),
         ];

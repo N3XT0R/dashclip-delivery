@@ -7,4 +7,7 @@ return [
     'expired' => 'Expired',
     'close' => 'Close',
     'save' => 'Save',
+    'email' => 'Email',
+    'youtube_name' => 'YouTube Name',
+    'is_video_reception_paused' => 'Is Video Reception Paused',
 ];
