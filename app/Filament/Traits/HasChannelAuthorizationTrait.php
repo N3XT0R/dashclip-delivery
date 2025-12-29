@@ -34,4 +34,9 @@ trait HasChannelAuthorizationTrait
     {
         return static::userHasAccessToChannel($record);
     }
+
+    public static function canReplicate(Model $record): bool
+    {
+        return false;
+    }
 }
