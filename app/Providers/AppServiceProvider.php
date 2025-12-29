@@ -11,9 +11,6 @@ use App\Services\ConfigService;
 use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
-use App\Services\Ingest\Contracts\IngestPipelineInterface;
-use App\Services\Ingest\Contracts\IngestStepInterface;
-use App\Services\Ingest\IngestPipeline;
 use App\Services\Mail\Scanner\Handlers\BounceHandler;
 use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
@@ -41,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
         $this->registerRefreshTokenProvider();
         $this->registerZip();
         $this->registerMail();
-        $this->registerIngest();
     }
 
     protected function registerConfig(): void
@@ -68,23 +64,6 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return new MailReplyScanner($handlers);
-        });
-    }
-
-    protected function registerIngest(): void
-    {
-        $this->app->bind(IngestPipelineInterface::class, function (Application $app) {
-            $instances = [];
-            $steps = $app['config']->get('ingest.steps', []);
-            if (!empty($steps)) {
-                foreach ($steps as $stepClass) {
-                    $step = $app->make($stepClass);
-                    if ($step instanceof IngestStepInterface) {
-                        $instances[] = $step;
-                    }
-                }
-            }
-            return new IngestPipeline($instances);
         });
     }
 
