@@ -59,7 +59,7 @@ class AppServiceProvider extends ServiceProvider
                 $this->app->get(InboundHandler::class),
             ];
 
-            if (Cfg::get('faq_email', 'email', false)) {
+            if (Cfg::get('faq_email', 'email', true)) {
                 $handlers[] = $this->app->get(ReplyHandler::class);
             }
 
