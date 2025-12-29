@@ -8,7 +8,6 @@ use App\Application\Offer\DispatchZipDownload;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
-use App\Filament\Standard\Pages\Traits\ChannelOwnerContextTrait;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
@@ -20,7 +19,6 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Pages\Page;
 use Filament\Resources\Concerns\HasTabs;
 use Filament\Schemas\Components\EmbeddedTable;
 use Filament\Schemas\Components\Section;
@@ -33,12 +31,11 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
-class MyOffers extends Page implements HasTable
+class MyOffers extends AbstractChannelOwnerPage implements HasTable
 {
     use InteractsWithTable;
     use InteractsWithActions;
     use HasTabs;
-    use ChannelOwnerContextTrait;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
