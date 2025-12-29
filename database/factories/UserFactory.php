@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
+use App\Models\Channel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -79,9 +80,18 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             $user->teams()->create([
-                'name' => $user->name."'s Team",
+                'name' => $user->name . "'s Team",
                 'slug' => Str::uuid()->toString(),
                 'owner_id' => $user->getKey(),
+            ]);
+        });
+    }
+
+    public function haveAccessToChannel(Channel $channel): static
+    {
+        return $this->afterCreating(function (User $user) use ($channel) {
+            $user->channels()->attach($channel->getKey(), [
+                'is_user_verified' => true,
             ]);
         });
     }

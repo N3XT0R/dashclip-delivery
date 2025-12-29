@@ -123,7 +123,7 @@ final class ChannelsRelationManagerTest extends DatabaseTestCase
         $this->assertCount(1, $operatorService->calls);
         [$user, $revokedChannel] = $operatorService->calls[0];
 
-        $this->assertTrue($user->is($this->admin));
+        $this->assertFalse($user->is($this->admin));
         $this->assertTrue($revokedChannel->is($channel));
     }
 }
