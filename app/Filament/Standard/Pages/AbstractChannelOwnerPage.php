@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages;
 
 use App\Filament\Standard\Pages\Traits\ChannelOwnerContextTrait;
-use Filament\Facades\Filament;
+use App\Filament\Standard\Pages\Traits\UserAccessChannelTrait;
 use Filament\Pages\Page;
 
 /**
@@ -14,11 +14,10 @@ use Filament\Pages\Page;
 abstract class AbstractChannelOwnerPage extends Page
 {
     use ChannelOwnerContextTrait;
+    use UserAccessChannelTrait;
 
     public static function canAccess(): bool
     {
-        $user = Filament::auth()->user();
-
-        return $user?->can('page.channels.access') ?? false;
+        return static::userCanAccessChannelPageStatic();
     }
 }
