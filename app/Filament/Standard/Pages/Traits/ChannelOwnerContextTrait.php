@@ -6,6 +6,7 @@ namespace App\Filament\Standard\Pages\Traits;
 
 use App\Application\Channel\GetCurrentChannel;
 use App\Models\Channel;
+use App\Models\User;
 
 /**
  * Trait to provide channel owner context functionality.
@@ -34,9 +35,21 @@ trait ChannelOwnerContextTrait
             return null;
         }
         $user = auth()->user();
-        if (null === $user || !$user->can('page.channels.access_for_channel', $channel)) {
+        if (static::userHasAccessToChannel($user) === false) {
             return null;
         }
         return $channel;
+    }
+
+    /**
+     * Check if the user has access to the given channel.
+     * @param Channel|null $channel
+     * @param User|null $user
+     * @return bool
+     */
+    public static function userHasAccessToChannel(?Channel $channel, ?User $user = null): bool
+    {
+        $user ??= auth()->user();
+        return !(null === $user || !$user->can('page.channels.access_for_channel', $channel));
     }
 }
