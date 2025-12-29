@@ -52,7 +52,8 @@ class ChannelsRelationManager extends RelationManager
                     ->action(function (Channel $record): void {
                         app(RevokeChannelAccess::class)->handle(
                             $this->getOwnerRecord(),
-                            $record
+                            $record,
+                            auth()->user()
                         );
                     })
                     ->successNotificationTitle(__('filament.user_revoke_channel_access.success_notification_title')),
