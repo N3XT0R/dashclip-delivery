@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
-use App\Application\Channel\GetCurrentChannel;
 use App\Application\Offer\DispatchZipDownload;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
+use App\Filament\Standard\Pages\Traits\ChannelOwnerContextTrait;
 use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
-use App\Models\Channel;
 use App\Services\LinkService;
 use BackedEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -39,6 +38,7 @@ class MyOffers extends Page implements HasTable
     use InteractsWithTable;
     use InteractsWithActions;
     use HasTabs;
+    use ChannelOwnerContextTrait;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGift;
 
@@ -202,11 +202,6 @@ class MyOffers extends Page implements HasTable
                     ->collapsible()
                     ->hidden(fn(): bool => $assignment->video->clips->isEmpty()),
             ]);
-    }
-
-    protected function getCurrentChannel(): ?Channel
-    {
-        return app(GetCurrentChannel::class)->handle();
     }
 
     public function dispatchZipDownload(iterable $ids): void
