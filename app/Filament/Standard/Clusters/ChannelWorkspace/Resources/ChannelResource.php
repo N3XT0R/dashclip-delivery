@@ -4,7 +4,7 @@ namespace App\Filament\Standard\Clusters\ChannelWorkspace\Resources;
 
 use App\Filament\Standard\Clusters\ChannelWorkspace\ChannelWorkspace;
 use App\Filament\Standard\Clusters\ChannelWorkspace\Resources\ChannelResource\Pages;
-use App\Filament\Traits\ChannelOwnerContextTrait;
+use App\Filament\Traits\HasChannelAuthorizationTrait;
 use App\Models\Channel;
 use BackedEnum;
 use Filament\Actions;
@@ -16,12 +16,11 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class ChannelResource extends Resource
 {
     protected static ?string $model = Channel::class;
-    use ChannelOwnerContextTrait;
+    use HasChannelAuthorizationTrait;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
@@ -30,21 +29,6 @@ class ChannelResource extends Resource
     public static function getRecordTitleAttribute(): ?string
     {
         return __('common.channel');
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return static::userHasAccessToChannel($record);
-    }
-
-    public static function canView(Model $record): bool
-    {
-        return static::userHasAccessToChannel($record);
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return static::userHasAccessToChannel($record);
     }
 
     public static function form(Schema $schema): Schema
