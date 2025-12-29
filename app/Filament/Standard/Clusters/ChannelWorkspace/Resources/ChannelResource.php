@@ -96,10 +96,12 @@ class ChannelResource extends Resource
                 Actions\EditAction::make(),
             ])
             ->toolbarActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                ]),
             ]);
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function getRelations(): array
