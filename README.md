@@ -102,6 +102,8 @@ Detailed explanations of structure and usage can be found in the [`docs`](docs) 
 
 ## Tests
 
+This project is tested with BrowserStack.
+
 ```bash
 composer test
 ```
