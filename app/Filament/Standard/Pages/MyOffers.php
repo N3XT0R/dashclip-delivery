@@ -66,13 +66,6 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
         return __('my_offers.title');
     }
 
-    public static function canAccess(): bool
-    {
-        $user = Filament::auth()->user();
-
-        return $user?->can('page.channels.access') ?? false;
-    }
-
     public function mount(): void
     {
         $this->loadDefaultActiveTab();
