@@ -10,5 +10,7 @@ enum ConfigTypeEnum: string
     case INT = 'int';
     case FLOAT = 'float';
     case BOOL = 'bool';
-    case JSON = 'json'; // array/json as canonical "json"
+    case JSON = 'json';
+    case DATETIME = 'datetime';
+    case ENCRYPTED = 'encrypted';
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Support;
 
 use App\Enum\ConfigTypeEnum;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
 
 class ConfigCaster
 {
@@ -32,6 +34,10 @@ class ConfigCaster
         // json/array
         'json' => ConfigTypeEnum::JSON,
         'array' => ConfigTypeEnum::JSON,
+
+        'datetime' => ConfigTypeEnum::DATETIME,
+        'date' => ConfigTypeEnum::DATETIME,
+
     ];
 
     /**
@@ -55,6 +61,10 @@ class ConfigCaster
             ConfigTypeEnum::BOOL => self::toBool($value),
             ConfigTypeEnum::JSON => self::decodeJsonArray($value),
             ConfigTypeEnum::STRING => $value,
+            ConfigTypeEnum::DATETIME => $value !== null
+                ? Carbon::parse($value)
+                : null,
+            ConfigTypeEnum::ENCRYPTED => $value !== null ? Crypt::decrypt($value) : null,
         };
     }
 
@@ -70,6 +80,10 @@ class ConfigCaster
             ConfigTypeEnum::BOOL => self::toBool($value) ? '1' : '0',
             ConfigTypeEnum::JSON => is_array($value) ? json_encode($value) : (string)$value,
             ConfigTypeEnum::STRING => (string)$value,
+            ConfigTypeEnum::DATETIME => $value instanceof \DateTimeInterface
+                ? $value->format('Y-m-d H:i:s')
+                : (string)$value,
+            ConfigTypeEnum::ENCRYPTED => encrypt($value),
         };
     }
 
@@ -85,6 +99,7 @@ class ConfigCaster
             ConfigTypeEnum::BOOL => 'boolean',
             ConfigTypeEnum::JSON => is_string($raw) ? 'json' : 'array',
             ConfigTypeEnum::STRING => 'string',
+            ConfigTypeEnum::DATETIME => 'date',
         };
     }
 
