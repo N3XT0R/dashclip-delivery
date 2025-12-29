@@ -4,6 +4,7 @@ namespace App\Filament\Standard\Clusters\ChannelWorkspace\Resources;
 
 use App\Filament\Standard\Clusters\ChannelWorkspace\ChannelWorkspace;
 use App\Filament\Standard\Clusters\ChannelWorkspace\Resources\ChannelResource\Pages;
+use App\Filament\Standard\Clusters\ChannelWorkspace\Resources\ChannelResource\RelationManagers\UsersRelationManager;
 use App\Filament\Traits\HasChannelAuthorizationTrait;
 use App\Models\Channel;
 use BackedEnum;
@@ -123,7 +124,7 @@ class ChannelResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            UsersRelationManager::class,
         ];
     }
 

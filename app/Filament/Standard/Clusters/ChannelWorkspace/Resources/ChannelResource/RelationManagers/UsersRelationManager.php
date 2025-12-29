@@ -2,26 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\UserResource\RelationManagers;
+namespace App\Filament\Standard\Clusters\ChannelWorkspace\Resources\ChannelResource\RelationManagers;
 
 use App\Application\Channel\Application\RevokeChannelAccess;
-use App\Enum\Guard\GuardEnum;
-use App\Enum\Users\RoleEnum;
 use App\Models\Channel;
-use App\Repository\RoleRepository;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
-class ChannelsRelationManager extends RelationManager
+class UsersRelationManager extends RelationManager
 {
-    protected static string $relationship = 'channels';
+    protected static string $relationship = 'channelUsers';
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __("filament.relation_manager.channels.title");
+        return __('channel-workspace.channel_resource.relation_manager.users.title');
     }
 
     public function table(Table $table): Table
@@ -40,23 +38,20 @@ class ChannelsRelationManager extends RelationManager
             ])
             ->recordActions([
                 Action::make('revokeAccess')
-                    ->visible(
-                        app(RoleRepository::class)->hasRole(
-                            auth()->user(),
-                            RoleEnum::SUPER_ADMIN,
-                            GuardEnum::DEFAULT
-                        )
-                    )
+                    ->visible()
                     ->label(__('filament.user_revoke_channel_access.label'))
                     ->requiresConfirmation()
-                    ->action(function (Channel $record): void {
+                    ->action(function (User $record): void {
+                        /**
+                         * @var Channel $ownerRecord
+                         */
+                        $ownerRecord = $this->getOwnerRecord();
                         app(RevokeChannelAccess::class)->handle(
-                            $this->getOwnerRecord(),
-                            $record
+                            $record,
+                            $ownerRecord
                         );
                     })
                     ->successNotificationTitle(__('filament.user_revoke_channel_access.success_notification_title')),
             ]);
     }
 }
-
