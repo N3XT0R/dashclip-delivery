@@ -12,8 +12,28 @@ class PassportServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        $this->defineTokenExpires();
+        $this->defineScopes();
+    }
+
+    protected function defineTokenExpires(): void
+    {
         Passport::tokensExpireIn(CarbonInterval::day());
         Passport::refreshTokensExpireIn(CarbonInterval::days(30));
         Passport::personalAccessTokensExpireIn(CarbonInterval::month());
+    }
+
+    protected function defineScopes(): void
+    {
+        Passport::tokensCan([
+            'account:read' => 'View account information',
+            'account:write' => 'Modify account information',
+            'channels:read' => 'View channels',
+            'channels:write' => 'Manage channels',
+            'videos:read' => 'View videos',
+            'videos:write' => 'Manage videos',
+            'assignments:read' => 'View assignments',
+            'assignments:download' => 'Download assignments',
+        ]);
     }
 }
