@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c49fdf2dd936198b458d6bfc4018c0e",
+    "content-hash": "d95b9fd6f8702aec95f51331f7c953c5",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1565,16 +1565,16 @@
         },
         {
             "name": "filament/actions",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/actions.git",
-                "reference": "8c436949d3fa5cc79a2aeb0b6d1741c5555e9d33"
+                "reference": "55939e38b429526f51cf0385d4142a46c4449e9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/actions/zipball/8c436949d3fa5cc79a2aeb0b6d1741c5555e9d33",
-                "reference": "8c436949d3fa5cc79a2aeb0b6d1741c5555e9d33",
+                "url": "https://api.github.com/repos/filamentphp/actions/zipball/55939e38b429526f51cf0385d4142a46c4449e9d",
+                "reference": "55939e38b429526f51cf0385d4142a46c4449e9d",
                 "shasum": ""
             },
             "require": {
@@ -1610,20 +1610,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-09T09:55:17+00:00"
+            "time": "2025-12-30T13:02:40+00:00"
         },
         {
             "name": "filament/filament",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/panels.git",
-                "reference": "2387e41380a304c411d420b17e965e11a8e24711"
+                "reference": "7d63beb782dc85a384a782a5ef434716c45aeaa5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/panels/zipball/2387e41380a304c411d420b17e965e11a8e24711",
-                "reference": "2387e41380a304c411d420b17e965e11a8e24711",
+                "url": "https://api.github.com/repos/filamentphp/panels/zipball/7d63beb782dc85a384a782a5ef434716c45aeaa5",
+                "reference": "7d63beb782dc85a384a782a5ef434716c45aeaa5",
                 "shasum": ""
             },
             "require": {
@@ -1667,20 +1667,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-09T09:56:39+00:00"
+            "time": "2025-12-30T13:02:13+00:00"
         },
         {
             "name": "filament/forms",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/forms.git",
-                "reference": "6f4843f45906e0583997d2543fb747e07720a774"
+                "reference": "0ac70fa4b7bce3ed656e947ecc97b7177c901ca8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/forms/zipball/6f4843f45906e0583997d2543fb747e07720a774",
-                "reference": "6f4843f45906e0583997d2543fb747e07720a774",
+                "url": "https://api.github.com/repos/filamentphp/forms/zipball/0ac70fa4b7bce3ed656e947ecc97b7177c901ca8",
+                "reference": "0ac70fa4b7bce3ed656e947ecc97b7177c901ca8",
                 "shasum": ""
             },
             "require": {
@@ -1717,20 +1717,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-09T09:53:27+00:00"
+            "time": "2025-12-30T13:02:11+00:00"
         },
         {
             "name": "filament/infolists",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/infolists.git",
-                "reference": "0a85cf19262610d607d873644d4fb33e620fe126"
+                "reference": "fc562cc08e704546aff754cb6f008b0c669b2206"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/infolists/zipball/0a85cf19262610d607d873644d4fb33e620fe126",
-                "reference": "0a85cf19262610d607d873644d4fb33e620fe126",
+                "url": "https://api.github.com/repos/filamentphp/infolists/zipball/fc562cc08e704546aff754cb6f008b0c669b2206",
+                "reference": "fc562cc08e704546aff754cb6f008b0c669b2206",
                 "shasum": ""
             },
             "require": {
@@ -1762,11 +1762,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-11-28T11:18:41+00:00"
+            "time": "2025-12-30T13:02:32+00:00"
         },
         {
             "name": "filament/notifications",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/notifications.git",
@@ -1813,16 +1813,16 @@
         },
         {
             "name": "filament/query-builder",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/query-builder.git",
-                "reference": "2f7e138801e7630c56a7588651497a7f468a9149"
+                "reference": "d9d3ecf78a87c4fad9dad7959d7280bc73f780ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/query-builder/zipball/2f7e138801e7630c56a7588651497a7f468a9149",
-                "reference": "2f7e138801e7630c56a7588651497a7f468a9149",
+                "url": "https://api.github.com/repos/filamentphp/query-builder/zipball/d9d3ecf78a87c4fad9dad7959d7280bc73f780ed",
+                "reference": "d9d3ecf78a87c4fad9dad7959d7280bc73f780ed",
                 "shasum": ""
             },
             "require": {
@@ -1855,20 +1855,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-09T09:54:30+00:00"
+            "time": "2025-12-30T13:02:08+00:00"
         },
         {
             "name": "filament/schemas",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/schemas.git",
-                "reference": "02ec53daed03d2feae75832db0920c4357079133"
+                "reference": "df5604b940d5eb82733b62560ac2aa2862fac5b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/schemas/zipball/02ec53daed03d2feae75832db0920c4357079133",
-                "reference": "02ec53daed03d2feae75832db0920c4357079133",
+                "url": "https://api.github.com/repos/filamentphp/schemas/zipball/df5604b940d5eb82733b62560ac2aa2862fac5b0",
+                "reference": "df5604b940d5eb82733b62560ac2aa2862fac5b0",
                 "shasum": ""
             },
             "require": {
@@ -1900,20 +1900,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-05T14:53:55+00:00"
+            "time": "2025-12-30T13:02:44+00:00"
         },
         {
             "name": "filament/support",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/support.git",
-                "reference": "7c644018cc5c9a74503039ecf7ff10f340123a8c"
+                "reference": "0029ed0bde9c26b85775cdf135dce8ee1cbbdabe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/support/zipball/7c644018cc5c9a74503039ecf7ff10f340123a8c",
-                "reference": "7c644018cc5c9a74503039ecf7ff10f340123a8c",
+                "url": "https://api.github.com/repos/filamentphp/support/zipball/0029ed0bde9c26b85775cdf135dce8ee1cbbdabe",
+                "reference": "0029ed0bde9c26b85775cdf135dce8ee1cbbdabe",
                 "shasum": ""
             },
             "require": {
@@ -1958,20 +1958,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-05T14:53:38+00:00"
+            "time": "2025-12-30T13:02:27+00:00"
         },
         {
             "name": "filament/tables",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/tables.git",
-                "reference": "93227775fff27b0662c5f82e2e7ca6ad20cdf42c"
+                "reference": "012af14bfd7bb8b501d2d542f74fadf7836f57bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/tables/zipball/93227775fff27b0662c5f82e2e7ca6ad20cdf42c",
-                "reference": "93227775fff27b0662c5f82e2e7ca6ad20cdf42c",
+                "url": "https://api.github.com/repos/filamentphp/tables/zipball/012af14bfd7bb8b501d2d542f74fadf7836f57bc",
+                "reference": "012af14bfd7bb8b501d2d542f74fadf7836f57bc",
                 "shasum": ""
             },
             "require": {
@@ -2004,20 +2004,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-09T09:54:45+00:00"
+            "time": "2025-12-30T13:02:11+00:00"
         },
         {
             "name": "filament/widgets",
-            "version": "v4.3.1",
+            "version": "v4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/widgets.git",
-                "reference": "555102cf4aea7f24977d24dd36f4bad0f7be528c"
+                "reference": "80141884dba3892d398d4913b7591b7d40fd50c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/widgets/zipball/555102cf4aea7f24977d24dd36f4bad0f7be528c",
-                "reference": "555102cf4aea7f24977d24dd36f4bad0f7be528c",
+                "url": "https://api.github.com/repos/filamentphp/widgets/zipball/80141884dba3892d398d4913b7591b7d40fd50c8",
+                "reference": "80141884dba3892d398d4913b7591b7d40fd50c8",
                 "shasum": ""
             },
             "require": {
@@ -2048,7 +2048,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-12-09T09:56:57+00:00"
+            "time": "2025-12-30T13:02:08+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -4766,6 +4766,90 @@
             "time": "2025-03-24T10:02:05+00:00"
         },
         {
+            "name": "n3xt0r/filament-passport-ui",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/N3XT0R/filament-passport-ui.git",
+                "reference": "e050da0b3f5ad554e43586c889009a0096b6bf92"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/N3XT0R/filament-passport-ui/zipball/e050da0b3f5ad554e43586c889009a0096b6bf92",
+                "reference": "e050da0b3f5ad554e43586c889009a0096b6bf92",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "laravel/passport": "^13.0",
+                "php": "^8.4",
+                "spatie/laravel-activitylog": "^4.0",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^8.0",
+                "orchestra/testbench": "^10.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^12.5",
+                "rector/rector": "^2.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FilamentPassportUi": "N3XT0R\\FilamentPassportUi\\Facades\\FilamentPassportUi"
+                    },
+                    "providers": [
+                        "N3XT0R\\FilamentPassportUi\\FilamentPassportUiServiceProvider",
+                        "N3XT0R\\FilamentPassportUi\\Providers\\PassportServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "N3XT0R\\FilamentPassportUi\\": "src/",
+                    "N3XT0R\\FilamentPassportUi\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ilya Beliaev",
+                    "email": "info@php-dev.info",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Filament admin UI for managing Laravel Passport OAuth clients, tokens, and scopes.",
+            "homepage": "https://github.com/n3xt0r/filament-passport-ui",
+            "keywords": [
+                "N3XT0R",
+                "filament-passport-ui",
+                "filamentphp",
+                "laravel",
+                "laravel-passport",
+                "passport-ui"
+            ],
+            "support": {
+                "issues": "https://github.com/n3xt0r/filament-passport-ui/issues",
+                "source": "https://github.com/n3xt0r/filament-passport-ui"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/N3XT0R",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-12-30T23:06:13+00:00"
+        },
+        {
             "name": "nesbot/carbon",
             "version": "3.11.0",
             "source": {
@@ -5515,16 +5599,16 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v2.4.0",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "547e2dc4d45107440e76c17ab5a46e4252460158"
+                "reference": "4714da6efdc782c06690bc72ce34fae7941c2d9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/547e2dc4d45107440e76c17ab5a46e4252460158",
-                "reference": "547e2dc4d45107440e76c17ab5a46e4252460158",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/4714da6efdc782c06690bc72ce34fae7941c2d9f",
+                "reference": "4714da6efdc782c06690bc72ce34fae7941c2d9f",
                 "shasum": ""
             },
             "require": {
@@ -5605,9 +5689,9 @@
             ],
             "support": {
                 "issues": "https://github.com/paragonie/sodium_compat/issues",
-                "source": "https://github.com/paragonie/sodium_compat/tree/v2.4.0"
+                "source": "https://github.com/paragonie/sodium_compat/tree/v2.5.0"
             },
-            "time": "2025-10-06T08:47:40+00:00"
+            "time": "2025-12-30T16:12:18+00:00"
         },
         {
             "name": "pbmedia/laravel-ffmpeg",
@@ -14575,7 +14659,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "n3xt0r/filament-passport-ui": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
