@@ -31,7 +31,7 @@ class PassportServiceProvider extends ServiceProvider
             'channels:read' => 'View channels',
             'channels:write' => 'Manage channels',
             'videos:read' => 'View videos',
-            'videos:write' => 'Manage videos',
+            'videos:create' => 'Upload Video',
             'assignments:read' => 'View assignments',
             'assignments:download' => 'Download assignments',
         ]);
