@@ -14,7 +14,7 @@ readonly class ClientService
     {
     }
 
-    public function createPersonalAccessClient(string $name, User $user): Client
+    public function createPersonalAccessClientForUser(string $name, User $user): Client
     {
         $client = $this->clientRepository->createPersonalAccessGrantClient(
             $name,
