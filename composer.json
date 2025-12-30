@@ -32,6 +32,7 @@
     "filament/filament": "^4.0",
     "gboquizosanchez/filament-log-viewer": "^2.0.0",
     "laravel/framework": "^12.0",
+    "laravel/passport": "^13.0",
     "laravel/reverb": "^1.0",
     "laravel/tinker": "^2.10.1",
     "maennchen/zipstream-php": "^3.2",
