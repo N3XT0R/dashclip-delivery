@@ -21,4 +21,10 @@ class PersonalAccessTokenRepository
             ->filter(fn(Token $token) => $token->client->hasGrantType('personal_access'));
     }
 
+    public function createToken(User $user, string $name, array $scopes = []): Token
+    {
+        $tokenResult = $user->createToken($name, $scopes);
+        return $tokenResult->token;
+    }
+
 }
