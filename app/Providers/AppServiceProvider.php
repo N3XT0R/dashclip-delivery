@@ -16,12 +16,14 @@ use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
+use Carbon\CarbonInterval;
 use Filament\Resources\Resource;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 use League\Flysystem\Filesystem;
 use Spatie\Dropbox\Client as DropboxClient;
 use Spatie\FlysystemDropbox\DropboxAdapter;
@@ -108,5 +110,8 @@ class AppServiceProvider extends ServiceProvider
 
     protected function bootPassport(): void
     {
+        Passport::tokensExpireIn(CarbonInterval::days(1));
+        Passport::refreshTokensExpireIn(CarbonInterval::days(30));
+        Passport::personalAccessTokensExpireIn(CarbonInterval::month());
     }
 }
