@@ -203,7 +203,7 @@ return [
                     'in' => 'header',
                     'scheme' => 'https',
                     'flows' => [
-                        "password" => [
+                        "client_credentials" => [
                             "authorizationUrl" => config('app.url') . '/oauth/authorize',
                             "tokenUrl" => config('app.url') . '/oauth/token',
                             "refreshUrl" => config('app.url') . '/token/refresh',
