@@ -8,7 +8,7 @@ use App\Models\User;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
 
-class ClientService
+readonly class ClientService
 {
     public function __construct(private ClientRepository $clientRepository)
     {
