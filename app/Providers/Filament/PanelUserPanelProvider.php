@@ -38,7 +38,7 @@ use Illuminate\Foundation\Vite;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use N3XT0R\FilamentPassportUi\FilamentPassportUi;
+use N3XT0R\FilamentPassportUi\FilamentPassportUiPlugin;
 
 class PanelUserPanelProvider extends PanelProvider
 {
@@ -189,7 +189,7 @@ class PanelUserPanelProvider extends PanelProvider
                 ->centralApp(false)
                 ->localizePermissionLabels()
                 ->scopeToTenant(false),
-            FilamentPassportUi::make(),
+            FilamentPassportUiPlugin::make(),
         ]);
     }
 }
