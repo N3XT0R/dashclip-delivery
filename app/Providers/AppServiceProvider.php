@@ -103,5 +103,10 @@ class AppServiceProvider extends ServiceProvider
             $filesystem = new Filesystem($adapter);
             return new FilesystemAdapter($filesystem, $adapter, $config);
         });
+        $this->bootPassport();
+    }
+
+    protected function bootPassport(): void
+    {
     }
 }
