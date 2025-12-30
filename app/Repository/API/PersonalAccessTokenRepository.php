@@ -27,4 +27,10 @@ class PersonalAccessTokenRepository
         return $tokenResult->token;
     }
 
+    public function revokeToken(Token $token): bool
+    {
+        $token->revoked = true;
+        return $token->save();
+    }
+
 }
