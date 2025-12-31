@@ -4771,12 +4771,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/N3XT0R/filament-passport-ui.git",
-                "reference": "e050da0b3f5ad554e43586c889009a0096b6bf92"
+                "reference": "b403662e75ef9a4a9d88f7e5cd79b243c79b3370"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/N3XT0R/filament-passport-ui/zipball/e050da0b3f5ad554e43586c889009a0096b6bf92",
-                "reference": "e050da0b3f5ad554e43586c889009a0096b6bf92",
+                "url": "https://api.github.com/repos/N3XT0R/filament-passport-ui/zipball/b403662e75ef9a4a9d88f7e5cd79b243c79b3370",
+                "reference": "b403662e75ef9a4a9d88f7e5cd79b243c79b3370",
                 "shasum": ""
             },
             "require": {
@@ -4813,6 +4813,7 @@
             "autoload": {
                 "psr-4": {
                     "N3XT0R\\FilamentPassportUi\\": "src/",
+                    "N3XT0R\\FilamentPassportUi\\Database\\Seeders\\": "database/Seeders/",
                     "N3XT0R\\FilamentPassportUi\\Database\\Factories\\": "database/factories/"
                 }
             },
@@ -4847,7 +4848,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-30T23:06:13+00:00"
+            "time": "2025-12-31T01:55:42+00:00"
         },
         {
             "name": "nesbot/carbon",
