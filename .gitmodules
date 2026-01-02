@@ -1,0 +1,3 @@
+[submodule "packages/filament-passport-ui"]
+	path = packages/filament-passport-ui
+	url = git@github.com:N3XT0R/filament-passport-ui.git

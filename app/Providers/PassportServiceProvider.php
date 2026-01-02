@@ -18,6 +18,7 @@ class PassportServiceProvider extends ServiceProvider
 
     protected function defineTokenExpires(): void
     {
+        Passport::enablePasswordGrant();
         Passport::tokensExpireIn(CarbonInterval::day());
         Passport::refreshTokensExpireIn(CarbonInterval::days(30));
         Passport::personalAccessTokensExpireIn(CarbonInterval::month());
