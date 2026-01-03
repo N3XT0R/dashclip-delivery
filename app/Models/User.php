@@ -26,15 +26,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Passport\Contracts\OAuthenticatable;
-use Laravel\Passport\HasApiTokens;
+use N3XT0R\FilamentPassportUi\Models\Concerns\HasPassportScopeGrantsInterface;
+use N3XT0R\FilamentPassportUi\Models\Traits\HasApiTokensTrait;
+use N3XT0R\FilamentPassportUi\Models\Traits\HasPassportScopeGrantsTrait;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery,
                                               HasEmailAuthentication, MustVerifyEmail, HasTenants, HasDefaultTenant,
-                                              HasLocalePreference, OAuthenticatable
+                                              HasLocalePreference, OAuthenticatable, HasPassportScopeGrantsInterface
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasApiTokens;
+    use HasFactory, Notifiable, HasRoles;
+    use HasApiTokensTrait;
+    use HasPassportScopeGrantsTrait;
 
     /**
      * The attributes that are mass assignable.
