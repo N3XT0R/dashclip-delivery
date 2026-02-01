@@ -1,0 +1,67 @@
+name: ✨ Feature Request
+description: Suggest an improvement or new feature for dashclip-delivery
+title: "[Feature]: "
+labels: [ "enhancement" ]
+assignees: [ ]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a feature 🙌  
+        **dashclip-delivery is a SaaS platform.**  
+        Please describe your idea clearly and with practical context.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Use case
+      description: What problem are you trying to solve?
+      placeholder: |
+        As a user, I want to...
+        Because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe your suggested solution or behavior
+      placeholder: |
+        How should the system behave?
+        Any UI / API expectations?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you considered other solutions or workarounds?
+      placeholder: |
+        Other approaches, integrations, or manual steps
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Expected impact
+      description: Who benefits from this feature and how?
+      placeholder: |
+        - End users
+        - Administrators
+        - API consumers
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope awareness
+      options:
+        - label: I understand that not all feature requests can be implemented
+          required: true
+        - label: I understand that GitHub issues are not guaranteed support channels
+          required: true
