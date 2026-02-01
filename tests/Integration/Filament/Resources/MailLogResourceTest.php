@@ -28,6 +28,7 @@ final class MailLogResourceTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Carbon::setTestNow(Carbon::parse('2025-01-02 12:00:00'));
 
         $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
@@ -66,7 +67,7 @@ final class MailLogResourceTest extends DatabaseTestCase
         ])->save();
 
         $expectedNewer = $newer->created_at->diffForHumans();
-        $expectedOlder = $newer->created_at->diffForHumans();
+        $expectedOlder = $older->created_at->diffForHumans();
 
         Livewire::test(ListMailLogs::class)
             ->assertStatus(200)
@@ -136,5 +137,12 @@ final class MailLogResourceTest extends DatabaseTestCase
         Livewire::test(ViewMailLog::class, ['record' => $log->getKey()])
             ->assertStatus(200)
             ->assertSee('Single-Header: Value');
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
     }
 }
