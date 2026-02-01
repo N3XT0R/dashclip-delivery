@@ -28,6 +28,7 @@ final class MailLogResourceTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Carbon::setTestNow(Carbon::parse('2025-02-01 12:00:00'));
 
         $this->user = User::factory()->admin()->create();
         $this->actingAs($this->user);
