@@ -1,0 +1,86 @@
+name: 🐞 Bug Report
+description: Report a reproducible issue in dashclip-delivery
+title: "[Bug]: "
+labels: [ "bug" ]
+assignees: [ ]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your report 🙌  
+        **dashclip-delivery is a SaaS platform.**  
+        Please provide accurate and complete information.  
+        Issues with missing details may be closed without further investigation.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Which version of dashclip-delivery are you using?
+      placeholder: e.g. 3.3.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Video playback / preview
+        - Download / ZIP generation
+        - API
+        - Authentication / Permissions
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue description
+      description: Clearly describe what is not working.
+      placeholder: |
+        Expected behavior:
+        Actual behavior:
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can the issue be reproduced?
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error messages (optional)
+      description: Relevant logs, error messages, or screenshots
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: sanity
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I verified that this is not related to unavailable, deleted, or non-assigned content
+          required: true
+        - label: I verified that the issue is reproducible
+          required: true
