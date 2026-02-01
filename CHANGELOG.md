@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Filament V4 => V5 Upgrade**
+    - Upgraded Filament from version 4 to version 5.
+    - Updated all custom resources, pages, and components to be compatible with Filament v5.
+    - Tested all existing functionality to ensure compatibility and stability after the upgrade.
+
 ### Security
 
 - **Composer Packages**
