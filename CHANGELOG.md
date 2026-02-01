@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **Composer Packages**
+    - upgraded packages to newest version (e.g. laravel)
+
 ## [3.3.0] - 2025-12-30
 
 ### Added
