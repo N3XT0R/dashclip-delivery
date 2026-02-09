@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property-read ApplicationMetaDto $meta
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ChannelApplication extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'user_id',
@@ -28,6 +31,18 @@ class ChannelApplication extends Model
         'meta' => 'array',
     ];
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'id',
+                'user_id',
+                'channel_id',
+                'status',
+            ]);
+    }
+
+
     public function scopeIsNewChannel(Builder $query): Builder
     {
         return $query->whereNull('channel_id');
@@ -37,7 +52,7 @@ class ChannelApplication extends Model
     {
         return $this->channel_id === null;
     }
-    
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
