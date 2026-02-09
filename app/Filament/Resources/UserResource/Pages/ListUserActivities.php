@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Clusters\ActivityWorkspace\Pages;
+namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Clusters\ActivityWorkspace;
 use App\Filament\Resources\ActivityResource\Pages\ListActivities;

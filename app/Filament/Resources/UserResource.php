@@ -117,6 +117,10 @@ class UserResource extends Resource
             ])
             ->recordActions([
                 Actions\EditAction::make(),
+                Actions\Action::make('activities')->url(
+                    fn($record) => self::getUrl('activities',
+                        ['record' => $record])
+                ),
                 Actions\Action::make('resetPassword')
                     ->label('Reset Password')
                     ->icon('heroicon-o-key')
@@ -124,7 +128,7 @@ class UserResource extends Resource
                         $password = Str::password(12);
                         $record->update(['password' => bcrypt($password)]);
                         Notification::make()
-                            ->title('Password reset to "' . $password . '"')
+                            ->title('Password reset to "'.$password.'"')
                             ->success()
                             ->send();
                     })
@@ -142,6 +146,7 @@ class UserResource extends Resource
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
+            'activities' => Pages\ListUserActivities::route('/{record}/activities'),
         ];
     }
 }
