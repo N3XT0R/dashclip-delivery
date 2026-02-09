@@ -4146,16 +4146,16 @@
         },
         {
             "name": "nette/php-generator",
-            "version": "v4.2.0",
+            "version": "v4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/php-generator.git",
-                "reference": "4707546a1f11badd72f5d82af4f8a6bc64bd56ac"
+                "reference": "52aff4d9b12f20ca9f3e31a559b646d2fd21dd61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/php-generator/zipball/4707546a1f11badd72f5d82af4f8a6bc64bd56ac",
-                "reference": "4707546a1f11badd72f5d82af4f8a6bc64bd56ac",
+                "url": "https://api.github.com/repos/nette/php-generator/zipball/52aff4d9b12f20ca9f3e31a559b646d2fd21dd61",
+                "reference": "52aff4d9b12f20ca9f3e31a559b646d2fd21dd61",
                 "shasum": ""
             },
             "require": {
@@ -4164,9 +4164,9 @@
             },
             "require-dev": {
                 "jetbrains/phpstorm-attributes": "^1.2",
-                "nette/tester": "^2.4",
+                "nette/tester": "^2.6",
                 "nikic/php-parser": "^5.0",
-                "phpstan/phpstan-nette": "^2.0@stable",
+                "phpstan/phpstan": "^2.0@stable",
                 "tracy/tracy": "^2.8"
             },
             "suggest": {
@@ -4212,9 +4212,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/php-generator/issues",
-                "source": "https://github.com/nette/php-generator/tree/v4.2.0"
+                "source": "https://github.com/nette/php-generator/tree/v4.2.1"
             },
-            "time": "2025-08-06T18:24:31+00:00"
+            "time": "2026-02-09T05:43:31+00:00"
         },
         {
             "name": "nette/schema",
@@ -6878,27 +6878,27 @@
         },
         {
             "name": "spatie/flysystem-dropbox",
-            "version": "3.0.2",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/flysystem-dropbox.git",
-                "reference": "e6bf18e4dcfe5b21945bdc8b633f7e4c3ae4b9eb"
+                "reference": "c427f97ef615162864621ec9039dc087517562f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/flysystem-dropbox/zipball/e6bf18e4dcfe5b21945bdc8b633f7e4c3ae4b9eb",
-                "reference": "e6bf18e4dcfe5b21945bdc8b633f7e4c3ae4b9eb",
+                "url": "https://api.github.com/repos/spatie/flysystem-dropbox/zipball/c427f97ef615162864621ec9039dc087517562f2",
+                "reference": "c427f97ef615162864621ec9039dc087517562f2",
                 "shasum": ""
             },
             "require": {
                 "league/flysystem": "^3.7.0",
-                "php": "^8.0",
+                "php": "^8.2",
                 "spatie/dropbox-api": "^1.17.1"
             },
             "require-dev": {
-                "pestphp/pest": "^1.22",
-                "phpspec/prophecy-phpunit": "^2.0.1",
-                "phpunit/phpunit": "^9.5.4"
+                "mockery/mockery": "^1.6",
+                "pestphp/pest": "^3.0",
+                "phpunit/phpunit": "^11.0"
             },
             "type": "library",
             "autoload": {
@@ -6930,7 +6930,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/flysystem-dropbox/issues",
-                "source": "https://github.com/spatie/flysystem-dropbox/tree/3.0.2"
+                "source": "https://github.com/spatie/flysystem-dropbox/tree/3.1.0"
             },
             "funding": [
                 {
@@ -6942,7 +6942,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-06T14:05:49+00:00"
+            "time": "2026-02-09T20:12:36+00:00"
         },
         {
             "name": "spatie/invade",
@@ -7157,16 +7157,16 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "6.24.0",
+            "version": "6.24.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "76adb1fc8d07c16a0721c35c4cc330b7a12598d7"
+                "reference": "eefc9d17eba80d023d6bff313f882cb2bcd691a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/76adb1fc8d07c16a0721c35c4cc330b7a12598d7",
-                "reference": "76adb1fc8d07c16a0721c35c4cc330b7a12598d7",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/eefc9d17eba80d023d6bff313f882cb2bcd691a3",
+                "reference": "eefc9d17eba80d023d6bff313f882cb2bcd691a3",
                 "shasum": ""
             },
             "require": {
@@ -7228,7 +7228,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-permission/issues",
-                "source": "https://github.com/spatie/laravel-permission/tree/6.24.0"
+                "source": "https://github.com/spatie/laravel-permission/tree/6.24.1"
             },
             "funding": [
                 {
@@ -7236,7 +7236,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-13T21:45:21+00:00"
+            "time": "2026-02-09T21:10:03+00:00"
         },
         {
             "name": "spatie/shiki-php",
