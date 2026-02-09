@@ -10,10 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Channel extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'name',
@@ -30,6 +33,16 @@ class Channel extends Model
         'is_video_reception_paused' => 'boolean',
         'approved_at' => 'datetime',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'id',
+                'name',
+            ]);
+    }
+
 
     public function scopeIsActive(Builder $query): Builder
     {
@@ -71,7 +84,7 @@ class Channel extends Model
      */
     public function getApprovalToken(): string
     {
-        return hash('sha256', $this->email . config('app.key'));
+        return hash('sha256', $this->email.config('app.key'));
     }
 
     public function getApprovalUrl(): string
