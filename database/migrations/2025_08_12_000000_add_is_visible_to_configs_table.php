@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->boolean('is_visible')->default(true);
         });
 
+        Config::unsetEventDispatcher();
         $config = Config::query()->where('key', 'dropbox_refresh_token')->firstOrNew();
 
         if (!$config->exists) {
