@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Config extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'key',
@@ -30,6 +33,19 @@ class Config extends Model
         'selectable' => 'array',
         'cast_type' => 'string',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'id',
+                'key',
+                'value',
+                'cast_type',
+                'is_visible',
+            ]);
+    }
+
 
     /**
      * Cast the "value" attribute according to the "cast_type" column.
