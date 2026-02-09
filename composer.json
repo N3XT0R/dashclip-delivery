@@ -36,6 +36,7 @@
     "laravel/tinker": "^2.10.1",
     "maennchen/zipstream-php": "^3.2",
     "pbmedia/laravel-ffmpeg": "^8.0",
+    "pxlrbt/filament-activity-log": "^2.0",
     "spatie/flysystem-dropbox": "^3.0",
     "spatie/laravel-activitylog": "^4.10",
     "webklex/laravel-imap": "^6.2"
