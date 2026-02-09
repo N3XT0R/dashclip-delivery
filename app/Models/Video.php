@@ -15,10 +15,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Video extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'hash',
@@ -38,6 +41,16 @@ class Video extends Model
     protected $append = [
         'human_readable_size',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'id',
+                'hash',
+                'original_name',
+            ]);
+    }
 
 
     public function scopeHasUsersClips(Builder $query, User $user): Builder
