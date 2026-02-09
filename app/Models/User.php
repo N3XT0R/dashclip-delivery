@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery,
@@ -33,6 +35,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
+    use LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -69,6 +72,17 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         'email_verified_at' => 'datetime',
         'terms_accepted_at' => 'datetime',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'id',
+                'name',
+                'email',
+            ]);
+    }
+
 
     protected function scopeIsOwnTeam(Builder $query, ?self $user = null): Builder
     {
@@ -135,7 +149,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     }
 
     /**
-     * @param array<string> | null $codes
+     * @param  array<string> | null  $codes
      */
     public function saveAppAuthenticationRecoveryCodes(?array $codes): void
     {
