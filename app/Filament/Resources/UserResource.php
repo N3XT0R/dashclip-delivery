@@ -118,7 +118,7 @@ class UserResource extends Resource
             ->recordActions([
                 Actions\EditAction::make(),
                 Actions\Action::make('activities')->url(
-                    fn($record) => self::getUrl('activities',
+                    fn($record) => static::getUrl('activities',
                         ['record' => $record])
                 ),
                 Actions\Action::make('resetPassword')
