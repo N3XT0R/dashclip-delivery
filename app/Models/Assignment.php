@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Assignment extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'video_id',
@@ -33,11 +36,25 @@ class Assignment extends Model
         'last_notified_at' => 'datetime'
     ];
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'id',
+                'video_id',
+                'channel_id',
+                'batch_id',
+                'status',
+                'expires_at',
+                'attempts',
+            ]);
+    }
+
 
     /**
      * Scope a query to only include assignments where the associated video has clips by the specified user.
-     * @param Builder $query
-     * @param User $user
+     * @param  Builder  $query
+     * @param  User  $user
      * @return Builder
      */
     public function scopeHasUsersClips(Builder $query, User $user): Builder
@@ -51,8 +68,8 @@ class Assignment extends Model
 
     /**
      * Scope a query to only include assignments with specified channel IDs.
-     * @param Builder $query
-     * @param array $channelIds
+     * @param  Builder  $query
+     * @param  array  $channelIds
      * @return Builder
      */
     public function scopeHasChannelIds(Builder $query, array $channelIds): Builder
@@ -62,7 +79,7 @@ class Assignment extends Model
 
     /**
      * Scope a query to only include available assignments.
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeAvailable(Builder $query): Builder
@@ -81,7 +98,7 @@ class Assignment extends Model
 
     /**
      * Scope a query to only include downloaded assignments.
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeDownloaded(Builder $query): Builder
@@ -96,7 +113,7 @@ class Assignment extends Model
 
     /**
      * Scope a query to only include expired assignments.
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeExpired(Builder $query): Builder
@@ -108,7 +125,7 @@ class Assignment extends Model
 
     /**
      * Scope a query to only include returned assignments.
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeReturned(Builder $query): Builder
@@ -151,7 +168,7 @@ class Assignment extends Model
 
     /**
      * Set the expiration date for the assignment.
-     * @param int|null $ttlDays
+     * @param  int|null  $ttlDays
      * @return void
      */
     public function setExpiresAt(?int $ttlDays = null): void
