@@ -10,9 +10,4 @@ use pxlrbt\FilamentActivityLog\Pages\ListActivities;
 class ListUserActivities extends ListActivities
 {
     protected static string $resource = UserResource::class;
-
-    public static function canAccess(array $parameters = []): bool
-    {
-        return true;
-    }
 }
