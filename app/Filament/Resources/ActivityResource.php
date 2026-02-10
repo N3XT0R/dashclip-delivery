@@ -38,16 +38,14 @@ class ActivityResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('event')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('subject_type')
+                Tables\Columns\TextColumn::make('subject')
                     ->formatStateUsing(fn(Model $state) => sprintf(
                         '%s (%s)',
                         $state->getKey() ?? '-',
                         get_class($state)
-                    ))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('causer_type')
-                    ->formatStateUsing(fn(Model $state) => sprintf('%s (%s)', $state['name'] ?? '-', get_class($state)))
-                    ->searchable(),
+                    )),
+                Tables\Columns\TextColumn::make('causer')
+                    ->formatStateUsing(fn(?Model $activityItem) => $activityItem?->causer?->name),
                 Tables\Columns\TextColumn::make('properties')
                     ->searchable()
                     ->listWithLineBreaks()
