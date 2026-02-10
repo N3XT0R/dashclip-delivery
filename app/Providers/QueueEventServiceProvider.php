@@ -17,12 +17,15 @@ class QueueEventServiceProvider extends ServiceProvider
             $payload = $job->payload();
 
             activity()
+                ->causedByAnonymous()
                 ->withProperties([
-                    'job_id' => $job->getJobId(),
-                    'name' => $job->getName(),
-                    'job' => $payload['displayName'] ?? get_class($job),
-                    'queue' => $job->getQueue(),
-                    'status' => 'completed',
+                    'attributes' => [
+                        'job_id' => $job->getJobId(),
+                        'name' => $job->getName(),
+                        'job' => $payload['displayName'] ?? get_class($job),
+                        'queue' => $job->getQueue(),
+                        'status' => 'completed',
+                    ],
                 ])
                 ->log('Job completed');
         });
@@ -33,13 +36,16 @@ class QueueEventServiceProvider extends ServiceProvider
             $payload = $job->payload();
 
             activity()
+                ->causedByAnonymous()
                 ->withProperties([
-                    'job_id' => $job->getJobId(),
-                    'name' => $job->getName(),
-                    'job' => $payload['displayName'] ?? get_class($job),
-                    'queue' => $job->getQueue(),
-                    'status' => 'failed',
-                    'exception' => $event->exception?->getMessage(),
+                    'attributes' => [
+                        'job_id' => $job->getJobId(),
+                        'name' => $job->getName(),
+                        'job' => $payload['displayName'] ?? get_class($job),
+                        'queue' => $job->getQueue(),
+                        'status' => 'failed',
+                        'exception' => $event->exception?->getMessage(),
+                    ],
                 ])
                 ->log('Job failed');
         });

@@ -27,11 +27,11 @@ class BuildZipJob implements ShouldQueue
 
     /**
      * Create a new job instance.
-     * @param int|null $batchId
-     * @param int $channelId
-     * @param array $assignmentIds
-     * @param string $ip
-     * @param string|null $userAgent
+     * @param  int|null  $batchId
+     * @param  int  $channelId
+     * @param  array  $assignmentIds
+     * @param  string  $ip
+     * @param  string|null  $userAgent
      * @todo refactor to DTO at v4.0
      */
     public function __construct(
@@ -50,8 +50,8 @@ class BuildZipJob implements ShouldQueue
 
     /**
      * Execute the job.
-     * @param AssignmentService $assignments
-     * @param ZipService $svc
+     * @param  AssignmentService  $assignments
+     * @param  ZipService  $svc
      * @return void
      */
     public function handle(AssignmentService $assignments, ZipService $svc): void
@@ -74,7 +74,7 @@ class BuildZipJob implements ShouldQueue
                 $assignmentIds
             );
 
-            $jobId = 'channel_' . $this->channelId . '_' . hash('sha256', implode('_', $this->assignmentIds));
+            $jobId = 'channel_'.$this->channelId.'_'.hash('sha256', implode('_', $this->assignmentIds));
         }
 
 
@@ -83,8 +83,13 @@ class BuildZipJob implements ShouldQueue
             ->causedBy(auth()?->user())
             ->performedOn($channel)
             ->withProperties([
-                'batch_id' => $this->batchId,
-                'assignments' => count($this->assignmentIds),
+                'attributes' => [
+                    'channel_id' => $this->channelId,
+                    'channel_name' => $channel->name,
+                    'batch_id' => $this->batchId,
+                    'assignments' => count($this->assignmentIds),
+                ],
+
             ])
             ->log('ZIP-File created');
     }
