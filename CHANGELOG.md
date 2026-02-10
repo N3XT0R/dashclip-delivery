@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Activity-log**
+    - Added a new activity pages and advanced logging for Models:
+        - User
+        - Video
+        - Channel
+        - Assignment
+        - ChannelApplication
+        - Channel
+
 ## [3.5.0] - 2026-02-08
 
 ### Security
