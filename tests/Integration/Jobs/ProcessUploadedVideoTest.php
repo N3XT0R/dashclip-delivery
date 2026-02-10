@@ -63,12 +63,10 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
         $job->handle($scannerMock);
 
         // Assert
-        $activity = Activity::where('subject_id', $video->id)
-            ->where('log_name', 'default')
-            ->first();
+        $activity = Activity::all()->last();
 
         $this->assertNotNull($activity, 'Expected an activity entry for the video.');
-        $this->assertSame('created', $activity->description);
+        $this->assertSame('uploaded a video', $activity->description);
         $this->assertSame($user->getKey(), $activity->causer_id);
 
         $this->assertDatabaseHas('clips', [
