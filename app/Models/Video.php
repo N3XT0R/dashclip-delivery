@@ -49,6 +49,8 @@ class Video extends Model
                 'id',
                 'hash',
                 'original_name',
+                'disk',
+                'path',
             ]);
     }
 
