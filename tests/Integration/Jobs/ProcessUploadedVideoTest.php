@@ -68,7 +68,7 @@ class ProcessUploadedVideoTest extends DatabaseTestCase
             ->first();
 
         $this->assertNotNull($activity, 'Expected an activity entry for the video.');
-        $this->assertSame('uploaded a video', $activity->description);
+        $this->assertSame('created', $activity->description);
         $this->assertSame($user->getKey(), $activity->causer_id);
 
         $this->assertDatabaseHas('clips', [
