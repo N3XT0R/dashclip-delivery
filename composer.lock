@@ -6815,27 +6815,27 @@
         },
         {
             "name": "spatie/flysystem-dropbox",
-            "version": "3.0.2",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/flysystem-dropbox.git",
-                "reference": "e6bf18e4dcfe5b21945bdc8b633f7e4c3ae4b9eb"
+                "reference": "c427f97ef615162864621ec9039dc087517562f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/flysystem-dropbox/zipball/e6bf18e4dcfe5b21945bdc8b633f7e4c3ae4b9eb",
-                "reference": "e6bf18e4dcfe5b21945bdc8b633f7e4c3ae4b9eb",
+                "url": "https://api.github.com/repos/spatie/flysystem-dropbox/zipball/c427f97ef615162864621ec9039dc087517562f2",
+                "reference": "c427f97ef615162864621ec9039dc087517562f2",
                 "shasum": ""
             },
             "require": {
                 "league/flysystem": "^3.7.0",
-                "php": "^8.0",
+                "php": "^8.2",
                 "spatie/dropbox-api": "^1.17.1"
             },
             "require-dev": {
-                "pestphp/pest": "^1.22",
-                "phpspec/prophecy-phpunit": "^2.0.1",
-                "phpunit/phpunit": "^9.5.4"
+                "mockery/mockery": "^1.6",
+                "pestphp/pest": "^3.0",
+                "phpunit/phpunit": "^11.0"
             },
             "type": "library",
             "autoload": {
@@ -6867,7 +6867,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/flysystem-dropbox/issues",
-                "source": "https://github.com/spatie/flysystem-dropbox/tree/3.0.2"
+                "source": "https://github.com/spatie/flysystem-dropbox/tree/3.1.0"
             },
             "funding": [
                 {
@@ -6879,7 +6879,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-06T14:05:49+00:00"
+            "time": "2026-02-09T20:12:36+00:00"
         },
         {
             "name": "spatie/invade",
@@ -13338,5 +13338,5 @@
         "ext-zip": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
