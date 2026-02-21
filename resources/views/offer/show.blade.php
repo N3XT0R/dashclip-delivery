@@ -104,11 +104,11 @@
 @section('content')
     @if(null === auth()->user() || !auth()->user()?->hasRole(RoleEnum::CHANNEL_OPERATOR->value))
         <div class="register-callout">
-            <h3>Zentraler Zugriff über das Portal</h3>
+            <h3>Hinweis: Portalzugang wird künftig vorausgesetzt</h3>
             <p>
-                Du kannst Angebote weiterhin wie gewohnt über diese Seite nutzen.
-                Viele Kanalbetreiber entscheiden sich später zusätzlich für ein Benutzerkonto,
-                um ihre Inhalte zentral und übersichtlich zu verwalten.
+                Der Zugriff auf Angebote per Direktlink (z. B. per E-Mail) wird
+                perspektivisch eingestellt.
+                Künftig erfolgt der Zugriff zentral über ein Benutzerkonto im Portal.
             </p>
             <ul class="register-benefits">
                 <li>✔ Zentrale Übersicht über alle Angebote, Downloads und Status</li>
@@ -117,6 +117,9 @@
                 <li>✔ Perspektivisch: Automatisierte Anbindung an eigene Workflows und Systeme</li>
                 <li>✔ Bestehende Zugriffe per E-Mail bleiben weiterhin möglich</li>
             </ul>
+            <p class="muted" style="font-size:13px;">
+                Bestehende Direktzugriffe funktionieren während der Übergangsphase weiterhin.
+            </p>
             <div class="register-callout-actions">
                 <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
                     Jetzt registrieren
@@ -172,8 +175,8 @@
     <hr class="muted-separator">
     @guest
         <button
-            class="register-tab"
-            onclick="document.querySelector('.register-callout')?.scrollIntoView({behavior:'smooth'})"
+                class="register-tab"
+                onclick="document.querySelector('.register-callout')?.scrollIntoView({behavior:'smooth'})"
         >
             Registrieren
         </button>

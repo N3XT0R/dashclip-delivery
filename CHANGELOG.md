@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - ChannelApplication
         - Channel
 
+### Deprecated
+
+- **Unauthenticated access via direct email links**
+    - Access to offers via direct email links without authentication is deprecated.
+    - This access method will be removed in a future release.
+    - The change aligns the project more closely with established security best practices
+      (e.g. traceability, access control, and accountability principles commonly required
+      in standards such as ISO 27001).
+    - During the transition phase, existing direct links will continue to function.
+    - Users are encouraged to create a portal account to ensure uninterrupted and auditable access.
+
 ### Security
 
 - **Composer Packages**
