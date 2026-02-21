@@ -10,11 +10,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
+/**
+ * @deprecated replaced by MyOffers-Page in Filament Admin Panel, will be removed in future release
+ */
 class OfferController extends Controller
 {
     public function __construct(
         private readonly OfferService $offerService,
-        private AssignmentService $assignments
+        private readonly AssignmentService $assignments
     ) {
     }
 
