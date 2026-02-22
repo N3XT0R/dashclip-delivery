@@ -6,6 +6,7 @@ use App\Filament\Resources\Videos\VideoResource;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Repository\ClipRepository;
+use App\Repository\TeamRepository;
 use Carbon\CarbonInterval;
 use Closure;
 use Filament\Forms\Components\FileUpload;
@@ -241,6 +242,7 @@ class CreateVideo extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        $data['team_id'] = app(TeamRepository::class)->getDefaultTeamForUser(auth()->user())?->getKey();
         $model = $this->getModel()::create($data);
         $data['clip']['video_id'] = $model->getKey();
         $data['clip']['user_id'] = auth()->id();
