@@ -10,5 +10,5 @@ enum ProcessingStatusEnum: string
     case Processing = 'processing';
     case Completed = 'completed';
     case Failed = 'failed';
-    case FileDeleted = 'file_deleted';
+    case Deleted = 'deleted';
 }
