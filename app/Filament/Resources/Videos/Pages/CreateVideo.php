@@ -67,11 +67,11 @@ class CreateVideo extends CreateRecord
                     ->columnSpanFull(),
                 $this->timeFields(),
                 $this->getClipSelectorComponent(),
-                Textarea::make('note')->label('Notiz')
+                Textarea::make('clip.note')->label('Notiz')
                     ->rows(5)
                     ->autosize()
                     ->trim(),
-                TextInput::make('bundle_key')
+                TextInput::make('clip.bundle_key')
                     ->label(__('filament.video_upload.form.fields.bundle_key'))
                     ->datalist(
                         Clip::query()
@@ -86,7 +86,7 @@ class CreateVideo extends CreateRecord
                     ->helperText(
                         __('filament.video_upload.form.fields.bundle_key_helper_text')
                     ),
-                TextInput::make('role')->label(__('filament.video_upload.form.fields.role'))
+                TextInput::make('clip.role')->label(__('filament.video_upload.form.fields.role'))
                     ->datalist([
                         'F' => 'Front',
                         'R' => 'Rear',
@@ -95,8 +95,7 @@ class CreateVideo extends CreateRecord
                         __('filament.video_upload.form.fields.role_helper_text')
                     )
                     ->trim(),
-            ])
-            ->statePath('data');
+            ]);
     }
 
     protected function getFileComponent(): FileUpload
@@ -125,7 +124,7 @@ class CreateVideo extends CreateRecord
 
     protected function getDurationComponent(): Hidden
     {
-        return Hidden::make('duration')
+        return Hidden::make('clip.duration')
             ->default(0)
             ->required()
             ->dehydrated()
@@ -144,7 +143,7 @@ class CreateVideo extends CreateRecord
     {
         return Grid::make(2)
             ->schema([
-                TextInput::make('start_sec')
+                TextInput::make('clip.start_sec')
                     ->label(__('filament.video_upload.form.fields.start_sec'))
                     ->required()
                     ->placeholder('mm:ss')
@@ -169,7 +168,7 @@ class CreateVideo extends CreateRecord
                     ->disabled(fn(Get $get) => (int)($get('duration') ?? 0) < 1)
                     ->reactive(),
 
-                TextInput::make('end_sec')
+                TextInput::make('clip.end_sec')
                     ->label(__('filament.video_upload.form.fields.end_sec'))
                     ->required()
                     ->placeholder('mm:ss')
@@ -239,6 +238,7 @@ class CreateVideo extends CreateRecord
     {
         $model = $this->getModel()::create($data);
         $data['clip']['video_id'] = $model->getKey();
+        $data['clip']['user_id'] = auth()->id();
         app(ClipRepository::class)->create([$data['clip']]);
 
         return $model;
