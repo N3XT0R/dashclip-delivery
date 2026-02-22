@@ -154,6 +154,11 @@ return [
                 'role' => 'Role',
                 'role_helper_text' => 'Optional: Specifies the camera position or perspective of the video, e.g., Front (F) or Rear (R).',
             ],
+            'messages' => [
+                'success' => [
+                    'process_started' => 'Video upload process has started! You will receive an email notification once the processing is complete.',
+                ],
+            ],
             'components' => [
                 // Additional form components can be defined here
             ],

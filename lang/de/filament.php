@@ -154,6 +154,11 @@ return [
                 'role' => 'Rolle',
                 'role_helper_text' => 'Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R)',
             ],
+            'messages' => [
+                'success' => [
+                    'process_started' => 'Die Verarbeitung kann je nach Video-Größe einige Minuten dauern. Du erhältst eine Benachrichtigung, sobald der Upload abgeschlossen ist.',
+                ],
+            ],
             'components' => [
 
             ],
