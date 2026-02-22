@@ -20,12 +20,11 @@
         video.onloadedmetadata = () => {
             const duration = Math.floor(video.duration ?? 0);
             URL.revokeObjectURL(url);
-            
+
             const component = window.Livewire.find(event.target.closest('[wire\\:id]').getAttribute('wire:id'));
             if (component) {
                 component.set(`${modelBase}.duration`, duration);
-
-                // Dauer auch als formatierten Wert für end_sec setzen
+                
                 const mins = Math.floor(duration / 60);
                 const secs = duration % 60;
                 const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
