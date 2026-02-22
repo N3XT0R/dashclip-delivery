@@ -1,5 +1,6 @@
 <?php
 
+use App\Enum\ProcessingStatusEnum;
 use App\Models\Video;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,7 +14,7 @@ return new class extends Migration {
     {
         Schema::table('videos', static function (Blueprint $table) {
             $table->string('processing_status')
-                ->default('pending')
+                ->default(ProcessingStatusEnum::Pending->value)
                 ->index()
                 ->after('path');
 
@@ -23,7 +24,7 @@ return new class extends Migration {
                 ->after('processing_status');
         });
 
-        Video::query()->update(['processing_status' => 'completed']);
+        Video::query()->update(['processing_status' => ProcessingStatusEnum::Completed->value]);
     }
 
     /**
