@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Videos;
 
 use App\Enum\Users\RoleEnum;
-use App\Filament\Resources\Videos\Pages\ListVideos;
-use App\Filament\Resources\Videos\Pages\ViewVideo;
 use App\Filament\Resources\Videos\RelationManagers\AssignmentsRelationManager;
 use App\Filament\Resources\Videos\RelationManagers\ClipsRelationManager;
 use App\Models\Video;
@@ -127,8 +125,8 @@ class VideoResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListVideos::route('/'),
-            'view' => ViewVideo::route('/{record}'),
+            'index' => Pages\ListVideos::route('/'),
+            'view' => Pages\ViewVideo::route('/{record}'),
             'create' => Pages\CreateVideo::route('/create'),
             // 'edit'   => Pages\EditVideo::route('/{record}/edit'),
         ];
