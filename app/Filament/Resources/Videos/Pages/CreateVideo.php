@@ -236,6 +236,7 @@ class CreateVideo extends CreateRecord
         $filePath = $data['file'];
         $disk = Storage::disk('videos');
         $data['path'] = $filePath;
+        $data['disk'] = 'videos';
         $data['file_size'] = $disk->size($filePath);
 
         return $data;
