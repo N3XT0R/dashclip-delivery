@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 return [
+    'general' => [
+        'actions' => [
+            'upload' => 'Video hochladen',
+        ],
+    ],
     'channel_application' => [
         'title' => 'Zugang zu Kanalvideos beantragen',
         'navigation_label' => 'Zugang beantragen',

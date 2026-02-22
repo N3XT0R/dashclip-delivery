@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 return [
+    'general' => [
+        'actions' => [
+            'upload' => 'Upload Video',
+        ],
+    ],
     'channel_application' => [
         'title' => 'Request Access to Channel Videos',
         'navigation_label' => 'Request Access',

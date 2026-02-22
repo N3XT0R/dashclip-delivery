@@ -26,6 +26,8 @@ class CreateVideo extends CreateRecord
 {
     protected static string $resource = VideoResource::class;
 
+    protected static bool $shouldRegisterNavigation = true;
+
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
