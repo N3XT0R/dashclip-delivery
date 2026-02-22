@@ -178,15 +178,18 @@ class VideoUpload extends Page implements HasForms
                             $endValue = static::toSeconds($value);
 
                             if ($start !== null && $endValue <= (int)$start) {
-                                $fail('Der Endzeitpunkt muss größer als der Startzeitpunkt sein.');
+                                $fail(__('errors.video_upload.error.end_sec_must_be_greater'));
                             }
 
                             if ($duration !== null && $endValue > (int)$duration) {
                                 $fail(
-                                    sprintf(
-                                        'Das Ende darf nicht hinter der Videolänge von %s liegen.',
-                                        CarbonInterval::seconds($duration)->cascade()->format('%I:%S')
-                                    )
+                                    __(
+                                        'errors.video_upload.error.end_sec_cannot_be_greater_than_duration',
+                                        [
+                                            'duration' => CarbonInterval::seconds($duration)
+                                                ->cascade()
+                                                ->format('%I:%S'),
+                                        ])
                                 );
                             }
                         };

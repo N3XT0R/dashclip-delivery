@@ -13,6 +13,7 @@ return [
         'error' => [
             'end_sec_must_be_greater' => 'End time must be greater than start time.',
             'start_sec_must_be_lower' => 'Start time must be less than end time.',
+            'end_sec_cannot_be_greater_than_duration' => 'End time cannot be greater than video duration of :duration seconds.',
         ],
     ],
 ];
