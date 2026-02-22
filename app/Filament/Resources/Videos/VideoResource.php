@@ -18,6 +18,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 
+/**
+ * @todo refactor for v4
+ */
 class VideoResource extends Resource
 {
     protected static ?string $model = Video::class;
