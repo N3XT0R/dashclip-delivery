@@ -146,6 +146,7 @@ return [
                 'note' => 'Note',
                 'bundle_key' => 'Bundle ID',
                 'bundle_key_helper_text' => 'Optional: Use the same bundle key for multiple uploads so that these videos are treated as a related group.',
+                'role' => 'Role',
                 'role_helper_text' => 'Optional: Specifies the camera position or perspective of the video, e.g., Front (F) or Rear (R).',
             ],
             'components' => [

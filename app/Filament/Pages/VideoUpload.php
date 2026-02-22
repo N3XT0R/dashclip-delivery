@@ -74,7 +74,7 @@ class VideoUpload extends Page implements HasForms
                     ->autosize()
                     ->trim(),
                 TextInput::make('bundle_key')
-                    ->label('Bundle ID')
+                    ->label(__('filament.video_upload.form.fields.bundle_key'))
                     ->datalist(
                         Clip::query()
                             ->whereNotNull('bundle_key')
@@ -88,7 +88,7 @@ class VideoUpload extends Page implements HasForms
                     ->helperText(
                         __('filament.video_upload.form.fields.bundle_key_helper_text')
                     ),
-                TextInput::make('role')->label('Rolle')
+                TextInput::make('role')->label(__('filament.video_upload.form.fields.role'))
                     ->datalist([
                         'F' => 'Front',
                         'R' => 'Rear',
