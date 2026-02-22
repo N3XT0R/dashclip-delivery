@@ -2,7 +2,6 @@
 
 namespace App\Filament\Pages;
 
-use AllowDynamicProperties;
 use App\Application\Video\UploadVideo;
 use App\Models\Clip;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -22,43 +21,21 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * @property array|null $data
  * @property Schema $form
  */
-#[AllowDynamicProperties]
 class VideoUpload extends Page implements HasForms
 {
     use InteractsWithForms, HasPageShield;
 
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::ArrowUpTray;
-    protected string $view = 'filament.pages.video-upload';
-
     public ?array $data = [];
 
-
-    public static function getNavigationGroup(): string
+    public static function canAccess(): bool
     {
-        return __('filament.video_upload.navigation_group');
-    }
-
-    public function getTitle(): string|Htmlable
-    {
-        return __('filament.video_upload.title');
-    }
-
-    public function getSubheading(): string|Htmlable|null
-    {
-        return __('filament.video_upload.subheading');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __('filament.video_upload.navigation_label');
+        return false;
     }
 
 
