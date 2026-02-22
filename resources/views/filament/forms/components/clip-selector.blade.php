@@ -20,8 +20,7 @@
         video.onloadedmetadata = () => {
             const duration = Math.floor(video.duration ?? 0);
             URL.revokeObjectURL(url);
-
-            // -> Sende an Livewire (statt manuell ins DOM zu schreiben)
+            
             const component = window.Livewire.find(event.target.closest('[wire\\:id]').getAttribute('wire:id'));
             if (component) {
                 component.set(`${modelBase}.duration`, duration);
