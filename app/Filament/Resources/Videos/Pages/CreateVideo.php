@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Videos\Pages;
 
 use App\Filament\Resources\Videos\VideoResource;
 use App\Models\Clip;
+use App\Models\Video;
 use App\Repository\ClipRepository;
 use Carbon\CarbonInterval;
 use Closure;
@@ -242,5 +243,14 @@ class CreateVideo extends CreateRecord
         app(ClipRepository::class)->create([$data['clip']]);
 
         return $model;
+    }
+
+    protected function afterCreate(): void
+    {
+        /**
+         * @var Video $record
+         * @note dispatch processing job after the transaction has been committed to ensure that the file is available for processing
+         */
+        $record = $this->record;
     }
 }
