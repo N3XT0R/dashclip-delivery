@@ -23,6 +23,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -35,9 +36,6 @@ class VideoUpload extends Page implements HasForms
     use InteractsWithForms, HasPageShield;
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::ArrowUpTray;
-    protected static ?string $navigationLabel = 'Video Upload';
-    protected ?string $subheading = 'Diese Seite ist noch experementell';
-    protected static ?string $title = 'Video Upload (alpha)';
     protected string $view = 'filament.pages.video-upload';
 
     public ?array $data = [];
@@ -46,6 +44,21 @@ class VideoUpload extends Page implements HasForms
     public static function getNavigationGroup(): string
     {
         return __('filament.video_upload.navigation_group');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return __('filament.video_upload.title');
+    }
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        return __('filament.video_upload.subheading');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.video_upload.navigation_label');
     }
 
 
