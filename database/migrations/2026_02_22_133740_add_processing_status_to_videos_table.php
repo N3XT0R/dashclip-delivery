@@ -17,13 +17,10 @@ return new class extends Migration {
                 ->index()
                 ->after('path');
 
-            $table->unsignedTinyInteger('processing_progress')
-                ->default(0)
-                ->after('processing_status');
 
             $table->text('processing_error_message')
                 ->nullable()
-                ->after('processing_progress');
+                ->after('processing_status');
         });
 
         Video::query()->update(['processing_status' => 'completed']);
@@ -37,7 +34,6 @@ return new class extends Migration {
         Schema::table('videos', static function (Blueprint $table) {
             $table->dropColumn([
                 'processing_status',
-                'processing_progress',
                 'processing_error_message',
             ]);
         });
