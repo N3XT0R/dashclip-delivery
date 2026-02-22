@@ -171,7 +171,7 @@ class CreateVideo extends CreateRecord
                         $component->state(sprintf('%02d:%02d', $minutes, $seconds));
                     })
                     ->dehydrateStateUsing(fn($state) => static::toSeconds($state))
-                    ->disabled(fn(Get $get) => (int)($get('duration') ?? 0) < 1)
+                    ->disabled(fn(Get $get) => (int)($get('clip.duration') ?? 0) < 1)
                     ->reactive(),
 
                 TextInput::make('clip.end_sec')
