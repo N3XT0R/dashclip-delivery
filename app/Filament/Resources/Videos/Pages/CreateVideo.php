@@ -110,7 +110,6 @@ class CreateVideo extends CreateRecord
             ->storeFileNamesIn('original_name')
             ->acceptedFileTypes(['video/mp4'])
             ->multiple(false)
-            ->panelLayout('integrated')
             ->moveFiles()
             ->acceptedFileTypes([
                 'video/mp4',
