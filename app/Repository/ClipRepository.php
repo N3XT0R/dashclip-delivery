@@ -77,4 +77,9 @@ class ClipRepository
                 fn(Collection $group) => $group->pluck('video_id')->unique()->values()
             );
     }
+
+    public function create(array $data): Clip
+    {
+        return Clip::query()->create($data);
+    }
 }

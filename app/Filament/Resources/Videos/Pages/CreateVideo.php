@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Videos\Pages;
 use App\Application\Video\UploadVideo;
 use App\Filament\Resources\Videos\VideoResource;
 use App\Models\Clip;
+use App\Repository\ClipRepository;
 use Carbon\CarbonInterval;
 use Closure;
 use Filament\Forms\Components\FileUpload;
@@ -18,6 +19,8 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class CreateVideo extends CreateRecord
 {
@@ -196,5 +199,23 @@ class CreateVideo extends CreateRecord
             return ((int)$matches[1] * 60) + (int)$matches[2];
         }
         return (int)$state;
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $filePath = $data['file_path'];
+        $disk = Storage::disk('videos');
+        $data['file_size'] = $disk->size($filePath);
+
+        return $data;
+    }
+
+    protected function handleRecordCreation(array $data): Model
+    {
+        $model = $this->getModel()::create($data);
+        $data['clip']['video_id'] = $model->getKey();
+        app(ClipRepository::class)->create([$data['clip']]);
+
+        return $model;
     }
 }

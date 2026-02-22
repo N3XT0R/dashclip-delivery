@@ -48,7 +48,7 @@ return [
             ],
         ],
 
-        'video' => [
+        'videos' => [
             'driver' => 'local',
             'root' => storage_path('app/video'),
             'visibility' => 'public',
