@@ -142,6 +142,7 @@ return [
                 'start_sec' => 'Start time (seconds)',
                 'end_sec' => 'End time (seconds)',
                 'upload_hint' => 'The time fields will automatically unlock once a video has been uploaded.',
+                'upload_hint_state' => 'The time fields will automatically unlock once a video has been uploaded.',
                 'note' => 'Note',
                 'bundle_key' => 'Bundle ID',
                 'bundle_key_helper_text' => 'Optional: Use the same bundle key for multiple uploads so that these videos are treated as a related group.',

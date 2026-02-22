@@ -142,6 +142,7 @@ return [
                 'start_sec' => 'Startzeit (Sekunden)',
                 'end_sec' => 'Endzeit (Sekunden)',
                 'upload_hint' => 'Upload-Hinweis',
+                'upload_hint_state' => 'Die Zeitfelder werden automatisch freigeschaltet, sobald ein Video hochgeladen wurde.',
                 'note' => 'Notiz',
                 'bundle_key' => 'Bundle ID',
                 'bundle_key_helper_text' => 'Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.',

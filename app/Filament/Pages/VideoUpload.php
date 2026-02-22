@@ -62,8 +62,8 @@ class VideoUpload extends Page implements HasForms
                 $this->getFileComponent(),
                 $this->getDurationComponent(),
                 TextEntry::make('upload_hint')
-                    ->label('Upload-Hinweis')
-                    ->state('Die Zeitfelder werden automatisch freigeschaltet, sobald ein Video hochgeladen wurde.')
+                    ->label(__('filament.video_upload.form.fields.upload_hint'))
+                    ->state(__('filament.video_upload.form.fields.upload_hint_state'))
                     ->visible(fn(Get $get): bool => (int)($get('duration') ?? 0) < 1)
                     ->extraAttributes(['class' => 'text-sm text-gray-500 italic'])
                     ->columnSpanFull(),
