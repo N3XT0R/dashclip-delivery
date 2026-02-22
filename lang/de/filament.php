@@ -144,6 +144,8 @@ return [
                 'upload_hint' => 'Upload-Hinweis',
                 'note' => 'Notiz',
                 'bundle_key' => 'Bundle ID',
+                'bundle_key_helper_text' => 'Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.',
+                'role_helper_text' => 'Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R)',
             ],
             'components' => [
 

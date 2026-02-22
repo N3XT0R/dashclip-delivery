@@ -144,6 +144,8 @@ return [
                 'upload_hint' => 'The time fields will automatically unlock once a video has been uploaded.',
                 'note' => 'Note',
                 'bundle_key' => 'Bundle ID',
+                'bundle_key_helper_text' => 'Optional: Use the same bundle key for multiple uploads so that these videos are treated as a related group.',
+                'role_helper_text' => 'Optional: Specifies the camera position or perspective of the video, e.g., Front (F) or Rear (R).',
             ],
             'components' => [
                 // Additional form components can be defined here

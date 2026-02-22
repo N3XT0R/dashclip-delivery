@@ -86,7 +86,7 @@ class VideoUpload extends Page implements HasForms
                     )
                     ->trim()
                     ->helperText(
-                        'Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.'
+                        __('filament.video_upload.form.fields.bundle_key_helper_text')
                     ),
                 TextInput::make('role')->label('Rolle')
                     ->datalist([
@@ -94,7 +94,7 @@ class VideoUpload extends Page implements HasForms
                         'R' => 'Rear',
                     ])
                     ->helperText(
-                        'Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R).'
+                        __('filament.video_upload.form.fields.role_helper_text')
                     )
                     ->trim(),
             ])
