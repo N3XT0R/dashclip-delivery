@@ -247,7 +247,7 @@ class CreateVideo extends CreateRecord
         $model = parent::handleRecordCreation($data);
         $data['clip']['video_id'] = $model->getKey();
         $data['clip']['user_id'] = auth()->id();
-        app(ClipRepository::class)->create([$data['clip']]);
+        app(ClipRepository::class)->create($data['clip']);
 
         return $model;
     }
