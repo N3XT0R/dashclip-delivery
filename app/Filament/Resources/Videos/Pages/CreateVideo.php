@@ -16,6 +16,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
@@ -58,44 +59,48 @@ class CreateVideo extends CreateRecord
     {
         return $schema
             ->components([
-                $this->getFileComponent(),
-                $this->getDurationComponent(),
-                TextEntry::make('upload_hint')
-                    ->label(__('filament.video_upload.form.fields.upload_hint'))
-                    ->state(__('filament.video_upload.form.fields.upload_hint_state'))
-                    ->visible(fn(Get $get): bool => (int)($get('duration') ?? 0) < 1)
-                    ->extraAttributes(['class' => 'text-sm text-gray-500 italic'])
-                    ->columnSpanFull(),
-                $this->timeFields(),
-                $this->getClipSelectorComponent(),
-                Textarea::make('clip.note')->label('Notiz')
-                    ->rows(5)
-                    ->autosize()
-                    ->trim(),
-                TextInput::make('clip.bundle_key')
-                    ->label(__('filament.video_upload.form.fields.bundle_key'))
-                    ->datalist(
-                        Clip::query()
-                            ->whereNotNull('bundle_key')
-                            ->whereHas('video', fn($q) => $q->doesntHave('assignments'))
-                            ->pluck('bundle_key')
-                            ->unique()
-                            ->values()
-                            ->all()
-                    )
-                    ->trim()
-                    ->helperText(
-                        __('filament.video_upload.form.fields.bundle_key_helper_text')
-                    ),
-                TextInput::make('clip.role')->label(__('filament.video_upload.form.fields.role'))
-                    ->datalist([
-                        'F' => 'Front',
-                        'R' => 'Rear',
+                Section::make()
+                    ->schema([
+                        $this->getFileComponent(),
+                        $this->getDurationComponent(),
+                        TextEntry::make('upload_hint')
+                            ->label(__('filament.video_upload.form.fields.upload_hint'))
+                            ->state(__('filament.video_upload.form.fields.upload_hint_state'))
+                            ->visible(fn(Get $get): bool => (int)($get('duration') ?? 0) < 1)
+                            ->extraAttributes(['class' => 'text-sm text-gray-500 italic'])
+                            ->columnSpanFull(),
+                        $this->timeFields(),
+                        $this->getClipSelectorComponent(),
+                        Textarea::make('clip.note')->label('Notiz')
+                            ->rows(5)
+                            ->autosize()
+                            ->trim(),
+                        TextInput::make('clip.bundle_key')
+                            ->label(__('filament.video_upload.form.fields.bundle_key'))
+                            ->datalist(
+                                Clip::query()
+                                    ->whereNotNull('bundle_key')
+                                    ->whereHas('video', fn($q) => $q->doesntHave('assignments'))
+                                    ->pluck('bundle_key')
+                                    ->unique()
+                                    ->values()
+                                    ->all()
+                            )
+                            ->trim()
+                            ->helperText(
+                                __('filament.video_upload.form.fields.bundle_key_helper_text')
+                            ),
+                        TextInput::make('clip.role')->label(__('filament.video_upload.form.fields.role'))
+                            ->datalist([
+                                'F' => 'Front',
+                                'R' => 'Rear',
+                            ])
+                            ->helperText(
+                                __('filament.video_upload.form.fields.role_helper_text')
+                            )
+                            ->trim()
                     ])
-                    ->helperText(
-                        __('filament.video_upload.form.fields.role_helper_text')
-                    )
-                    ->trim(),
+                    ->columnSpanFull()
             ]);
     }
 
