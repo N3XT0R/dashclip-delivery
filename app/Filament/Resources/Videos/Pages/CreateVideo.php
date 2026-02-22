@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,8 @@ use Illuminate\Support\Str;
 class CreateVideo extends CreateRecord
 {
     protected static string $resource = VideoResource::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::ArrowUpTray;
 
     protected function getCreatedNotification(): ?Notification
     {
