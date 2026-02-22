@@ -129,7 +129,7 @@ class VideoResource extends Resource
         return [
             'index' => ListVideos::route('/'),
             'view' => ViewVideo::route('/{record}'),
-            // 'create' => Pages\CreateVideo::route('/create'),
+            'create' => Pages\CreateVideo::route('/create'),
             // 'edit'   => Pages\EditVideo::route('/{record}/edit'),
         ];
     }
