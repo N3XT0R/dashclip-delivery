@@ -45,7 +45,7 @@ class VideoUpload extends Page implements HasForms
 
     public static function getNavigationGroup(): string
     {
-        return __('nav.media');
+        return __('filament.video_upload.navigation_group');
     }
 
 
@@ -230,7 +230,7 @@ class VideoUpload extends Page implements HasForms
         );
 
         Notification::make()
-            ->title('Video wird verarbeitet')
+            ->title(__('filament.video_upload.form.messages.success.process_started'))
             ->success()
             ->send();
 

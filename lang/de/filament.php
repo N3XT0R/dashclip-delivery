@@ -130,4 +130,31 @@ return [
             ],
         ],
     ],
+    'video_upload' => [
+        'navigation_label' => 'Video Upload',
+        'navigation_group' => __('nav.media'),
+        'subheading' => 'Diese Seite ist noch experementell',
+        'title' => 'Video Upload (alpha)',
+        'form' => [
+            'fields' => [
+                'file' => 'Videodatei',
+                'duration' => 'Dauer (Sekunden)',
+                'start_sec' => 'Startzeit (Sekunden)',
+                'end_sec' => 'Endzeit (Sekunden)',
+                'upload_hint' => 'Upload-Hinweis',
+                'note' => 'Notiz',
+                'bundle_key' => 'Bundle ID',
+            ],
+            'components' => [
+
+            ],
+        ],
+        'messages' => [
+            'success' => [
+                'process_started' => 'Die Verarbeitung kann je nach Video-Größe einige Minuten dauern. Du erhältst eine Benachrichtigung, sobald der Upload abgeschlossen ist.',
+            ],
+            'error' => [
+            ],
+        ],
+    ]
 ];

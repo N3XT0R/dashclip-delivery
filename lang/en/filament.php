@@ -130,4 +130,31 @@ return [
             ],
         ],
     ],
+    'video_upload' => [
+        'navigation_label' => 'Video Upload',
+        'navigation_group' => __('nav.media'),
+        'subheading' => 'This page is still experimental',
+        'title' => 'Video Upload (alpha)',
+        'form' => [
+            'fields' => [
+                'file' => 'Select video file',
+                'duration' => 'Duration (seconds)',
+                'start_sec' => 'Start time (seconds)',
+                'end_sec' => 'End time (seconds)',
+                'upload_hint' => 'The time fields will automatically unlock once a video has been uploaded.',
+                'note' => 'Note',
+                'bundle_key' => 'Bundle ID',
+            ],
+            'components' => [
+                // Additional form components can be defined here
+            ],
+            'messages' => [
+                'success' => [
+                    'process_started' => 'Video upload process has started! You will receive an email notification once the processing is complete.',
+                ],
+                'error' => [
+                ],
+            ],
+        ],
+    ],
 ];
