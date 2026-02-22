@@ -115,7 +115,7 @@ class CreateVideo extends CreateRecord
             ->label(__('filament.video_upload.form.fields.file'))
             ->required()
             ->disk('videos')
-            ->directory(auth()->id())
+            ->directory('inbox/'.auth()->id())
             ->visibility('public')
             ->storeFileNamesIn('original_name')
             ->acceptedFileTypes(['video/mp4'])
