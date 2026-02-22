@@ -107,7 +107,7 @@ class CreateVideo extends CreateRecord
             ->disk('videos')
             ->directory(auth()->id())
             ->visibility('public')
-            ->storeFileNamesIn('file_name')
+            ->storeFileNamesIn('original_name')
             ->acceptedFileTypes(['video/mp4'])
             ->multiple(false)
             ->panelLayout('integrated')
