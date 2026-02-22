@@ -263,4 +263,9 @@ class CreateVideo extends CreateRecord
          */
         $record = $this->record;
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return self::getResource()::getUrl('create');
+    }
 }
