@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Videos\Pages;
 
 use App\Filament\Resources\Videos\VideoResource;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListVideos extends ListRecords
@@ -13,8 +12,6 @@ class ListVideos extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-                ->label(__('filament.general.actions.upload')),
         ];
     }
 }
