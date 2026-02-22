@@ -51,11 +51,20 @@ return [
         'video' => [
             'driver' => 'local',
             'root' => storage_path('app/video'),
-            'url' => env('APP_URL').'/video',
             'visibility' => 'public',
             'serve' => true,
             'throw' => false,
             'report' => false,
+            'permissions' => [
+                'file' => [
+                    'public' => 0775,
+                    'private' => 0775,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0775,
+                ],
+            ],
         ],
 
         'uploads' => [
@@ -121,7 +130,6 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
-        public_path('video') => storage_path('app/video'),
     ],
 
 ];
