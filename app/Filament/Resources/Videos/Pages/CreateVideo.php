@@ -18,6 +18,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -30,6 +31,26 @@ class CreateVideo extends CreateRecord
         return Notification::make()
             ->title(__('filament.video_upload.form.messages.success.process_started'))
             ->success();
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.video_upload.navigation_group');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return __('filament.video_upload.title');
+    }
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        return __('filament.video_upload.subheading');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.video_upload.navigation_label');
     }
 
     public function form(Schema $schema): Schema
