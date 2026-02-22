@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Videos\Pages;
 
-use App\Application\Video\UploadVideo;
 use App\Filament\Resources\Videos\VideoResource;
 use App\Models\Clip;
 use App\Repository\ClipRepository;
@@ -84,15 +83,20 @@ class CreateVideo extends CreateRecord
         return FileUpload::make('file')
             ->label(__('filament.video_upload.form.fields.file'))
             ->required()
-            ->disk(config(UploadVideo::UPLOAD_DISK_CONFIG_KEY))
-            ->directory(config('uploads.directory'))
+            ->disk('videos')
+            ->directory(auth()->id())
+            ->visibility('public')
+            ->storeFileNamesIn('file_name')
+            ->acceptedFileTypes(['video/mp4'])
+            ->multiple(false)
+            ->panelLayout('integrated')
+            ->moveFiles()
             ->acceptedFileTypes([
                 'video/mp4',
                 'application/mp4',
                 'application/octet-stream',
                 'binary/octet-stream',
             ])
-            ->storeFileNamesIn('original_name')
             ->mimeTypeMap([
                 'mp4' => 'video/mp4',
             ]);
