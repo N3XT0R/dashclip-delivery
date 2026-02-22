@@ -235,6 +235,7 @@ class CreateVideo extends CreateRecord
     {
         $filePath = $data['file'];
         $disk = Storage::disk('videos');
+        $data['path'] = $filePath;
         $data['file_size'] = $disk->size($filePath);
 
         return $data;
@@ -243,7 +244,7 @@ class CreateVideo extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $data['team_id'] = app(TeamRepository::class)->getDefaultTeamForUser(auth()->user())?->getKey();
-        $model = $this->getModel()::create($data);
+        $model = parent::handleRecordCreation($data);
         $data['clip']['video_id'] = $model->getKey();
         $data['clip']['user_id'] = auth()->id();
         app(ClipRepository::class)->create([$data['clip']]);
