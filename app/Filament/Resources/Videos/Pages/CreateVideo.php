@@ -233,7 +233,7 @@ class CreateVideo extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $filePath = $data['file_path'];
+        $filePath = $data['file'];
         $disk = Storage::disk('videos');
         $data['file_size'] = $disk->size($filePath);
 
