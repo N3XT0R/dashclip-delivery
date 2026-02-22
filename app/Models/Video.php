@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enum\ProcessingStatusEnum;
 use App\Facades\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,10 +33,12 @@ class Video extends Model
         'original_name',
         'disk',
         'preview_url',
-        'team_id'
+        'team_id',
+        'processing_status',
     ];
     protected $casts = [
-        'meta' => 'array'
+        'meta' => 'array',
+        'processing_status' => ProcessingStatusEnum::class,
     ];
 
     protected $append = [
