@@ -137,10 +137,10 @@ class CreateVideo extends CreateRecord
             ->reactive()
             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                 // Falls end_sec noch leer, automatisch übernehmen
-                if (blank($get('end_sec')) && (int)$state > 0) {
+                if (blank($get('clip.end_sec')) && (int)$state > 0) {
                     $minutes = floor($state / 60);
                     $seconds = $state % 60;
-                    $set('end_sec', sprintf('%02d:%02d', $minutes, $seconds));
+                    $set('clip.end_sec', sprintf('%02d:%02d', $minutes, $seconds));
                 }
             });
     }
@@ -156,7 +156,7 @@ class CreateVideo extends CreateRecord
                     ->mask('99:99')
                     ->rule(function (Get $get) {
                         return static function (string $attribute, $value, Closure $fail) use ($get) {
-                            $end = $get('end_sec');
+                            $end = $get('clip.end_sec');
                             if ($end !== null && static::toSeconds($value) >= static::toSeconds($end)) {
                                 $fail(__('errors.video_upload.error.start_sec_must_be_lower'));
                             }
@@ -181,8 +181,8 @@ class CreateVideo extends CreateRecord
                     ->mask('99:99')
                     ->rule(function (Get $get) {
                         return static function (string $attribute, $value, Closure $fail) use ($get) {
-                            $start = $get('start_sec');
-                            $duration = $get('duration');
+                            $start = $get('clip.start_sec');
+                            $duration = $get('clip.duration');
                             $endValue = static::toSeconds($value);
 
                             if ($start !== null && $endValue <= (int)$start) {
@@ -203,7 +203,7 @@ class CreateVideo extends CreateRecord
                         };
                     })
                     ->afterStateHydrated(function (TextInput $component, $state, Get $get) {
-                        $duration = $get('duration');
+                        $duration = $get('clip.duration');
                         if (empty($state) && $duration) {
                             $state = $duration;
                         }
@@ -212,7 +212,7 @@ class CreateVideo extends CreateRecord
                         $component->state(sprintf('%02d:%02d', $minutes, $seconds));
                     })
                     ->dehydrateStateUsing(fn($state) => static::toSeconds($state))
-                    ->disabled(fn(Get $get) => (int)($get('duration') ?? 0) < 1)
+                    ->disabled(fn(Get $get) => (int)($get('clip.duration') ?? 0) < 1)
                     ->reactive(),
             ]);
     }

@@ -23,13 +23,13 @@
 
             const component = window.Livewire.find(event.target.closest('[wire\\:id]').getAttribute('wire:id'));
             if (component) {
-                component.set(`${modelBase}.duration`, duration);
-                
+                component.set(`${modelBase}.clip.duration`, duration);
+
                 const mins = Math.floor(duration / 60);
                 const secs = duration % 60;
                 const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
-                component.set(`${modelBase}.end_sec`, formatted);
+                component.set(`${modelBase}.clip.end_sec`, formatted);
             }
         };
     });
