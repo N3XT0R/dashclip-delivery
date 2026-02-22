@@ -134,7 +134,7 @@ return [
         'navigation_label' => 'Video Upload',
         'navigation_group' => __('nav.media'),
         'subheading' => 'Diese Seite ist noch experementell',
-        'title' => 'Video Upload (alpha)',
+        'title' => 'Video Upload (beta)',
         'form' => [
             'fields' => [
                 'file' => 'Videodatei',
