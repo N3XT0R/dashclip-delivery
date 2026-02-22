@@ -148,13 +148,6 @@ return [
             'components' => [
                 // Additional form components can be defined here
             ],
-            'messages' => [
-                'success' => [
-                    'process_started' => 'Video upload process has started! You will receive an email notification once the processing is complete.',
-                ],
-                'error' => [
-                ],
-            ],
         ],
     ],
 ];

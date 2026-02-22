@@ -150,7 +150,7 @@ class VideoUpload extends Page implements HasForms
                         return static function (string $attribute, $value, Closure $fail) use ($get) {
                             $end = $get('end_sec');
                             if ($end !== null && static::toSeconds($value) >= static::toSeconds($end)) {
-                                $fail('Der Startzeitpunkt muss kleiner als der Endzeitpunkt sein.');
+                                $fail(__('errors.video_upload.error.start_sec_must_be_lower'));
                             }
                         };
                     })
