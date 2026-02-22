@@ -239,7 +239,7 @@ class CreateVideo extends CreateRecord
         $data['path'] = $filePath;
         $data['disk'] = 'videos';
         $data['bytes'] = $disk->size($filePath);
-        $data['ext'] = strtolower(Str::afterLast($data['original_name'], '.'));
+        $data['ext'] = strtoupper(Str::afterLast($data['original_name'], '.'));
 
         return $data;
     }
