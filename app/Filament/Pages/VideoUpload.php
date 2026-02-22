@@ -104,7 +104,7 @@ class VideoUpload extends Page implements HasForms
     protected function getFileComponent(): FileUpload
     {
         return FileUpload::make('file')
-            ->label('Video')
+            ->label(__('filament.video_upload.form.fields.file'))
             ->required()
             ->disk(config(UploadVideo::UPLOAD_DISK_CONFIG_KEY))
             ->directory(config('uploads.directory'))
