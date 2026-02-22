@@ -24,6 +24,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CreateVideo extends CreateRecord
 {
@@ -237,7 +238,8 @@ class CreateVideo extends CreateRecord
         $disk = Storage::disk('videos');
         $data['path'] = $filePath;
         $data['disk'] = 'videos';
-        $data['file_size'] = $disk->size($filePath);
+        $data['bytes'] = $disk->size($filePath);
+        $data['ext'] = strtolower(Str::afterLast($data['original_name'], '.'));
 
         return $data;
     }
