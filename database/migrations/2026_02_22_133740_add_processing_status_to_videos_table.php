@@ -18,7 +18,7 @@ return new class extends Migration {
                 ->after('path');
 
 
-            $table->text('processing_error_message')
+            $table->json('processing_meta')
                 ->nullable()
                 ->after('processing_status');
         });
@@ -34,7 +34,7 @@ return new class extends Migration {
         Schema::table('videos', static function (Blueprint $table) {
             $table->dropColumn([
                 'processing_status',
-                'processing_error_message',
+                'processing_meta',
             ]);
         });
     }
