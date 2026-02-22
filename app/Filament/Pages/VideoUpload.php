@@ -174,7 +174,7 @@ class VideoUpload extends Page implements HasForms
                     ->rule(function (Get $get) {
                         return static function (string $attribute, $value, Closure $fail) use ($get) {
                             $start = $get('start_sec');
-                            $duration = $get('duration') ?? null;
+                            $duration = $get('duration');
                             $endValue = static::toSeconds($value);
 
                             if ($start !== null && $endValue <= (int)$start) {
