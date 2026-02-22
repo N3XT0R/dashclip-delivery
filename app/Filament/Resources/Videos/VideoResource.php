@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 
 /**
- * @todo refactor for v4
+ * @todo refactor for v4 (do no overload the class)
  */
 class VideoResource extends Resource
 {
