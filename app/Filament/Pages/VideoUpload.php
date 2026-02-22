@@ -142,7 +142,7 @@ class VideoUpload extends Page implements HasForms
         return Grid::make(2)
             ->schema([
                 TextInput::make('start_sec')
-                    ->label('Start (mm:ss)')
+                    ->label(__('filament.video_upload.form.fields.start_sec'))
                     ->required()
                     ->placeholder('mm:ss')
                     ->mask('99:99')
@@ -167,7 +167,7 @@ class VideoUpload extends Page implements HasForms
                     ->reactive(),
 
                 TextInput::make('end_sec')
-                    ->label('Ende (mm:ss)')
+                    ->label(__('filament.video_upload.form.fields.end_sec'))
                     ->required()
                     ->placeholder('mm:ss')
                     ->mask('99:99')

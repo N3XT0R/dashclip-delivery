@@ -139,8 +139,8 @@ return [
             'fields' => [
                 'file' => 'Videodatei',
                 'duration' => 'Dauer (Sekunden)',
-                'start_sec' => 'Startzeit (Sekunden)',
-                'end_sec' => 'Endzeit (Sekunden)',
+                'start_sec' => 'Startzeit (mm:ss)',
+                'end_sec' => 'Endzeit (mm:ss)',
                 'upload_hint' => 'Upload-Hinweis',
                 'upload_hint_state' => 'Die Zeitfelder werden automatisch freigeschaltet, sobald ein Video hochgeladen wurde.',
                 'note' => 'Notiz',
