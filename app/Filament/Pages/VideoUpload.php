@@ -201,7 +201,7 @@ class VideoUpload extends Page implements HasForms
                         $component->state(sprintf('%02d:%02d', $minutes, $seconds));
                     })
                     ->dehydrateStateUsing(fn($state) => static::toSeconds($state))
-                    ->disabled(fn(Get $get) => (int)($get('duration') ?? 0) < 1) // << hier
+                    ->disabled(fn(Get $get) => (int)($get('duration') ?? 0) < 1)
                     ->reactive(),
             ]);
     }
