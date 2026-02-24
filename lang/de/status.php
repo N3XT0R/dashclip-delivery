@@ -1,0 +1,14 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'processing_status' => [
+        'pending' => 'Wartend',
+        'processing' => 'In Verarbeitung',
+        'completed' => 'Abgeschlossen',
+        'failed' => 'Fehlgeschlagen',
+        'deleted' => 'Gelöscht',
+        'unknown' => 'Unbekannt',
+    ],
+];

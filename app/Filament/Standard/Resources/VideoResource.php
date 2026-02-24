@@ -63,6 +63,16 @@ class VideoResource extends Resource
                                             $record->clips()?->first()?->getAttribute('duration')
                                         );
                                     }),
+                                TextEntry::make('processing_status')
+                                    ->label('filament.video_resource.view.fields.processing_status')
+                                    ->translateLabel()
+                                    ->badge()
+                                    ->state(function (Video $record) {
+                                        if ($record->processing_status === null) {
+                                            return __('status.processing_status.unknown');
+                                        }
+                                        return __('status.processing_status.'.$record->processing_status->value);
+                                    }),
                                 TextEntry::make('bundle_key')
                                     ->label('filament.video_resource.view.fields.bundle_key')
                                     ->translateLabel()
@@ -115,6 +125,16 @@ class VideoResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(60),
+                TextColumn::make('processing_status')
+                    ->label('filament.video_resource.view.fields.processing_status')
+                    ->translateLabel()
+                    ->badge()
+                    ->state(function (Video $record) {
+                        if ($record->processing_status === null) {
+                            return __('status.processing_status.unknown');
+                        }
+                        return __('status.processing_status.'.$record->processing_status->value);
+                    }),
                 TextColumn::make('bundle')
                     ->label('Bundle')
                     ->sortable()

@@ -132,6 +132,7 @@ return [
                 'status' => 'Status',
                 'duration' => 'Duration',
                 'note' => 'Comment from the Channel Owner',
+                'processing_status' => 'Processing Status',
             ],
         ],
     ],

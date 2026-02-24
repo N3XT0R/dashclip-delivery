@@ -132,6 +132,7 @@ return [
                 'status' => 'Status',
                 'duration' => 'Dauer',
                 'note' => 'Kommentar vom Kanalbetreiber',
+                'processing_status' => 'Verarbeitungsstatus',
             ],
         ],
     ],
