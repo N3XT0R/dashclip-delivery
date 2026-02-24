@@ -315,9 +315,9 @@ class VideoResource extends Resource
     private static function statusIcon(string $label): string
     {
         return match ($label) {
-            'Verfügbar' => 'heroicon-m-sparkles',
-            'Alle verteilt' => 'heroicon-m-check-badge',
-            'Abgelaufen' => 'heroicon-m-clock',
+            __('status.distribution_status.available') => 'heroicon-m-sparkles',
+            __('status.distribution_status.all_distributed') => 'heroicon-m-check-badge',
+            __('status.distribution_status.expired') => 'heroicon-m-clock',
             default => 'heroicon-m-arrow-path',
         };
     }
