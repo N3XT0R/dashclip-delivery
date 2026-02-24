@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Video-Upload Structure**
     - Moved VideoUpload to CreateRecord and refactored the upload flow to be more modular and testable.
 - **Internationalization (i18n) Foundation**
-    - Introduced English base language files.
     - migrated hardcoded German UI strings to the i18n system.
 
 ### Security
