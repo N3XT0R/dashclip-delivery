@@ -39,21 +39,6 @@ final class ClipTest extends DatabaseTestCase
         $this->assertSame(45, $clip->duration);
     }
 
-    public function testGeneratesPreviewPathFromVideoAndTimestamps(): void
-    {
-        $clip = Clip::factory()->create([
-            'start_sec' => 5,
-            'end_sec' => 10,
-        ]);
-
-        $clip->load('video');
-
-        $hash = md5($clip->video->getKey() . '_' . $clip->start_sec . '_' . $clip->end_sec);
-        $expected = "previews/{$hash}.mp4";
-
-        $this->assertSame($expected, $clip->getPreviewPath());
-    }
-
     public function testMassAssignmentAllowsNullablesAndPersistsValues(): void
     {
         $video = Video::factory()->create();

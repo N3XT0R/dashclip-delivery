@@ -108,7 +108,11 @@ readonly class VideoService
         $disk = $video->getDisk();
         if (!$disk->exists($path)) {
             $clip = $video->clips()->first();
-            $path = $clip?->getPreviewPath();
+            $path = null;
+            if ($clip) {
+                $path = app(ClipService::class)->getPreviewPath($clip);
+            }
+
             if (empty($path) || !$disk->exists($path)) {
                 return null;
             }
