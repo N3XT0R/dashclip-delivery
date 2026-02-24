@@ -67,7 +67,7 @@ class VideoResource extends Resource
                                     ->label('filament.video_resource.view.fields.processing_status')
                                     ->translateLabel()
                                     ->badge()
-                                    ->state(function (Video $record) {
+                                    ->formatStateUsing(function (Video $record) {
                                         if ($record->processing_status === null) {
                                             return __('status.processing_status.unknown');
                                         }
@@ -129,7 +129,7 @@ class VideoResource extends Resource
                     ->label('filament.video_resource.view.fields.processing_status')
                     ->translateLabel()
                     ->badge()
-                    ->state(function (Video $record) {
+                    ->formatStateUsing(function (Video $record) {
                         if ($record->processing_status === null) {
                             return __('status.processing_status.unknown');
                         }
