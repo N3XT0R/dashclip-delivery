@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;
+use App\Facades\PathBuilder;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Repository\VideoRepository;
@@ -88,6 +89,32 @@ readonly class VideoService
         }
 
         return $result;
+    }
+
+    /**
+     * Get the preview path for a video. If the video itself doesn't have a preview, check its clips for a preview.
+     * @param  Video  $video
+     * @return string|null
+     */
+    public function getPreviewPath(Video $video): ?string
+    {
+        $hash = $video->getAttribute('hash');
+        if (empty($hash)) {
+            return null;
+        }
+
+        $path = PathBuilder::forPreviewByHash($hash);
+
+        $disk = $video->getDisk();
+        if (!$disk->exists($path)) {
+            $clip = $video->clips()->first();
+            $path = $clip?->getPreviewPath();
+            if (empty($path) || !$disk->exists($path)) {
+                return null;
+            }
+        }
+
+        return $path;
     }
 
 }

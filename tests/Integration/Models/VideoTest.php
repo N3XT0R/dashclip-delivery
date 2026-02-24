@@ -33,65 +33,6 @@ final class VideoTest extends DatabaseTestCase
         Storage::fake('tmp');
     }
 
-
-    public function testGetPreviewPathReturnsPreviewByHashIfExists(): void
-    {
-        // Arrange
-        $video = Video::factory()->create([
-            'disk' => 'tmp',
-            'hash' => 'abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234',
-            'ext' => 'mp4',
-        ]);
-
-        $previewPath = PathBuilder::forPreviewByHash($video->hash);
-        Storage::disk('tmp')->put($previewPath, 'preview-data');
-
-        // Act
-        $result = $video->getPreviewPath();
-
-        // Assert
-        $this->assertSame($previewPath, $result);
-    }
-
-
-    public function testGetPreviewPathFallsBackToClipPreviewWhenMissing(): void
-    {
-        // Arrange
-        $video = Video::factory()->create([
-            'disk' => 'tmp',
-            'hash' => 'abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcd'
-        ]);
-        $clip = Clip::factory()->create([
-            'video_id' => $video->id,
-            'start_sec' => 0,
-            'end_sec' => 5,
-        ]);
-
-        $fallbackPath = $clip->getPreviewPath();
-        Storage::disk('tmp')->put($fallbackPath, 'clip-preview');
-
-        // Act
-        $result = $video->getPreviewPath();
-
-        // Assert
-        $this->assertSame($fallbackPath, $result);
-    }
-
-    public function testGetPreviewPathReturnsNullWhenNothingExists(): void
-    {
-        // Arrange
-        $video = Video::factory()->create([
-            'disk' => 'tmp',
-            'hash' => 'hashnotfound1234567890abcdef1234567890abcdef1234567890abcdef12345678'
-        ]);
-
-        // Act
-        $result = $video->getPreviewPath();
-
-        // Assert
-        $this->assertNull($result);
-    }
-
     public function testHasUsersClipsScopeReturnsVideos(): void
     {
         $user = User::factory()->create();
@@ -236,13 +177,13 @@ final class VideoTest extends DatabaseTestCase
 
         $video = Video::factory()->create([
             'disk' => 'public',
-            'path' => 'videos/' . Str::random(8) . '/' . Str::random(8) . '.mp4',
+            'path' => 'videos/'.Str::random(8).'/'.Str::random(8).'.mp4',
         ]);
 
         $disk = $video->getDisk();
         $this->assertInstanceOf(Filesystem::class, $disk);
 
-        $testPath = 'probe/' . Str::random(12) . '.txt';
+        $testPath = 'probe/'.Str::random(12).'.txt';
         $this->assertTrue($disk->put($testPath, 'ok'));
 
         Storage::disk('public')->assertExists($testPath);

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enum\ProcessingStatusEnum;
-use App\Facades\PathBuilder;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -86,28 +85,6 @@ class Video extends Model
     public function getDisk(): Filesystem
     {
         return Storage::disk($this->getAttribute('disk'));
-    }
-
-
-    public function getPreviewPath(): ?string
-    {
-        $hash = $this->getAttribute('hash');
-        if (empty($hash)) {
-            return null;
-        }
-
-        $path = PathBuilder::forPreviewByHash($hash);
-
-        $disk = $this->getDisk();
-        if (!$disk->exists($path)) {
-            $clip = $this->clips()->first();
-            $path = $clip?->getPreviewPath();
-            if (empty($path) || !$disk->exists($path)) {
-                return null;
-            }
-        }
-
-        return $path;
     }
 
     protected function humanReadableSize(): Attribute

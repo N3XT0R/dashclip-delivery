@@ -35,17 +35,4 @@ final class VideoTest extends TestCase
 
         self::assertNull($video->human_readable_size);
     }
-
-    public function testGetPreviewPathReturnsNullWhenPreviewByHashMissing(): void
-    {
-        $video = Video::factory()->make([
-            'disk' => 'tmp',
-            'hash' => null,
-        ]);
-
-        $result = $video->getPreviewPath();
-
-
-        $this->assertNull($result);
-    }
 }

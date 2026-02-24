@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Video;
+use App\Services\VideoService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Log;
@@ -12,6 +13,10 @@ use Throwable;
 
 class VideoObserver extends BaseObserver
 {
+    public function __construct(private VideoService $videoService)
+    {
+    }
+
     public function deleting(Video|Model $model): bool
     {
         $path = $model->getAttribute('path');
@@ -23,7 +28,7 @@ class VideoObserver extends BaseObserver
             $storageDisk = $model->getDisk();
             $targetDisk = config('preview.default_disk', 'public');
             $previewDisk = Storage::disk($targetDisk);
-            $previewPath = $model->getPreviewPath();
+            $previewPath = $this->videoService->getPreviewPath($model);
 
             if ($storageDisk->exists($path) && !$storageDisk->delete($path)) {
                 Log::warning('video delete failed', ['video_id' => $model->getKey(), 'path' => $path]);
