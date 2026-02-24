@@ -118,7 +118,8 @@ class VideoResource extends Resource
             ->columns([
                 ViewColumn::make('video_preview')
                     ->label(__('filament.video_resource.view.fields.preview'))
-                    ->view('filament.forms.components.video-preview'),
+                    ->view('filament.forms.components.video-preview')
+                    ->extraAttributes(['class' => 'rounded-lg shadow-md w-full max-w-xs']),
                 TextColumn::make('original_name')
                     ->label(__('filament.video_resource.view.fields.original_name'))
                     ->description('Meine hochgeladenen Clips')
@@ -139,6 +140,7 @@ class VideoResource extends Resource
                     ->label(__('filament.video_resource.view.fields.bundle_key'))
                     ->sortable()
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->getStateUsing(function (Video $record) {
                         return $record->clips()?->first()?->getAttribute('bundle_key');
                     })
