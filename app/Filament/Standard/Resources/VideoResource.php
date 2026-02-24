@@ -186,7 +186,7 @@ class VideoResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('assignment_state')
-                    ->label('Offer-Status')
+                    ->label(__('filament.video_resource.view.fields.status'))
                     ->options(__('status.assignment_state'))
                     ->default('all')
                     ->query(function (Builder $query, array $data): Builder {
