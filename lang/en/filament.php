@@ -135,6 +135,7 @@ return [
                 'processing_status' => 'Processing Status',
                 'preview' => 'Preview',
                 'view_type' => 'View Type',
+                'view_details' => 'View Details',
             ],
         ],
     ],

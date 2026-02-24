@@ -219,7 +219,7 @@ class VideoResource extends Resource
             ->recordActions([
                 ViewAction::make('view-details')
                     ->defaultColor('gray')
-                    ->label('Details ansehen')
+                    ->label(__('filament.video_resource.view.fields.view_details'))
                     ->icon('heroicon-m-eye')
                     ->button(),
             ])

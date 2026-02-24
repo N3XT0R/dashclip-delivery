@@ -135,6 +135,7 @@ return [
                 'processing_status' => 'Verarbeitungsstatus',
                 'preview' => 'Vorschau',
                 'view_type' => 'Ansichtstyp',
+                'view_details' => 'Details anzeigen',
             ],
         ],
     ],
