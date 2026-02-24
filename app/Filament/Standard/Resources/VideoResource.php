@@ -294,20 +294,20 @@ class VideoResource extends Resource
         $downloaded = (int)$video->getAttribute('downloaded_assignments_count');
 
         return match (true) {
-            $downloaded > 0 => 'Heruntergeladen',
-            $available > 0 => 'Verfügbar',
-            $expired > 0 => 'Abgelaufen',
-            $total > 0 && $available === 0 => 'Alle verteilt',
-            default => 'In Vorbereitung',
+            $downloaded > 0 => __('status.distribution_status.downloaded'),
+            $available > 0 => __('status.distribution_status.available'),
+            $expired > 0 => __('status.distribution_status.expired'),
+            $total > 0 && $available === 0 => __('status.distribution_status.all_distributed'),
+            default => __('status.distribution_status.preparing'),
         };
     }
 
     private static function statusColor(string $label): string
     {
         return match ($label) {
-            'Verfügbar' => 'success',
-            'Alle verteilt' => 'primary',
-            'Abgelaufen' => 'gray',
+            __('status.distribution_status.available') => 'success',
+            __('status.distribution_status.all_distributed') => 'primary',
+            __('status.distribution_status.expired') => 'gray',
             default => 'warning',
         };
     }

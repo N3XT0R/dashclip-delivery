@@ -17,4 +17,11 @@ return [
         'expired' => 'Expired Offers',
         'all' => 'All',
     ],
+    'distribution_status' => [
+        'available' => 'Available',
+        'downloaded' => 'Downloaded',
+        'expired' => 'Expired',
+        'all_distributed' => 'All Distributed',
+        'preparing' => 'Preparing',
+    ],
 ];

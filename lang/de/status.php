@@ -17,4 +17,11 @@ return [
         'expired' => 'Abgelaufene Offers',
         'all' => 'Alle',
     ],
+    'distribution_status' => [
+        'available' => 'Verfügbar',
+        'downloaded' => 'Heruntergeladen',
+        'expired' => 'Abgelaufen',
+        'all_distributed' => 'Alle verteilt',
+        'preparing' => 'In Vorbereitung',
+    ],
 ];
