@@ -11,4 +11,10 @@ return [
         'deleted' => 'Deleted',
         'unknown' => 'Unknown',
     ],
+    'assignment_state' => [
+        'downloaded' => 'Downloaded Offers',
+        'active' => 'Only Active Offers',
+        'expired' => 'Expired Offers',
+        'all' => 'All',
+    ],
 ];

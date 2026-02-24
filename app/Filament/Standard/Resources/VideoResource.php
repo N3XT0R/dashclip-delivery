@@ -150,7 +150,7 @@ class VideoResource extends Resource
                     ->searchable()
                     ->getStateUsing(fn(?Video $record) => $record->clips()?->first()?->getAttribute('role')),
                 TextColumn::make('duration')
-                    ->label('Dauer')
+                    ->label(__('filament.video_resource.view.fields.duration'))
                     ->state(fn(Video $record
                     ) => self::formatDuration($record->clips()?->first()?->getAttribute('duration')))
                     ->tooltip('Gesamtlänge des Videos')
@@ -173,24 +173,19 @@ class VideoResource extends Resource
                     ) => $query->orderBy('available_assignments_count', $direction)),
 
                 TextColumn::make('available_assignments_count')
-                    ->label('Verfügbare Offers')
+                    ->label(__('filament.video_resource.view.fields.available_assignments_count'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('expired_assignments_count')
-                    ->label('Abgelaufene Offers')
+                    ->label(__('filament.video_resource.view.fields.expired_assignments_count'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('assignment_state')
                     ->label('Offer-Status')
-                    ->options([
-                        'downloaded' => 'Heruntergeladene Offers',
-                        'active' => 'Nur aktive Offers',
-                        'expired' => 'Abgelaufene Offers',
-                        'all' => 'Alle',
-                    ])
+                    ->options(__('status.assignment_state'))
                     ->default('all')
                     ->query(function (Builder $query, array $data): Builder {
                         return match ($data['value'] ?? 'all') {
