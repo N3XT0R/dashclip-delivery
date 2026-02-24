@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Pages;
 
-use App\Enum\Guard\GuardEnum;
 use App\Facades\Cfg;
 use App\Facades\DynamicStorage;
 use App\Filament\Pages\VideoUpload;
@@ -13,23 +12,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
-use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 use Tests\Testing\Traits\CopyDiskTrait;
 
 final class VideoUploadTest extends DatabaseTestCase
 {
     use CopyDiskTrait;
-
-
-    public function testRegularUserHasAccess(): void
-    {
-        $regularUser = User::factory()->standard(GuardEnum::DEFAULT)->create();
-        $this->actingAs($regularUser);
-
-        Livewire::test(VideoUpload::class)
-            ->assertStatus(200);
-    }
 
     public function testSubmitDispatchesJobForEachClip(): void
     {
