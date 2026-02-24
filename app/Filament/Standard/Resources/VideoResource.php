@@ -144,7 +144,7 @@ class VideoResource extends Resource
                     })
                     ->limit(60),
                 TextColumn::make('role')
-                    ->label('Ansicht')
+                    ->label(__('filament.video_resource.view.fields.view_type'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable()

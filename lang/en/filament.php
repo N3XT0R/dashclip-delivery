@@ -134,6 +134,7 @@ return [
                 'note' => 'Comment from the Channel Owner',
                 'processing_status' => 'Processing Status',
                 'preview' => 'Preview',
+                'view_type' => 'View Type',
             ],
         ],
     ],

@@ -134,6 +134,7 @@ return [
                 'note' => 'Kommentar vom Kanalbetreiber',
                 'processing_status' => 'Verarbeitungsstatus',
                 'preview' => 'Vorschau',
+                'view_type' => 'Ansichtstyp',
             ],
         ],
     ],
