@@ -122,7 +122,7 @@ class VideoResource extends Resource
                     ->extraAttributes(['class' => 'rounded-lg shadow-md w-full max-w-xs']),
                 TextColumn::make('original_name')
                     ->label(__('filament.video_resource.view.fields.original_name'))
-                    ->description('Meine hochgeladenen Clips')
+                    ->description(__('filament.video_resource.view.fields.original_name_description'))
                     ->sortable()
                     ->searchable()
                     ->limit(60),

@@ -125,6 +125,7 @@ return [
             'fields' => [
                 'video_preview' => 'Preview',
                 'original_name' => 'Video Title',
+                'original_name_description' => 'My uploaded Clips',
                 'bundle_key' => 'Bundle',
                 'created_at' => 'Uploaded on',
                 'available_assignments_count' => 'Available Offers',
