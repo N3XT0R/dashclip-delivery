@@ -137,6 +137,11 @@ return [
                 'view_type' => 'View Type',
                 'view_details' => 'View Details',
             ],
+            'messages' => [
+                'no_preview' => 'No preview available for this video.',
+                'no_videos' => 'No videos available.',
+                'table_description' => 'This table shows all videos that have been uploaded and assigned to you.',
+            ],
         ],
     ],
     'video_upload' => [

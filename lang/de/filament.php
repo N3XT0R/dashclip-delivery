@@ -137,6 +137,11 @@ return [
                 'view_type' => 'Ansichtstyp',
                 'view_details' => 'Details anzeigen',
             ],
+            'messages' => [
+                'no_preview' => 'Für dieses Video ist keine Vorschau verfügbar.',
+                'no_videos' => 'Es sind keine Videos verfügbar.',
+                'table_description' => 'Hier siehst du alle Videos, die deinem Account gehören.',
+            ],
         ],
     ],
     'video_upload' => [

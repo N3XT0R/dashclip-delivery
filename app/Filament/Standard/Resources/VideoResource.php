@@ -224,8 +224,8 @@ class VideoResource extends Resource
                     ->button(),
             ])
             ->toolbarActions([])
-            ->emptyStateHeading('Keine Videos gefunden')
-            ->emptyStateDescription('Hier siehst du alle Videos, die deinem Account gehören.');
+            ->emptyStateHeading(__('filament.video_resource.view.messages.no_videos'))
+            ->emptyStateDescription(__('filament.video_resource.view.messages.table_description'));
     }
 
     public static function getRelations(): array
