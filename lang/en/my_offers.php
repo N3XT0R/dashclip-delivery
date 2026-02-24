@@ -108,6 +108,5 @@ return [
         'no_videos_downloaded' => 'You have not downloaded any videos yet.',
         'no_expired_offers' => 'You have no expired offers.',
         'no_returned_offers' => 'You have no rejected offers.',
-        'no_preview_available' => 'No preview is available for this video.',
     ],
 ];
