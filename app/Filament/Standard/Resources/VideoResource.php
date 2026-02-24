@@ -117,10 +117,10 @@ class VideoResource extends Resource
             ->recordUrl(fn(Video $record) => static::getUrl('view', ['record' => $record]))
             ->columns([
                 ViewColumn::make('video_preview')
-                    ->label('Preview')
+                    ->label(__('filament.video_resource.view.fields.preview'))
                     ->view('filament.forms.components.video-preview'),
                 TextColumn::make('original_name')
-                    ->label('Video-Titel')
+                    ->label(__('filament.video_resource.view.fields.original_name'))
                     ->description('Meine hochgeladenen Clips')
                     ->sortable()
                     ->searchable()
@@ -136,7 +136,7 @@ class VideoResource extends Resource
                         return __('status.processing_status.'.$record->processing_status->value);
                     }),
                 TextColumn::make('bundle')
-                    ->label('Bundle')
+                    ->label(__('filament.video_resource.view.fields.bundle_key'))
                     ->sortable()
                     ->searchable()
                     ->getStateUsing(function (Video $record) {
@@ -157,12 +157,12 @@ class VideoResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->label('Upload am')
+                    ->label((__('filament.video_resource.view.fields.created_at')))
                     ->dateTime('d.m.Y, H:i')
                     ->sortable(),
 
                 TextColumn::make('status_label')
-                    ->label('Status')
+                    ->label(__('filament.video_resource.view.fields.status'))
                     ->badge()
                     ->state(fn(Video $record) => self::determineStatusLabel($record))
                     ->color(fn(Video $record) => self::statusColor(self::determineStatusLabel($record)))
