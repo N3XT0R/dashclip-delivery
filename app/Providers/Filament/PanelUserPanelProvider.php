@@ -131,9 +131,6 @@ class PanelUserPanelProvider extends PanelProvider
         return $panel->renderHook(
             PanelsRenderHook::CONTENT_END,
             function (): ?string {
-                if (request()->routeIs('filament.standard.pages.video-upload')) {
-                    return null;
-                }
                 return view('partials.footer')->render();
             }
         );
