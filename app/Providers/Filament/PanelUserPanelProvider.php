@@ -5,7 +5,6 @@ namespace App\Providers\Filament;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Pages\Auth\EditProfile;
-use App\Filament\Pages\VideoUpload;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
 use App\Filament\Standard\Pages\ChannelApplication;
@@ -111,7 +110,6 @@ class PanelUserPanelProvider extends PanelProvider
                 Css::make('app', app(Vite::class)->asset('resources/css/app.css')),
             ])
             ->pages([
-                VideoUpload::class,
                 Dashboard::class,
             ])
             ->resources([
