@@ -27,11 +27,6 @@ Schedule::command('assign:expire')
 
 Schedule::command('assign:uploader')->everyTenMinutes();
 
-Schedule::command('video:cleanup', [
-    '--weeks' => Cfg::get('post_expiry_retention_weeks', 'default', 1, true),
-])
-    ->dailyAt('04:00');
-
 Schedule::command('notify:reminders', [
     '--days' => Cfg::get('email_reminder_days', 'email', 1, true),
 ])
@@ -47,3 +42,8 @@ Schedule::command('assign:videos-to-teams')->everyFifteenMinutes();
 
 //video processing
 Schedule::command('video:calculate-hash')->everyMinute();
+
+Schedule::command('video:cleanup', [
+    '--weeks' => Cfg::get('post_expiry_retention_weeks', 'default', 1, true),
+])
+    ->dailyAt('04:00');
