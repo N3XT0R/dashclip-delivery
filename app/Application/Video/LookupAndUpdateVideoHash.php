@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Video;
 
+use App\Enum\ProcessingStatusEnum;
 use App\Models\Video;
 use App\Repository\VideoRepository;
 use App\Services\DynamicStorageService;
@@ -38,6 +39,7 @@ readonly class LookupAndUpdateVideoHash
 
         $this->videoRepository->update($video, [
             'hash' => $hash,
+            'processing_status' => ProcessingStatusEnum::Processing,
         ]);
     }
 }
