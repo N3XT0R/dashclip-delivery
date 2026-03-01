@@ -15,11 +15,11 @@ class CalculateHashCommand extends Command
 
     public function handle(
         VideoRepository $videoRepository,
-        LookupAndUpdateVideoHash $updateVideoHash
+        LookupAndUpdateVideoHash $lookupAndUpdateVideoHash
     ): void {
         $videos = $videoRepository->getVideosWhereHashIsEmpty();
         foreach ($videos as $video) {
-            $updateVideoHash->handle($video);
+            $lookupAndUpdateVideoHash->handle($video);
         }
     }
 }
