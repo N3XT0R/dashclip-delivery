@@ -18,4 +18,7 @@ return [
         'title' => 'Kanalzugriff genehmigt',
         'body' => 'Ihr Zugriff auf den Kanal ":channelName" wurde genehmigt.',
     ],
+    'user_upload_duplicated' => [
+        'body' => 'Die Datei ":filename" wurde als Duplikat erkannt und wurde gelöscht.',
+    ],
 ];

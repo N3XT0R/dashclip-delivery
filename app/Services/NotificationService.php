@@ -41,7 +41,7 @@ class NotificationService
         if ($user) {
             $user->notify(new UserUploadDuplicatedNotification(
                 filename: $video->original_name,
-                note: 'Die Datei wurde als Duplikat erkannt und nicht erneut hochgeladen.'
+                note: __('user_upload_duplicated.body', ['filename' => $video->original_name])
             ));
         }
     }

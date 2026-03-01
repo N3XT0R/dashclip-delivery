@@ -17,4 +17,8 @@ return [
         'title' => 'Channel Access Approved',
         'body' => 'Your access to the channel ":channelName" has been approved.',
     ],
+
+    'user_upload_duplicated' => [
+        'body' => 'The file ":filename" was detected as a duplicate and was deleted.',
+    ],
 ];
