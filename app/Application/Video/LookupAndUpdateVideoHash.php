@@ -29,8 +29,7 @@ readonly class LookupAndUpdateVideoHash
      */
     public function handle(Video $video, ?string $hash = null): void
     {
-        $diskName = $video->disk;
-        $disk = Storage::disk($diskName);
+        $disk = Storage::disk($video->disk);
         $hash ??= $this->dynamicStorageService->getHashForFilePath($disk, $video->path);
         if ($this->videoService->isDuplicate($hash)) {
             $this->videoService->deleteDuplicateVideo($video);
