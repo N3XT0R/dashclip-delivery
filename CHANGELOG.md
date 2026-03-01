@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - **Packages**
-    - upgraded packages to newest version (e.g. laravel or npm)
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
 
 ## [3.6.0] - 2026-02-22
 
