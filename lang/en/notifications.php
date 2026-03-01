@@ -13,4 +13,8 @@ return [
             UserUploadProceedNotification::class => 'Notify when user upload is processed',
         ],
     ],
+    'channel_access_approved' => [
+        'title' => 'Channel Access Approved',
+        'body' => 'Your access to the channel ":channelName" has been approved.',
+    ],
 ];
