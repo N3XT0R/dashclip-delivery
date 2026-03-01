@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Composer Packages**
     - upgraded packages to newest version (e.g. laravel)
 
+## [3.7.0] - 2026-03-01
+
+### Security
+
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
 ## [3.6.0] - 2026-02-22
 
 ### Added
