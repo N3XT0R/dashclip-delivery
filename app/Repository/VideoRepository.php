@@ -183,4 +183,10 @@ class VideoRepository
             })
             ->cursor();
     }
+
+    public function getUploaderUser(Video $video): ?User
+    {
+        $clip = $video->clips()->first();
+        return $clip ? $clip->user : null;
+    }
 }

@@ -7,6 +7,7 @@ namespace App\Application\Video;
 use App\Models\Video;
 use App\Repository\VideoRepository;
 use App\Services\DynamicStorageService;
+use App\Services\VideoService;
 use Illuminate\Support\Facades\Storage;
 
 readonly class LookupAndUpdateVideoHash
@@ -14,6 +15,7 @@ readonly class LookupAndUpdateVideoHash
 
     public function __construct(
         private VideoRepository $videoRepository,
+        private VideoService $videoService,
         private DynamicStorageService $dynamicStorageService,
     ) {
     }
@@ -22,6 +24,9 @@ readonly class LookupAndUpdateVideoHash
     {
         $disk = Storage::disk($video->disk);
         $hash ??= $this->dynamicStorageService->getHashForFilePath($disk, $video->path);
+        if ($this->videoService->isDuplicate($hash)) {
+            $disk->delete($video->path);
+        }
 
         $this->videoRepository->update($video, [
             'hash' => $hash,
