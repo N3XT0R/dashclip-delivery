@@ -21,7 +21,6 @@ readonly class UpdateVideoHash
     public function handle(Video $video, ?string $hash = null): void
     {
         $disk = Storage::disk($video->disk);
-
         $hash ??= $this->dynamicStorageService->getHashForFilePath($disk, $video->path);
 
         $this->videoRepository->update($video, [
