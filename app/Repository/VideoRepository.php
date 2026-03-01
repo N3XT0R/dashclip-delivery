@@ -80,8 +80,8 @@ class VideoRepository
     }
 
     /**
-     * @param Collection<Video> $pool
-     * @param iterable $ids
+     * @param  Collection<Video>  $pool
+     * @param  iterable  $ids
      * @return Collection
      */
     public function getVideosByIdsFromPool(Collection $pool, iterable $ids): Collection
@@ -99,7 +99,7 @@ class VideoRepository
      * Partitions videos by uploader (Clip → user_id).
      * Videos without uploader are grouped under key "0".
      *
-     * @param Collection<Video> $videos
+     * @param  Collection<Video>  $videos
      * @return array<int, Collection<Video>>
      */
     public function partitionByUploader(Collection $videos): array
@@ -113,7 +113,7 @@ class VideoRepository
      * Partitions videos by team slug, or by uploader (Clip → user_id) if no team is assigned.
      * Videos without team and uploader are grouped under key "user:0".
      *
-     * @param Collection<Video> $videos
+     * @param  Collection<Video>  $videos
      * @return array<int, UploaderPoolInfo>
      */
     public function partitionByTeamOrUploader(Collection $videos): array
@@ -123,7 +123,7 @@ class VideoRepository
             ->groupBy(function (Video $video) {
                 $video->loadMissing(['team', 'clips']);
                 if ($video->team && $video->team->slug) {
-                    return UploaderTypeEnum::TEAM->value . ':' . $video->team->slug;
+                    return UploaderTypeEnum::TEAM->value.':'.$video->team->slug;
                 }
 
                 $userString = UploaderTypeEnum::USER->value;
@@ -131,9 +131,9 @@ class VideoRepository
                 // Fallback: Uploader (Clip → user_id)
                 $uploaderId = $video->clips->first()?->user_id;
                 if ($uploaderId) {
-                    return $userString . ':' . $uploaderId;
+                    return $userString.':'.$uploaderId;
                 }
-                return $userString . ':0';
+                return $userString.':0';
             });
 
         return $grouped
@@ -166,5 +166,18 @@ class VideoRepository
     public function update(Video $video, array $data): bool
     {
         return $video->update($data);
+    }
+
+    /**
+     * Get videos where the "hash" field is null or empty,
+     * which may indicate that they haven't been processed correctly.
+     * @return Collection
+     */
+    public function getVideosWhereHashIsEmpty(): Collection
+    {
+        return Video::query()
+            ->whereNull('hash')
+            ->orWhere('hash', '')
+            ->get();
     }
 }
