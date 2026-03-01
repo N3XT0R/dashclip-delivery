@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Video;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 
 class VideoRepository
 {
@@ -171,13 +172,15 @@ class VideoRepository
     /**
      * Get videos where the "hash" field is null or empty,
      * which may indicate that they haven't been processed correctly.
-     * @return Collection
+     * @return LazyCollection
      */
-    public function getVideosWhereHashIsEmpty(): Collection
+    public function getVideosWhereHashIsEmpty(): LazyCollection
     {
         return Video::query()
-            ->whereNull('hash')
-            ->orWhere('hash', '')
-            ->get();
+            ->where(function ($query) {
+                $query->whereNull('hash')
+                    ->orWhere('hash', '');
+            })
+            ->cursor();
     }
 }
