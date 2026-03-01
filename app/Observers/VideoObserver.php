@@ -13,7 +13,7 @@ use Throwable;
 
 class VideoObserver extends BaseObserver
 {
-    public function __construct(private VideoService $videoService)
+    public function __construct(private readonly VideoService $videoService)
     {
     }
 
