@@ -20,6 +20,13 @@ readonly class LookupAndUpdateVideoHash
     ) {
     }
 
+    /**
+     * Lookup the hash for the given video and update it in the database.
+     * If the hash already exists, delete the video and notify the uploader.
+     * @param  Video  $video
+     * @param  string|null  $hash
+     * @return void
+     */
     public function handle(Video $video, ?string $hash = null): void
     {
         $diskName = $video->disk;
