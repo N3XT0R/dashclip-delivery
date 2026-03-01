@@ -9,7 +9,7 @@ use App\Repository\VideoRepository;
 use App\Services\DynamicStorageService;
 use Illuminate\Support\Facades\Storage;
 
-readonly class UpdateVideoHash
+readonly class LookupAndUpdateVideoHash
 {
 
     public function __construct(
