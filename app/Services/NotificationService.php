@@ -24,6 +24,12 @@ class NotificationService
         $user->notify(new ChannelAccessApprovedNotification($channelApplication));
     }
 
+    /**
+     * Send duplicated upload notification to the user.
+     * @param  Video  $video
+     * @param  User|null  $user
+     * @return void
+     */
     public function notifyDuplicatedUpload(Video $video, ?User $user = null): void
     {
         $videoRepository = app(VideoRepository::class);
