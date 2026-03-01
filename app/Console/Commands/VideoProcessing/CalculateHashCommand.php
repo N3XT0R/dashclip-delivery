@@ -11,7 +11,7 @@ use Illuminate\Console\Command;
 class CalculateHashCommand extends Command
 {
 
-    protected $signature = 'videos:calculate-hash';
+    protected $signature = 'video:calculate-hash';
 
     public function handle(
         VideoRepository $videoRepository,

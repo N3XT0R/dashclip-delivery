@@ -46,4 +46,4 @@ Schedule::command('clean:database')->dailyAt('02:00');
 Schedule::command('assign:videos-to-teams')->everyFifteenMinutes();
 
 //video processing
-Schedule::command('videos:calculate-hash')->everyMinute();
+Schedule::command('video:calculate-hash')->everyMinute();
