@@ -9,7 +9,6 @@ use App\Facades\DynamicStorage;
 use App\Facades\PathBuilder;
 use App\Models\Clip;
 use App\Models\Video;
-use App\Notifications\UserUploadDuplicatedNotification;
 use App\Repository\VideoRepository;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
@@ -122,27 +121,21 @@ readonly class VideoService
         return $path;
     }
 
-    public function deleteDuplicateVideo(Video $video): void
+    /**
+     * Deletes a video that was identified as a duplicate. This includes deleting the video file from storage and removing the database record.
+     * @param  Video  $video
+     * @return bool
+     */
+    public function deleteDuplicateVideo(Video $video): bool
     {
         $disk = $video->getDisk();
         if ($disk->exists($video->path)) {
             $disk->delete($video->path);
         }
 
-        $user = $this->videoRepository->getUploaderUser($video);
-        if (null === $user) {
-            $user = $video->team()->first()?->owner;
-        }
+        app(NotificationService::class)->notifyDuplicatedUpload($video);
 
-        if ($user) {
-            $user->notify(new UserUploadDuplicatedNotification(
-                filename: $video->original_name,
-                note: 'Die Datei wurde als Duplikat erkannt und nicht erneut hochgeladen.'
-            ));
-        }
-
-
-        $video->delete();
+        return $video->delete();
     }
 
 }
