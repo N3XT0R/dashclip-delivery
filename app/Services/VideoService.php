@@ -122,7 +122,8 @@ readonly class VideoService
     }
 
     /**
-     * Deletes a video that was identified as a duplicate. This includes deleting the video file from storage and removing the database record.
+     * Deletes a video that was identified as a duplicate.
+     * This includes deleting the video file from storage and removing the database record.
      * @param  Video  $video
      * @return bool
      */
