@@ -30,16 +30,18 @@ class VideoFactory extends Factory
                 'codec' => $this->faker->randomElement(['h264', 'hevc', 'mpeg4']),
                 'fps' => $this->faker->randomElement([24, 25, 30, 60]),
             ],
-            'original_name' => $this->faker->unique()->slug().".{$ext}",
+            'original_name' => $this->faker->unique()->slug() . ".{$ext}",
             'disk' => 'local',                                // default disk
-            'preview_url' => null,                            // set via state if needed
         ];
     }
 
+    /**
+     * @return $this
+     * @deprecated
+     */
     public function withPreviewUrl(): static
     {
         return $this->state(fn() => [
-            'preview_url' => $this->faker->url(),
         ]);
     }
 
