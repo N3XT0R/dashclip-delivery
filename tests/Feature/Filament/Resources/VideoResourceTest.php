@@ -44,12 +44,14 @@ final class VideoResourceTest extends DatabaseTestCase
             'created_at' => Carbon::parse('2024-10-15 10:00:00'),
         ]);
 
-        $videos->clips()->create([
-            'start_sec' => 0,
-            'end_sec' => 5,
-            'preview_disk' => 'preview',
-            'preview_path' => 'previews/v1.mp4',
-        ]);
+        foreach ($videos as $video) {
+            $video->clips()->create([
+                'start_sec' => 0,
+                'end_sec' => 5,
+                'preview_disk' => 'preview',
+                'preview_path' => 'previews/v1.mp4',
+            ]);
+        }
 
         $this->actingAs($this->admin);
 
