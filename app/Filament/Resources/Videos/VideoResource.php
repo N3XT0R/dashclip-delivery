@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Videos;
 
+use App\Application\Clips\GetPreviewUrl;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Resources\Videos\RelationManagers\AssignmentsRelationManager;
 use App\Filament\Resources\Videos\RelationManagers\ClipsRelationManager;
@@ -108,7 +109,7 @@ class VideoResource extends Resource
                 Action::make('preview')
                     ->label('Preview')
                     ->icon('heroicon-m-play')
-                    ->url(fn(Video $video) => (string)$video->getAttribute('preview_url'))
+                    ->url(fn(Video $video) => app(GetPreviewUrl::class)->handle($video->clips()->first()))
                     ->openUrlInNewTab(),
                 DeleteAction::make()
                     ->visible(auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value))
