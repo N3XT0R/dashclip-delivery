@@ -180,6 +180,7 @@ class IngestScanner
 
         try {
             DB::beginTransaction();
+            // new: web frontend
             $video = $videoService->createVideoBydDiskAndFileInfoDto(
                 $inboxDiskName ?: 'dynamicStorage',
                 $inboxDisk,
@@ -192,7 +193,9 @@ class IngestScanner
             $startSec = $clip?->start_sec ?? 0;
             $endSec = $clip?->end_sec ?? null;
             DB::commit();
+            // end new web frontend
 
+            
             $previewUrl = $previewService->generatePreviewByDisk(
                 $inboxDisk,
                 $pathToFile,
