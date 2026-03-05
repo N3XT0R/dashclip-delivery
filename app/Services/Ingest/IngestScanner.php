@@ -29,7 +29,7 @@ use Throwable;
 
 /**
  * @deprecated This class is deprecated and will be removed in v4.
- * Please use the dedicated use-cases for ingest operations instead (e.g. LookupAndUpdateVideoHash).)
+ * Please use the dedicated use-cases for ingest operations instead (e.g. LookupAndUpdateVideoHash)
  */
 class IngestScanner
 {
