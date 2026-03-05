@@ -25,6 +25,7 @@ class PathBuilderService
      * @param int $id
      * @param int $start
      * @param int $end
+     * @return string
      * @deprecated use forPreviewByClip instead
      */
     public function forPreview(int $id, int $start, int $end): string
