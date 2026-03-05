@@ -9,6 +9,7 @@ use App\Exceptions\PreviewGenerationException;
 use App\Facades\Cfg;
 use App\Facades\DynamicStorage;
 use App\Facades\PathBuilder;
+use App\Models\Clip;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Filters\Video\VideoFilters;
 use FFMpeg\Format\Video\X264;
@@ -37,6 +38,7 @@ final class PreviewService
      * @param  int|null  $id
      * @param  int|null  $startSec
      * @param  int|null  $endSec
+     * @param  bool  $autoCompression
      * @return string
      */
     public function generatePreviewByDisk(
@@ -109,6 +111,18 @@ final class PreviewService
                 $disk->path($relativePath),
                 $e
             );
+        }
+    }
+
+    public function generatePreviewForClip(Clip $clip)
+    {
+        $video = $clip->video;
+        $disk = Storage::disk($video->disk);
+        $relativePath = $video->path;
+
+
+        if ($clip->start_sec !== null && !$this->isValidRange($clip->start_sec, $clip->end_sec)) {
+            throw new InvalidTimeRangeException($clip->start_sec, $clip->end_sec);
         }
     }
 

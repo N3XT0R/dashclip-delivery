@@ -15,6 +15,8 @@ class Clip extends Model
 
     protected $fillable = [
         'video_id',
+        'preview_disk',
+        'preview_path',
         'start_sec',
         'end_sec',
         'note',
@@ -51,7 +53,7 @@ class Clip extends Model
     public function getPreviewPath(): string
     {
         $videoId = $this->getAttribute('video')->getKey();
-        $hash = md5($videoId.'_'.$this->getAttribute('start_sec').'_'.$this->getAttribute('end_sec'));
+        $hash = md5($videoId . '_' . $this->getAttribute('start_sec') . '_' . $this->getAttribute('end_sec'));
         return "previews/{$hash}.mp4";
     }
 
