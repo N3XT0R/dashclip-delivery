@@ -26,18 +26,18 @@ readonly class LookupAndUpdateVideoHash
      * If the hash already exists, delete the video and notify the uploader.
      * @param  Video  $video
      * @param  string|null  $hash
-     * @return void
+     * @return bool
      */
-    public function handle(Video $video, ?string $hash = null): void
+    public function handle(Video $video, ?string $hash = null): bool
     {
         $disk = Storage::disk($video->disk);
         $hash ??= $this->dynamicStorageService->getHashForFilePath($disk, $video->path);
         if ($this->videoService->isDuplicate($hash)) {
             $this->videoService->deleteDuplicateVideo($video);
-            return;
+            return true;
         }
 
-        $this->videoRepository->update($video, [
+        return $this->videoRepository->update($video, [
             'hash' => $hash,
             'processing_status' => ProcessingStatusEnum::Processing,
         ]);
