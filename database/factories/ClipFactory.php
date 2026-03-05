@@ -30,6 +30,7 @@ class ClipFactory extends Factory
             'role' => null,                                // set via state if needed
             'submitted_by' => $this->faker->optional()->safeEmail(),
             'user_id' => null,
+            'preview_disk' => config('preview.default_disk', 'public'),
         ];
     }
 
