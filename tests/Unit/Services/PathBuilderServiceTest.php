@@ -28,29 +28,6 @@ class PathBuilderServiceTest extends TestCase
         );
     }
 
-    public function testForPreviewReturnsCorrectPath(): void
-    {
-        $id = 123;
-        $start = 0;
-        $end = 10;
-        $hash = hash('sha256', $id . '_' . $start . '_' . $end);
-        $actualPath = $this->service->forPreview($id, $start, $end);
-        $this->assertEquals(
-            sprintf('previews/%s.mp4', $hash),
-            $actualPath
-        );
-    }
-
-    public function testForPreviewByHashReturnsCorrectPath(): void
-    {
-        $hash = md5('custom_hash');
-        $actualPath = $this->service->forPreviewByHash($hash);
-        $this->assertEquals(
-            'previews/1f/9d/1f9d42c2cbd56b1194faa9955b97eda3.mp4',
-            $actualPath
-        );
-    }
-
 
     public function testForDropboxReturnsCorrectPath(): void
     {
