@@ -12,7 +12,7 @@ return new class extends Migration {
     public function up(): void
     {
         $this->cleanPreviews();
-        Schema::table('video', static function (Blueprint $table) {
+        Schema::table('videos', static function (Blueprint $table) {
             $table->dropColumn('path');
         });
     }
@@ -32,7 +32,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('video', static function (Blueprint $table) {
+        Schema::table('videos', static function (Blueprint $table) {
             $table->string('path')->nullable()->after('bytes');
         });
     }

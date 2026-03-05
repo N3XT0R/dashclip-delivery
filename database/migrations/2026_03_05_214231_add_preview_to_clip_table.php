@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('clip', static function (Blueprint $table) {
+        Schema::table('clips', static function (Blueprint $table) {
             $table->string('preview_disk')->nullable()->after('video_id');
             $table->string('preview_path')->nullable()->after('preview_disk');
         });
@@ -21,7 +21,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('clip', static function (Blueprint $table) {
+        Schema::table('clips', static function (Blueprint $table) {
             $table->dropColumn('preview_path');
             $table->dropColumn('preview_disk');
         });
