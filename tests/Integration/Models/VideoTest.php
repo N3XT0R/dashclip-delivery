@@ -113,7 +113,6 @@ final class VideoTest extends DatabaseTestCase
             'meta' => ['duration' => 42, 'codec' => 'h264'],
             'original_name' => 'dashcam.mp4',
             'disk' => 'local',
-            'preview_url' => null,
         ])->fresh();
 
         $this->assertSame('abc123', $video->hash);
@@ -124,7 +123,6 @@ final class VideoTest extends DatabaseTestCase
         $this->assertSame(['duration' => 42, 'codec' => 'h264'], $video->meta);
         $this->assertSame('dashcam.mp4', $video->original_name);
         $this->assertSame('local', $video->disk);
-        $this->assertNull($video->preview_url);
     }
 
     public function testAssignmentsRelationReturnsRelatedModels(): void
@@ -177,13 +175,13 @@ final class VideoTest extends DatabaseTestCase
 
         $video = Video::factory()->create([
             'disk' => 'public',
-            'path' => 'videos/'.Str::random(8).'/'.Str::random(8).'.mp4',
+            'path' => 'videos/' . Str::random(8) . '/' . Str::random(8) . '.mp4',
         ]);
 
         $disk = $video->getDisk();
         $this->assertInstanceOf(Filesystem::class, $disk);
 
-        $testPath = 'probe/'.Str::random(12).'.txt';
+        $testPath = 'probe/' . Str::random(12) . '.txt';
         $this->assertTrue($disk->put($testPath, 'ok'));
 
         Storage::disk('public')->assertExists($testPath);

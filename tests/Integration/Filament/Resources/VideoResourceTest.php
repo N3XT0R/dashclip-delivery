@@ -44,7 +44,6 @@ final class VideoResourceTest extends DatabaseTestCase
             'ext' => 'mp4',
             'bytes' => 111,
             'disk' => 'dropbox',
-            'preview_url' => 'https://cdn.example.test/previews/v1.mp4',
             'created_at' => Carbon::parse('2025-08-10 10:00:00'),
         ]);
 
@@ -53,7 +52,6 @@ final class VideoResourceTest extends DatabaseTestCase
             'ext' => 'mov',
             'bytes' => 222,
             'disk' => 'local',
-            'preview_url' => null,
             'created_at' => Carbon::parse('2025-08-11 12:00:00'),
         ]);
 

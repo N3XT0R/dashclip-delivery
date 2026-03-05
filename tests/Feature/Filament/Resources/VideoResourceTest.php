@@ -92,7 +92,6 @@ final class VideoResourceTest extends DatabaseTestCase
     public function testPreviewAndViewActionsAreAvailable(): void
     {
         $video = Video::factory()->create([
-            'preview_url' => 'https://example.com/preview.mp4',
         ]);
 
         $this->actingAs($this->admin);

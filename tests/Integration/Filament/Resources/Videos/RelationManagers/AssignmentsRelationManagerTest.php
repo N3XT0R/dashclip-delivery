@@ -42,7 +42,7 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
 
     public function testPreviewActionHiddenWhenVideoMissingPreviewUrl(): void
     {
-        $video = Video::factory()->create(['preview_url' => null]);
+        $video = Video::factory()->create([]);
         $assignment = Assignment::factory()->withBatch()->forVideo($video)->create();
 
         $this->actingAs($this->admin);

@@ -48,7 +48,7 @@ final class ClipsRelationManagerTest extends DatabaseTestCase
 
     public function testPreviewActionHiddenWhenVideoHasNoPreviewUrl(): void
     {
-        $video = Video::factory()->create(['preview_url' => null]);
+        $video = Video::factory()->create([]);
         $clip = Clip::factory()->forVideo($video)->create();
 
         $this->actingAs($this->admin);

@@ -16,7 +16,6 @@ use Tests\DatabaseTestCase;
  *
  * Verifies:
  *  - View page renders correctly for SuperAdmins
- *  - Preview action visibility depends on `preview_url`
  *  - Meta data fields are visible and formatted
  *  - Regular users are forbidden
  */
@@ -36,7 +35,6 @@ final class ViewVideoPageTest extends DatabaseTestCase
     public function testAdminUserCanSeePreviewAction(): void
     {
         $video = Video::factory()->create([
-            'preview_url' => 'https://cdn.example.test/video/preview.mp4',
         ]);
 
         $this->actingAs($this->admin);
@@ -57,7 +55,6 @@ final class ViewVideoPageTest extends DatabaseTestCase
     {
         $video = Video::factory()->create([
             'original_name' => 'nourl.mp4',
-            'preview_url' => null,
         ]);
 
         $this->actingAs($this->admin);
@@ -70,7 +67,6 @@ final class ViewVideoPageTest extends DatabaseTestCase
     public function testRegularUserCanAccessViewPageButHasNoRestrictedActions(): void
     {
         $video = Video::factory()->create([
-            'preview_url' => 'https://cdn.example.test/video/preview.mp4',
         ]);
 
         $this->actingAs($this->regular);

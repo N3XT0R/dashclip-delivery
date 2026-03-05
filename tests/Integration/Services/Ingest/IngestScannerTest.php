@@ -67,10 +67,6 @@ class IngestScannerTest extends DatabaseTestCase
         $this->assertSame('local', $video->disk);
         $this->assertNotEmpty($video->hash);
 
-        // Assert: preview was generated
-        $this->assertNotNull($video->preview_url);
-        $this->assertStringEndsWith('.mp4', $video->preview_url);
-
         $this->assertDatabaseCount('clips', 1);
         $clip = Clip::first();
         $this->assertSame($video->id, $clip->video_id);
