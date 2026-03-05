@@ -65,6 +65,20 @@ final class VideoResourceTest extends DatabaseTestCase
         $videoA = Video::factory()->create(['ext' => 'mp4', 'disk' => 'local']);
         $videoB = Video::factory()->create(['ext' => 'avi', 'disk' => 's3']);
 
+        $videoA->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
+
+        $videoB->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
+
         $this->actingAs($this->admin);
 
         Livewire::test(ListVideos::class)
