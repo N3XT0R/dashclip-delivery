@@ -87,7 +87,19 @@ final class VideoResourceTest extends DatabaseTestCase
     public function testFilterByDiskShowsOnlyMatchingRecords(): void
     {
         $drop = Video::factory()->create(['disk' => 'dropbox', 'ext' => 'mp4', 'original_name' => 'drop.mp4']);
+        $drop->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
         $loc = Video::factory()->create(['disk' => 'local', 'ext' => 'mov', 'original_name' => 'local.mov']);
+        $loc->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mov',
+        ]);
 
         Livewire::test(ListVideos::class)
             ->assertStatus(200)
@@ -100,7 +112,19 @@ final class VideoResourceTest extends DatabaseTestCase
     public function testFilterByExtShowsOnlyMatchingRecords(): void
     {
         $mp4 = Video::factory()->create(['ext' => 'mp4', 'disk' => 'dropbox', 'original_name' => 'one.mp4']);
+        $mp4->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
         $mov = Video::factory()->create(['ext' => 'mov', 'disk' => 'local', 'original_name' => 'two.mov']);
+        $mov->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mov',
+        ]);
 
         Livewire::test(ListVideos::class)
             ->assertStatus(200)
@@ -119,11 +143,25 @@ final class VideoResourceTest extends DatabaseTestCase
             'created_at' => Carbon::parse('2024-01-01 00:00:00'),
         ]);
 
+        $old->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mov',
+        ]);
+
         $new = Video::factory()->create([
             'original_name' => 'new.mp4',
             'ext' => 'mp4',
             'disk' => 'local',
             'created_at' => Carbon::parse('2025-08-13 09:00:00'),
+        ]);
+
+        $new->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mov',
         ]);
 
         Livewire::test(ListVideos::class)
@@ -144,6 +182,13 @@ final class VideoResourceTest extends DatabaseTestCase
             'original_name' => 'sample.mp4',
             'ext' => 'mp4',
             'disk' => 'local',
+        ]);
+
+        $video->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mov',
         ]);
 
         // Act & Assert: the view page renders and shows stable UI labels
