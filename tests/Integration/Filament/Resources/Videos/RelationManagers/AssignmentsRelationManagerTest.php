@@ -25,7 +25,7 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
 
     public function testAssignmentsRelationManagerShowsRecordsAndActions(): void
     {
-        $video = Video::factory()->withPreviewUrl()->create();
+        $video = Video::factory()->create();
         $assignment = Assignment::factory()->withBatch()->forVideo($video)->create();
 
         $this->actingAs($this->admin);
