@@ -33,7 +33,7 @@ class PathBuilderServiceTest extends TestCase
         $id = 123;
         $start = 0;
         $end = 10;
-        $hash = md5($id.'_'.$start.'_'.$end);
+        $hash = hash('sha256', $id . '_' . $start . '_' . $end);
         $actualPath = $this->service->forPreview($id, $start, $end);
         $this->assertEquals(
             sprintf('previews/%s.mp4', $hash),
