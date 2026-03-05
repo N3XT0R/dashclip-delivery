@@ -100,6 +100,12 @@ final class VideoResourceTest extends DatabaseTestCase
     public function testAdminSeesDeleteActionWhileRegularUserDoesNot(): void
     {
         $video = Video::factory()->create();
+        $video->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
 
         // Admin: darf löschen
         $this->actingAs($this->admin);
@@ -114,7 +120,12 @@ final class VideoResourceTest extends DatabaseTestCase
 
     public function testPreviewAndViewActionsAreAvailable(): void
     {
-        $video = Video::factory()->create([
+        $video = Video::factory()->create();
+        $video->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
         ]);
 
         $this->actingAs($this->admin);
@@ -127,7 +138,19 @@ final class VideoResourceTest extends DatabaseTestCase
     public function testDefaultSortingShowsNewestFirst(): void
     {
         $older = Video::factory()->create(['created_at' => now()->subDay()]);
+        $older->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
         $newer = Video::factory()->create(['created_at' => now()]);
+        $newer->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
 
         $this->actingAs($this->admin);
 
