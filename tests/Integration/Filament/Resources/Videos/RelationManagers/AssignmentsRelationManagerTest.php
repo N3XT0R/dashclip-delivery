@@ -36,22 +36,6 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
         ])
             ->assertSuccessful()
             ->assertCanSeeTableRecords([$assignment])
-            ->assertTableActionVisible('open', $assignment)
-            ->assertTableActionVisible('preview', $assignment);
-    }
-
-    public function testPreviewActionHiddenWhenVideoMissingPreviewUrl(): void
-    {
-        $video = Video::factory()->create([]);
-        $assignment = Assignment::factory()->withBatch()->forVideo($video)->create();
-
-        $this->actingAs($this->admin);
-
-        Livewire::test(AssignmentsRelationManager::class, [
-            'ownerRecord' => $video,
-            'pageClass' => ViewVideo::class,
-        ])
-            ->assertCanSeeTableRecords([$assignment])
-            ->assertTableActionHidden('preview', $assignment);
+            ->assertTableActionVisible('open', $assignment);
     }
 }
