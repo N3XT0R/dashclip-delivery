@@ -55,12 +55,29 @@ final class VideoResourceTest extends DatabaseTestCase
             'created_at' => Carbon::parse('2025-08-11 12:00:00'),
         ]);
 
+        $v1->clips()->create([
+            'start_sec' => 0,
+            'end_sec' => 5,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v1.mp4',
+        ]);
+
+        $v2->clips()->create([
+            'start_sec' => 10,
+            'end_sec' => 20,
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/v2.mp4',
+        ]);
+
         // Add some relations so counts have data (table uses ->counts())
         $batch = Batch::factory()->type('assign')->finished()->create();
         $channel = Channel::factory()->create();
 
-        Assignment::factory()->for($v1, 'video')->for($batch, 'batch')->for($channel, 'channel')->create();
-        // no relations for $v2 to keep counts different
+        Assignment::factory()
+            ->for($v1, 'video')
+            ->for($batch, 'batch')
+            ->for($channel, 'channel')
+            ->create();
 
         Livewire::test(ListVideos::class)
             ->assertStatus(200)
