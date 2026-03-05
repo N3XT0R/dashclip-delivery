@@ -25,8 +25,11 @@ final class ClipsRelationManagerTest extends DatabaseTestCase
 
     public function testClipsRelationManagerShowsColumnsAndActions(): void
     {
-        $video = Video::factory()->withPreviewUrl()->create();
-        $clip = Clip::factory()->forVideo($video)->create();
+        $video = Video::factory()->create();
+        $clip = Clip::factory()->forVideo($video)->create([
+            'preview_disk' => 'preview',
+            'preview_path' => 'previews/clip1.mp4',
+        ]);
 
         $this->actingAs($this->admin);
 
