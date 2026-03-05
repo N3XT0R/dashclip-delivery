@@ -11,13 +11,18 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        $this->cleanPreviews();
+        Schema::table('video', static function (Blueprint $table) {
+            $table->dropColumn('path');
+        });
+    }
+
+    private function cleanPreviews(): void
+    {
         try {
             Storage::disk('public')->deleteDirectory('videos');
         } catch (\Throwable) {
         }
-        Schema::table('video', static function (Blueprint $table) {
-            $table->dropColumn('path');
-        });
     }
 
     /**
