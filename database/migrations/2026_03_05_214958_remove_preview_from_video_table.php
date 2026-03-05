@@ -20,7 +20,9 @@ return new class extends Migration {
     private function cleanPreviews(): void
     {
         try {
-            Storage::disk('public')->deleteDirectory('videos');
+            Storage::disk(
+                config('preview.default_disk', 'public')
+            )->deleteDirectory('previews');
         } catch (\Throwable) {
         }
     }
