@@ -46,6 +46,11 @@ class PathBuilderService
         return sprintf('previews/%s/%s.mp4', $sub, $fileHash);
     }
 
+    /**
+     * Get the preview path by clip data.
+     * @param Clip $clip
+     * @return string
+     */
     public function forPreviewByClip(Clip $clip): string
     {
         $hash = hash('sha256', $clip->getKey());
