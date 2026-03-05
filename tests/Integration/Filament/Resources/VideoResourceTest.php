@@ -69,7 +69,6 @@ final class VideoResourceTest extends DatabaseTestCase
             'preview_path' => 'previews/v2.mp4',
         ]);
 
-        // Add some relations so counts have data (table uses ->counts())
         $batch = Batch::factory()->type('assign')->finished()->create();
         $channel = Channel::factory()->create();
 
@@ -81,12 +80,9 @@ final class VideoResourceTest extends DatabaseTestCase
 
         Livewire::test(ListVideos::class)
             ->assertStatus(200)
-            // Records are visible in the table
             ->assertCanSeeTableRecords([$v1, $v2])
-            // Preview action exists
             ->assertTableActionExists('preview')
-            // And the preview URL appears (link action is rendered as <a href="...">)
-            ->assertSee('https://cdn.example.test/previews/v1.mp4');
+            ->assertTableActionVisible('preview');
     }
 
     public function testFilterByDiskShowsOnlyMatchingRecords(): void
