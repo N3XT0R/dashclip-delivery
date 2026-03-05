@@ -35,23 +35,6 @@ class VideoFactory extends Factory
         ];
     }
 
-    /**
-     * public function configure(): static
-     * {
-     * return $this->afterCreating(function (Video $video) {
-     * if (!$video->clips()->exists()) {
-     * Clip::factory()->for($video, 'video')->create();
-     * }
-     * });
-     * }**/
-
-    public function withoutClips(): static
-    {
-        return $this->afterCreating(function (Video $video) {
-            $video->clips()->delete();
-        });
-    }
-
     public function withClips(int $count = 1, ?User $user = null): static
     {
         return $this->afterCreating(function (Video $video) use ($count, $user) {
