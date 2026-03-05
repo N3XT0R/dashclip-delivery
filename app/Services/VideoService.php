@@ -140,7 +140,7 @@ readonly class VideoService
         }
 
         if ($user) {
-            app(NotificationService::class)->notifyDuplicatedUpload($video, $user);
+            app(NotificationService::class)->notifyDuplicatedUpload($user, $video);
         }
 
         return $video->delete();

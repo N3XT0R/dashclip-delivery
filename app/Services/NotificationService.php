@@ -29,7 +29,7 @@ class NotificationService
      * @param  User  $user
      * @return void
      */
-    public function notifyDuplicatedUpload(Video $video, User $user): void
+    public function notifyDuplicatedUpload(User $user, Video $video): void
     {
         $user->notify(new UserUploadDuplicatedNotification(
             filename: $video->original_name,
