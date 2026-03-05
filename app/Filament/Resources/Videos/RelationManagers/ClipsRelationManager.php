@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Videos\RelationManagers;
 
+use App\Application\Clips\GetPreviewUrl;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
@@ -41,8 +42,8 @@ class ClipsRelationManager extends RelationManager
                 Action::make('preview')
                     ->label('Preview')
                     ->icon('heroicon-m-play')
-                    ->url(fn($record) => (string)$record->getAttribute('preview_path'))
-                    ->visible(fn($record) => null !== $record->video?->getAttribute('preview_url'))
+                    ->url(fn($record) => app(GetPreviewUrl::class)->handle($record))
+                    ->visible(fn($record) => null !== $record->getAttribute('preview_path'))
                     ->openUrlInNewTab()
             ])
             ->toolbarActions([]);
