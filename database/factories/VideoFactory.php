@@ -44,9 +44,6 @@ class VideoFactory extends Factory
         });
     }
 
-    /**
-     * Wenn du in einem Test mal *kein* Clip willst:
-     */
     public function withoutClips(): static
     {
         return $this->afterCreating(function (Video $video) {
