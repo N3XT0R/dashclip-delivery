@@ -17,11 +17,6 @@ return new class extends Migration {
                 ->default(ProcessingStatusEnum::Pending->value)
                 ->index()
                 ->after('path');
-
-
-            $table->json('processing_meta')
-                ->nullable()
-                ->after('processing_status');
         });
 
         Video::query()->update(['processing_status' => ProcessingStatusEnum::Completed->value]);
@@ -35,7 +30,6 @@ return new class extends Migration {
         Schema::table('videos', static function (Blueprint $table) {
             $table->dropColumn([
                 'processing_status',
-                'processing_meta',
             ]);
         });
     }
