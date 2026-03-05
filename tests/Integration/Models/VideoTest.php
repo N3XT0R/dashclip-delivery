@@ -17,13 +17,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\DatabaseTestCase;
 
-/**
- * Integration tests for the Video model and its file-related behaviors.
- *
- * - Uses Storage::fake('tmp') to simulate the video disk.
- * - Verifies that deleting a Video removes its files and previews.
- * - Ensures getPreviewPath() works correctly with and without existing previews.
- */
 final class VideoTest extends DatabaseTestCase
 {
     protected function setUp(): void
