@@ -134,7 +134,14 @@ readonly class VideoService
             $disk->delete($video->path);
         }
 
-        app(NotificationService::class)->notifyDuplicatedUpload($video);
+        $user ??= $this->videoRepository->getUploaderUser($video);
+        if (null === $user) {
+            $user = $video->team()->first()?->owner;
+        }
+
+        if ($user) {
+            app(NotificationService::class)->notifyDuplicatedUpload($video, $user);
+        }
 
         return $video->delete();
     }

@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Video;
 use App\Notifications\ChannelAccessApprovedNotification;
 use App\Notifications\UserUploadDuplicatedNotification;
-use App\Repository\VideoRepository;
 
 class NotificationService
 {
@@ -27,22 +26,14 @@ class NotificationService
     /**
      * Send duplicated upload notification to the user.
      * @param  Video  $video
-     * @param  User|null  $user
+     * @param  User  $user
      * @return void
      */
-    public function notifyDuplicatedUpload(Video $video, ?User $user = null): void
+    public function notifyDuplicatedUpload(Video $video, User $user): void
     {
-        $videoRepository = app(VideoRepository::class);
-        $user ??= $videoRepository->getUploaderUser($video);
-        if (null === $user) {
-            $user = $video->team()->first()?->owner;
-        }
-
-        if ($user) {
-            $user->notify(new UserUploadDuplicatedNotification(
-                filename: $video->original_name,
-                note: __('user_upload_duplicated.body', ['filename' => $video->original_name])
-            ));
-        }
+        $user->notify(new UserUploadDuplicatedNotification(
+            filename: $video->original_name,
+            note: __('user_upload_duplicated.body', ['filename' => $video->original_name])
+        ));
     }
 }
