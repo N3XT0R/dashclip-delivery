@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Video;
+namespace App\Application\Video\Ingest;
 
 use App\Enum\ProcessingStatusEnum;
 use App\Models\Video;

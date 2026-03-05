@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\VideoProcessing;
 
-use App\Application\Video\LookupAndUpdateVideoHash;
+use App\Application\Video\Ingest\LookupAndUpdateVideoHash;
 use App\Repository\VideoRepository;
 use Illuminate\Console\Command;
 
