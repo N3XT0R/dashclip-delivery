@@ -33,7 +33,7 @@ use Throwable;
  */
 class IngestScanner
 {
-    private const ALLOWED_EXTENSIONS = ['mp4', 'mov', 'mkv', 'avi', 'm4v', 'webm'];
+    private const array ALLOWED_EXTENSIONS = ['mp4', 'mov', 'mkv', 'avi', 'm4v', 'webm'];
 
 
     private ?OutputStyle $output = null;
