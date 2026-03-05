@@ -43,7 +43,7 @@ class ClipsRelationManager extends RelationManager
                     ->label('Preview')
                     ->icon('heroicon-m-play')
                     ->url(fn($record) => app(GetPreviewUrl::class)->handle($record))
-                    ->visible(fn($record) => null !== $record->getAttribute('preview_path'))
+                    ->visible(fn($record) => null !== $record->preview_path)
                     ->openUrlInNewTab()
             ])
             ->toolbarActions([]);
