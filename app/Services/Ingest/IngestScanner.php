@@ -27,6 +27,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
+/**
+ * @deprecated This class is deprecated and will be removed in v4.
+ * Please use the dedicated use-cases for ingest operations instead (e.g. LookupAndUpdateVideoHash).)
+ */
 class IngestScanner
 {
     private const ALLOWED_EXTENSIONS = ['mp4', 'mov', 'mkv', 'avi', 'm4v', 'webm'];
