@@ -33,12 +33,12 @@ final class PreviewService
 
     /**
      * Generate a video preview for the given time range.
-     * @param  Filesystem  $disk
-     * @param  string  $relativePath
-     * @param  int|null  $id
-     * @param  int|null  $startSec
-     * @param  int|null  $endSec
-     * @param  bool  $autoCompression
+     * @param Filesystem $disk
+     * @param string $relativePath
+     * @param int|null $id
+     * @param int|null $startSec
+     * @param int|null $endSec
+     * @param bool $autoCompression
      * @return string
      */
     public function generatePreviewByDisk(
@@ -105,7 +105,7 @@ final class PreviewService
 
             return $previewDisk->url($previewPath);
         } catch (Throwable $e) {
-            $this->error('ffmpeg failed: '.$e->getMessage());
+            $this->error('ffmpeg failed: ' . $e->getMessage());
             throw PreviewGenerationException::fromDisk(
                 $relativePath,
                 $disk->path($relativePath),
@@ -124,6 +124,8 @@ final class PreviewService
         if ($clip->start_sec !== null && !$this->isValidRange($clip->start_sec, $clip->end_sec)) {
             throw new InvalidTimeRangeException($clip->start_sec, $clip->end_sec);
         }
+
+        $previewPath = PathBuilder::forPreviewByClip($clip);
     }
 
     // ───────────────────────── internal / helpers ─────────────────────────
@@ -132,9 +134,9 @@ final class PreviewService
      * Dynamically adjust FFmpeg compression parameters
      * based on the file size.
      *
-     * @param  Filesystem  $disk
-     * @param  string  $relativePath
-     * @param  X264  $format
+     * @param Filesystem $disk
+     * @param string $relativePath
+     * @param X264 $format
      * @return void
      */
     private function applyAdaptiveCompression(Filesystem $disk, string $relativePath, X264 $format): void
@@ -177,15 +179,17 @@ final class PreviewService
 
             $format->setAdditionalParameters($params);
 
-            $this->info(sprintf(
-                'Adaptive compression applied for %s (%.1f MB, CRF=%d%s)',
-                $relativePath,
-                $sizeMB,
-                $crf,
-                $scale ? ', scaled ½' : ''
-            ));
+            $this->info(
+                sprintf(
+                    'Adaptive compression applied for %s (%.1f MB, CRF=%d%s)',
+                    $relativePath,
+                    $sizeMB,
+                    $crf,
+                    $scale ? ', scaled ½' : ''
+                )
+            );
         } catch (Throwable $e) {
-            $this->error('Adaptive compression failed: '.$e->getMessage());
+            $this->error('Adaptive compression failed: ' . $e->getMessage());
         }
     }
 
@@ -215,8 +219,8 @@ final class PreviewService
 
     /**
      * Check if the given time range is valid.
-     * @param  int  $start
-     * @param  int  $end
+     * @param int $start
+     * @param int $end
      * @return bool
      */
     private function isValidRange(int $start, int $end): bool
