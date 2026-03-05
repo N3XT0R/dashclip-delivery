@@ -13,7 +13,6 @@ return new class extends Migration {
     {
         $this->cleanPreviews();
         Schema::table('videos', static function (Blueprint $table) {
-            $table->dropColumn('path');
             $table->dropColumn('preview_url');
         });
     }
@@ -34,7 +33,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('videos', static function (Blueprint $table) {
-            $table->string('path')->nullable()->after('bytes');
             $table->string('preview_url')->nullable()->after('meta');
         });
     }
