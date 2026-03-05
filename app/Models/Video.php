@@ -33,12 +33,10 @@ class Video extends Model
         'disk',
         'team_id',
         'processing_status',
-        'processing_meta',
     ];
     protected $casts = [
         'meta' => 'array',
         'processing_status' => ProcessingStatusEnum::class,
-        'processing_meta' => 'array',
     ];
 
     protected $append = [
