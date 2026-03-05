@@ -12,7 +12,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
       - name: Set up PHP with no coverage driver
         uses: shivammathur/setup-php@v2
         with:
