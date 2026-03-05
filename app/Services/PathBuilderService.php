@@ -51,7 +51,7 @@ class PathBuilderService
         $hash = hash('sha256', $clip->getKey());
         $sub = substr($hash, 0, 2) . '/' . substr($hash, 2, 2);
 
-        return sprintf('previews/%s/%s.mp4', $sub, $hash);
+        return sprintf('%s/%s.mp4', $sub, $hash);
     }
 
     /**
