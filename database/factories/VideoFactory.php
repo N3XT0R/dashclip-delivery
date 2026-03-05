@@ -19,30 +19,52 @@ class VideoFactory extends Factory
         $hash = $this->faker->sha256;
 
         return [
-            'hash' => $hash,                                  // SHA-256 hex
+            'hash' => $hash,
             'ext' => $ext,
-            'bytes' => $this->faker->numberBetween(100_000, 2_000_000_000), // ~100KB..~2GB
+            'bytes' => $this->faker->numberBetween(100_000, 2_000_000_000),
             'path' => "videos/{$hash}.{$ext}",
             'meta' => [
-                'duration' => $this->faker->numberBetween(5, 1200),    // seconds
+                'duration' => $this->faker->numberBetween(5, 1200),
                 'width' => $this->faker->randomElement([1280, 1920, 2560]),
                 'height' => $this->faker->randomElement([720, 1080, 1440]),
                 'codec' => $this->faker->randomElement(['h264', 'hevc', 'mpeg4']),
                 'fps' => $this->faker->randomElement([24, 25, 30, 60]),
             ],
             'original_name' => $this->faker->unique()->slug() . ".{$ext}",
-            'disk' => 'local',                                // default disk
+            'disk' => 'local',
         ];
     }
 
-    /**
-     * @return $this
-     * @deprecated
-     */
-    public function withPreviewUrl(): static
+    public function configure(): static
     {
-        return $this->state(fn() => [
-        ]);
+        return $this->afterCreating(function (Video $video) {
+            if (!$video->clips()->exists()) {
+                Clip::factory()->for($video, 'video')->create();
+            }
+        });
+    }
+
+    /**
+     * Wenn du in einem Test mal *kein* Clip willst:
+     */
+    public function withoutClips(): static
+    {
+        return $this->afterCreating(function (Video $video) {
+            $video->clips()->delete();
+        });
+    }
+
+    public function withClips(int $count = 1, ?User $user = null): static
+    {
+        return $this->afterCreating(function (Video $video) use ($count, $user) {
+            Clip::factory()
+                ->count($count)
+                ->for($video, 'video')
+                ->state(fn() => [
+                    'user_id' => $user?->getKey() ?? User::factory(),
+                ])
+                ->create();
+        });
     }
 
     public function onDisk(string $disk): static
@@ -59,18 +81,4 @@ class VideoFactory extends Factory
     {
         return $this->state(fn() => ['bytes' => $this->faker->numberBetween(500_000_000, 2_000_000_000)]);
     }
-
-    public function withClips(int $count = 1, ?User $user = null): static
-    {
-        return $this->afterCreating(function (Video $video) use ($count, $user) {
-            Clip::factory()
-                ->count($count)
-                ->for($video, 'video')
-                ->state(fn() => [
-                    'user_id' => $user?->getKey() ?? User::factory(),
-                ])
-                ->create();
-        });
-    }
-
 }
