@@ -11,7 +11,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Storage::disk('public')->deleteDirectory('videos');
+        try {
+            Storage::disk('public')->deleteDirectory('videos');
+        } catch (\Throwable) {
+        }
         Schema::table('video', static function (Blueprint $table) {
             $table->dropColumn('path');
         });
