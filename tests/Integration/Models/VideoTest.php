@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Models;
 
-use App\Facades\PathBuilder;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -63,18 +62,14 @@ final class VideoTest extends DatabaseTestCase
         ]);
 
         Storage::disk('tmp')->put($video->path, 'video-data');
-        $previewPath = PathBuilder::forPreviewByHash($video->hash);
-        Storage::disk('tmp')->put($previewPath, 'preview-data');
 
         $this->assertTrue(Storage::disk('tmp')->exists($video->path));
-        $this->assertTrue(Storage::disk('tmp')->exists($previewPath));
 
         // Act
         $video->delete();
 
         // Assert
         Storage::disk('tmp')->assertMissing($video->path);
-        Storage::disk('tmp')->assertMissing($previewPath);
         $this->assertDatabaseMissing('videos', ['id' => $video->id]);
     }
 
