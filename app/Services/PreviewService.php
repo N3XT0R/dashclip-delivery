@@ -112,21 +112,64 @@ final class PreviewService
         }
     }
 
-    public function generatePreviewForClip(Clip $clip, Filesystem $previewDisk): string
+    /**
+     * Generate a video preview for the given clip.
+     * @param Clip $clip
+     * @param Filesystem $previewDisk
+     * @param bool $force
+     * @return string
+     */
+    public function generatePreviewForClip(Clip $clip, Filesystem $previewDisk, bool $force = false): string
     {
         $video = $clip->video;
-        $disk = Storage::disk($video->disk);
+        $sourceDisk = Storage::disk($video->disk);
         $relativePath = $video->path;
+        $startSec = $clip->start_sec;
+        $endSec = $clip->end_sec;
+        $duration = $endSec !== null ? $endSec - $startSec : null;
 
 
-        if ($clip->start_sec !== null && !$this->isValidRange($clip->start_sec, $clip->end_sec)) {
-            throw new InvalidTimeRangeException($clip->start_sec, $clip->end_sec);
+        if ($startSec !== null && !$this->isValidRange($startSec, $endSec)) {
+            throw new InvalidTimeRangeException($startSec, $endSec);
         }
 
         $previewPath = PathBuilder::forPreviewByClip($clip);
-        if ($this->existsPreviewForClip($clip, $previewDisk)) {
+        if (!$force || $this->existsPreviewForClip($clip, $previewDisk)) {
             $this->info("Preview for clip {$clip->getKey()} exists in: {$previewPath}");
             return $previewPath;
+        }
+
+        try {
+            $audioCodec = (string)Cfg::get('ffmpeg_audio_codec', 'ffmpeg', 'aac');
+            $videoCodec = (string)Cfg::get('ffmpeg_video_codec', 'ffmpeg', 'libx264');
+            $format = new X264($audioCodec, $videoCodec);
+
+            $params = $this->ffmpegParams();
+            if ($params !== []) {
+                $format->setAdditionalParameters($params);
+            }
+
+            $this->applyAdaptiveCompression($sourceDisk, $relativePath, $format);
+
+            FFMpeg::fromFilesystem($sourceDisk)
+                ->open($relativePath)
+                ->addFilter(function (VideoFilters $filters) use ($startSec, $duration): void {
+                    if ($duration === null) {
+                        $filters->clip(TimeCode::fromSeconds($startSec));
+                    } else {
+                        $filters->clip(TimeCode::fromSeconds($startSec), TimeCode::fromSeconds($duration));
+                    }
+                })
+                ->export()
+                ->toDisk($previewDisk)
+                ->inFormat($format)
+                ->save($previewPath);
+        } catch (Throwable $e) {
+            throw PreviewGenerationException::fromDisk(
+                $relativePath,
+                $sourceDisk->path($relativePath),
+                $e
+            );
         }
     }
 
