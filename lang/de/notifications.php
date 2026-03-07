@@ -21,4 +21,7 @@ return [
     'user_upload_duplicated' => [
         'body' => 'Die Datei ":filename" wurde als Duplikat erkannt und wurde gelöscht.',
     ],
+    'user_upload_proceed' => [
+        'body' => 'Ihre Datei ":filename" wurde erfolgreich verarbeitet.',
+    ],
 ];

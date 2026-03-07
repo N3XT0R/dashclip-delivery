@@ -35,7 +35,7 @@ class NotificationService
         $user->notify(
             new UserUploadDuplicatedNotification(
                 filename: $video->original_name,
-                note: __('user_upload_duplicated.body', ['filename' => $video->original_name])
+                note: __('notifications.user_upload_duplicated.body', ['filename' => $video->original_name])
             )
         );
     }
@@ -51,7 +51,7 @@ class NotificationService
         $user->notify(
             new UserUploadProceedNotification(
                 filename: $video->original_name,
-                note: 'Alles erfolgreich abgeschlossen.'
+                note: __('notifications.user_upload_proceed.body', ['filename' => $video->original_name]),
             )
         );
     }
