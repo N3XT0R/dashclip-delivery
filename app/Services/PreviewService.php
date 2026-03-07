@@ -127,7 +127,7 @@ final class PreviewService
         $video = $clip->video;
         $sourceDisk = Storage::disk($video->disk);
         $relativePath = $video->path;
-        $startSec = $clip->start_sec;
+        $startSec = $clip->start_sec ?? 0;
         $endSec = $clip->end_sec;
         $duration = $endSec !== null ? $endSec - $startSec : null;
 
