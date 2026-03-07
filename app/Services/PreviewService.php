@@ -124,6 +124,23 @@ final class PreviewService
         }
 
         $previewPath = PathBuilder::forPreviewByClip($clip);
+        if ($this->existsPreviewForClip($clip, $previewDisk)) {
+            $this->info("Preview for clip {$clip->getKey()} exists in: {$previewPath}");
+            return $previewPath;
+        }
+    }
+
+
+    /**
+     * Check if a preview already exists for the given clip.
+     * @param Clip $clip
+     * @param Filesystem $previewDisk
+     * @return bool
+     */
+    public function existsPreviewForClip(Clip $clip, Filesystem $previewDisk): bool
+    {
+        $previewPath = PathBuilder::forPreviewByClip($clip);
+        return $previewDisk->exists($previewPath);
     }
 
     // ───────────────────────── internal / helpers ─────────────────────────
