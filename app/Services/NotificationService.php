@@ -46,7 +46,7 @@ class NotificationService
      * @param Video $video
      * @return void
      */
-    public function notifyUserUploadComplete(User $user, Video $video): void
+    public function notifyUserVideoUploadProceeded(User $user, Video $video): void
     {
         $user->notify(
             new UserUploadProceedNotification(
