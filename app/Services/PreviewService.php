@@ -119,8 +119,11 @@ final class PreviewService
      * @param bool $force
      * @return string
      */
-    public function generatePreviewForClip(Clip $clip, Filesystem $previewDisk, bool $force = false): string
-    {
+    public function generatePreviewForClip(
+        Clip $clip,
+        Filesystem $previewDisk,
+        bool $force = false
+    ): string {
         $video = $clip->video;
         $sourceDisk = Storage::disk($video->disk);
         $relativePath = $video->path;
