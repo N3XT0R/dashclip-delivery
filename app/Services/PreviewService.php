@@ -24,8 +24,6 @@ final class PreviewService
 {
     private ?OutputStyle $output = null;
 
-    // ───────────────────────── public API ─────────────────────────
-
     public function setOutput(?OutputStyle $outputStyle = null): void
     {
         $this->output = $outputStyle;
@@ -114,7 +112,7 @@ final class PreviewService
         }
     }
 
-    public function generatePreviewForClip(Clip $clip)
+    public function generatePreviewForClip(Clip $clip, Filesystem $previewDisk): string
     {
         $video = $clip->video;
         $disk = Storage::disk($video->disk);
