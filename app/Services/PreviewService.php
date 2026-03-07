@@ -139,7 +139,7 @@ final class PreviewService
 
         $previewPath = PathBuilder::forPreviewByClip($clip);
         if (!$force || $this->existsPreviewForClip($clip, $previewDisk)) {
-            $this->info("Preview for clip {$clip->getKey()} exists in: {$previewPath}");
+            Log::info('Preview already exists for clip ' . $clip->getKey() . ' at ' . $previewPath);
             return $previewPath;
         }
 
@@ -190,8 +190,6 @@ final class PreviewService
         $previewPath = PathBuilder::forPreviewByClip($clip);
         return $previewDisk->exists($previewPath);
     }
-
-    // ───────────────────────── internal / helpers ─────────────────────────
 
     /**
      * Dynamically adjust FFmpeg compression parameters
@@ -289,20 +287,6 @@ final class PreviewService
     private function isValidRange(int $start, int $end): bool
     {
         return $start >= 0 && $end > $start;
-    }
-
-    // ───────────────────────── logging helpers ─────────────────────────
-
-    private function info(string $message): void
-    {
-        $this->output?->writeln("<info>{$message}</info>");
-        Log::info($message, ['service' => 'PreviewService']);
-    }
-
-    private function error(string $message): void
-    {
-        $this->output?->writeln("<error>{$message}</error>");
-        Log::error($message, ['service' => 'PreviewService']);
     }
 }
 
