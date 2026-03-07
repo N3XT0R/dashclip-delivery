@@ -171,6 +171,7 @@ final class PreviewService
                 $e
             );
         }
+        return $previewPath;
     }
 
 
