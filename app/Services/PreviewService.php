@@ -242,17 +242,26 @@ final class PreviewService
 
             $format->setAdditionalParameters($params);
 
-            $this->info(
+            Log::info(
                 sprintf(
                     'Adaptive compression applied for %s (%.1f MB, CRF=%d%s)',
                     $relativePath,
                     $sizeMB,
                     $crf,
                     $scale ? ', scaled ½' : ''
-                )
+                ),
+                [
+                    'relative_path' => $relativePath,
+                    'size_mb' => $sizeMB,
+                    'crf' => $crf,
+                    'scale_applied' => $scale !== null,
+                ]
             );
         } catch (Throwable $e) {
-            $this->error('Adaptive compression failed: ' . $e->getMessage());
+            Log::error('Adaptive compression failed for ' . $relativePath . ': ' . $e->getMessage(), [
+                'relative_path' => $relativePath,
+                'exception' => $e,
+            ]);
         }
     }
 
