@@ -22,5 +22,10 @@ readonly class GeneratePreviewForClip
         $diskName = config('preview.default_disk', 'preview');
         $previewDisk = Storage::disk($diskName);
         $relativePath = $this->previewService->generatePreviewForClip($clip, $previewDisk);
+
+        return $this->clipRepository->update($clip, [
+            'preview_path' => $relativePath,
+            'preview_disk' => $diskName,
+        ]);
     }
 }
