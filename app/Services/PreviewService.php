@@ -38,6 +38,7 @@ final class PreviewService
      * @param int|null $endSec
      * @param bool $autoCompression
      * @return string
+     * @deprecated use generatePreviewForClip instead.
      */
     public function generatePreviewByDisk(
         Filesystem $disk,
