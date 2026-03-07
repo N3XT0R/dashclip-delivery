@@ -9,6 +9,9 @@ use App\Repository\ClipRepository;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Generate a preview for the given clip and update the clip with the preview path and disk.
+ */
 readonly class GeneratePreviewForClip
 {
     public function __construct(
