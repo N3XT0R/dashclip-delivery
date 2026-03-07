@@ -117,7 +117,7 @@ final class PreviewService
      * @param Clip $clip
      * @param Filesystem $previewDisk
      * @param bool $force
-     * @return string path to the generated preview
+     * @return string path to the generated preview on preview disk
      */
     public function generatePreviewForClip(
         Clip $clip,
