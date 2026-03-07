@@ -66,7 +66,6 @@ final class PreviewService
 
 
         if ($previewDisk->exists($previewPath)) {
-            $this->info("Preview exists in cache: {$previewPath}");
             return $previewDisk->url($previewPath);
         }
 
@@ -104,7 +103,6 @@ final class PreviewService
 
             return $previewDisk->url($previewPath);
         } catch (Throwable $e) {
-            $this->error('ffmpeg failed: ' . $e->getMessage());
             throw PreviewGenerationException::fromDisk(
                 $relativePath,
                 $disk->path($relativePath),
