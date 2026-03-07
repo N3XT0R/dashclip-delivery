@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Models\Clip;
+use App\Models\Video;
 use Illuminate\Support\Collection;
 
 class ClipRepository
@@ -81,5 +82,26 @@ class ClipRepository
     public function create(array $data): Clip
     {
         return Clip::query()->create($data);
+    }
+
+    /**
+     * Get all clips for a given video.
+     * @param  Video  $video
+     * @return Collection<Clip>
+     */
+    public function getClipsByVideo(Video $video): Collection
+    {
+        return $video->clips()->get();
+    }
+
+    /**
+     * Update the given clip with the provided data.
+     * @param  Clip  $clip
+     * @param  array  $data
+     * @return bool
+     */
+    public function update(Clip $clip, array $data): bool
+    {
+        return $clip->update($data);
     }
 }
