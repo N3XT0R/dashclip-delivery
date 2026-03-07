@@ -80,8 +80,11 @@ class IngestScanner
                 $stats->increment($result);
             } catch (Throwable $e) {
                 $stats->increment(IngestResult::ERR);
-                $this->log("Fehler bei der Verarbeitung: {$e->getMessage()}", 'error',
-                    ['exception' => $e, 'file' => $file->path]);
+                $this->log(
+                    "Fehler bei der Verarbeitung: {$e->getMessage()}",
+                    'error',
+                    ['exception' => $e, 'file' => $file->path]
+                );
             }
             $this->batchService->updateStats($batch, $stats);
         }
@@ -94,8 +97,8 @@ class IngestScanner
 
     /**
      * Import CSV files for all directories in the given disk.
-     * @param  Filesystem  $inboxDisk
-     * @param  bool  $deleteAfter
+     * @param Filesystem $inboxDisk
+     * @param bool $deleteAfter
      * @return ClipImportResult
      */
     private function importCsvForDirectory(Filesystem $inboxDisk, bool $deleteAfter = false): ClipImportResult
@@ -125,11 +128,11 @@ class IngestScanner
     /**
      * Process a single file from the inbox-disk.
      *
-     * @param  Filesystem  $inboxDisk
-     * @param  FileInfoDto  $file
-     * @param  string  $diskName
-     * @param  User|null  $user
-     * @param  string|null  $inboxDiskName
+     * @param Filesystem $inboxDisk
+     * @param FileInfoDto $file
+     * @param string $diskName
+     * @param User|null $user
+     * @param string|null $inboxDiskName
      * @return IngestResult
      *
      * @throws Throwable
@@ -158,7 +161,6 @@ class IngestScanner
         $ext = $file->extension;
         $videoService = $this->videoService;
         $previewService = app(PreviewService::class);
-        $previewService->setOutput($this->output);
         $uploadService = app(UploadService::class);
 
         if ($videoService->isDuplicate($hash)) {
@@ -184,7 +186,8 @@ class IngestScanner
             $video = $videoService->createVideoBydDiskAndFileInfoDto(
                 $inboxDiskName ?: 'dynamicStorage',
                 $inboxDisk,
-                $file);
+                $file
+            );
             $importResult = $this->importCsvForDirectory($inboxDisk, true);
             $video->refresh();
 
@@ -195,7 +198,7 @@ class IngestScanner
             DB::commit();
             // end new web frontend
 
-            
+
             $previewUrl = $previewService->generatePreviewByDisk(
                 $inboxDisk,
                 $pathToFile,
@@ -207,7 +210,7 @@ class IngestScanner
             $uploadService->uploadFile($inboxDisk, $pathToFile, $diskName, $dstRel);
             $videoService->finalizeUpload($video, $dstRel, $diskName, $previewUrl);
 
-            $this->log('Upload abgeschlossen für '.$file->basename, 'info', [
+            $this->log('Upload abgeschlossen für ' . $file->basename, 'info', [
                 'path' => $video->path,
                 'disk' => $video->disk,
                 'original_file' => $file->path,
@@ -222,7 +225,7 @@ class IngestScanner
         } catch (Throwable $e) {
             DB::rollBack();
             $this->log(
-                'Upload fehlgeschlagen: '.$e->getMessage(),
+                'Upload fehlgeschlagen: ' . $e->getMessage(),
                 'error',
                 [
                     'exception' => $e,
@@ -240,18 +243,22 @@ class IngestScanner
 
     private function notifyUserUploadComplete(User $user, FileInfoDto $file): void
     {
-        $user->notify(new UserUploadProceedNotification(
-            filename: $file->originalName ?? $file->basename,
-            note: 'Alles erfolgreich abgeschlossen.'
-        ));
+        $user->notify(
+            new UserUploadProceedNotification(
+                filename: $file->originalName ?? $file->basename,
+                note: 'Alles erfolgreich abgeschlossen.'
+            )
+        );
     }
 
     private function notifyUserUploadIsDuplicate(User $user, FileInfoDto $file): void
     {
-        $user->notify(new UserUploadDuplicatedNotification(
-            filename: $file->originalName ?? $file->basename,
-            note: 'Die Datei wurde als Duplikat erkannt und nicht erneut hochgeladen.'
-        ));
+        $user->notify(
+            new UserUploadDuplicatedNotification(
+                filename: $file->originalName ?? $file->basename,
+                note: 'Die Datei wurde als Duplikat erkannt und nicht erneut hochgeladen.'
+            )
+        );
     }
 
 }

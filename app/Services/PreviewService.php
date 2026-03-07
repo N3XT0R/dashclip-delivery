@@ -13,7 +13,6 @@ use App\Models\Clip;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Filters\Video\VideoFilters;
 use FFMpeg\Format\Video\X264;
-use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -22,13 +21,6 @@ use Throwable;
 
 final class PreviewService
 {
-    private ?OutputStyle $output = null;
-
-    public function setOutput(?OutputStyle $outputStyle = null): void
-    {
-        $this->output = $outputStyle;
-    }
-
     /**
      * Generate a video preview for the given time range.
      * @param Filesystem $disk
