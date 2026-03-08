@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Pages\Assignments;
 
-use App\Filament\Resources\Assignments\Pages\ListAssignments;
+use App\Filament\Admin\Resources\Assignments\Pages\ListAssignments;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;

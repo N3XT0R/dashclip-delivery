@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\Configs\Pages\ListConfigs;
-use App\Filament\Resources\Pages\Pages\EditPage;
-use App\Filament\Resources\Pages\Pages\ListPages;
+use App\Filament\Admin\Resources\Configs\Pages\ListConfigs;
+use App\Filament\Admin\Resources\Pages\Pages\EditPage;
+use App\Filament\Admin\Resources\Pages\Pages\ListPages;
 use App\Models\Page;
 use App\Models\User;
 use Livewire\Livewire;

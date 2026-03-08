@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources;
 
-use App\Filament\Resources\TeamResource\Pages\CreateTeam;
-use App\Filament\Resources\TeamResource\Pages\EditTeam;
-use App\Filament\Resources\TeamResource\Pages\ListTeams;
+use App\Filament\Admin\Resources\TeamResource\Pages\CreateTeam;
+use App\Filament\Admin\Resources\TeamResource\Pages\EditTeam;
+use App\Filament\Admin\Resources\TeamResource\Pages\ListTeams;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -53,7 +53,7 @@ final class TeamResourceTest extends DatabaseTestCase
     public function testCreateTeamFormStoresTeam(): void
     {
         $owner = User::factory()->create();
-        $slug = 'team-'.Str::random(6);
+        $slug = 'team-' . Str::random(6);
 
         Livewire::test(CreateTeam::class)
             ->assertStatus(200)

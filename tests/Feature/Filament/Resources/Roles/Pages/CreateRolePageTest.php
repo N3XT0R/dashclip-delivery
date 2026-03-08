@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources\Roles\Pages;
 
-use App\Filament\Resources\Roles\Pages\CreateRole;
+use App\Filament\Admin\Resources\Roles\Pages\CreateRole;
 use App\Models\User;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Livewire\Livewire;

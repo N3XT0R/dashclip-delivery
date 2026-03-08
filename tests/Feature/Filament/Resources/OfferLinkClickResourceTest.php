@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources;
 
-use App\Filament\Resources\OfferLinkClickResource;
+use App\Filament\Admin\Resources\OfferLinkClickResource;
 use App\Models\OfferLinkClick;
 use App\Models\User;
 use Carbon\Carbon;

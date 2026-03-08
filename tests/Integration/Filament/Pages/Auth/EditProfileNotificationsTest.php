@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Pages\Auth;
 
-use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Models\User;
 use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Filament\Resources\ChannelApplicationResource;
 
 use App\Enum\Channel\ApplicationEnum;
-use App\Filament\Resources\ChannelApplicationResource;
-use App\Filament\Resources\ChannelApplicationResource\Pages\EditChannelApplication;
-use App\Filament\Resources\ChannelApplicationResource\Pages\ListChannelApplications;
+use App\Filament\Admin\Resources\ChannelApplicationResource;
+use App\Filament\Admin\Resources\ChannelApplicationResource\Pages\EditChannelApplication;
+use App\Filament\Admin\Resources\ChannelApplicationResource\Pages\ListChannelApplications;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;

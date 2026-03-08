@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources\UserResource\Pages;
 
-use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Admin\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;

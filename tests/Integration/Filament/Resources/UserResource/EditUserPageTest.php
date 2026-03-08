@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources\UserResource;
 
-use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
 use App\Models\User;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;

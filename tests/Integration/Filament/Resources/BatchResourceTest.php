@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\Batches\Pages\ListBatches;
+use App\Filament\Admin\Resources\Batches\Pages\ListBatches;
 use App\Filament\Resources\Batches\RelationManagers\ChannelsRelationManager;
 use App\Models\Assignment;
 use App\Models\Batch;

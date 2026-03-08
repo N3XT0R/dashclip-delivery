@@ -6,7 +6,7 @@ namespace Tests\Integration\Filament\Resources\UserResource;
 
 use App\Enum\Users\RoleEnum;
 use App\Events\User\UserCreated;
-use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Admin\Resources\UserResource\Pages\CreateUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;

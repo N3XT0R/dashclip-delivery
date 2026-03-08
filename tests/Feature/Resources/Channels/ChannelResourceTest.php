@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Resources\Channels;
 
-use App\Filament\Resources\Channels\ChannelResource;
-use App\Filament\Resources\Channels\Pages\CreateChannel;
-use App\Filament\Resources\Channels\Pages\EditChannel;
-use App\Filament\Resources\Channels\Pages\ListChannels;
+use App\Filament\Admin\Resources\Channels\ChannelResource;
+use App\Filament\Admin\Resources\Channels\Pages\CreateChannel;
+use App\Filament\Admin\Resources\Channels\Pages\EditChannel;
+use App\Filament\Admin\Resources\Channels\Pages\ListChannels;
 use App\Models\Channel;
 use App\Models\User;
 use Filament\Resources\Pages\PageRegistration;

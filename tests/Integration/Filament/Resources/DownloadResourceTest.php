@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources;
 
-use App\Filament\Resources\Downloads\Pages\ListDownloads;
+use App\Filament\Admin\Resources\Downloads\Pages\ListDownloads;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;

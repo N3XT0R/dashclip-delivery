@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources\Roles\Pages;
 
-use App\Filament\Resources\Roles\Pages\ListRoles;
-use App\Filament\Resources\Roles\RoleResource;
 use App\Enum\Guard\GuardEnum;
+use App\Filament\Admin\Resources\Roles\Pages\ListRoles;
+use App\Filament\Admin\Resources\Roles\RoleResource;
 use App\Models\Role;
 use App\Models\User;
 use Livewire\Livewire;

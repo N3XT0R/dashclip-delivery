@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources\VideoResource;
 
-use App\Filament\Resources\Videos\Pages\EditVideo;
+use App\Filament\Admin\Resources\Videos\Pages\EditVideo;
 use App\Models\User;
 use App\Models\Video;
 use Livewire\Livewire;

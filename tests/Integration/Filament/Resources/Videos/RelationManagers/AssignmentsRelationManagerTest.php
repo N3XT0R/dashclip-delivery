@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Resources\Videos\RelationManagers;
 
-use App\Filament\Resources\Videos\Pages\ViewVideo;
-use App\Filament\Resources\Videos\RelationManagers\AssignmentsRelationManager;
+use App\Filament\Admin\Resources\Videos\Pages\ViewVideo;
+use App\Filament\Admin\Resources\Videos\RelationManagers\AssignmentsRelationManager;
 use App\Models\Assignment;
 use App\Models\User;
 use App\Models\Video;

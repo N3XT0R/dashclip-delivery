@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Filament\Resources;
 
 use App\Enum\Guard\GuardEnum;
-use App\Filament\Resources\Videos\Pages\ListVideos;
+use App\Filament\Admin\Resources\Videos\Pages\ListVideos;
 use App\Models\User;
 use App\Models\Video;
 use Illuminate\Support\Carbon;

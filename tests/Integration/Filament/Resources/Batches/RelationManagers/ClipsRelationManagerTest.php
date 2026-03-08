@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Integration\Filament\Resources\Batches\RelationManagers;
 
 use App\Enum\BatchTypeEnum;
+use App\Filament\Admin\Resources\Batches\RelationManagers\ClipsRelationManager;
 use App\Filament\Resources\Batches\Pages\EditBatch;
-use App\Filament\Resources\Batches\RelationManagers\ClipsRelationManager;
 use App\Models\Batch;
 use App\Models\Clip;
 use App\Models\User;

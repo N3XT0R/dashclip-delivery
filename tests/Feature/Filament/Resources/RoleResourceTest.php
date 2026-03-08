@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources;
 
-use App\Filament\Resources\Roles\Pages\CreateRole;
-use App\Filament\Resources\Roles\Pages\ListRoles;
-use App\Filament\Resources\Roles\RoleResource;
+use App\Filament\Admin\Resources\Roles\Pages\CreateRole;
+use App\Filament\Admin\Resources\Roles\Pages\ListRoles;
+use App\Filament\Admin\Resources\Roles\RoleResource;
 use App\Models\User;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Illuminate\Support\Str;
@@ -61,7 +61,7 @@ final class RoleResourceTest extends DatabaseTestCase
 
     public function testCreateRoleFormStoresNewRole(): void
     {
-        $roleName = 'quality_assurance_'.Str::random(4);
+        $roleName = 'quality_assurance_' . Str::random(4);
 
         Livewire::test(CreateRole::class)
             ->set('data.name', $roleName)

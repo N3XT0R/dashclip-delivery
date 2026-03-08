@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources;
 
-use App\Filament\Resources\ActivityResource\Pages\ListActivities;
+use App\Filament\Admin\Resources\ActivityResource\Pages\ListActivities;
 use App\Models\Activity;
 use App\Models\User;
 use App\Models\Video;

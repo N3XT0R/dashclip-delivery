@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Resources;
 
-use App\Filament\Resources\UserResource;
-use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Admin\Resources\UserResource;
+use App\Filament\Admin\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;

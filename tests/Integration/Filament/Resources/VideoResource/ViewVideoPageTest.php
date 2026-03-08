@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration\Filament\Resources\VideoResource;
 
 use App\Enum\Guard\GuardEnum;
-use App\Filament\Resources\Videos\Pages\ViewVideo;
+use App\Filament\Admin\Resources\Videos\Pages\ViewVideo;
 use App\Models\User;
 use App\Models\Video;
 use Livewire\Livewire;

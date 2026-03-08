@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Pages;
 
-use App\Filament\Pages\DropboxConnect;
+use App\Filament\Admin\Pages\DropboxConnect;
 use App\Models\Config;
 use App\Models\User;
 use Carbon\Carbon;

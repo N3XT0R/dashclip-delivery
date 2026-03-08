@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Integration\Filament\Resources;
 
 use App\Enum\MailStatus;
-use App\Filament\Resources\MailLogResource\Pages\ListMailLogs;
-use App\Filament\Resources\MailLogResource\Pages\ViewMailLog;
+use App\Filament\Admin\Resources\MailLogResource\Pages\ListMailLogs;
+use App\Filament\Admin\Resources\MailLogResource\Pages\ViewMailLog;
 use App\Models\MailLog;
 use App\Models\User;
 use Illuminate\Support\Carbon;

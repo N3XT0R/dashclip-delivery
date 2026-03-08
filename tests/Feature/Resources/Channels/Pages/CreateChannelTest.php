@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Resources\Channels\Pages;
 
 use App\Events\ChannelCreated;
-use App\Filament\Resources\Channels\Pages\CreateChannel;
+use App\Filament\Admin\Resources\Channels\Pages\CreateChannel;
 use App\Models\Channel;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;

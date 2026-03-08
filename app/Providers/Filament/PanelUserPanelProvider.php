@@ -4,7 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
-use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
 use App\Filament\Standard\Pages\ChannelApplication;
