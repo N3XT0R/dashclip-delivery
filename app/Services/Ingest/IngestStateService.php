@@ -21,6 +21,12 @@ final readonly class IngestStateService
     ) {
     }
 
+    /**
+     * Marks the overall processing status of the video.
+     * @param Video $video
+     * @param ProcessingStatusEnum $status
+     * @return bool
+     */
     public function markProcessingStatus(Video $video, ProcessingStatusEnum $status): bool
     {
         $video->processing_status = $status;
@@ -30,6 +36,12 @@ final readonly class IngestStateService
         ]);
     }
 
+    /**
+     * Checks if the given step is marked as completed in the video's meta information.
+     * @param Video $video
+     * @param IngestStepEnum $step
+     * @return bool
+     */
     public function isStepCompleted(Video $video, IngestStepEnum $step): bool
     {
         return 'completed' === data_get(
@@ -39,7 +51,10 @@ final readonly class IngestStateService
     }
 
     /**
+     * Checks if all dependencies for a given step are completed.
+     * @param Video $video
      * @param list<IngestStepEnum> $dependencies
+     * @return bool
      */
     public function dependenciesAreCompleted(Video $video, array $dependencies): bool
     {
@@ -52,6 +67,13 @@ final readonly class IngestStateService
         return true;
     }
 
+    /**
+     * Marks the given step as running, increments the attempt count,
+     * and clears any previous error information in the video's meta.
+     * @param Video $video
+     * @param IngestStepEnum $step
+     * @return bool
+     */
     public function markStepRunning(Video $video, IngestStepEnum $step): bool
     {
         $meta = $video->meta ?? [];
@@ -66,6 +88,12 @@ final readonly class IngestStateService
         return $this->persistMeta($video, $meta);
     }
 
+    /**
+     * Marks the given step as completed and clears any error information in the video's meta.
+     * @param Video $video
+     * @param IngestStepEnum $step
+     * @return bool
+     */
     public function markStepCompleted(Video $video, IngestStepEnum $step): bool
     {
         $meta = $video->meta ?? [];
@@ -76,6 +104,13 @@ final readonly class IngestStateService
         return $this->persistMeta($video, $meta);
     }
 
+    /**
+     * Marks the given step as failed and records the error information in the video's meta.
+     * @param Video $video
+     * @param IngestStepEnum $step
+     * @param Throwable $e
+     * @return bool
+     */
     public function markStepFailed(Video $video, IngestStepEnum $step, Throwable $e): bool
     {
         $meta = $video->meta ?? [];
@@ -89,6 +124,12 @@ final readonly class IngestStateService
         return $this->persistMeta($video, $meta);
     }
 
+    /**
+     * Persists the updated meta information for the video.
+     * @param Video $video
+     * @param array $meta
+     * @return bool
+     */
     private function persistMeta(Video $video, array $meta): bool
     {
         $video->meta = $meta;
