@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.0.0] - not released yet
 
+### Added
+
+- **Ingest Pipeline Architecture**
+    - Introduced a modular ingest pipeline to process videos through atomic workflow steps.
+    - Added `IngestPipeline` to orchestrate the ingest workflow.
+    - Added `IngestStepInterface` to standardize pipeline steps.
+    - Introduced `IngestContext` to carry runtime state across pipeline steps.
+- **Ingest Workflow Steps**
+    - Added step-based processing for ingest operations:
+        - `LookupAndUpdateVideoHashStep`
+        - `GeneratePreviewForVideoClipsStep`
+        - `UploadVideoToDropboxStep`
+- **Ingest Step Enumeration**
+    - Added `IngestStepEnum` to centralize step identifiers and replace string-based step names.
+- **Ingest State Management**
+    - Added `IngestStateService` to manage ingest workflow step state via `video.meta`.
+- **Job-based Ingest Execution**
+    - Added `ProcessVideoIngestJob` to execute the ingest pipeline asynchronously.
+    - Implemented `ShouldBeUnique` to prevent concurrent ingest runs for the same video.
+- **Event-driven Ingest Trigger**
+    - Added `VideoCreatedForIngest` event to trigger the ingest workflow.
+    - Added a dedicated listener to dispatch `ProcessVideoIngestJob`.
+- **Service Container Integration**
+    - Added `IngestServiceProvider` to register ingest pipeline steps via Laravel container tagging.
+
 ### Changed
 
 - **Video-Upload Structure**
@@ -17,6 +42,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - migrated hardcoded German UI strings to the i18n system.
 - **Separation of Concerns**
     - Moved Business Logic to Services from Models and Controllers.
+- **Ingest Workflow**
+    - Replaced the legacy monolithic ingest implementation with a modular step-based pipeline architecture.
+- **Clip Handling**
+    - Updated ingest processing to support multiple clips per video.
+    - Replaced single clip handling with a clips collection in `IngestContext`.
+- **Preview Generation**
+    - Updated preview generation to process previews for all clips belonging to a video.
+- **Processing Status Handling**
+    - Centralized ingest lifecycle state using the `processing_status` column with `ProcessingStatusEnum`.
 
 ### Security
 
