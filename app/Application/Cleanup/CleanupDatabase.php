@@ -6,7 +6,7 @@ namespace App\Application\Cleanup;
 
 use App\Services\ActionTokenService;
 
-readonly class CleanupDatabase
+class CleanupDatabase
 {
     public function __construct(private ActionTokenService $actionTokenService)
     {
