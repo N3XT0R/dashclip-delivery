@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Ingest;
 
+use App\Application\Ingest\Context\IngestContext;
 use App\Application\Ingest\Step\IngestStepInterface;
 
 final readonly class IngestPipeline

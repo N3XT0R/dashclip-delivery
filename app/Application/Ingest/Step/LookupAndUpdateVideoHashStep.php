@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Ingest\Step;
 
-use App\Application\Ingest\IngestContext;
+use App\Application\Ingest\Context\IngestContext;
 use App\Repository\VideoRepository;
 use App\Services\DynamicStorageService;
 use App\Services\VideoService;

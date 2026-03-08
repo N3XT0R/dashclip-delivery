@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Ingest;
+namespace App\Application\Ingest\Context;
 
 use App\Models\Clip;
 use App\Models\Video;
