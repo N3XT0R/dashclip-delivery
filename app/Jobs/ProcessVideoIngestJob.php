@@ -70,7 +70,6 @@ final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
 
         $context = new IngestContext(
             video: $video,
-            clips: $video->clips,
         );
 
         $ingestPipeline->handle($context);
