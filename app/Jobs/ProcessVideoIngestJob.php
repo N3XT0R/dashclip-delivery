@@ -15,6 +15,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Throwable;
 
+/**
+ * This job is responsible for processing the ingest pipeline for a video. It retrieves the video by its ID,
+ */
 final class ProcessVideoIngestJob implements ShouldQueue
 {
     use Dispatchable;
