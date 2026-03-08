@@ -45,7 +45,7 @@ class DropboxUploadService
     ): void {
         $read = $sourceDisk->readStream($relativePath);
         if ($read === false) {
-            throw new IOException("Konnte Datei nicht lesen: {$relativePath}");
+            throw new IOException("Unable to read file: {$relativePath}");
         }
 
         rewind($read);
@@ -133,9 +133,9 @@ class DropboxUploadService
         try {
             $client = $this->getClient();
             $client->delete($targetPath);
-            Log::info('Dropbox-Upload: Datei gelöscht', ['path' => $targetPath]);
+            Log::info('Dropbox upload: file deleted', ['path' => $targetPath]);
         } catch (\Throwable $e) {
-            Log::error('Dropbox-Upload: Fehler beim Löschen der Datei: ' . $e->getMessage(), [
+            Log::error('Dropbox upload: error deleting file: ' . $e->getMessage(), [
                 'path' => $targetPath,
                 'exception' => $e
             ]);
@@ -162,7 +162,7 @@ class DropboxUploadService
             if (str_contains($e->getMessage(), 'not_found')) {
                 return false; // file does not exist
             }
-            Log::error('Dropbox-Upload: Fehler beim Überprüfen der Datei: ' . $e->getMessage(), [
+            Log::error('Dropbox upload: error while checking file: ' . $e->getMessage(), [
                 'path' => $targetPath,
                 'exception' => $e
             ]);
@@ -184,7 +184,7 @@ class DropboxUploadService
         try {
             return $this->getClient()->getTemporaryLink($targetPath);
         } catch (\Throwable $e) {
-            Log::error('Dropbox-Upload: Fehler beim Abrufen des temporären Links: ' . $e->getMessage(), [
+            Log::error('Dropbox upload: error retrieving temporary link: ' . $e->getMessage(), [
                 'path' => $targetPath,
                 'exception' => $e
             ]);
