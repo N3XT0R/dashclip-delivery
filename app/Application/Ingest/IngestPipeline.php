@@ -6,13 +6,10 @@ namespace App\Application\Ingest;
 
 use App\Application\Ingest\Context\IngestContext;
 use App\Application\Ingest\Step\IngestStepInterface;
+use App\Enum\ProcessingStatusEnum;
 use App\Services\Ingest\IngestStateService;
 use Throwable;
 
-/**
- * The IngestPipeline class orchestrates the execution of a series of ingest steps for a given video.
- * It manages the state of each step and the overall workflow using the IngestStateService.
- */
 final readonly class IngestPipeline
 {
     /**
@@ -24,15 +21,12 @@ final readonly class IngestPipeline
     ) {
     }
 
-    /**
-     * Executes the ingest pipeline for the given context.
-     * @param IngestContext $context
-     * @return IngestContext
-     * @throws Throwable
-     */
     public function handle(IngestContext $context): IngestContext
     {
-        $this->ingestStateService->markWorkflowRunning($context->video);
+        $this->ingestStateService->markProcessingStatus(
+            $context->video,
+            ProcessingStatusEnum::Running
+        );
 
         foreach ($this->steps as $step) {
             if ($this->ingestStateService->isStepCompleted($context->video, $step->name())) {
@@ -54,7 +48,10 @@ final readonly class IngestPipeline
                 $this->ingestStateService->markStepCompleted($context->video, $step->name());
             } catch (Throwable $e) {
                 $this->ingestStateService->markStepFailed($context->video, $step->name(), $e);
-                $this->ingestStateService->markWorkflowFailed($context->video, $step->name(), $e);
+                $this->ingestStateService->markProcessingStatus(
+                    $context->video,
+                    ProcessingStatusEnum::Failed
+                );
 
                 throw $e;
             }
@@ -64,7 +61,10 @@ final readonly class IngestPipeline
             }
         }
 
-        $this->ingestStateService->markWorkflowCompleted($context->video);
+        $this->ingestStateService->markProcessingStatus(
+            $context->video,
+            ProcessingStatusEnum::Completed
+        );
 
         return $context;
     }
