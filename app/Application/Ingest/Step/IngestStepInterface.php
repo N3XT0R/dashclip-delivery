@@ -10,7 +10,7 @@ use App\Enum\Ingest\IngestStepEnum;
 interface IngestStepInterface
 {
 
-    public function step(): IngestStepEnum;
+    public function name(): IngestStepEnum;
 
     /**
      * @return array<IngestStepEnum>

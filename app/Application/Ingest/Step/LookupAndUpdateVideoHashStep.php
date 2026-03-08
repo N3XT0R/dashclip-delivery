@@ -20,7 +20,7 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
     ) {
     }
 
-    public function step(): IngestStepEnum
+    public function name(): IngestStepEnum
     {
         return IngestStepEnum::LookupAndUpdateVideoHash;
     }

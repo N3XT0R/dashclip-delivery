@@ -18,7 +18,7 @@ readonly class GeneratePreviewForClipStep implements IngestStepInterface
     ) {
     }
 
-    public function step(): IngestStepEnum
+    public function name(): IngestStepEnum
     {
         return IngestStepEnum::GeneratePreviewForClip;
     }

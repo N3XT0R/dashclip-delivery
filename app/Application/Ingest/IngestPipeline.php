@@ -48,7 +48,10 @@ final readonly class IngestPipeline
             ProcessingStatusEnum::Running
         );
 
-        foreach ($this->steps as $step) {
+        /**
+         * @var IngestStepInterface $step
+         */
+        foreach ($this->getSteps() as $step) {
             if ($this->ingestStateService->isStepCompleted($context->video, $step->name())) {
                 continue;
             }
