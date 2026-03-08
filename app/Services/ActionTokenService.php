@@ -86,9 +86,11 @@ final readonly class ActionTokenService
         $count = 0;
 
         $this->repository->getLazyActionTokensWithSubject()
-            ->each(function ($token) use (&$count) {
-                if ($token->delete()) {
-                    $count++;
+            ->each(function (ActionToken $token) use (&$count) {
+                if (!$token->subject()->exists()) {
+                    if ($token->delete()) {
+                        $count++;
+                    }
                 }
             });
 
@@ -104,7 +106,7 @@ final readonly class ActionTokenService
         $count = 0;
 
         $this->repository->getExpiredTokens()
-            ->each(function ($token) use (&$count) {
+            ->each(function (ActionToken $token) use (&$count) {
                 if ($token->delete()) {
                     $count++;
                 }

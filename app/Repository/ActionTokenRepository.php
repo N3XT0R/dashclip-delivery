@@ -86,7 +86,7 @@ final class ActionTokenRepository
 
     /**
      * Get a lazy collection of action tokens that have expired (i.e. expires_at is in the past).
-     * @return LazyCollection
+     * @return LazyCollection<ActionToken>
      */
     public function getExpiredTokens(): LazyCollection
     {
@@ -100,7 +100,7 @@ final class ActionTokenRepository
      * Get a lazy collection of action tokens that have an assigned subject
      * (i.e. subject_type and subject_id are not null).
      * @param int $chunkSize
-     * @return LazyCollection
+     * @return LazyCollection<ActionToken>
      */
     public function getLazyActionTokensWithSubject(int $chunkSize = 100): LazyCollection
     {
