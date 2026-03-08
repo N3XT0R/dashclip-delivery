@@ -127,7 +127,9 @@ readonly class VideoService
     ): LazyCollection {
         return $this->videoRepository
             ->getLazyAllByProcessingStatus($processingStatusEnum)
-            ->reject(fn(Video $video) => $video->getDisk()->exists($video->path));
+            ->reject(function (Video $video) {
+                return $video->getDisk()->exists($video->path);
+            });
     }
 
 }
