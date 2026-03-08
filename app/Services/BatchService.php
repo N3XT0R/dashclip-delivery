@@ -30,7 +30,7 @@ class BatchService
             ->latest('id')
             ->first();
         if (false === $assignBatch instanceof Batch) {
-            throw new RuntimeException('Kein Assign-Batch gefunden.');
+            throw new RuntimeException('No assign batch found.');
         }
 
         return $assignBatch;
@@ -45,7 +45,7 @@ class BatchService
             ->first();
 
         if (false === $assignBatch instanceof Batch) {
-            throw new RuntimeException('Kein Assign-Batch gefunden.');
+            throw new RuntimeException('No assign batch found.');
         }
 
         return $assignBatch;
