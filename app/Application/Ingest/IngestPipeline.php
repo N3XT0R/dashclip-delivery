@@ -6,7 +6,8 @@ namespace App\Application\Ingest;
 
 use App\Application\Ingest\Context\IngestContext;
 use App\Application\Ingest\Step\IngestStepInterface;
-use InvalidArgumentException;
+use App\Services\Ingest\IngestStateService;
+use Throwable;
 
 final readonly class IngestPipeline
 {
@@ -14,28 +15,46 @@ final readonly class IngestPipeline
      * @param iterable<IngestStepInterface> $steps
      */
     public function __construct(
-        private iterable $steps
+        private iterable $steps,
+        private IngestStateService $ingestStateService,
     ) {
     }
 
     public function handle(IngestContext $context): IngestContext
     {
+        $this->ingestStateService->markWorkflowRunning($context->video);
+
         foreach ($this->steps as $step) {
-            if ($step instanceof IngestStepInterface === false) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        'All steps must implement %s, but got %s',
-                        IngestStepInterface::class,
-                        get_class($step)
-                    )
-                );
+            if ($this->ingestStateService->isStepCompleted($context->video, $step->name())) {
+                continue;
             }
-            $context = $step->handle($context);
+
+            if (!$this->ingestStateService->dependenciesAreCompleted($context->video, $step->dependsOn())) {
+                continue;
+            }
+
+            if (!$step->isApplicable($context)) {
+                continue;
+            }
+
+            $this->ingestStateService->markStepRunning($context->video, $step->name());
+
+            try {
+                $context = $step->handle($context);
+                $this->ingestStateService->markStepCompleted($context->video, $step->name());
+            } catch (Throwable $e) {
+                $this->ingestStateService->markStepFailed($context->video, $step->name(), $e);
+                $this->ingestStateService->markWorkflowFailed($context->video, $step->name(), $e);
+
+                throw $e;
+            }
 
             if ($context->isDuplicate) {
                 break;
             }
         }
+
+        $this->ingestStateService->markWorkflowCompleted($context->video);
 
         return $context;
     }
