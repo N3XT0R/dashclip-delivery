@@ -11,6 +11,9 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Str;
 
+/**
+ * @deprecated
+ */
 class UploadVideo
 {
     public const string UPLOAD_DISK_CONFIG_KEY = 'uploads.disk';
