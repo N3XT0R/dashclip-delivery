@@ -46,6 +46,9 @@ final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
     }
 
     /**
+     * Handle the job for processing the video ingest pipeline.
+     * It retrieves the video by its ID, checks its processing status, and if applicable,
+     * creates an IngestContext and passes it to the IngestPipeline for processing.
      * @throws Throwable
      */
     public function handle(
