@@ -1,7 +1,6 @@
 <?php
 
 use App\Enum\ProcessingStatusEnum;
-use App\Models\Video;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,8 +17,6 @@ return new class extends Migration {
                 ->index()
                 ->after('path');
         });
-
-        Video::query()->update(['processing_status' => ProcessingStatusEnum::Completed->value]);
     }
 
     /**
