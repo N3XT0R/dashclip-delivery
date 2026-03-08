@@ -14,10 +14,6 @@ Schedule::command('weekly:run')
     ->mondays()
     ->at('08:00');
 
-Schedule::command('ingest:scan', [
-    '--inbox' => Cfg::get('ingest_inbox_absolute_path', 'default', '/srv/ingest/pending/', true),
-])->hourly();
-
 Schedule::command('ingest:unzip', [
     '--inbox' => Cfg::get('ingest_inbox_absolute_path', 'default', '/srv/ingest/pending/', true),
 ])->everyTenMinutes();
