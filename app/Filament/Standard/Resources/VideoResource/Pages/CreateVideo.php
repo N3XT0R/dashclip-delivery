@@ -2,6 +2,7 @@
 
 namespace App\Filament\Standard\Resources\VideoResource\Pages;
 
+use App\Events\Video\VideoUploaded;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Models\Clip;
 use App\Models\Video;
@@ -249,13 +250,14 @@ class CreateVideo extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $data['team_id'] = app(TeamRepository::class)->getDefaultTeamForUser(auth()->user())?->getKey();
+        $user = auth()->user();
+        $data['team_id'] = app(TeamRepository::class)->getDefaultTeamForUser($user)?->getKey();
         $model = parent::handleRecordCreation($data);
         $data['clip']['video_id'] = $model->getKey();
         $data['clip']['user_id'] = auth()->id();
-        $data['clip']['submitted_by'] = auth()->user()->display_name;
+        $data['clip']['submitted_by'] = $user->display_name;
         app(ClipRepository::class)->create($data['clip']);
-
+        VideoUploaded::dispatch($model, $user);
         return $model;
     }
 
