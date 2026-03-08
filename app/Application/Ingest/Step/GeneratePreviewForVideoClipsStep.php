@@ -10,6 +10,10 @@ use App\Repository\ClipRepository;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * This step generates preview images for video clips and updates the clip records with the preview paths.
+ * It depends on the LookupAndUpdateVideoHash step to ensure that the video hash is available before processing clips.
+ */
 readonly class GeneratePreviewForVideoClipsStep implements IngestStepInterface
 {
     public function __construct(
