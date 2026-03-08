@@ -29,18 +29,18 @@ class DropboxUploadService
 
 
     public function uploadFile(
-        Filesystem $disk,
+        Filesystem $sourceDisk,
         string $relativePath,
         string $targetPath,
         ?ProgressBar $bar = null
     ): void {
-        $read = $disk->readStream($relativePath);
+        $read = $sourceDisk->readStream($relativePath);
         if ($read === false) {
             throw new IOException("Konnte Datei nicht lesen: {$relativePath}");
         }
 
         rewind($read);
-        $bytes = $disk->size($relativePath);
+        $bytes = $sourceDisk->size($relativePath);
         $root = (string)config('filesystems.disks.dropbox.root', '');
         $targetPath = PathBuilder::forDropbox($root, $targetPath);
 
@@ -93,7 +93,7 @@ class DropboxUploadService
                 $bar?->advance(strlen($chunk));
             }
         } catch (\Throwable $e) {
-            Log::error('Dropbox-Upload: '.$e->getMessage(), [
+            Log::error('Dropbox-Upload: ' . $e->getMessage(), [
                 'session' => $cursor?->session_id,
                 'exception' => $e
             ]);

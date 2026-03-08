@@ -24,7 +24,7 @@ class UploadService
             ->put($targetPath, $sourceDisk->readStream($relativePath));
     }
 
-    protected function uploadToDropbox(Filesystem $disk, string $relativePath, string $dstRel): void
+    public function uploadToDropbox(Filesystem $disk, string $relativePath, string $dstRel): void
     {
         app(DropboxUploadService::class)
             ->uploadFile($disk, $relativePath, $dstRel);
