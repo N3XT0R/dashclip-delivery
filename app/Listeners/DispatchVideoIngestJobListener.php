@@ -7,6 +7,9 @@ namespace App\Listeners;
 use App\Events\Video\VideoCreatedForIngest;
 use App\Jobs\ProcessVideoIngestJob;
 
+/**
+ * This listener is responsible for dispatching the ProcessVideoIngestJob when a video is created for ingest.
+ */
 class DispatchVideoIngestJobListener
 {
     public function handle(VideoCreatedForIngest $event): void
