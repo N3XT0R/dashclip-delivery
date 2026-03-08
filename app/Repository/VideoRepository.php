@@ -198,4 +198,13 @@ class VideoRepository
     {
         return $video->clips()->first()?->user;
     }
+
+    /**
+     * Get a lazy collection of all videos
+     * @return LazyCollection
+     */
+    public function getLazyAll(): LazyCollection
+    {
+        return Video::query()->lazy();
+    }
 }
