@@ -6,12 +6,12 @@ namespace App\Services;
 
 use App\Models\Batch;
 use App\Models\Channel;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\URL;
 
 class LinkService
 {
-    public function getOfferUrl(Batch $batch, Channel $channel, Carbon $expireDate): string
+    public function getOfferUrl(Batch $batch, Channel $channel, CarbonInterface $expireDate): string
     {
         return URL::temporarySignedRoute(
             'offer.show',
@@ -20,7 +20,7 @@ class LinkService
         );
     }
 
-    public function getUnusedUrl(Batch $batch, Channel $channel, Carbon $expireDate): string
+    public function getUnusedUrl(Batch $batch, Channel $channel, CarbonInterface $expireDate): string
     {
         return URL::temporarySignedRoute(
             'offer.unused.show',
@@ -29,7 +29,7 @@ class LinkService
         );
     }
 
-    public function getStoreUnusedUrl(Batch $batch, Channel $channel, Carbon $expireDate): string
+    public function getStoreUnusedUrl(Batch $batch, Channel $channel, CarbonInterface $expireDate): string
     {
         return URL::temporarySignedRoute(
             'offer.unused.store',
@@ -38,7 +38,7 @@ class LinkService
         );
     }
 
-    public function getZipSelectedUrl(Batch $batch, Channel $channel, Carbon $expireDate): string
+    public function getZipSelectedUrl(Batch $batch, Channel $channel, CarbonInterface $expireDate): string
     {
         return URL::temporarySignedRoute(
             'zips.start',
@@ -47,7 +47,7 @@ class LinkService
         );
     }
 
-    public function getZipSelectedUrlForChannel(Channel $channel, Carbon $expireDate): string
+    public function getZipSelectedUrlForChannel(Channel $channel, CarbonInterface $expireDate): string
     {
         return URL::temporarySignedRoute(
             'zips.channel.start',
