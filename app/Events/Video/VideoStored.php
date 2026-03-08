@@ -10,6 +10,9 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Event that is fired when a video has been stored in the storage and database, and is ready for processing.
+ */
 readonly class VideoStored
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
