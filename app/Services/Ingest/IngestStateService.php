@@ -10,6 +10,10 @@ use App\Models\Video;
 use App\Repository\VideoRepository;
 use Throwable;
 
+/**
+ * Service responsible for managing the state of the ingest process,
+ * including tracking the status of each step and handling errors.
+ */
 final readonly class IngestStateService
 {
     public function __construct(
