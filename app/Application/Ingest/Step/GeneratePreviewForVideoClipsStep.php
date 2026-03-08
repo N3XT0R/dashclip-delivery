@@ -32,7 +32,9 @@ readonly class GeneratePreviewForVideoClipsStep implements IngestStepInterface
 
     public function isApplicable(IngestContext $context): bool
     {
-        return !$context->isDuplicate && null !== $context->clip;
+        return !$context->isDuplicate
+            && $context->clips !== null
+            && $context->clips->isNotEmpty();
     }
 
     public function handle(IngestContext $context): IngestContext
