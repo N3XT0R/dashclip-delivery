@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - `GeneratePreviewForVideoClipsStep`
         - `UploadVideoToDropboxStep`
 - **Ingest Step Enumeration**
-    - Added `IngestStepEnum` to centralize step identifiers and replace string-based step names.
+    - Added `IngestStepEnum` to centralize step identifiers.
 - **Ingest State Management**
     - Added `IngestStateService` to manage ingest workflow step state via `video.meta`.
 - **Job-based Ingest Execution**
