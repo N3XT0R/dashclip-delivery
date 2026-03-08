@@ -24,13 +24,13 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $v1 = Video::create([
             'hash' => 'h1',
             'path' => 'p1',
-            'processing_status' => ProcessingStatusEnum::Completed->value
+            'processing_status' => ProcessingStatusEnum::Completed
         ]);
 
         $v2 = Video::create([
             'hash' => 'h2',
             'path' => 'p2',
-            'processing_status' => ProcessingStatusEnum::Completed->value
+            'processing_status' => ProcessingStatusEnum::Completed
         ]);
         Clip::create(['video_id' => $v1->id, 'bundle_key' => 'B']);
         Clip::create(['video_id' => $v2->id, 'bundle_key' => 'B']);
@@ -66,17 +66,16 @@ class AssignmentDistributorTest extends DatabaseTestCase
 
     public function testDistributorReturnsWithoutAssignmentsWhenNoChannelsExist(): void
     {
-        // Arrange
         Channel::query()->delete();
-        // One video => pool is non-empty → next step must fail at channel check
-        Video::factory()->create();
+        Video::factory()->create([
+            'processing_status' => ProcessingStatusEnum::Completed
+        ]);
 
         $distributor = $this->assignmentDistributor;
 
         // Act
         $result = $distributor->distribute();
 
-        // Assert: distributor catches the missing-channel exception and finishes the batch gracefully
         $this->assertSame(['assigned' => 0, 'skipped' => 0], $result);
         $this->assertDatabaseCount('assignments', 0);
     }
