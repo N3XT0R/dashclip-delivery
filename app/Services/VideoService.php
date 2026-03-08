@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\DTO\FileInfoDto;
+use App\Enum\ProcessingStatusEnum;
 use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
@@ -12,6 +13,7 @@ use App\Repository\VideoRepository;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\LazyCollection;
 
 readonly class VideoService
 {
@@ -113,6 +115,19 @@ readonly class VideoService
         }
 
         return $video->delete();
+    }
+
+    /**
+     * Finds videos whose files are missing from storage, based on their processing status.
+     * @param ProcessingStatusEnum $processingStatusEnum
+     * @return LazyCollection
+     */
+    public function findVideosMissingFromStorage(
+        ProcessingStatusEnum $processingStatusEnum = ProcessingStatusEnum::Completed
+    ): LazyCollection {
+        return $this->videoRepository
+            ->getLazyAllByProcessingStatus($processingStatusEnum)
+            ->reject(fn(Video $video) => $video->getDisk()->exists($video->path));
     }
 
 }
