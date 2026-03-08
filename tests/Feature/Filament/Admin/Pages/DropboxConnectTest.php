@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Filament\Pages;
+namespace Feature\Filament\Admin\Pages;
 
 use App\Filament\Admin\Pages\DropboxConnect;
 use App\Models\Config;

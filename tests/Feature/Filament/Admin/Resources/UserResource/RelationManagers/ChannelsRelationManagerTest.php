@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Filament\Resources\UserResource\RelationManagers;
+namespace Feature\Filament\Admin\Resources\UserResource\RelationManagers;
 
 use App\Application\Channel\Application\RevokeChannelAccess;
 use App\Enum\Guard\GuardEnum;

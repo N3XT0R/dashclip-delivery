@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Filament\Resources\Roles\Pages;
+namespace Feature\Filament\Admin\Resources\Roles\Pages;
 
 use App\Enum\Guard\GuardEnum;
 use App\Filament\Admin\Resources\Roles\Pages\ListRoles;

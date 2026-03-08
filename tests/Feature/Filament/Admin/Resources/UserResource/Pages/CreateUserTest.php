@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Filament\Resources\UserResource\Pages;
+namespace Feature\Filament\Admin\Resources\UserResource\Pages;
 
 use App\Enum\Users\RoleEnum;
 use App\Events\User\UserCreated;
