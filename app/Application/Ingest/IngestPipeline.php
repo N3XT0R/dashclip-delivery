@@ -9,6 +9,10 @@ use App\Application\Ingest\Step\IngestStepInterface;
 use App\Services\Ingest\IngestStateService;
 use Throwable;
 
+/**
+ * The IngestPipeline class orchestrates the execution of a series of ingest steps for a given video.
+ * It manages the state of each step and the overall workflow using the IngestStateService.
+ */
 final readonly class IngestPipeline
 {
     /**
