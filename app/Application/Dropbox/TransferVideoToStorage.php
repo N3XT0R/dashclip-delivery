@@ -11,7 +11,7 @@ use App\Services\Upload\DropboxUploadService;
  * This class is responsible for uploading a video file to Dropbox.
  * It uses the DropboxUploadService to perform the actual upload.
  */
-readonly class UploadVideoToDropbox
+readonly class TransferVideoToStorage
 {
     public function __construct(
         private DropboxUploadService $uploadService
