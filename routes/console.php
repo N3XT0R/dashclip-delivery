@@ -41,7 +41,7 @@ Schedule::command('clean:database')->dailyAt('02:00');
 Schedule::command('assign:videos-to-teams')->everyFifteenMinutes();
 
 //video processing
-Schedule::command('video:calculate-hash')->everyMinute();
+Schedule::command('video:process-videos')->everyMinute();
 
 Schedule::command('video:cleanup', [
     '--weeks' => Cfg::get('post_expiry_retention_weeks', 'default', 1, true),

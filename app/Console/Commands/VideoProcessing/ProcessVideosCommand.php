@@ -8,10 +8,10 @@ use App\Application\Video\LookupAndUpdateVideoHash;
 use App\Repository\VideoRepository;
 use Illuminate\Console\Command;
 
-class CalculateHashCommand extends Command
+class ProcessVideosCommand extends Command
 {
 
-    protected $signature = 'video:calculate-hash';
+    protected $signature = 'video:process-videos';
 
     public function handle(
         VideoRepository $videoRepository,
