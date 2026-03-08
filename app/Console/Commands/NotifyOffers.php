@@ -37,7 +37,7 @@ class NotifyOffers extends Command
         try {
             $result = $this->notifier->notify($ttlDays, $assignBatch);
             if ($result['sent'] === 0) {
-                $this->info('Keine Kanäle mit neuen Angeboten.');
+                $this->info('no channels with new offers.');
             } else {
                 $this->info("Offer emails queued: {$result['sent']} (Assign-Batch #{$result['batchId']})");
             }
