@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Filament\Admin\Pages\Assignments;
+namespace Tests\Integration\Filament\Admin\Pages\Assignments;
 
 use App\Filament\Admin\Resources\Assignments\Pages\ListAssignments;
 use App\Models\Assignment;
