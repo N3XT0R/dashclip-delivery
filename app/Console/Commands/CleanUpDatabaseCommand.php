@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Application\Cleanup\CleanupDatabase;
+use App\Application\Cleanup\CleanupTransitionState;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -16,6 +17,7 @@ class CleanUpDatabaseCommand extends Command
     {
         try {
             $cleanupDatabase->handle();
+            app(CleanupTransitionState::class)->handle();
         } catch (\Throwable $e) {
             Log::error('Error during database cleanup: ' . $e->getMessage(), [
                 'exception' => $e,
