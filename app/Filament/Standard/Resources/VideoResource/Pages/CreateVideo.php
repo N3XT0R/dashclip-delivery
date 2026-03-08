@@ -2,7 +2,7 @@
 
 namespace App\Filament\Standard\Resources\VideoResource\Pages;
 
-use App\Events\Video\VideoCreatedForIngest;
+use App\Events\Video\VideoQueuedForIngest;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Models\Clip;
 use App\Models\Video;
@@ -267,6 +267,6 @@ class CreateVideo extends CreateRecord
          * @var Video $record
          */
         $record = $this->record;
-        VideoCreatedForIngest::dispatch($record, auth()->user());
+        VideoQueuedForIngest::dispatch($record, auth()->user());
     }
 }
