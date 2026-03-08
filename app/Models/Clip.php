@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Clip extends Model
 {
@@ -91,6 +93,11 @@ class Clip extends Model
                 ? gmdate('i:s', (int)$this->end_sec)
                 : null,
         );
+    }
+
+    public function getDisk(): Filesystem
+    {
+        return Storage::disk($this->getAttribute('preview_disk'));
     }
 }
 
