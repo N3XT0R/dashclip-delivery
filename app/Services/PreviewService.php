@@ -170,7 +170,7 @@ final class PreviewService
                 $e
             );
         }
-        return $previewDisk->path($previewPath);
+        return $previewPath;
     }
 
 
