@@ -14,6 +14,16 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
     ) {
     }
 
+    public function name(): string
+    {
+        return 'upload_video_to_dropbox';
+    }
+
+    public function dependsOn(): array
+    {
+        return ['lookup_and_update_video_hash'];
+    }
+
     public function handle(IngestContext $context): IngestContext
     {
         if ($context->isDuplicate) {

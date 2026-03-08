@@ -17,6 +17,16 @@ readonly class GeneratePreviewForClipStep implements IngestStepInterface
     ) {
     }
 
+    public function name(): string
+    {
+        return 'generate_preview_for_clip';
+    }
+
+    public function dependsOn(): array
+    {
+        return ['lookup_and_update_video_hash'];
+    }
+
     public function handle(IngestContext $context): IngestContext
     {
         if ($context->isDuplicate) {

@@ -8,5 +8,14 @@ use App\Application\Ingest\Context\IngestContext;
 
 interface IngestStepInterface
 {
+
+    public function name(): string;
+
+    /**
+     * @return array<string>
+     */
+    public function dependsOn(): array;
+
+
     public function handle(IngestContext $context): IngestContext;
 }

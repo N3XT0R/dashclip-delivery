@@ -19,6 +19,16 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
     ) {
     }
 
+    public function name(): string
+    {
+        return 'lookup_and_update_video_hash';
+    }
+
+    public function dependsOn(): array
+    {
+        return [];
+    }
+
     public function handle(IngestContext $context): IngestContext
     {
         $video = $context->video;
