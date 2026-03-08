@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -17,10 +18,12 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::create('custom_notifications', function ($table) {
-            $table->id();
-            $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
+        Schema::create('custom_notifications', static function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->string('type');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
