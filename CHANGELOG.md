@@ -34,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Service Container Integration**
     - Added `IngestServiceProvider` to register ingest pipeline steps via Laravel container tagging.
 - **Module System**
-    - Added `coolsam/modules`, extending `nwidart/laravel-modules` to support a package-like module architecture.
+    - Added `coolsam/modules` to provide Filament integration for the package-like module structure managed by
+      `nwidart/laravel-modules`.
     - Modules are generated using `php artisan module:make` and are bootstrapped via their own `ModuleServiceProvider`.
     - Added support for organizing Filament resources and related components within modules.
 
