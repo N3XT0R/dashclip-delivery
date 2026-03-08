@@ -332,6 +332,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - the `/channels/{channel}/approve/{token}` route has been deprecated in favor of
       `/action-tokens/approve/{purpose}/{token}`.
 
+### Removed
+
+- **Notification Table Resource**
+    - Removed the deprecated `NotificationTableResource` and `Notification` model.
+    - Users should use the new user notification center available in the `/standard` panel for managing notifications.
+    - The new system logs notification mails by default and provides an improved user experience.
+
 ### Security
 
 - **Composer Packages**
