@@ -7,7 +7,7 @@ namespace App\Enum;
 enum ProcessingStatusEnum: string
 {
     case Pending = 'pending';
-    case Processing = 'processing';
+    case Running = 'running';
     case Completed = 'completed';
     case Failed = 'failed';
     case Deleted = 'deleted';

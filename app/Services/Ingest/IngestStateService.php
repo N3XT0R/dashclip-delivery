@@ -74,7 +74,7 @@ readonly class IngestStateService
         $meta = $video->meta ?? [];
 
         data_set($meta, 'ingest.current_step', $stepName);
-        data_set($meta, "ingest.steps.{$stepName}.status", 'running');
+        data_set($meta, "ingest.steps.{$stepName}.status", ProcessingStatusEnum::Running->value);
         data_set($meta, "ingest.steps.{$stepName}.error", null);
         data_set($meta, "ingest.steps.{$stepName}.started_at", now()?->toIso8601String());
 
@@ -88,7 +88,7 @@ readonly class IngestStateService
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, "ingest.steps.{$stepName}.status", 'completed');
+        data_set($meta, "ingest.steps.{$stepName}.status", ProcessingStatusEnum::Completed->value);
         data_set($meta, "ingest.steps.{$stepName}.finished_at", now()?->toIso8601String());
         data_set($meta, "ingest.steps.{$stepName}.error", null);
 
@@ -99,7 +99,7 @@ readonly class IngestStateService
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, "ingest.steps.{$stepName}.status", 'failed');
+        data_set($meta, "ingest.steps.{$stepName}.status", ProcessingStatusEnum::Failed->value);
         data_set($meta, "ingest.steps.{$stepName}.finished_at", now()?->toIso8601String());
         data_set($meta, "ingest.steps.{$stepName}.error", [
             'message' => $e->getMessage(),
