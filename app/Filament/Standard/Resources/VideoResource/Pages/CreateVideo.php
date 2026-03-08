@@ -2,7 +2,7 @@
 
 namespace App\Filament\Standard\Resources\VideoResource\Pages;
 
-use App\Events\Video\VideoUploaded;
+use App\Events\Video\VideoStored;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Models\Clip;
 use App\Models\Video;
@@ -266,6 +266,6 @@ class CreateVideo extends CreateRecord
          * @var Video $record
          */
         $record = $this->record;
-        VideoUploaded::dispatch($record, auth()->user());
+        VideoStored::dispatch($record, auth()->user());
     }
 }
