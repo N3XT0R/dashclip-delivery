@@ -10,6 +10,11 @@ use App\Enum\ProcessingStatusEnum;
 use App\Services\Ingest\IngestStateService;
 use Throwable;
 
+/**
+ * Orchestrates the execution of ingest steps for a video.
+ * It manages the processing status and step states using the IngestStateService.
+ * The pipeline ensures that steps are executed in the correct order based on their dependencies and applicability.
+ */
 final readonly class IngestPipeline
 {
     /**
@@ -21,6 +26,12 @@ final readonly class IngestPipeline
     ) {
     }
 
+    /**
+     * Executes the ingest pipeline for the given context.
+     * @param IngestContext $context
+     * @return IngestContext
+     * @throws Throwable
+     */
     public function handle(IngestContext $context): IngestContext
     {
         $this->ingestStateService->markProcessingStatus(
