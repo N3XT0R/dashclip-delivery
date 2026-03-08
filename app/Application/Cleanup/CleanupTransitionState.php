@@ -21,8 +21,6 @@ readonly class CleanupTransitionState
             $this->videoRepository->update($video, [
                 'hash' => null,
             ]);
-            $video->refresh();
-
             VideoQueuedForIngest::dispatch($video);
         }
     }
