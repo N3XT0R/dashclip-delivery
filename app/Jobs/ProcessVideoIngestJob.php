@@ -16,6 +16,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Throwable;
 
+use function in_array;
+
 /**
  * This job is responsible for processing the ingest pipeline for a video. It retrieves the video by its ID,
  */
@@ -56,11 +58,10 @@ final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        if ($video->processing_status === ProcessingStatusEnum::Deleted) {
-            return;
-        }
-
-        if ($video->processing_status === ProcessingStatusEnum::Completed) {
+        if (in_array($video->processing_status, [
+            ProcessingStatusEnum::Deleted,
+            ProcessingStatusEnum::Completed,
+        ], true)) {
             return;
         }
 
