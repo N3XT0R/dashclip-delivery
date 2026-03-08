@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\DTO\FileInfoDto;
 use App\Facades\DynamicStorage;
-use App\Facades\PathBuilder;
 use App\Models\Clip;
 use App\Models\Video;
 use App\Repository\VideoRepository;
@@ -92,39 +91,9 @@ readonly class VideoService
     }
 
     /**
-     * Get the preview path for a video. If the video itself doesn't have a preview, check its clips for a preview.
-     * @param  Video  $video
-     * @return string|null
-     */
-    public function getPreviewPath(Video $video): ?string
-    {
-        $hash = $video->getAttribute('hash');
-        if (empty($hash)) {
-            return null;
-        }
-
-        $path = PathBuilder::forPreviewByHash($hash);
-
-        $disk = $video->getDisk();
-        if (!$disk->exists($path)) {
-            $clip = $video->clips()->first();
-            $path = null;
-            if ($clip) {
-                $path = app(ClipService::class)->getPreviewPath($clip);
-            }
-
-            if (empty($path) || !$disk->exists($path)) {
-                return null;
-            }
-        }
-
-        return $path;
-    }
-
-    /**
      * Deletes a video that was identified as a duplicate.
      * This includes deleting the video file from storage and removing the database record.
-     * @param  Video  $video
+     * @param Video $video
      * @return bool
      */
     public function deleteDuplicateVideo(Video $video): bool

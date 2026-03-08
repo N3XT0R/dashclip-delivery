@@ -40,18 +40,4 @@ readonly class ClipService
 
         return $this->assignUserFromSubmittedBy($clip, $user);
     }
-
-    /**
-     * Generate a unique preview path for a given clip based on its video ID and start/end seconds.
-     * @param  Clip  $clip
-     * @return string
-     * @deprecated no replacement
-     */
-    public function getPreviewPath(Clip $clip): string
-    {
-        $videoId = $clip->getAttribute('video')->getKey();
-        $hash = md5($videoId.'_'.$clip->getAttribute('start_sec').'_'.$clip->getAttribute('end_sec'));
-        return "previews/{$hash}.mp4";
-    }
-
 }
