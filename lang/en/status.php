@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'processing_status' => [
         'pending' => 'Pending',
-        'processing' => 'Processing',
+        'running' => 'Running',
         'completed' => 'Completed',
         'failed' => 'Failed',
         'deleted' => 'Deleted',
