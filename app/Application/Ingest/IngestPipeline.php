@@ -27,6 +27,15 @@ final readonly class IngestPipeline
     }
 
     /**
+     * Returns the list of ingest steps in the pipeline.
+     * @return iterable<IngestStepInterface>
+     */
+    public function getSteps(): iterable
+    {
+        return $this->steps;
+    }
+
+    /**
      * Executes the ingest pipeline for the given context.
      * @param IngestContext $context
      * @return IngestContext
