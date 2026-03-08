@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Admin\Resource\UserResource;
+namespace Tests\Integration\Filament\Admin\Resources\UserResource;
 
 use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
 use App\Models\User;
