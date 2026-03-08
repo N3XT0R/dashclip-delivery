@@ -57,7 +57,7 @@ class BatchServiceTest extends DatabaseTestCase
         // Assert: service throws RuntimeException with expected message
         $this->withoutExceptionHandling();
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Kein Assign-Batch gefunden.');
+        $this->expectExceptionMessage('No assign batch found.');
 
         // Act
         $this->batchService->getLatestAssignBatch();
@@ -111,7 +111,7 @@ class BatchServiceTest extends DatabaseTestCase
     public function testGetAssignBatchByIdThrowsExceptionWhenNotFound(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Kein Assign-Batch gefunden.');
+        $this->expectExceptionMessage('No assign batch found.');
 
         $this->batchService->getAssignBatchById(9999);
     }
