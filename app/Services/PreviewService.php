@@ -132,7 +132,7 @@ final class PreviewService
             Log::info('Preview already exists for clip ' . $clip->getKey() . ' at ' . $previewPath, [
                 'clip_id' => $clip->getKey(),
                 'video_id' => $video->getKey(),
-                'preview_path' => $previewPath,
+                'preview_path' => $previewDisk->path($previewPath),
             ]);
             return $previewPath;
         }
