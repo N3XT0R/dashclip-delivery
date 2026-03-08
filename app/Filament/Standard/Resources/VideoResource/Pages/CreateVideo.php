@@ -257,7 +257,6 @@ class CreateVideo extends CreateRecord
         $data['clip']['user_id'] = auth()->id();
         $data['clip']['submitted_by'] = $user->display_name;
         app(ClipRepository::class)->create($data['clip']);
-        VideoUploaded::dispatch($model, $user);
         return $model;
     }
 
@@ -268,5 +267,6 @@ class CreateVideo extends CreateRecord
          * @note dispatch processing job after the transaction has been committed to ensure that the file is available for processing
          */
         $record = $this->record;
+        VideoUploaded::dispatch($record, auth()->user());
     }
 }
