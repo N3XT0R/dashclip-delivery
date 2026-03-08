@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Ingest;
 
+use App\Enum\ProcessingStatusEnum;
 use App\Models\Video;
 use App\Repository\VideoRepository;
 use Throwable;
@@ -45,7 +46,7 @@ readonly class IngestStateService
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, 'ingest.status', 'completed');
+        data_set($meta, 'ingest.status', ProcessingStatusEnum::Completed->value);
         data_set($meta, 'ingest.current_step', null);
         data_set($meta, 'ingest.last_error', null);
         data_set($meta, 'ingest.finished_at', now()?->toIso8601String());
@@ -57,7 +58,7 @@ readonly class IngestStateService
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, 'ingest.status', 'failed');
+        data_set($meta, 'ingest.status', ProcessingStatusEnum::Failed->value);
         data_set($meta, 'ingest.current_step', $stepName);
         data_set($meta, 'ingest.last_error', [
             'message' => $e->getMessage(),
