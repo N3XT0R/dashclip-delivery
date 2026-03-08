@@ -84,7 +84,7 @@ final class NotifyOffersTest extends DatabaseTestCase
         Mail::fake();
 
         // Create exactly ONE finished assign-batch, but attach no ready assignments.
-        $assignBatch = Batch::factory()
+        Batch::factory()
             ->state(['type' => 'assign'])
             ->create([
                 'started_at' => now()->subHour(),
