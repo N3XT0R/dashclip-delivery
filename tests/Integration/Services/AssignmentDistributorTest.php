@@ -2,6 +2,7 @@
 
 namespace Tests\Integration\Services;
 
+use App\Enum\ProcessingStatusEnum;
 use App\Models\{Assignment, Channel, Clip, Video};
 use App\Services\AssignmentDistributor;
 use Tests\DatabaseTestCase;
@@ -20,22 +21,42 @@ class AssignmentDistributorTest extends DatabaseTestCase
 
     public function testBundleVideosAreAssignedTogether(): void
     {
-        $v1 = Video::create(['hash' => 'h1', 'path' => 'p1']);
-        $v2 = Video::create(['hash' => 'h2', 'path' => 'p2']);
+        $v1 = Video::create([
+            'hash' => 'h1',
+            'path' => 'p1',
+            'processing_status' => ProcessingStatusEnum::Completed->value
+        ]);
+
+        $v2 = Video::create([
+            'hash' => 'h2',
+            'path' => 'p2',
+            'processing_status' => ProcessingStatusEnum::Completed->value
+        ]);
         Clip::create(['video_id' => $v1->id, 'bundle_key' => 'B']);
         Clip::create(['video_id' => $v2->id, 'bundle_key' => 'B']);
 
         $result = $this->assignmentDistributor->distribute();
 
         $this->assertSame(2, $result['assigned']);
-        $assignments = Assignment::query()->whereIn('video_id', [$v1->getKey(), $v2->getKey()])->get();
+        $assignments = Assignment::query()
+            ->whereIn('video_id', [
+                $v1->getKey(),
+                $v2->getKey()
+            ])
+            ->get();
+
+
         $this->assertCount(2, $assignments);
         $this->assertSame(1, $assignments->pluck('channel_id')->unique()->count());
     }
 
     public function testDistributorHandlesInitialRunWithoutPreviousBatch(): void
     {
-        $video = Video::create(['hash' => 'h1', 'path' => 'p1']);
+        $video = Video::create([
+            'hash' => 'h1',
+            'path' => 'p1',
+            'processing_status' => ProcessingStatusEnum::Completed
+        ]);
 
         $result = $this->assignmentDistributor->distribute();
 
