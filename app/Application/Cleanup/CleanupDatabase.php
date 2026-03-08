@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Application\Cleanup;
 
-use App\Repository\ActionTokenRepository;
+use App\Services\ActionTokenService;
 
-class CleanupDatabase
+readonly class CleanupDatabase
 {
-    public function __construct(private ActionTokenRepository $actionTokenRepository)
+    public function __construct(private ActionTokenService $actionTokenService)
     {
     }
 
     public function handle(): void
     {
-        $this->actionTokenRepository->deleteExpired();
-        $this->actionTokenRepository->deleteOrphans();
+        $this->actionTokenService->deleteExpired();
+        $this->actionTokenService->deleteOrphans();
     }
 }

@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Models\ActionToken;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\LazyCollection;
 
 final class ActionTokenRepository
 {
@@ -82,47 +83,30 @@ final class ActionTokenRepository
         ])->save();
     }
 
+
     /**
-     * Delete all expired action tokens.
-     * @return bool
+     * Get a lazy collection of action tokens that have expired (i.e. expires_at is in the past).
+     * @return LazyCollection
      */
-    public function deleteExpired(): bool
+    public function getExpiredTokens(): LazyCollection
     {
-        $deleted = ActionToken::whereNotNull('expires_at')
+        return ActionToken::query()
+            ->whereNotNull('expires_at')
             ->whereDate('expires_at', '<', now())
-            ->delete();
-
-
-        return $deleted > 0;
+            ->lazyById();
     }
 
     /**
-     * Delete orphaned action tokens (tokens with subjects that no longer exist).
-     * @return int Number of tokens removed
+     * Get a lazy collection of action tokens that have an assigned subject
+     * (i.e. subject_type and subject_id are not null).
+     * @param int $chunkSize
+     * @return LazyCollection
      */
-    public function deleteOrphans(): int
+    public function getLazyActionTokensWithSubject(int $chunkSize = 100): LazyCollection
     {
         return ActionToken::query()
-            ->whereNotNull('subject_type')
             ->whereNotNull('subject_id')
-            ->get()
-            ->filter(function (ActionToken $token): bool {
-                $class = $token->subject_type;
-
-                if (!class_exists($class)) {
-                    return true;
-                }
-
-                if (!is_subclass_of($class, Model::class)) {
-                    return true;
-                }
-
-                return !$class::query()
-                    ->whereKey($token->subject_id)
-                    ->exists();
-            })
-            ->each
-            ->delete()
-            ->count();
+            ->whereNotNull('subject_type')
+            ->lazyById(chunkSize: $chunkSize);
     }
 }

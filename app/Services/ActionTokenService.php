@@ -76,4 +76,40 @@ final readonly class ActionTokenService
 
         return $token;
     }
+
+    /**
+     * Delete orphaned action tokens (tokens with subjects that no longer exist).
+     * @return int Number of tokens removed
+     */
+    public function deleteOrphans(): int
+    {
+        $count = 0;
+
+        $this->repository->getLazyActionTokensWithSubject()
+            ->each(function ($token) use (&$count) {
+                if ($token->delete()) {
+                    $count++;
+                }
+            });
+
+        return $count;
+    }
+
+    /**
+     * Delete all expired action tokens.
+     * @return bool
+     */
+    public function deleteExpired(): bool
+    {
+        $count = 0;
+
+        $this->repository->getExpiredTokens()
+            ->each(function ($token) use (&$count) {
+                if ($token->delete()) {
+                    $count++;
+                }
+            });
+
+        return $count > 0;
+    }
 }
