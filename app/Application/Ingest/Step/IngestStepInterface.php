@@ -16,6 +16,8 @@ interface IngestStepInterface
      */
     public function dependsOn(): array;
 
+    public function isApplicable(IngestContext $context): bool;
+
 
     public function handle(IngestContext $context): IngestContext;
 }

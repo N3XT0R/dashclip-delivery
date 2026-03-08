@@ -24,6 +24,19 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
         return 'lookup_and_update_video_hash';
     }
 
+    public function isApplicable(IngestContext $context): bool
+    {
+        if ($context->isDuplicate) {
+            return false;
+        }
+
+        if (!empty($context->video->hash)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function dependsOn(): array
     {
         return [];

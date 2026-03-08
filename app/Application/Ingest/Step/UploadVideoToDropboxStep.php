@@ -24,6 +24,11 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
         return ['lookup_and_update_video_hash'];
     }
 
+    public function isApplicable(IngestContext $context): bool
+    {
+        return !$context->isDuplicate;
+    }
+
     public function handle(IngestContext $context): IngestContext
     {
         if ($context->isDuplicate) {
