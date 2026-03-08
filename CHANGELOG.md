@@ -56,6 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Updated preview generation to process previews for all clips belonging to a video.
 - **Processing Status Handling**
     - Centralized ingest lifecycle state using the `processing_status` column with `ProcessingStatusEnum`.
+- **Filament Panel Structure**
+    - Moved `Filament/Resources`, `Filament/Pages`, `Filament/Widgets`, and `Filament/Clusters` to `Filament/Admin` to
+      clearly separate the Admin panel from the default panel structure.
 
 ### Removed
 
