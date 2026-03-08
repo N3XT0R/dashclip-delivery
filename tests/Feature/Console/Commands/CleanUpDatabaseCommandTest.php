@@ -7,9 +7,9 @@ namespace Tests\Feature\Console\Commands;
 use App\Application\Cleanup\CleanupDatabase;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 
-final class CleanUpDatabaseCommandTest extends TestCase
+final class CleanUpDatabaseCommandTest extends DatabaseTestCase
 {
     public function testRunsCleanupServiceSuccessfully(): void
     {
