@@ -9,6 +9,7 @@ use App\Application\Ingest\IngestPipeline;
 use App\Enum\ProcessingStatusEnum;
 use App\Repository\VideoRepository;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -18,7 +19,7 @@ use Throwable;
 /**
  * This job is responsible for processing the ingest pipeline for a video. It retrieves the video by its ID,
  */
-final class ProcessVideoIngestJob implements ShouldQueue
+final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -30,6 +31,11 @@ final class ProcessVideoIngestJob implements ShouldQueue
     public function __construct(
         public readonly int $videoId
     ) {
+    }
+
+    public function uniqueId(): string
+    {
+        return 'ingest_job_video_id_' . $this->videoId;
     }
 
     /**
