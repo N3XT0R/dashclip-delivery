@@ -142,4 +142,53 @@ class DropboxUploadService
             throw $e;
         }
     }
+
+    /**
+     * Check if a file exists in Dropbox.
+     * @param string $targetPath
+     * @return bool
+     * @throws \Throwable
+     */
+    public function exists(string $targetPath): bool
+    {
+        $root = (string)config('filesystems.disks.dropbox.root', '');
+        $targetPath = PathBuilder::forDropbox($root, $targetPath);
+
+        try {
+            $client = $this->getClient();
+            $client->getMetadata($targetPath);
+            return true;
+        } catch (\Throwable $e) {
+            if (str_contains($e->getMessage(), 'not_found')) {
+                return false; // file does not exist
+            }
+            Log::error('Dropbox-Upload: Fehler beim Überprüfen der Datei: ' . $e->getMessage(), [
+                'path' => $targetPath,
+                'exception' => $e
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get a temporary link for a file in Dropbox.
+     * @param string $targetPath
+     * @return string
+     * @throws \Throwable
+     */
+    public function getTemporaryLink(string $targetPath): string
+    {
+        $root = (string)config('filesystems.disks.dropbox.root', '');
+        $targetPath = PathBuilder::forDropbox($root, $targetPath);
+
+        try {
+            return $this->getClient()->getTemporaryLink($targetPath);
+        } catch (\Throwable $e) {
+            Log::error('Dropbox-Upload: Fehler beim Abrufen des temporären Links: ' . $e->getMessage(), [
+                'path' => $targetPath,
+                'exception' => $e
+            ]);
+            throw $e;
+        }
+    }
 }
