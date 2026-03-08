@@ -20,6 +20,12 @@ final readonly class IngestPipeline
     ) {
     }
 
+    /**
+     * Executes the ingest pipeline for the given context.
+     * @param IngestContext $context
+     * @return IngestContext
+     * @throws Throwable
+     */
     public function handle(IngestContext $context): IngestContext
     {
         $this->ingestStateService->markWorkflowRunning($context->video);
