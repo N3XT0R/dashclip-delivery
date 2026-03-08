@@ -33,11 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added a dedicated listener to dispatch `ProcessVideoIngestJob`.
 - **Service Container Integration**
     - Added `IngestServiceProvider` to register ingest pipeline steps via Laravel container tagging.
-- **Modular Application Structure**
-    - Added `coolsam/modules` to support a modular application architecture.
-    - Builds on top of `nwidart/laravel-modules`, allowing the application to be structured into self-contained
-      modules (controllers, models, views, etc.).
-    - Extends the module system with integration for Filament resources, pages, and related components.
+- **Module System**
+    - Added `coolsam/modules`, extending `nwidart/laravel-modules` to support a package-like module architecture.
+    - Modules are generated using `php artisan module:make` and are bootstrapped via their own `ModuleServiceProvider`.
+    - Added support for organizing Filament resources and related components within modules.
 
 ### Changed
 
