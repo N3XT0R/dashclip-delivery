@@ -202,13 +202,19 @@ class VideoRepository
 
     /**
      * Get a lazy collection of all videos
-     * @return LazyCollection
+     * @return LazyCollection<Video>
      */
     public function getLazyAll(): LazyCollection
     {
         return Video::query()->lazy();
     }
 
+    /**
+     * Get a lazy collection of videos filtered by processing status.
+     * @param ProcessingStatusEnum $status
+     * @param int $chunkSize
+     * @return LazyCollection<Video>
+     */
     public function getLazyAllByProcessingStatus(
         ProcessingStatusEnum $status,
         int $chunkSize = 1000
@@ -221,14 +227,14 @@ class VideoRepository
     /**
      * Get videos that are in "pending" processing status and have a non-empty "hash" field,
      * which may indicate that they are stuck in a migration state.
-     * @return Collection
+     * @return LazyCollection<Video>
      */
-    public function getPendingVideosWithHashInMigrationState(): Collection
+    public function getPendingVideosWithHashInMigrationState(int $chunkSize = 10): LazyCollection
     {
         return Video::query()
             ->where('processing_status', ProcessingStatusEnum::Pending->value)
             ->whereNotNull('hash')
             ->where('hash', '!=', '')
-            ->get();
+            ->lazy();
     }
 }
