@@ -80,11 +80,9 @@ php artisan migrate
 | Command                             | Description                                                                            |
 |-------------------------------------|----------------------------------------------------------------------------------------|
 | `php artisan ingest:unzip`          | Extracts ZIP files from a directory.                                                   |
-| `php artisan ingest:scan`           | Scans the upload folder and stores new videos.                                         |
 | `php artisan info:import`           | Imports clip information from an `info.csv`.                                           |
 | `php artisan assign:distribute`     | Distributes videos to channels.                                                        |
 | `php artisan notify:offers`         | Sends offer links via email.                                                           |
-| `php artisan notify:reminders`      | Notifies channels about pending offers before expiration.                              |
 | `php artisan assign:expire`         | Marks expired assignments and temporarily blocks channels.                             |
 | `php artisan dropbox:refresh-token` | Refreshes the Dropbox token.                                                           |
 | `php artisan weekly:run`            | Executes Expire → Distribute → Notify in sequence.                                     |
