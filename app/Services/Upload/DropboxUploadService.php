@@ -28,6 +28,15 @@ class DropboxUploadService
     }
 
 
+    /**
+     * Upload a file to Dropbox using chunked upload for large files.
+     * @param Filesystem $sourceDisk
+     * @param string $relativePath
+     * @param string $targetPath
+     * @param ProgressBar|null $bar
+     * @return void
+     * @throws \Throwable
+     */
     public function uploadFile(
         Filesystem $sourceDisk,
         string $relativePath,
@@ -107,6 +116,30 @@ class DropboxUploadService
             ]);
             fclose($read);
             $bar?->finish();
+        }
+    }
+
+    /**
+     * Delete a file from Dropbox.
+     * @param string $targetPath
+     * @return void
+     * @throws \Throwable
+     */
+    public function deleteFile(string $targetPath): void
+    {
+        $root = (string)config('filesystems.disks.dropbox.root', '');
+        $targetPath = PathBuilder::forDropbox($root, $targetPath);
+
+        try {
+            $client = $this->getClient();
+            $client->delete($targetPath);
+            Log::info('Dropbox-Upload: Datei gelöscht', ['path' => $targetPath]);
+        } catch (\Throwable $e) {
+            Log::error('Dropbox-Upload: Fehler beim Löschen der Datei: ' . $e->getMessage(), [
+                'path' => $targetPath,
+                'exception' => $e
+            ]);
+            throw $e;
         }
     }
 }
