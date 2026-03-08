@@ -160,6 +160,7 @@ final class PreviewService
                 })
                 ->export()
                 ->toDisk($previewDisk)
+                ->withVisibility('public')
                 ->inFormat($format)
                 ->save($previewPath);
         } catch (Throwable $e) {
