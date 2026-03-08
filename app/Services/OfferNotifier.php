@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enum\{BatchTypeEnum, NotificationTypeEnum, StatusEnum};
-use App\Models\{Assignment, Batch, Channel, Notification};
+use App\Enum\{BatchTypeEnum, StatusEnum};
+use App\Models\{Assignment, Batch, Channel};
 use App\Services\Channel\ChannelOperatorService;
 use Carbon\Carbon;
 
@@ -65,22 +65,6 @@ class OfferNotifier
 
         if ($assignments->isEmpty()) {
             return;
-        }
-
-        /**
-         * @var Notification $notification
-         * @deprecated will be removed in next major
-         */
-        $notification = Notification::query()->create([
-            'channel_id' => $channel->getKey(),
-            'type' => NotificationTypeEnum::OFFER->value,
-        ]);
-
-        foreach ($assignments as $assignment) {
-            $assignment->setNotified();
-            $assignment->setAttribute('expires_at', $expireDate);
-            $assignment->setAttribute('notification_id', $notification->getKey());
-            $assignment->save();
         }
 
 
