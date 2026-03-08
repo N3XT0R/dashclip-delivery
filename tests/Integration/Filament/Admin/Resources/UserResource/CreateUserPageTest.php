@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources\UserResource;
+namespace Tests\Integration\Filament\Admin\Resources\UserResource;
 
 use App\Enum\Users\RoleEnum;
 use App\Events\User\UserCreated;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources;
+namespace Tests\Integration\Filament\Admin\Resource;
 
 use App\Filament\Admin\Resources\Batches\Pages\ListBatches;
 use App\Filament\Resources\Batches\RelationManagers\ChannelsRelationManager;

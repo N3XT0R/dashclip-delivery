@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Pages\Auth;
+namespace Filament\Admin\Pages\Auth;
 
 use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Models\User;

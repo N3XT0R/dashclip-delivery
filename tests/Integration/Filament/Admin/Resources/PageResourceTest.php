@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources;
+namespace Tests\Integration\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\Configs\Pages\ListConfigs;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;

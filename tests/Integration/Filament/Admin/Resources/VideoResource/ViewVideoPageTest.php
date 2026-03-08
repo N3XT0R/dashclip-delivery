@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources\VideoResource;
+namespace Tests\Integration\Filament\Admin\Resources\VideoResource;
 
 use App\Enum\Guard\GuardEnum;
 use App\Filament\Admin\Resources\Videos\Pages\ViewVideo;

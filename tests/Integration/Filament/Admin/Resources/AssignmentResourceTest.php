@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources;
+namespace Tests\Integration\Filament\Admin\Resource;
 
 use App\Filament\Admin\Resources\Assignments\AssignmentResource;
 use App\Filament\Admin\Resources\Assignments\Pages\ListAssignments;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Resources\Batches\RelationManagers;
+namespace Tests\Integration\Filament\Admin\Resources\Batches\RelationManagers;
 
 use App\Enum\BatchTypeEnum;
 use App\Filament\Admin\Resources\Batches\RelationManagers\ClipsRelationManager;
