@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\DTO\UploaderPoolInfo;
+use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Enum\UploaderTypeEnum;
 use App\Models\Clip;
@@ -206,5 +207,14 @@ class VideoRepository
     public function getLazyAll(): LazyCollection
     {
         return Video::query()->lazy();
+    }
+
+    public function getLazyAllByProcessingStatus(
+        ProcessingStatusEnum $status,
+        int $chunkSize = 1000
+    ): LazyCollection {
+        return Video::query()
+            ->where('processing_status', $status->value)
+            ->lazy($chunkSize);
     }
 }

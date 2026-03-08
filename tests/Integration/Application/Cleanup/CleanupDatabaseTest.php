@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Integration\Application\Cleanup;
 
 use App\Application\Cleanup\CleanupDatabase;
-use App\Repository\ActionTokenRepository;
 use App\Models\ActionToken;
 use App\Models\User;
 use Tests\DatabaseTestCase;
@@ -29,7 +28,7 @@ final class CleanupDatabaseTest extends DatabaseTestCase
 
         $user->delete();
 
-        $cleanup = new CleanupDatabase(app(ActionTokenRepository::class));
+        $cleanup = $this->app->make(CleanupDatabase::class);
         $cleanup->handle();
 
         $this->assertDatabaseMissing(ActionToken::class, ['id' => $expiredToken->id]);
