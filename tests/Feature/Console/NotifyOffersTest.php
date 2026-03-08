@@ -92,7 +92,7 @@ final class NotifyOffersTest extends DatabaseTestCase
             ]);
 
         $this->artisan('notify:offers')
-            ->expectsOutput('Keine Kanäle mit neuen Angeboten.')
+            ->expectsOutput('no channels with new offers.')
             ->assertExitCode(Command::SUCCESS);
 
         Mail::assertNothingQueued();
