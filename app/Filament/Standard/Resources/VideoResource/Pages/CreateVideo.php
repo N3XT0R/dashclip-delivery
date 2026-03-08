@@ -264,7 +264,6 @@ class CreateVideo extends CreateRecord
     {
         /**
          * @var Video $record
-         * @note dispatch processing job after the transaction has been committed to ensure that the file is available for processing
          */
         $record = $this->record;
         VideoUploaded::dispatch($record, auth()->user());
