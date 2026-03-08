@@ -45,6 +45,7 @@ readonly class ClipService
      * Generate a unique preview path for a given clip based on its video ID and start/end seconds.
      * @param  Clip  $clip
      * @return string
+     * @deprecated
      */
     public function getPreviewPath(Clip $clip): string
     {
