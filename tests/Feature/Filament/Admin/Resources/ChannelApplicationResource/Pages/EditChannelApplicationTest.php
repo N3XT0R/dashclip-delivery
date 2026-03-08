@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Admin\Resources\ChannelApplicationResource\Pages;
 
-use;
 use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Admin\Resources\ChannelApplicationResource\Pages\EditChannelApplication;
 use App\Models\ChannelApplication;
