@@ -17,6 +17,11 @@ use Illuminate\Support\LazyCollection;
 
 class VideoRepository
 {
+    public function findById(int $id): ?Video
+    {
+        return Video::query()->find($id);
+    }
+
     public function filterDeletableVideoIds(Collection $candidateIds, Carbon $threshold): Collection
     {
         if ($candidateIds->isEmpty()) {
@@ -81,8 +86,8 @@ class VideoRepository
     }
 
     /**
-     * @param  Collection<Video>  $pool
-     * @param  iterable  $ids
+     * @param Collection<Video> $pool
+     * @param iterable $ids
      * @return Collection
      */
     public function getVideosByIdsFromPool(Collection $pool, iterable $ids): Collection
@@ -100,7 +105,7 @@ class VideoRepository
      * Partitions videos by uploader (Clip → user_id).
      * Videos without uploader are grouped under key "0".
      *
-     * @param  Collection<Video>  $videos
+     * @param Collection<Video> $videos
      * @return array<int, Collection<Video>>
      */
     public function partitionByUploader(Collection $videos): array
@@ -114,7 +119,7 @@ class VideoRepository
      * Partitions videos by team slug, or by uploader (Clip → user_id) if no team is assigned.
      * Videos without team and uploader are grouped under key "user:0".
      *
-     * @param  Collection<Video>  $videos
+     * @param Collection<Video> $videos
      * @return array<int, UploaderPoolInfo>
      */
     public function partitionByTeamOrUploader(Collection $videos): array
@@ -124,7 +129,7 @@ class VideoRepository
             ->groupBy(function (Video $video) {
                 $video->loadMissing(['team', 'clips']);
                 if ($video->team && $video->team->slug) {
-                    return UploaderTypeEnum::TEAM->value.':'.$video->team->slug;
+                    return UploaderTypeEnum::TEAM->value . ':' . $video->team->slug;
                 }
 
                 $userString = UploaderTypeEnum::USER->value;
@@ -132,9 +137,9 @@ class VideoRepository
                 // Fallback: Uploader (Clip → user_id)
                 $uploaderId = $video->clips->first()?->user_id;
                 if ($uploaderId) {
-                    return $userString.':'.$uploaderId;
+                    return $userString . ':' . $uploaderId;
                 }
-                return $userString.':0';
+                return $userString . ':0';
             });
 
         return $grouped
