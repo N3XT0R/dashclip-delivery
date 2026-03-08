@@ -16,6 +16,15 @@ readonly class IngestStateService
     ) {
     }
 
+    public function markProcessingStatus(Video $video, ProcessingStatusEnum $status): bool
+    {
+        $video->processing_status = $status;
+
+        return $this->videoRepository->update($video, [
+            'processing_status' => $status->value,
+        ]);
+    }
+
     public function isStepCompleted(Video $video, string $stepName): bool
     {
         return 'completed' === data_get($video->meta, "ingest.steps.{$stepName}.status");
@@ -32,90 +41,46 @@ readonly class IngestStateService
         return true;
     }
 
-    public function markWorkflowRunning(Video $video): void
-    {
-        $meta = $video->meta ?? [];
-
-        data_set($meta, 'ingest.status', ProcessingStatusEnum::Running->value);
-        data_set($meta, 'ingest.last_error', null);
-
-        $this->persistMeta($video, $meta);
-    }
-
-    public function markWorkflowCompleted(Video $video): void
-    {
-        $meta = $video->meta ?? [];
-
-        data_set($meta, 'ingest.status', ProcessingStatusEnum::Completed->value);
-        data_set($meta, 'ingest.current_step', null);
-        data_set($meta, 'ingest.last_error', null);
-        data_set($meta, 'ingest.finished_at', now()?->toIso8601String());
-
-        $this->persistMeta($video, $meta);
-    }
-
-    public function markWorkflowFailed(Video $video, string $stepName, Throwable $e): void
-    {
-        $meta = $video->meta ?? [];
-
-        data_set($meta, 'ingest.status', ProcessingStatusEnum::Failed->value);
-        data_set($meta, 'ingest.current_step', $stepName);
-        data_set($meta, 'ingest.last_error', [
-            'message' => $e->getMessage(),
-            'type' => $e::class,
-            'at' => now()?->toIso8601String(),
-        ]);
-
-        $this->persistMeta($video, $meta);
-    }
-
-    public function markStepRunning(Video $video, string $stepName): void
+    public function markStepRunning(Video $video, string $stepName): bool
     {
         $meta = $video->meta ?? [];
 
         data_set($meta, 'ingest.current_step', $stepName);
-        data_set($meta, "ingest.steps.{$stepName}.status", ProcessingStatusEnum::Running->value);
+        data_set($meta, "ingest.steps.{$stepName}.status", 'running');
         data_set($meta, "ingest.steps.{$stepName}.error", null);
-        data_set($meta, "ingest.steps.{$stepName}.started_at", now()?->toIso8601String());
 
-        $attempts = (int)data_get($meta, "ingest.steps.{$stepName}.attempts", 0);
-        data_set($meta, "ingest.steps.{$stepName}.attempts", $attempts + 1);
-
-        $this->persistMeta($video, $meta);
+        return $this->persistMeta($video, $meta);
     }
 
-    public function markStepCompleted(Video $video, string $stepName): void
+    public function markStepCompleted(Video $video, string $stepName): bool
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, "ingest.steps.{$stepName}.status", ProcessingStatusEnum::Completed->value);
-        data_set($meta, "ingest.steps.{$stepName}.finished_at", now()?->toIso8601String());
+        data_set($meta, "ingest.steps.{$stepName}.status", 'completed');
         data_set($meta, "ingest.steps.{$stepName}.error", null);
 
-        $this->persistMeta($video, $meta);
+        return $this->persistMeta($video, $meta);
     }
 
-    public function markStepFailed(Video $video, string $stepName, Throwable $e): void
+    public function markStepFailed(Video $video, string $stepName, Throwable $e): bool
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, "ingest.steps.{$stepName}.status", ProcessingStatusEnum::Failed->value);
-        data_set($meta, "ingest.steps.{$stepName}.finished_at", now()?->toIso8601String());
+        data_set($meta, "ingest.steps.{$stepName}.status", 'failed');
         data_set($meta, "ingest.steps.{$stepName}.error", [
             'message' => $e->getMessage(),
             'type' => $e::class,
-            'at' => now()?->toIso8601String(),
         ]);
 
-        $this->persistMeta($video, $meta);
+        return $this->persistMeta($video, $meta);
     }
 
-    private function persistMeta(Video $video, array $meta): void
+    private function persistMeta(Video $video, array $meta): bool
     {
-        $this->videoRepository->update($video, [
+        $video->meta = $meta;
+
+        return $this->videoRepository->update($video, [
             'meta' => $meta,
         ]);
-
-        $video->meta = $meta;
     }
 }
