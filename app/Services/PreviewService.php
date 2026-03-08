@@ -128,7 +128,8 @@ final class PreviewService
         }
 
         $previewPath = PathBuilder::forPreviewByClip($clip);
-        if (!$force && $this->existsPreviewForClip($clip, $previewDisk)) {
+        $exists = $this->existsPreviewForClip($clip, $previewDisk);
+        if ($exists && !$force) {
             Log::info('Preview already exists for clip ' . $clip->getKey() . ' at ' . $previewPath, [
                 'clip_id' => $clip->getKey(),
                 'video_id' => $video->getKey(),
