@@ -51,11 +51,11 @@ final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        if ($video->processing_status === ProcessingStatusEnum::Deleted->value) {
+        if ($video->processing_status === ProcessingStatusEnum::Deleted) {
             return;
         }
 
-        if ($video->processing_status === ProcessingStatusEnum::Completed->value) {
+        if ($video->processing_status === ProcessingStatusEnum::Completed) {
             return;
         }
 
