@@ -38,6 +38,11 @@ final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
         return 'ingest_job_video_id_' . $this->videoId;
     }
 
+    public function backoff(): array
+    {
+        return [60, 300, 900];
+    }
+
     /**
      * @throws Throwable
      */
