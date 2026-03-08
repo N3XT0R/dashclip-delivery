@@ -225,11 +225,11 @@ class VideoRepository
     }
 
     /**
-     * Get videos that are in "pending" processing status and have a non-empty "hash" field,
-     * which may indicate that they are stuck in a migration state.
+     * Get a lazy collection of videos that are pending and have a non-empty hash,
+     * which may indicate they are in transition.
      * @return LazyCollection<Video>
      */
-    public function getPendingVideosWithHashInMigrationState(int $chunkSize = 10): LazyCollection
+    public function getPendingVideosWithHashInTransition(int $chunkSize = 10): LazyCollection
     {
         return Video::query()
             ->where('processing_status', ProcessingStatusEnum::Pending->value)
