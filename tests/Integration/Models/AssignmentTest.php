@@ -10,7 +10,6 @@ use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\Download;
-use App\Models\Notification;
 use App\Models\User;
 use App\Models\Video;
 use Carbon\Carbon;
@@ -118,18 +117,6 @@ final class AssignmentTest extends DatabaseTestCase
         } finally {
             Carbon::setTestNow();
         }
-    }
-
-    public function testBelongsToNotification(): void
-    {
-        $notification = Notification::factory()->create();
-
-        $assignment = Assignment::factory()
-            ->state(['notification_id' => $notification->getKey()])
-            ->withBatch()
-            ->create();
-
-        $this->assertTrue($assignment->notification->is($notification));
     }
 
     public function testHasChannelIdsScopeReturnsOnlyMatchingAssignments(): void

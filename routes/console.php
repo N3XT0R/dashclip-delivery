@@ -23,11 +23,6 @@ Schedule::command('assign:expire')
 
 Schedule::command('assign:uploader')->everyTenMinutes();
 
-Schedule::command('notify:reminders', [
-    '--days' => Cfg::get('email_reminder_days', 'email', 1, true),
-])
-    ->dailyAt('09:00');
-
 Schedule::command('dropbox:refresh-token')
     ->everyMinute();
 
