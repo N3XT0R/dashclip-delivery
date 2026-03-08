@@ -2,7 +2,7 @@
 
 namespace App\Filament\Standard\Resources\VideoResource\Pages;
 
-use App\Events\Video\VideoStored;
+use App\Events\Video\VideoCreatedForIngest;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Models\Clip;
 use App\Models\Video;
@@ -202,7 +202,8 @@ class CreateVideo extends CreateRecord
                                             'duration' => CarbonInterval::seconds($duration)
                                                 ->cascade()
                                                 ->format('%I:%S'),
-                                        ])
+                                        ]
+                                    )
                                 );
                             }
                         };
@@ -266,6 +267,6 @@ class CreateVideo extends CreateRecord
          * @var Video $record
          */
         $record = $this->record;
-        VideoStored::dispatch($record, auth()->user());
+        VideoCreatedForIngest::dispatch($record, auth()->user());
     }
 }
