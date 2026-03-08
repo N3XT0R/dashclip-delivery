@@ -10,6 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::table('assignments', static function (Blueprint $table) {
+            $table->dropConstrainedForeignId('notification_id');
+        });
+
         Schema::dropIfExists('custom_notifications');
     }
 
@@ -25,6 +29,13 @@ return new class extends Migration {
             $table->text('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
+        });
+
+        Schema::table('assignments', static function (Blueprint $t) {
+            $t->foreignId('notification_id')
+                ->nullable()
+                ->constrained('custom_notifications')
+                ->nullOnDelete();
         });
     }
 };
