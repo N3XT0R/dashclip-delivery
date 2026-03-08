@@ -131,7 +131,7 @@ readonly class AssignmentDistributor
 
         if ($poolVideos->isEmpty()) {
             $this->batchService->finishAssignBatch($batch, 0, 0);
-            throw new RuntimeException('Nichts zu verteilen.');
+            throw new RuntimeException('nothing to assign');
         }
 
         return $poolVideos;
