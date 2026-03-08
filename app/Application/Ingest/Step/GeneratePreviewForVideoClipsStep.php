@@ -10,7 +10,7 @@ use App\Repository\ClipRepository;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
 
-readonly class GeneratePreviewForClipStep implements IngestStepInterface
+readonly class GeneratePreviewForVideoClipsStep implements IngestStepInterface
 {
     public function __construct(
         private PreviewService $previewService,
@@ -20,7 +20,7 @@ readonly class GeneratePreviewForClipStep implements IngestStepInterface
 
     public function name(): IngestStepEnum
     {
-        return IngestStepEnum::GeneratePreviewForClip;
+        return IngestStepEnum::GeneratePreviewForVideoClips;
     }
 
     public function dependsOn(): array

@@ -7,6 +7,6 @@ namespace App\Enum\Ingest;
 enum IngestStepEnum: string
 {
     case LookupAndUpdateVideoHash = 'lookup_and_update_video_hash';
-    case GeneratePreviewForClip = 'generate_preview_for_clip';
+    case GeneratePreviewForVideoClips = 'generate_preview_for_clips';
     case UploadVideoToDropbox = 'upload_video_to_dropbox';
 }
