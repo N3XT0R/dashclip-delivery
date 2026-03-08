@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Ingest;
 
+use App\Enum\Ingest\IngestStepEnum;
 use App\Enum\ProcessingStatusEnum;
 use App\Models\Video;
 use App\Repository\VideoRepository;
 use Throwable;
 
-readonly class IngestStateService
+final readonly class IngestStateService
 {
     public function __construct(
         private VideoRepository $videoRepository,
@@ -25,11 +26,17 @@ readonly class IngestStateService
         ]);
     }
 
-    public function isStepCompleted(Video $video, string $stepName): bool
+    public function isStepCompleted(Video $video, IngestStepEnum $step): bool
     {
-        return 'completed' === data_get($video->meta, "ingest.steps.{$stepName}.status");
+        return 'completed' === data_get(
+                $video->meta,
+                "ingest.steps.{$step->value}.status"
+            );
     }
 
+    /**
+     * @param list<IngestStepEnum> $dependencies
+     */
     public function dependenciesAreCompleted(Video $video, array $dependencies): bool
     {
         foreach ($dependencies as $dependency) {
@@ -41,33 +48,36 @@ readonly class IngestStateService
         return true;
     }
 
-    public function markStepRunning(Video $video, string $stepName): bool
+    public function markStepRunning(Video $video, IngestStepEnum $step): bool
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, 'ingest.current_step', $stepName);
-        data_set($meta, "ingest.steps.{$stepName}.status", 'running');
-        data_set($meta, "ingest.steps.{$stepName}.error", null);
+        data_set($meta, 'ingest.current_step', $step->value);
+        data_set($meta, "ingest.steps.{$step->value}.status", 'running');
+        data_set($meta, "ingest.steps.{$step->value}.error", null);
+
+        $attempts = (int)data_get($meta, "ingest.steps.{$step->value}.attempts", 0);
+        data_set($meta, "ingest.steps.{$step->value}.attempts", $attempts + 1);
 
         return $this->persistMeta($video, $meta);
     }
 
-    public function markStepCompleted(Video $video, string $stepName): bool
+    public function markStepCompleted(Video $video, IngestStepEnum $step): bool
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, "ingest.steps.{$stepName}.status", 'completed');
-        data_set($meta, "ingest.steps.{$stepName}.error", null);
+        data_set($meta, "ingest.steps.{$step->value}.status", 'completed');
+        data_set($meta, "ingest.steps.{$step->value}.error", null);
 
         return $this->persistMeta($video, $meta);
     }
 
-    public function markStepFailed(Video $video, string $stepName, Throwable $e): bool
+    public function markStepFailed(Video $video, IngestStepEnum $step, Throwable $e): bool
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, "ingest.steps.{$stepName}.status", 'failed');
-        data_set($meta, "ingest.steps.{$stepName}.error", [
+        data_set($meta, "ingest.steps.{$step->value}.status", 'failed');
+        data_set($meta, "ingest.steps.{$step->value}.error", [
             'message' => $e->getMessage(),
             'type' => $e::class,
         ]);
