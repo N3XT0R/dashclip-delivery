@@ -36,7 +36,7 @@ readonly class IngestStateService
     {
         $meta = $video->meta ?? [];
 
-        data_set($meta, 'ingest.status', 'running');
+        data_set($meta, 'ingest.status', ProcessingStatusEnum::Running->value);
         data_set($meta, 'ingest.last_error', null);
 
         $this->persistMeta($video, $meta);
