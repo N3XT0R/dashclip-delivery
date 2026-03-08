@@ -189,9 +189,13 @@ class VideoRepository
             ->cursor();
     }
 
+    /**
+     * Get the uploader user for a video, based on the first associated clip's user.
+     * @param Video $video
+     * @return User|null
+     */
     public function getUploaderUser(Video $video): ?User
     {
-        $clip = $video->clips()->first();
-        return $clip ? $clip->user : null;
+        return $video->clips()->first()?->user;
     }
 }
