@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\BatchTypeEnum;
+use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
@@ -101,6 +102,7 @@ class BatchService
     {
         // Unassigned EVER ODER neuer als letzter Batch
         $newOrUnassigned = Video::query()
+            ->where('processing_status', ProcessingStatusEnum::Completed->value)
             ->whereDoesntHave('assignments')
             ->when($lastFinished, function ($q) use ($lastFinished) {
                 $q->orWhere('created_at', '>', $lastFinished?->finished_at);
