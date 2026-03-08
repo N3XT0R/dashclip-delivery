@@ -39,26 +39,27 @@ readonly class GeneratePreviewForVideoClipsStep implements IngestStepInterface
 
     public function handle(IngestContext $context): IngestContext
     {
-        if ($context->isDuplicate) {
-            return $context;
-        }
-
-        if (!$context->clip) {
+        if ($context->isDuplicate || null === $context->clips || $context->clips->isEmpty()) {
             return $context;
         }
 
         $diskName = config('preview.default_disk', 'preview');
         $previewDisk = Storage::disk($diskName);
 
-        $relativePath = $this->previewService->generatePreviewForClip(
-            $context->clip,
-            $previewDisk
-        );
+        foreach ($context->clips as $clip) {
+            $relativePath = $this->previewService->generatePreviewForClip(
+                $clip,
+                $previewDisk
+            );
 
-        $this->clipRepository->update($context->clip, [
-            'preview_path' => $relativePath,
-            'preview_disk' => $diskName,
-        ]);
+            $this->clipRepository->update($clip, [
+                'preview_path' => $relativePath,
+                'preview_disk' => $diskName,
+            ]);
+
+            $clip->preview_path = $relativePath;
+            $clip->preview_disk = $diskName;
+        }
 
         return $context;
     }
