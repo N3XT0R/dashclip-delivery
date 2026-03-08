@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Application\Ingest\Step;
 
 use App\Application\Ingest\Context\IngestContext;
+use App\Enum\Ingest\IngestStepEnum;
 
 interface IngestStepInterface
 {
 
-    public function name(): string;
+    public function step(): IngestStepEnum;
 
     /**
-     * @return array<string>
+     * @return array<IngestStepEnum>
      */
     public function dependsOn(): array;
 

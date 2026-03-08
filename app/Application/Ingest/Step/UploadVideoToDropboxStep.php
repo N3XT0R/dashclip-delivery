@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Ingest\Step;
 
 use App\Application\Ingest\Context\IngestContext;
+use App\Enum\Ingest\IngestStepEnum;
 use App\Services\Upload\DropboxUploadService;
 
 readonly class UploadVideoToDropboxStep implements IngestStepInterface
@@ -14,14 +15,16 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
     ) {
     }
 
-    public function name(): string
+    public function step(): IngestStepEnum
     {
-        return 'upload_video_to_dropbox';
+        return IngestStepEnum::UploadVideoToDropbox;
     }
 
     public function dependsOn(): array
     {
-        return ['lookup_and_update_video_hash'];
+        return [
+            IngestStepEnum::LookupAndUpdateVideoHash
+        ];
     }
 
     public function isApplicable(IngestContext $context): bool

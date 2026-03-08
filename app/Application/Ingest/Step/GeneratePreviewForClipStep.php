@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Ingest\Step;
 
 use App\Application\Ingest\Context\IngestContext;
+use App\Enum\Ingest\IngestStepEnum;
 use App\Repository\ClipRepository;
 use App\Services\PreviewService;
 use Illuminate\Support\Facades\Storage;
@@ -17,14 +18,16 @@ readonly class GeneratePreviewForClipStep implements IngestStepInterface
     ) {
     }
 
-    public function name(): string
+    public function step(): IngestStepEnum
     {
-        return 'generate_preview_for_clip';
+        return IngestStepEnum::GeneratePreviewForClip;
     }
 
     public function dependsOn(): array
     {
-        return ['lookup_and_update_video_hash'];
+        return [
+            IngestStepEnum::LookupAndUpdateVideoHash
+        ];
     }
 
     public function isApplicable(IngestContext $context): bool

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Ingest\Step;
 
 use App\Application\Ingest\Context\IngestContext;
+use App\Enum\Ingest\IngestStepEnum;
 use App\Repository\VideoRepository;
 use App\Services\DynamicStorageService;
 use App\Services\VideoService;
@@ -19,9 +20,9 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
     ) {
     }
 
-    public function name(): string
+    public function step(): IngestStepEnum
     {
-        return 'lookup_and_update_video_hash';
+        return IngestStepEnum::LookupAndUpdateVideoHash;
     }
 
     public function isApplicable(IngestContext $context): bool
@@ -47,7 +48,7 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
         if ($context->video->hash) {
             return $context;
         }
-        
+
         $video = $context->video;
         $disk = Storage::disk($video->disk);
 
