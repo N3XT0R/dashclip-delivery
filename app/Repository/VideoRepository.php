@@ -235,6 +235,6 @@ class VideoRepository
             ->where('processing_status', ProcessingStatusEnum::Pending->value)
             ->whereNotNull('hash')
             ->where('hash', '!=', '')
-            ->lazy();
+            ->lazy($chunkSize);
     }
 }
