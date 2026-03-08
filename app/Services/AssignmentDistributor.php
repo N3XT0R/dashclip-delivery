@@ -105,8 +105,12 @@ readonly class AssignmentDistributor
                 $totalSkipped += $skipped;
             } catch (\Throwable $e) {
                 Log::warning(
-                    'Fehler bei der Verteilung für Uploader ' . $uploaderType . '#' . $uploaderId . ': ' . $e->getMessage(
-                    )
+                    'Error during distribution for uploader {type}#{id}: {message}',
+                    [
+                        'type' => $uploaderType,
+                        'id' => $uploaderId,
+                        'message' => $e->getMessage(),
+                    ]
                 );
             }
         }
