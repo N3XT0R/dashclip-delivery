@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Enum\{BatchTypeEnum, StatusEnum};
 use App\Models\{Assignment, Batch, Channel};
 use App\Services\Channel\ChannelOperatorService;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 class OfferNotifier
 {
@@ -56,7 +56,7 @@ class OfferNotifier
         return ['sent' => $sent, 'batchId' => $assignBatch->getKey()];
     }
 
-    public function notifyChannel(Channel $channel, Batch $assignBatch, Carbon $expireDate): void
+    public function notifyChannel(Channel $channel, Batch $assignBatch, CarbonInterface $expireDate): void
     {
         $assignments = Assignment::query()
             ->where('batch_id', $assignBatch->getKey())
