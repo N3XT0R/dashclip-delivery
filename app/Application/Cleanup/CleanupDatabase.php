@@ -8,8 +8,9 @@ use App\Services\ActionTokenService;
 
 class CleanupDatabase
 {
-    public function __construct(private ActionTokenService $actionTokenService)
-    {
+    public function __construct(
+        private ActionTokenService $actionTokenService
+    ) {
     }
 
     public function handle(): void
