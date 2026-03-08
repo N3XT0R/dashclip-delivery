@@ -44,6 +44,10 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
 
     public function handle(IngestContext $context): IngestContext
     {
+        if ($context->video->hash) {
+            return $context;
+        }
+        
         $video = $context->video;
         $disk = Storage::disk($video->disk);
 
