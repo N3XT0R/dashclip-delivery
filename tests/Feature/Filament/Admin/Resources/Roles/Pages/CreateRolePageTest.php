@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\Filament\Admin\Resources\Roles\Pages;
+namespace Tests\Feature\Filament\Admin\Resources\Roles\Pages;
 
 use App\Filament\Admin\Resources\Roles\Pages\CreateRole;
 use App\Models\User;

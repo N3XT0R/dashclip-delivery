@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\Filament\Admin\Resources\ChannelApplicationResource;
+namespace Tests\Feature\Filament\Admin\Resources\ChannelApplicationResource;
 
 use App\Enum\Channel\ApplicationEnum;
 use App\Filament\Admin\Resources\ChannelApplicationResource;

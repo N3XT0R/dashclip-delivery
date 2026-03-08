@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\Filament\Admin\Resources\UserResource\Pages;
+namespace Tests\Feature\Filament\Admin\Resources\UserResource\Pages;
 
 use App\Filament\Admin\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\Filament\Admin\Resources;
+namespace Tests\Feature\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\ActivityResource\Pages\ListActivities;
 use App\Models\Activity;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\Filament\Admin\Resources;
+namespace Tests\Feature\Filament\Admin\Resources;
 
 use App\Enum\Guard\GuardEnum;
 use App\Filament\Admin\Resources\Videos\Pages\ListVideos;
