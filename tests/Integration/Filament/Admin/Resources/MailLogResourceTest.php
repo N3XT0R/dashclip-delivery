@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Filament\Admin\Resource;
+namespace Tests\Integration\Filament\Admin\Resources;
 
 use App\Enum\MailStatus;
 use App\Filament\Admin\Resources\MailLogResource\Pages\ListMailLogs;
