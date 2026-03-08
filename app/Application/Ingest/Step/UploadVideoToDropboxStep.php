@@ -29,7 +29,10 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
 
     public function isApplicable(IngestContext $context): bool
     {
-        return !$context->isDuplicate;
+        return !$context->isDuplicate
+            && !$this->uploadService->exists(
+                $context->video->path
+            );
     }
 
     public function handle(IngestContext $context): IngestContext
