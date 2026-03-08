@@ -5,9 +5,7 @@ namespace App\Filament\Resources\Batches;
 use App\Filament\Resources\Batches\Pages\ListBatches;
 use App\Filament\Resources\Batches\Pages\ViewBatch;
 use App\Filament\Resources\Batches\RelationManagers\AssignmentsRelationManager;
-use App\Filament\Resources\Batches\RelationManagers\ChannelsRelationManager;
 use App\Filament\Resources\Batches\RelationManagers\ClipsRelationManager;
-use App\Filament\Resources\BatchResource\Pages;
 use App\Models\Batch;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
@@ -51,7 +49,7 @@ class BatchResource extends Resource
                         if ($val === null) {
                             $val = 'null';
                         }
-                        return $key.': '.(string)$val;
+                        return $key . ': ' . (string)$val;
                     })->implode(', ');
                     return $lines;
                 }),
@@ -78,7 +76,6 @@ class BatchResource extends Resource
         return [
             AssignmentsRelationManager::class,
             ClipsRelationManager::class,
-            ChannelsRelationManager::class,
         ];
     }
 
