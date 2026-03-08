@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
+use App\Enum\ProcessingStatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -29,8 +30,12 @@ final class AssignDistributeTest extends DatabaseTestCase
         $ch2 = Channel::factory()->create(['weekly_quota' => 10, 'weight' => 1]);
 
         // Arrange: two new videos
-        $v1 = Video::factory()->create();
-        $v2 = Video::factory()->create();
+        $v1 = Video::factory()->create([
+            'processing_status' => ProcessingStatusEnum::Completed
+        ]);
+        $v2 = Video::factory()->create([
+            'processing_status' => ProcessingStatusEnum::Completed
+        ]);
 
         // Act: run the real command
         $this->artisan('assign:distribute')
