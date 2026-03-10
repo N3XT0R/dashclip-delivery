@@ -19,7 +19,8 @@ use Throwable;
 use function in_array;
 
 /**
- * This job is responsible for processing the ingest pipeline for a video. It retrieves the video by its ID,
+ * This job is responsible for processing the video ingest pipeline. It retrieves the video by its ID,
+ *
  */
 final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
 {
