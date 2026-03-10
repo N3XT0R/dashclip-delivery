@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Application\Cleanup;
 
-use App\Application\Cleanup\CleanupDatabase;
+use App\Application\Cleanup\CleanupActionTokens;
 use App\Models\ActionToken;
 use App\Models\User;
 use Tests\DatabaseTestCase;
 
-final class CleanupDatabaseTest extends DatabaseTestCase
+final class CleanupActionTokensTest extends DatabaseTestCase
 {
     public function testHandleCleansExpiredAndOrphanTokens(): void
     {
@@ -28,7 +28,7 @@ final class CleanupDatabaseTest extends DatabaseTestCase
 
         $user->delete();
 
-        $cleanup = $this->app->make(CleanupDatabase::class);
+        $cleanup = $this->app->make(CleanupActionTokens::class);
         $cleanup->handle();
 
         $this->assertDatabaseMissing(ActionToken::class, ['id' => $expiredToken->id]);

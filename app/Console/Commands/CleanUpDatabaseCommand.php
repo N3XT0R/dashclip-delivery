@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Application\Cleanup\CleanupDatabase;
+use App\Application\Cleanup\CleanupActionTokens;
 use App\Application\Cleanup\CleanupTransitionState;
 use App\Application\Cleanup\DeleteVideosMissingFromStorage;
 use Illuminate\Console\Command;
@@ -14,7 +14,7 @@ class CleanUpDatabaseCommand extends Command
 
     protected $description = 'Clean up the database by removing old or unnecessary records';
 
-    public function handle(CleanupDatabase $cleanupDatabase): int
+    public function handle(CleanupActionTokens $cleanupDatabase): int
     {
         try {
             $cleanupDatabase->handle();

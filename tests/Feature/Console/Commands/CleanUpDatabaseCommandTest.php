@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console\Commands;
 
-use App\Application\Cleanup\CleanupDatabase;
+use App\Application\Cleanup\CleanupActionTokens;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Tests\DatabaseTestCase;
@@ -13,7 +13,7 @@ final class CleanUpDatabaseCommandTest extends DatabaseTestCase
 {
     public function testRunsCleanupServiceSuccessfully(): void
     {
-        $this->mock(CleanupDatabase::class)
+        $this->mock(CleanupActionTokens::class)
             ->expects('handle')
             ->once()
             ->andReturnNull();
@@ -30,7 +30,7 @@ final class CleanUpDatabaseCommandTest extends DatabaseTestCase
     {
         $exception = new \RuntimeException('test exception');
 
-        $this->mock(CleanupDatabase::class)
+        $this->mock(CleanupActionTokens::class)
             ->expects('handle')
             ->once()
             ->andThrow($exception);
@@ -54,7 +54,7 @@ final class CleanUpDatabaseCommandTest extends DatabaseTestCase
     {
         $throwable = new \Error('unexpected error');
 
-        $this->mock(CleanupDatabase::class)
+        $this->mock(CleanupActionTokens::class)
             ->expects('handle')
             ->once()
             ->andThrow($throwable);
