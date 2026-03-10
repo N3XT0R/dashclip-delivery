@@ -18,8 +18,8 @@ class CleanUpDatabaseCommand extends Command
     {
         try {
             app(CleanupActionTokens::class)->handle();
-            app(CleanupTransitionState::class)->handle();
             app(DeleteVideosMissingFromStorage::class)->handle();
+            app(CleanupTransitionState::class)->handle();
         } catch (\Throwable $e) {
             Log::error('Error during database cleanup: ' . $e->getMessage(), [
                 'exception' => $e,
