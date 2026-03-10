@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `nwidart/laravel-modules`.
     - Modules are generated using `php artisan module:make` and are bootstrapped via their own `ModuleServiceProvider`.
     - Added support for organizing Filament resources and related components within modules.
-- **Video Storage Cleanup**
+- **Video Storage Cleanup** [#225](https://github.com/N3XT0R/dashclip-delivery/issues/225)
     - added maintenance command to remove database records for videos whose files are missing from storage
     - resolves inconsistencies where videos exist in the database but no longer exist in storage
     - related issues/features:
