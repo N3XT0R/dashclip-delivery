@@ -42,6 +42,11 @@ readonly class ClipService
     }
 
 
+    /**
+     * Deletes the clip and its preview image from storage if it exists.
+     * @param Clip $clip
+     * @return bool
+     */
     public function delete(Clip $clip): bool
     {
         $disk = $clip->getDisk();
