@@ -11,26 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Ingest Pipeline Architecture**
-    - Introduced a modular ingest pipeline to process videos through atomic workflow steps.
-    - Added `IngestPipeline` to orchestrate the ingest workflow.
-    - Added `IngestStepInterface` to standardize pipeline steps.
-    - Introduced `IngestContext` to carry runtime state across pipeline steps.
-- **Ingest Workflow Steps**
-    - Added step-based processing for ingest operations:
+- **Video Ingest Pipeline**
+    - introduced a modular ingest pipeline architecture to process videos through atomic workflow steps
+    - added `IngestPipeline`, `IngestStepInterface`, and `IngestContext` to orchestrate and structure the ingest
+      workflow
+    - added step-based ingest processing including:
         - `LookupAndUpdateVideoHashStep`
         - `GeneratePreviewForVideoClipsStep`
         - `UploadVideoToDropboxStep`
-- **Ingest Step Enumeration**
-    - Added `IngestStepEnum` to centralize step identifiers.
-- **Ingest State Management**
-    - Added `IngestStateService` to manage ingest workflow step state via `video.meta`.
-- **Job-based Ingest Execution**
-    - Added `ProcessVideoIngestJob` to execute the ingest pipeline asynchronously.
-    - Implemented `ShouldBeUnique` to prevent concurrent ingest runs for the same video.
-- **Ingest Job Recovery**
-    - added maintenance commands to requeue failed videos and stale running ingest jobs
-    - provides a fallback mechanism to recover from lost or interrupted queue jobs
+    - added `IngestStepEnum` to centralize ingest step identifiers
+    - added `IngestStateService` to manage ingest workflow state via `video.meta`
+    - added `ProcessVideoIngestJob` for asynchronous pipeline execution
+    - implemented `ShouldBeUnique` to prevent concurrent ingest runs for the same video
+    - added maintenance commands to requeue failed and stale running ingest jobs
+    - provides a recovery mechanism for interrupted or lost queue jobs
 - **Event-driven Ingest Trigger**
     - Added `VideoCreatedForIngest` event to trigger the ingest workflow.
     - Added a dedicated listener to dispatch `ProcessVideoIngestJob`.
