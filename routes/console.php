@@ -2,7 +2,6 @@
 
 use App\Console\Commands\VideoProcessing\RequeueFailedVideosCommand;
 use App\Console\Commands\VideoProcessing\RequeueStaleRunningCommand;
-use App\Facades\Cfg;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -15,10 +14,6 @@ Artisan::command('inspire', function () {
 Schedule::command('weekly:run')
     ->mondays()
     ->at('08:00');
-
-Schedule::command('ingest:unzip', [
-    '--inbox' => Cfg::get('ingest_inbox_absolute_path', 'default', '/srv/ingest/pending/', true),
-])->everyTenMinutes();
 
 Schedule::command('assign:expire')
     ->dailyAt('03:00');
