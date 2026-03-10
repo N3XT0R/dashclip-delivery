@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Video Storage Cleanup**
     - added maintenance command to remove database records for videos whose files are missing from storage
     - resolves inconsistencies where videos exist in the database but no longer exist in storage
-        - related issues/features:
+    - related issues/features:
         - [#257](https://github.com/N3XT0R/dashclip-delivery/issues/257)
         - [#225](https://github.com/N3XT0R/dashclip-delivery/issues/225)
         - [#224](https://github.com/N3XT0R/dashclip-delivery/issues/224)
