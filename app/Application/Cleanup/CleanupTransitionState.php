@@ -14,9 +14,11 @@ readonly class CleanupTransitionState
     ) {
     }
 
-    public function handle(): void
+    public function handle(int $chunkSize = 1000): void
     {
-        $videos = $this->videoRepository->getPendingVideosWithHashInTransition();
+        $videos = $this->videoRepository->getPendingVideosWithHashInTransition(
+            chunkSize: $chunkSize,
+        );
         foreach ($videos as $video) {
             $this->videoRepository->update($video, [
                 'hash' => null,
