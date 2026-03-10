@@ -7,6 +7,9 @@ namespace App\Application\Cleanup;
 use App\Services\ClipService;
 use App\Services\VideoService;
 
+/**
+ * This class is responsible for finding videos that are missing from storage and deleting them from the database.
+ */
 readonly class DeleteVideosMissingFromStorage
 {
     public function __construct(
@@ -23,7 +26,7 @@ readonly class DeleteVideosMissingFromStorage
             foreach ($clips as $clip) {
                 $this->clipService->delete($clip);
             }
-            
+
             $this->videoService->delete($video);
         }
     }
