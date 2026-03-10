@@ -36,8 +36,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Modules are generated using `php artisan module:make` and are bootstrapped via their own `ModuleServiceProvider`.
     - Added support for organizing Filament resources and related components within modules.
 - **Video Storage Cleanup**
-    - added maintenance command to remove database records for videos whose files are missing from
-      storage ([#257](https://github.com/N3XT0R/dashclip-delivery/issues/257), [#225](https://github.com/N3XT0R/dashclip-delivery/issues/225))
+    - added maintenance command to remove database records for videos whose files are missing from storage
+    - related issues:
+        - [#257](https://github.com/N3XT0R/dashclip-delivery/issues/257)
+        - [#225](https://github.com/N3XT0R/dashclip-delivery/issues/225)
+        - [#224](https://github.com/N3XT0R/dashclip-delivery/issues/224)
 
 ### Changed
 
