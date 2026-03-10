@@ -71,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BatchResource**
     - ChannelRelationManager removed
 - **console.php**
-    - removed obsolete cron entries
+    - removed obsolete scheduler cron entries
+    - removed the corresponding command classes and related tests
 
 ### Security
 
