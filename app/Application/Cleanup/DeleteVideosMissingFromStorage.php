@@ -15,7 +15,7 @@ readonly class DeleteVideosMissingFromStorage
     ) {
     }
 
-    public function handle()
+    public function handle(): void
     {
         $missingVideos = $this->videoService->findVideosMissingFromStorage();
         foreach ($missingVideos as $video) {
