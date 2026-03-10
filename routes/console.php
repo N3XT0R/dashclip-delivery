@@ -38,8 +38,3 @@ Schedule::command('video:process-videos')->everyMinute();
 
 Schedule::command(RequeueStaleRunningCommand::class)->everyFifteenMinutes();
 Schedule::command(RequeueFailedVideosCommand::class)->everyFifteenMinutes();
-
-Schedule::command('video:cleanup', [
-    '--weeks' => Cfg::get('post_expiry_retention_weeks', 'default', 1, true),
-])
-    ->dailyAt('04:00');
