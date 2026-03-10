@@ -40,4 +40,15 @@ readonly class ClipService
 
         return $this->assignUserFromSubmittedBy($clip, $user);
     }
+
+
+    public function delete(Clip $clip): bool
+    {
+        $disk = $clip->getDisk();
+        if ($disk->exists($clip->preview_path)) {
+            $disk->delete($clip->preview_path);
+        }
+
+        return $this->clipRepository->delete($clip);
+    }
 }

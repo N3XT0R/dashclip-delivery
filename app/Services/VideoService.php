@@ -132,4 +132,19 @@ readonly class VideoService
             });
     }
 
+    /**
+     * Deletes a video and its associated file from storage.
+     * @param Video $video
+     * @return bool
+     */
+    public function delete(Video $video): bool
+    {
+        $disk = $video->getDisk();
+        if ($disk->exists($video->path)) {
+            $disk->delete($video->path);
+        }
+
+        return $video->delete();
+    }
+
 }
