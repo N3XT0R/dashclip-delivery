@@ -12,6 +12,7 @@ use App\Models\Clip;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
+use DateTimeInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
@@ -241,16 +242,16 @@ class VideoRepository
     /**
      * Get a lazy collection of videos that have failed processing before a certain date,
      * which may be candidates for requeueing.
-     * @param \DateTimeInterface $failedBefore
+     * @param DateTimeInterface $failedBefore
      * @param int $chunkSize
      * @return LazyCollection
      */
     public function getLazyFailedForRequeue(
-        \DateTimeInterface $failedBefore,
+        DateTimeInterface $failedBefore,
         int $chunkSize = 100
     ): LazyCollection {
         return Video::query()
-            ->where('processing_status', ProcessingStatusEnum::Failed)
+            ->where('processing_status', ProcessingStatusEnum::Failed->value)
             ->where('updated_at', '<=', $failedBefore)
             ->orderBy('id')
             ->lazyById($chunkSize);
