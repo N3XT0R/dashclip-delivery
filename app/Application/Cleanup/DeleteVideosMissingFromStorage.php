@@ -18,9 +18,11 @@ readonly class DeleteVideosMissingFromStorage
     ) {
     }
 
-    public function handle(): void
+    public function handle(int $chunkSize = 1000): void
     {
-        $missingVideos = $this->videoService->findVideosMissingFromStorage();
+        $missingVideos = $this->videoService->findVideosMissingFromStorage(
+            chunkSize: $chunkSize,
+        );
         foreach ($missingVideos as $video) {
             $clips = $video->clips;
             foreach ($clips as $clip) {
