@@ -70,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - The new system logs notification mails by default and provides an improved user experience.
 - **BatchResource**
     - ChannelRelationManager removed
+- **console.php**
+    - removed obsolete cron entries
 
 ### Security
 
