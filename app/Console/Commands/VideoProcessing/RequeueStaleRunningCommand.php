@@ -29,6 +29,6 @@ class RequeueStaleRunningCommand extends Command
 
     protected function getErrorLogMessage(): string
     {
-        return 'Error requeuing failed videos';
+        return 'Error requeuing stale running videos';
     }
 }
