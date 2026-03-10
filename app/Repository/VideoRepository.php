@@ -237,4 +237,22 @@ class VideoRepository
             ->where('hash', '!=', '')
             ->lazy($chunkSize);
     }
+
+    /**
+     * Get a lazy collection of videos that have failed processing before a certain date,
+     * which may be candidates for requeueing.
+     * @param \DateTimeInterface $failedBefore
+     * @param int $chunkSize
+     * @return LazyCollection
+     */
+    public function getLazyFailedForRequeue(
+        \DateTimeInterface $failedBefore,
+        int $chunkSize = 100
+    ): LazyCollection {
+        return Video::query()
+            ->where('processing_status', ProcessingStatusEnum::Failed)
+            ->where('updated_at', '<=', $failedBefore)
+            ->orderBy('id')
+            ->lazyById($chunkSize);
+    }
 }
