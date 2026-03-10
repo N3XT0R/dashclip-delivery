@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Video Ingest Pipeline**
+- **Video Ingest Pipeline** [#265](https://github.com/N3XT0R/dashclip-delivery/issues/265)
     - introduced a modular ingest pipeline architecture to process videos through atomic workflow steps
     - added `IngestPipeline`, `IngestStepInterface`, and `IngestContext` to orchestrate and structure the ingest
       workflow
