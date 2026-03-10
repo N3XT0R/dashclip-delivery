@@ -23,6 +23,10 @@ use Throwable;
  * Step states and the overall processing status are managed through
  * the {@see IngestStateService}, allowing failed pipelines to be
  * safely retried without repeating completed steps.
+ *
+ * Because step completion state is persisted, the pipeline is
+ * retryable and can safely resume after interruptions, executing
+ * only the steps that have not yet been completed.
  */
 final readonly class IngestPipeline
 {
