@@ -23,7 +23,7 @@ Schedule::command(Commands\RefreshDropboxToken::class)
 # Mail
 Schedule::command(Commands\ScanMailReplies::class)->everyTenMinutes();
 
-##Cleanup
+# Cleanup
 Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
 
 #video processing
