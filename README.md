@@ -6,6 +6,8 @@
 [![Latest Unstable Version](https://poser.pugx.org/n3xt0r/dashclip-delivery/v/unstable)](https://packagist.org/packages/n3xt0r/dashclip-delivery)
 ![License](https://img.shields.io/badge/license-AGPL--3.0%20%2F%20Commercial-blue)
 
+# Dashclip-Delivery
+
 > **Notice**
 >
 > Starting with **v4.0**, this project follows a **strict Domain-Driven Design (DDD)** architecture.
