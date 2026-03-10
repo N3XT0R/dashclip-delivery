@@ -140,8 +140,9 @@ readonly class VideoService
     public function delete(Video $video): bool
     {
         $disk = $video->getDisk();
-        if ($disk->exists($video->path)) {
-            $disk->delete($video->path);
+        $path = $video->path;
+        if ($video->exists && $disk->exists($path)) {
+            $disk->delete($path);
         }
 
         return $video->delete();

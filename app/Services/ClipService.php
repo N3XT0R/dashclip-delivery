@@ -50,8 +50,9 @@ readonly class ClipService
     public function delete(Clip $clip): bool
     {
         $disk = $clip->getDisk();
-        if ($disk->exists($clip->preview_path)) {
-            $disk->delete($clip->preview_path);
+        $path = $clip->preview_path;
+        if ($clip->exists && $disk->exists($path)) {
+            $disk->delete($path);
         }
 
         return $this->clipRepository->delete($clip);
