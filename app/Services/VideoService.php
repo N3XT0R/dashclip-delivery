@@ -123,10 +123,14 @@ readonly class VideoService
      * @return LazyCollection
      */
     public function findVideosMissingFromStorage(
-        ProcessingStatusEnum $processingStatusEnum = ProcessingStatusEnum::Completed
+        ProcessingStatusEnum $processingStatusEnum = ProcessingStatusEnum::Completed,
+        int $chunkSize = 1000,
     ): LazyCollection {
         return $this->videoRepository
-            ->getLazyAllByProcessingStatus($processingStatusEnum)
+            ->getLazyAllByProcessingStatus(
+                status: $processingStatusEnum,
+                chunkSize: $chunkSize
+            )
             ->reject(function (Video $video) {
                 return $video->getDisk()->exists($video->path);
             });

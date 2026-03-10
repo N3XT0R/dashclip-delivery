@@ -230,7 +230,7 @@ class VideoRepository
      * which may indicate they are in transition.
      * @return LazyCollection<Video>
      */
-    public function getPendingVideosWithHashInTransition(int $chunkSize = 10): LazyCollection
+    public function getPendingVideosWithHashInTransition(int $chunkSize = 1000): LazyCollection
     {
         return Video::query()
             ->where('processing_status', ProcessingStatusEnum::Pending->value)
@@ -249,7 +249,7 @@ class VideoRepository
      */
     public function getLazyFailedForRequeue(
         DateTimeInterface $failedBefore,
-        int $chunkSize = 100
+        int $chunkSize = 1000
     ): LazyCollection {
         return Video::query()
             ->where('processing_status', ProcessingStatusEnum::Failed->value)
