@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `nwidart/laravel-modules`.
     - Modules are generated using `php artisan module:make` and are bootstrapped via their own `ModuleServiceProvider`.
     - Added support for organizing Filament resources and related components within modules.
+- **Storage Integrity Cleanup**
+    - added maintenance command to remove video records whose files no longer exist in storage
 
 ### Changed
 
