@@ -230,12 +230,13 @@ class VideoRepository
      * which may indicate they are in transition.
      * @return LazyCollection<Video>
      */
-    public function getPendingVideosWithHashInTransition(int $chunkSize = 10): LazyCollection
+    public function getPendingVideosWithHashInTransition(int $chunkSize = 100): LazyCollection
     {
         return Video::query()
             ->where('processing_status', ProcessingStatusEnum::Pending->value)
             ->whereNotNull('hash')
             ->where('hash', '!=', '')
+            ->orderBy('id')
             ->lazy($chunkSize);
     }
 
