@@ -256,4 +256,9 @@ class VideoRepository
             ->orderBy('id')
             ->lazyById($chunkSize);
     }
+
+    public function delete(Video $video): bool
+    {
+        return $video->delete();
+    }
 }
