@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Video Ingest Flow**
+    - replaced the legacy monolithic ingest workflow with the new modular step-based ingest pipeline
 - **Video-Upload Structure**
     - Moved VideoUpload to CreateRecord and refactored the upload flow to be more modular and testable.
 - **Internationalization (i18n) Foundation**
@@ -68,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Video Ingest Flow**
+    - replaced the legacy monolithic ingest workflow with the new modular step-based ingest pipeline
 - **Notification Table Resource**
     - Removed the deprecated `NotificationTableResource` and `Notification` model.
     - Users should use the new user notification center available in the `/standard` panel for managing notifications.
