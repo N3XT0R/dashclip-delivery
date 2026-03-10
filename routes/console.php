@@ -16,7 +16,7 @@ Schedule::command(Commands\AssignExpire::class)
 Schedule::command(Commands\AssignUploader::class)->everyTenMinutes();
 Schedule::command(Commands\AssignVideosToTeams::class)->everyFifteenMinutes();
 
-#Dropbox
+# Dropbox
 Schedule::command(Commands\RefreshDropboxToken::class)
     ->everyMinute();
 
@@ -26,6 +26,6 @@ Schedule::command(Commands\ScanMailReplies::class)->everyTenMinutes();
 # Cleanup
 Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
 
-#video processing
+# video processing
 Schedule::command(Commands\VideoProcessing\RequeueStaleRunningCommand::class)->everyFifteenMinutes();
 Schedule::command(Commands\VideoProcessing\RequeueFailedVideosCommand::class)->everyFifteenMinutes();
