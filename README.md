@@ -77,16 +77,13 @@ php artisan migrate
 
 ## Useful Commands
 
-| Command                             | Description                                                                            |
-|-------------------------------------|----------------------------------------------------------------------------------------|
-| `php artisan ingest:unzip`          | Extracts ZIP files from a directory.                                                   |
-| `php artisan info:import`           | Imports clip information from an `info.csv`.                                           |
-| `php artisan assign:distribute`     | Distributes videos to channels.                                                        |
-| `php artisan notify:offers`         | Sends offer links via email.                                                           |
-| `php artisan assign:expire`         | Marks expired assignments and temporarily blocks channels.                             |
-| `php artisan dropbox:refresh-token` | Refreshes the Dropbox token.                                                           |
-| `php artisan weekly:run`            | Executes Expire → Distribute → Notify in sequence.                                     |
-| `php artisan video:cleanup`         | Deletes downloaded videos whose expiration has exceeded the specified number of weeks. |
+| Command                             | Description                                                |
+|-------------------------------------|------------------------------------------------------------|
+| `php artisan assign:distribute`     | Distributes videos to channels.                            |
+| `php artisan notify:offers`         | Sends offer links via email.                               |
+| `php artisan assign:expire`         | Marks expired assignments and temporarily blocks channels. |
+| `php artisan dropbox:refresh-token` | Refreshes the Dropbox token.                               |
+| `php artisan weekly:run`            | Executes Expire → Distribute → Notify in sequence.         |
 
 ## Documentation
 
