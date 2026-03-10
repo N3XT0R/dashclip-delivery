@@ -1,5 +1,7 @@
 <?php
 
+use App\Console\Commands\VideoProcessing\RequeueFailedVideosCommand;
+use App\Console\Commands\VideoProcessing\RequeueStaleRunningCommand;
 use App\Facades\Cfg;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -33,6 +35,9 @@ Schedule::command('assign:videos-to-teams')->everyFifteenMinutes();
 
 //video processing
 Schedule::command('video:process-videos')->everyMinute();
+
+Schedule::command(RequeueStaleRunningCommand::class)->everyFifteenMinutes();
+Schedule::command(RequeueFailedVideosCommand::class)->everyFifteenMinutes();
 
 Schedule::command('video:cleanup', [
     '--weeks' => Cfg::get('post_expiry_retention_weeks', 'default', 1, true),
