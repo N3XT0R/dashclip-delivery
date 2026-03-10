@@ -11,9 +11,18 @@ use App\Services\Ingest\IngestStateService;
 use Throwable;
 
 /**
- * Orchestrates the execution of ingest steps for a video.
- * It manages the processing status and step states using the IngestStateService.
- * The pipeline ensures that steps are executed in the correct order based on their dependencies and applicability.
+ * Orchestrates the ingest processing pipeline for a video.
+ *
+ * The pipeline executes a sequence of ingest steps that implement
+ * {@see IngestStepInterface}. Each step is executed only if:
+ *
+ * - the step has not already been completed
+ * - all declared dependencies are completed
+ * - the step is applicable to the current {@see IngestContext}
+ *
+ * Step states and the overall processing status are managed through
+ * the {@see IngestStateService}, allowing failed pipelines to be
+ * safely retried without repeating completed steps.
  */
 final readonly class IngestPipeline
 {
