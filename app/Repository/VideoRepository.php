@@ -257,6 +257,11 @@ class VideoRepository
             ->lazyById($chunkSize);
     }
 
+    /**
+     * Deletes a video and its associated file from storage, typically used for removing duplicates.
+     * @param Video $video
+     * @return bool
+     */
     public function delete(Video $video): bool
     {
         return $video->delete();

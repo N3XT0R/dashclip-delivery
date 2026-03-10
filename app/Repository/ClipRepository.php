@@ -51,7 +51,7 @@ class ClipRepository
     }
 
     /**
-     * @param  iterable  $bundleKeys
+     * @param iterable $bundleKeys
      * @return Collection
      */
     public function getVideoIdsForBundleKeys(iterable $bundleKeys): Collection
@@ -64,7 +64,7 @@ class ClipRepository
     }
 
     /**
-     * @param  iterable  $poolVideosIds
+     * @param iterable $poolVideosIds
      * @return Collection
      */
     public function getBundleVideoMap(iterable $poolVideosIds): Collection
@@ -86,7 +86,7 @@ class ClipRepository
 
     /**
      * Get all clips for a given video.
-     * @param  Video  $video
+     * @param Video $video
      * @return Collection<Clip>
      */
     public function getClipsByVideo(Video $video): Collection
@@ -96,12 +96,22 @@ class ClipRepository
 
     /**
      * Update the given clip with the provided data.
-     * @param  Clip  $clip
-     * @param  array  $data
+     * @param Clip $clip
+     * @param array $data
      * @return bool
      */
     public function update(Clip $clip, array $data): bool
     {
         return $clip->update($data);
+    }
+
+    /**
+     * Delete the given clip from the database.
+     * @param Clip $clip
+     * @return bool
+     */
+    public function delete(Clip $clip): bool
+    {
+        return $clip->delete();
     }
 }
