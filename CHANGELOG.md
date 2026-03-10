@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added support for organizing Filament resources and related components within modules.
 - **Video Storage Cleanup**
     - added maintenance command to remove database records for videos whose files are missing from
-      storage ([#257](https://github.com/N3XT0R/dashclip-delivery/issues/257))
+      storage ([#257](https://github.com/N3XT0R/dashclip-delivery/issues/257), [#225](https://github.com/N3XT0R/dashclip-delivery/issues/225))
 
 ### Changed
 
