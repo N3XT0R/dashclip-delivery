@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-// app/Console/Commands/AssignExpire.php
 namespace App\Console\Commands;
 
 use App\Facades\Cfg;
