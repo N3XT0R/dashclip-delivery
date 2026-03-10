@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Filament Panel Structure**
     - Moved `Filament/Resources`, `Filament/Pages`, `Filament/Widgets`, and `Filament/Clusters` to `Filament/Admin` to
       clearly separate the Admin panel from the default panel structure.
+- **console.php**
+    - replaced hardcoded command names with command class references
 
 ### Removed
 
