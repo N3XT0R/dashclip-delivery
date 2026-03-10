@@ -4,26 +4,29 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\VideoProcessing;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
+use App\Enum\ProcessingStatusEnum;
+use App\Repository\VideoRepository;
+use Illuminate\Support\LazyCollection;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(
     name: 'video-processing:requeue-failed',
     description: 'Requeue failed videos for processing',
 )]
-class RequeueFailedVideosCommand extends Command
+class RequeueFailedVideosCommand extends AbstractRequeueVideosCommand
 {
-
-    public function handle(): int
+    protected function getVideos(VideoRepository $videoRepository): LazyCollection
     {
-        try {
-        } catch (\Throwable $e) {
-            Log::error('Error requeuing failed videos: ' . $e->getMessage(), [
-                'exception' => $e,
-            ]);
-        }
-
-        return self::SUCCESS;
+        return $videoRepository->getLazyForRequeue(
+            now()->subHour(),
+            ProcessingStatusEnum::Failed,
+            chunkSize: 50,
+        );
     }
+
+    protected function getErrorLogMessage(): string
+    {
+        return 'Error requeuing failed videos';
+    }
+
 }

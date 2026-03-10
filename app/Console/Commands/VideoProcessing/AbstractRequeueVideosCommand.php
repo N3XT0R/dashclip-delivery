@@ -12,7 +12,7 @@ use Illuminate\Support\LazyCollection;
 
 abstract class AbstractRequeueVideosCommand extends Command
 {
-    public function handle(VideoRepository $videoRepository): int
+    final public function handle(VideoRepository $videoRepository): int
     {
         try {
             foreach ($this->getVideos($videoRepository) as $video) {

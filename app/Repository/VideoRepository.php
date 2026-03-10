@@ -250,7 +250,7 @@ class VideoRepository
      */
     public function getLazyForRequeue(
         DateTimeInterface $before,
-        ProcessingStatusEnum $processingStatusEnum = ProcessingStatusEnum::Failed,
+        ProcessingStatusEnum $processingStatusEnum,
         int $chunkSize = 1000
     ): LazyCollection {
         return Video::query()
