@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Job-based Ingest Execution**
     - Added `ProcessVideoIngestJob` to execute the ingest pipeline asynchronously.
     - Implemented `ShouldBeUnique` to prevent concurrent ingest runs for the same video.
+- **Ingest Job Recovery**
+    - added maintenance commands to requeue failed videos and stale running ingest jobs
+    - provides a fallback mechanism to recover from lost or interrupted queue jobs
 - **Event-driven Ingest Trigger**
     - Added `VideoCreatedForIngest` event to trigger the ingest workflow.
     - Added a dedicated listener to dispatch `ProcessVideoIngestJob`.
