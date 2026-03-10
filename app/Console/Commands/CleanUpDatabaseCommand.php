@@ -14,10 +14,10 @@ class CleanUpDatabaseCommand extends Command
 
     protected $description = 'Clean up the database by removing old or unnecessary records';
 
-    public function handle(CleanupActionTokens $cleanupDatabase): int
+    public function handle(): int
     {
         try {
-            $cleanupDatabase->handle();
+            app(CleanupActionTokens::class)->handle();
             app(CleanupTransitionState::class)->handle();
             app(DeleteVideosMissingFromStorage::class)->handle();
         } catch (\Throwable $e) {
