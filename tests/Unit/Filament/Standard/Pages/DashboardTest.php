@@ -16,6 +16,8 @@ class DashboardTest extends TestCase
     {
         $dashboard = new Dashboard();
         $widgets = $dashboard->getWidgets();
-        $this->assertSame([OnboardingWizard::class, AccountWidget::class], $widgets);
+
+        $this->assertContains(OnboardingWizard::class, $widgets);
+        $this->assertContains(AccountWidget::class, $widgets);
     }
 }

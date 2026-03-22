@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.10.0] - 2026-03-22
+
+### Added
+
+- Dashboard widget providing access to the test system (staging environment), allowing users to preview the upcoming
+  version and view its changelog without affecting the production system
+
 ## [3.9.0] - 2026-03-21
 
 ### Security
