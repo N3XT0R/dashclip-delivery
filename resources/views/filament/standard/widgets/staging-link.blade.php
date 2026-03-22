@@ -12,17 +12,29 @@
                 <p class="text-xs text-gray-500 mt-1">
                     Deine Tests haben keinen Einfluss auf den produktiven Ablauf.
                 </p>
-                @if (config('services.staging.changelog'))
+                <div class="mt-2 flex items-center gap-4 text-sm">
+                    @if (config('services.staging.changelog'))
+                        <a
+                            href="{{ config('services.staging.changelog') }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center text-primary-600 hover:underline"
+                        >
+                            Änderungen ansehen
+                            <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4 ml-1"/>
+                        </a>
+                    @endif
+
                     <a
-                        href="{{ config('services.staging.changelog') }}"
+                        href="https://github.com/N3XT0R/dashclip-delivery/issues"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="mt-2 inline-flex items-center text-sm text-primary-600 hover:underline"
+                        class="inline-flex items-center text-primary-600 hover:underline"
                     >
-                        Änderungen ansehen
+                        Feedback geben
                         <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4 ml-1"/>
                     </a>
-                @endif
+                </div>
             </div>
 
             <div class="shrink-0">
