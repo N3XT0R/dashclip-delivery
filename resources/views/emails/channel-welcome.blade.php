@@ -34,9 +34,9 @@
             </p>
 
             <p>
-                Nach der Bestätigung bekommst du automatisch die neuen Videos im gewohnten Rhythmus.
-                Wenn du das irgendwann nicht mehr möchtest, reicht eine kurze Mail an
-                <a href="mailto:{{ Cfg::get('email_admin_mail', 'email') }}">{{ Cfg::get('email_admin_mail', 'email') }}</a>.
+                {{__('messages.after_confirmation', [
+                     'email' => Cfg::get('email_admin_mail', 'email')
+                 ])}}
             </p>
 
             <p style="margin:24px 0 0 0;">

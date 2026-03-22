@@ -55,6 +55,7 @@ return [
         'channel_registered' => 'Dein Kanal wurde in <strong>:app_name</strong> eingetragen, damit du regelmäßig neue Videos direkt zur Veröffentlichung bekommst. Bevor der Versand startet, musst du nur kurz deine Teilnahme bestätigen.',
         'weekly_opt_in' => 'Wenn du mit dem wöchentlichen Versand einverstanden bist, klick einfach hier:',
         'approve' => 'Teilnahme bestätigen',
+        'after_confirmation' => 'Nach der Bestätigung bekommst du automatisch die neuen Videos im gewohnten Rhythmus. Wenn du das irgendwann nicht mehr möchtest, reicht eine kurze Mail an <a href="mailto::email">:email</a>.',
         'signature' => 'Viele Grüße<br>Dein :app_name-Team',
     ],
 ];
