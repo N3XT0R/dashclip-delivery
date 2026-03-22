@@ -14,8 +14,8 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            OnboardingWizard::class,
             StagingLinkWidget::class,
+            OnboardingWizard::class,
             AccountWidget::class,
         ];
     }
