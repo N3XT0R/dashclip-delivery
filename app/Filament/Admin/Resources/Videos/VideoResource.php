@@ -4,6 +4,8 @@ namespace App\Filament\Admin\Resources\Videos;
 
 use App\Application\Clips\GetPreviewUrl;
 use App\Enum\Users\RoleEnum;
+use App\Filament\Admin\Resources\Videos\Pages\ListVideos;
+use App\Filament\Admin\Resources\Videos\Pages\ViewVideo;
 use App\Filament\Admin\Resources\Videos\RelationManagers\AssignmentsRelationManager;
 use App\Filament\Admin\Resources\Videos\RelationManagers\ClipsRelationManager;
 use App\Models\Video;
@@ -19,9 +21,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 
-/**
- * @todo refactor for v4 (do no overload the class)
- */
 class VideoResource extends Resource
 {
     protected static ?string $model = Video::class;
@@ -129,8 +128,8 @@ class VideoResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \App\Filament\Admin\Resources\Videos\Pages\ListVideos::route('/'),
-            'view' => \App\Filament\Admin\Resources\Videos\Pages\ViewVideo::route('/{record}'),
+            'index' => ListVideos::route('/'),
+            'view' => ViewVideo::route('/{record}'),
             // 'edit'   => Pages\EditVideo::route('/{record}/edit'),
         ];
     }
