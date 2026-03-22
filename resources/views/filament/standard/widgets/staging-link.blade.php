@@ -7,7 +7,7 @@
                 </h2>
 
                 <p class="text-sm text-gray-600">
-                    Hier kannst du das Testsystem öffnen und neue Funktionen vorab ausprobieren.
+                    Teste neue Funktionen vor dem Release im Testsystem und gib Feedback zur kommenden Version.
                 </p>
                 <p class="text-xs text-gray-500 mt-1">
                     Deine Tests haben keinen Einfluss auf den produktiven Ablauf.
