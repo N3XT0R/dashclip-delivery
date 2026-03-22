@@ -84,15 +84,7 @@ class Channel extends Model
      */
     public function getApprovalToken(): string
     {
-        return hash('sha256', $this->email.config('app.key'));
-    }
-
-    public function getApprovalUrl(): string
-    {
-        return route('channels.approve', [
-            'channel' => $this->getKey(),
-            'token' => $this->getApprovalToken(),
-        ]);
+        return hash('sha256', $this->email . config('app.key'));
     }
 
     public function assignedTeams(): BelongsToMany

@@ -9,7 +9,6 @@ use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
 
 final class ChannelTest extends DatabaseTestCase
@@ -35,23 +34,6 @@ final class ChannelTest extends DatabaseTestCase
         $this->assertTrue($activeChannel->blockedVideos->first()->is($block->video));
         $this->assertTrue($activeBlocks->every(fn(ChannelVideoBlock $b) => $b->until->greaterThan(now())));
         $this->assertTrue($pausedChannel->is_video_reception_paused);
-    }
-
-    public function testApprovalHelpersReturnSignedData(): void
-    {
-        $channel = Channel::factory()->create([
-            'email' => 'creator@example.com',
-        ]);
-
-        $expectedToken = hash('sha256', $channel->email.config('app.key'));
-
-        $this->assertSame($expectedToken, $channel->getApprovalToken());
-
-        $approvalUrl = $channel->getApprovalUrl();
-        $this->assertTrue(str_contains($approvalUrl, (string)$channel->getKey()));
-        $this->assertTrue(str_contains($approvalUrl, $expectedToken));
-        $this->assertSame(URL::route('channels.approve', ['channel' => $channel, 'token' => $expectedToken]),
-            $approvalUrl);
     }
 
 
