@@ -48,4 +48,7 @@ return [
         'timeout' => env('FFMPEG_TIMEOUT', 3600),      // max. Laufzeit in Sekunden (1h)
         'idle_timeout' => env('FFMPEG_IDLE_TIMEOUT', null), // z. B. 60
     ],
+    'staging' => [
+        'url' => 'https://staging.dashclip-delivery.net/',
+    ],
 ];
