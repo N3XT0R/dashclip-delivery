@@ -50,13 +50,12 @@ return [
     ],
     'channel_welcome_email' => [
         'subject' => 'Welcome to the weekly video delivery',
-
-        'greeting' => 'Hello :name,',
-
-        'intro' =>
-            'Welcome to the weekly video delivery! We are glad to have you on board.',
-
-        'instruction' =>
-            'To get started, please confirm your access to the channel using the button below.',
+        'headline' => 'Please confirm your subscription to the weekly video delivery',
+        'greeting' => 'Hi :name,',
+        'channel_registered' => 'Your channel has been registered with <strong>:app_name</strong> so you can receive new videos regularly right when they are published. Before the delivery starts, please confirm your participation.',
+        'weekly_opt_in' => 'If you agree to receive the weekly delivery, simply click here:',
+        'approve' => 'Confirm subscription',
+        'after_confirmation' => 'After confirmation, you will automatically receive new videos at the usual intervals. If you no longer wish to receive them, just send a short email to <a href="mailto::email">:email</a>.',
+        'signature' => 'Best regards,<br>Your :app_name Team',
     ],
 ];
