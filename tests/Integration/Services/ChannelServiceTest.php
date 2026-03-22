@@ -86,42 +86,6 @@ class ChannelServiceTest extends DatabaseTestCase
         ], $dto->quota);
     }
 
-
-    public function testApproveUpdatesChannelWhenTokenIsValid(): void
-    {
-        // Arrange
-        $channel = Channel::factory()->create([
-            'is_video_reception_paused' => true,
-            'approved_at' => null,
-        ]);
-
-        $token = $channel->getApprovalToken();
-
-        // Act
-        $this->channelService->approve($channel, $token);
-
-        // Assert
-        $updated = $channel->fresh();
-
-        $this->assertFalse($updated->is_video_reception_paused);
-        $this->assertNotNull($updated->approved_at);
-    }
-
-    public function testApproveThrowsExceptionWhenTokenIsInvalid(): void
-    {
-        // Arrange
-        $channel = Channel::factory()->create([
-            'is_video_reception_paused' => true,
-            'approved_at' => null,
-        ]);
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Ungültiger Bestätigungslink.');
-
-        // Act
-        $this->channelService->approve($channel, 'invalid-token');
-    }
-
     public function testGetEligibleForWelcomeMailSelectsCorrectChannels(): void
     {
         // Clean slate

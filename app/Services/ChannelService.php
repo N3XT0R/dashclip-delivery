@@ -70,22 +70,6 @@ class ChannelService
     }
 
     /**
-     * @param Channel $channel
-     * @param string $approvalToken
-     * @return void
-     * @deprecated use ActionTokenService instead
-     */
-    public function approve(Channel $channel, string $approvalToken): void
-    {
-        $expected = $channel->getApprovalToken();
-        if ($approvalToken !== $expected) {
-            throw new InvalidArgumentException('Ungültiger Bestätigungslink.');
-        }
-
-        $this->channelRepository->approve($channel);
-    }
-
-    /**
      * Get the channels that should receive a welcome mail.
      *
      * This applies the same selection logic that was previously
