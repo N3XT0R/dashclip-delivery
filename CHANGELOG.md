@@ -84,6 +84,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **console.php**
     - removed obsolete scheduler cron entries
     - removed the corresponding command classes and related tests
+- **Channel Welcome Email / Approval Flow**
+    - removed `Channel::getApprovalToken()` from the model.
+    - removed the dedicated `ChannelApprovalController` and its associated route.
+    - cleaned up `ChannelService` by removing legacy approval token handling.
 
 ### Security
 
