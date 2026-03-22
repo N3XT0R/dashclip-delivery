@@ -51,6 +51,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Moved VideoUpload to CreateRecord and refactored the upload flow to be more modular and testable.
 - **Internationalization (i18n) Foundation**
     - migrated hardcoded German UI strings to the i18n system.
+- **Channel Welcome Email**
+    - migrated email content to the i18n system and replaced hardcoded strings with translation keys.
+    - replaced the custom token implementation with the centralized `TokenApprovalController` and `ActionTokenService`.
 - **Separation of Concerns**
     - Moved Business Logic to Services from Models and Controllers.
 - **Ingest Workflow**
