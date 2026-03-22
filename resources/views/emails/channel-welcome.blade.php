@@ -1,9 +1,9 @@
 @php use App\Facades\Cfg; @endphp
-        <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $subject ?? 'Bitte bestätige den wöchentlichen Video-Versand' }}</title>
+    <title>{{ $subject}}</title>
 </head>
 <body style="margin:0; padding:0; background-color:#f8fafc; font-family:Arial, sans-serif;">
 @include('emails.partials.header')
@@ -14,11 +14,9 @@
     <tr>
         <td style="padding:24px; color:#0f172a; line-height:1.6; font-size:16px;">
             <h1 style="margin:0 0 16px 0; font-size:20px; font-weight:700;">
-                Bitte bestätige den wöchentlichen Video-Versand
+                {{__('mails.channel_welcome_email.headline')}}
             </h1>
-
-            <p>Hi {{ $channel->name ?? 'Liebes Team' }},</p>
-
+            <p>{{__('mails.channel_welcome_email.greeting', ['name' => $channel->name ?? 'Liebes Team'])}}</p>
             <p>
                 dein Kanal wurde in <strong>{{ config('app.name') }}</strong> eingetragen,
                 damit du regelmäßig neue Videos direkt zur Veröffentlichung bekommst.

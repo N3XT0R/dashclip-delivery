@@ -50,8 +50,9 @@ return [
     ],
     'channel_welcome_email' => [
         'subject' => 'Willkommen beim wöchentlichen Video-Versand',
+        'headline' => 'Bitte bestätige den wöchentlichen Video-Versand',
 
-        'greeting' => 'Hallo :name,',
+        'greeting' => 'Hi :name,',
 
         'intro' =>
             'herzlich willkommen beim wöchentlichen Video-Versand! Wir freuen uns, dass du dabei bist.',
