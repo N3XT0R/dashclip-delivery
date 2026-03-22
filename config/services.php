@@ -50,6 +50,6 @@ return [
     ],
     'staging' => [
         'url' => 'https://staging.dashclip-delivery.net/',
-        'changelog' => 'https://github.com/N3XT0R/dashclip-delivery/blob/4.x/CHANGELOG.md',
+        'changelog' => 'https://staging.dashclip-delivery.net/changelog',
     ],
 ];
