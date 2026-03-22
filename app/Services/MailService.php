@@ -88,8 +88,8 @@ readonly class MailService
         $this->queueMail(
             $channel->email,
             new ChannelWelcomeMail(
-                $channel
-                , $actionToken
+                $channel,
+                $actionToken
             )
         );
     }
