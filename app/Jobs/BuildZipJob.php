@@ -21,17 +21,17 @@ class BuildZipJob implements ShouldQueue
     use Queueable, SerializesModels, Dispatchable, InteractsWithQueue;
 
     /** Max attempts before the job is marked as failed */
-    public int $tries = 1;            // set to 1 if you don't want auto-retries
+    public int $tries = 1;
 
     public int $timeout = 1200;       // 20 minutes for big ZIPs
 
     /**
      * Create a new job instance.
-     * @param  int|null  $batchId
-     * @param  int  $channelId
-     * @param  array  $assignmentIds
-     * @param  string  $ip
-     * @param  string|null  $userAgent
+     * @param int|null $batchId
+     * @param int $channelId
+     * @param array $assignmentIds
+     * @param string $ip
+     * @param string|null $userAgent
      * @todo refactor to DTO at v4.0
      */
     public function __construct(
@@ -50,8 +50,8 @@ class BuildZipJob implements ShouldQueue
 
     /**
      * Execute the job.
-     * @param  AssignmentService  $assignments
-     * @param  ZipService  $svc
+     * @param AssignmentService $assignments
+     * @param ZipService $svc
      * @return void
      */
     public function handle(AssignmentService $assignments, ZipService $svc): void
@@ -74,7 +74,7 @@ class BuildZipJob implements ShouldQueue
                 $assignmentIds
             );
 
-            $jobId = 'channel_'.$this->channelId.'_'.hash('sha256', implode('_', $this->assignmentIds));
+            $jobId = 'channel_' . $this->channelId . '_' . hash('sha256', implode('_', $this->assignmentIds));
         }
 
 
