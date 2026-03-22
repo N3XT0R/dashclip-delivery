@@ -50,9 +50,6 @@ Route::post('/zips/{batch}/{channel}', [ZipController::class, 'start'])->name('z
 Route::get('/zips/{id}/progress', [ZipController::class, 'progress'])->name('zips.progress');
 Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zips.download');
 
-Route::get('/channels/{channel}/approve/{token}', [ChannelApprovalController::class, 'approve'])
-    ->name('channels.approve');
-
 Route::get('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'update'])
     ->name('tokens.update');
 
