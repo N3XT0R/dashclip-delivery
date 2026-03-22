@@ -51,20 +51,10 @@ return [
     'channel_welcome_email' => [
         'subject' => 'Willkommen beim wöchentlichen Video-Versand',
         'headline' => 'Bitte bestätige den wöchentlichen Video-Versand',
-
         'greeting' => 'Hi :name,',
+        'channel_registered' => 'Dein Kanal wurde in <strong>:app_name</strong> eingetragen, damit du regelmäßig neue Videos direkt zur Veröffentlichung bekommst. Bevor der Versand startet, musst du nur kurz deine Teilnahme bestätigen.',
 
-        'intro' =>
-            'herzlich willkommen beim wöchentlichen Video-Versand! Wir freuen uns, dass du dabei bist.',
-
-        'instruction' =>
-            'Um loszulegen, bestätige bitte deinen Zugriff auf den Kanal über den folgenden Button.',
-
-        'approve' => 'Zugriff bestätigen',
-
-        'outro' =>
-            'Nach der Bestätigung erhältst du Zugriff auf die Inhalte des Kanals und kannst diese gemäß den erteilten Berechtigungen nutzen.',
-
+        'approve' => 'Teilnahme bestätigen',
         'signature' => 'Viele Grüße<br>Dein :app-Team',
     ],
 ];

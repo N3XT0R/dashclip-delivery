@@ -18,9 +18,7 @@
             </h1>
             <p>{{__('mails.channel_welcome_email.greeting', ['name' => $channel->name ?? 'Liebes Team'])}}</p>
             <p>
-                dein Kanal wurde in <strong>{{ config('app.name') }}</strong> eingetragen,
-                damit du regelmäßig neue Videos direkt zur Veröffentlichung bekommst.
-                Bevor der Versand startet, musst du nur kurz deine Teilnahme bestätigen.
+                {{__('mails.channel_welcome_email.channel_registered', ['app_name' => config('app.name')])}}
             </p>
 
             <p style="margin-top:16px;">
@@ -31,7 +29,7 @@
                 <a href="{{ $approveUrl }}"
                    style="display:inline-block; padding:12px 24px; background-color:#2563eb; color:#ffffff;
                           text-decoration:none; border-radius:6px; font-weight:bold;">
-                    Teilnahme bestätigen
+                    {{__('mails.channel_welcome_email.approve')}}
                 </a>
             </p>
 
