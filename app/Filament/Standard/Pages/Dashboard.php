@@ -13,10 +13,15 @@ class Dashboard extends BaseDashboard
 {
     public function getWidgets(): array
     {
-        return [
-            StagingLinkWidget::class,
+        $widgets = [
             OnboardingWizard::class,
             AccountWidget::class,
         ];
+
+        if (app()->environment('production', 'local')) {
+            $widgets[] = StagingLinkWidget::class;
+        }
+
+        return $widgets;
     }
 }
