@@ -12,19 +12,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Video Ingest Pipeline** [#265](https://github.com/N3XT0R/dashclip-delivery/issues/265)
-    - introduced a modular ingest pipeline architecture to process videos through atomic workflow steps
-    - added `IngestPipeline`, `IngestStepInterface`, and `IngestContext` to orchestrate and structure the ingest
-      workflow
-    - added step-based ingest processing including:
+    - introduced a deterministic, step-based ingest pipeline that processes videos through isolated and reproducible
+      workflow steps
+    - added `IngestPipeline`, `IngestStepInterface`, and `IngestContext` to explicitly model the ingest workflow and its
+      data flow
+    - implemented idempotent step execution, allowing safe reprocessing of individual steps without affecting already
+      completed ones
+    - added dependency-aware step execution so that only incomplete or invalid steps and their dependent steps are
+      re-run during retries
+    - added `IngestStepEnum` to centralize and standardize ingest step identifiers
+    - added `IngestStateService` to persist and track per-video workflow progress and step results via `video.meta`
+    - enables full traceability of ingest progress, including detection of failed or stuck steps on a per-video basis
+    - added `ProcessVideoIngestJob` for asynchronous and decoupled pipeline execution
+    - implemented `ShouldBeUnique` to prevent concurrent ingest runs for the same video
+    - added maintenance commands to requeue failed or stale ingest jobs
+    - provides a robust recovery mechanism for interrupted workflows (e.g. worker crashes or restarts) by resuming only
+      incomplete steps
+    - includes step-based processing such as:
         - `LookupAndUpdateVideoHashStep`
         - `GeneratePreviewForVideoClipsStep`
         - `UploadVideoToDropboxStep`
-    - added `IngestStepEnum` to centralize ingest step identifiers
-    - added `IngestStateService` to manage ingest workflow state via `video.meta`
-    - added `ProcessVideoIngestJob` for asynchronous pipeline execution
-    - implemented `ShouldBeUnique` to prevent concurrent ingest runs for the same video
-    - added maintenance commands to requeue failed and stale running ingest jobs
-    - provides a recovery mechanism for interrupted or lost queue jobs (e.g. queue-worker server crashes or restarts)
 - **Event-driven Ingest Trigger**
     - Added `VideoCreatedForIngest` event to trigger the ingest workflow.
     - Added a dedicated listener to dispatch `ProcessVideoIngestJob`.
