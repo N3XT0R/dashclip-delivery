@@ -22,7 +22,7 @@
             </p>
 
             <p style="margin-top:16px;">
-                Wenn du mit dem wöchentlichen Versand einverstanden bist, klick einfach hier:
+                {{__('mails.channel_welcome_email.weekly_opt_in')}}
             </p>
 
             <p style="text-align:center; margin:24px 0;">
@@ -40,7 +40,7 @@
             </p>
 
             <p style="margin:24px 0 0 0;">
-                Viele Grüße<br>Dein {{ config('app.name') }}-Team
+                {{__('mails.channel_welcome_email.signature', ['app_name' => config('app.name')])}}
             </p>
         </td>
     </tr>

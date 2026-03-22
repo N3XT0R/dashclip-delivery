@@ -53,8 +53,8 @@ return [
         'headline' => 'Bitte bestätige den wöchentlichen Video-Versand',
         'greeting' => 'Hi :name,',
         'channel_registered' => 'Dein Kanal wurde in <strong>:app_name</strong> eingetragen, damit du regelmäßig neue Videos direkt zur Veröffentlichung bekommst. Bevor der Versand startet, musst du nur kurz deine Teilnahme bestätigen.',
-
+        'weekly_opt_in' => 'Wenn du mit dem wöchentlichen Versand einverstanden bist, klick einfach hier:',
         'approve' => 'Teilnahme bestätigen',
-        'signature' => 'Viele Grüße<br>Dein :app-Team',
+        'signature' => 'Viele Grüße<br>Dein :app_name-Team',
     ],
 ];
