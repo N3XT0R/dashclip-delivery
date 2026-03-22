@@ -21,7 +21,7 @@ final readonly class ActionTokenService
 
     /**
      * Issue a new action token.
-     * @param string $purpose
+     * @param TokenPurposeEnum $purpose
      * @param Model|null $subject
      * @param User|null $issuedForUser
      * @param DateTimeInterface|null $expiresAt

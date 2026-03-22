@@ -48,4 +48,22 @@ return [
 
         'signature' => 'Viele Grüße<br>Dein :app-Team',
     ],
+    'channel_welcome_email' => [
+        'subject' => 'Willkommen beim wöchentlichen Video-Versand',
+
+        'greeting' => 'Hallo :name,',
+
+        'intro' =>
+            'herzlich willkommen beim wöchentlichen Video-Versand! Wir freuen uns, dass du dabei bist.',
+
+        'instruction' =>
+            'Um loszulegen, bestätige bitte deinen Zugriff auf den Kanal über den folgenden Button.',
+
+        'approve' => 'Zugriff bestätigen',
+
+        'outro' =>
+            'Nach der Bestätigung erhältst du Zugriff auf die Inhalte des Kanals und kannst diese gemäß den erteilten Berechtigungen nutzen.',
+
+        'signature' => 'Viele Grüße<br>Dein :app-Team',
+    ],
 ];

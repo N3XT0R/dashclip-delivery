@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
+use Random\RandomException;
 
 readonly class MailService
 {
@@ -74,10 +75,23 @@ readonly class MailService
     /**
      * Send channel welcome mail to the channel email.
      * @param Channel $channel
+     * @throws RandomException
      */
     public function sendChannelWelcomeMail(Channel $channel): void
     {
-        $this->queueMail($channel->email, new ChannelWelcomeMail($channel));
+        $tokenService = app(ActionTokenService::class);
+        $actionToken = $tokenService->issue(
+            purpose: TokenPurposeEnum::CHANNEL_ACTIVATION_APPROVAL,
+            subject: $channel,
+            expiresAt: Carbon::now()->addMonth(),
+        );
+        $this->queueMail(
+            $channel->email,
+            new ChannelWelcomeMail(
+                $channel
+                , $actionToken
+            )
+        );
     }
 
     /**

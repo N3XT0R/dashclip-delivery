@@ -48,4 +48,15 @@ return [
 
         'signature' => 'Best regards<br>Your :app team',
     ],
+    'channel_welcome_email' => [
+        'subject' => 'Welcome to the weekly video delivery',
+
+        'greeting' => 'Hello :name,',
+
+        'intro' =>
+            'Welcome to the weekly video delivery! We are glad to have you on board.',
+
+        'instruction' =>
+            'To get started, please confirm your access to the channel using the button below.',
+    ],
 ];
