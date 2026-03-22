@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AssignmentDownloadController;
-use App\Http\Controllers\ChannelApprovalController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\TokenApprovalController;
