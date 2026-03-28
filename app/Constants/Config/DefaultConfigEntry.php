@@ -10,4 +10,5 @@ final readonly class DefaultConfigEntry
     public const string ASSIGN_EXPIRE_COOLDOWN_DAYS = 'assign_expire_cooldown_days';
     public const string EXPIRE_AFTER_DAYS = 'expire_after_days';
     public const string POST_EXPIRY_RETENTION_WEEKS = 'post_expiry_retention_weeks';
+    public const string INGEST_INBOX_ABSOLUTE_PATH = 'ingest_inbox_absolute_path';
 }

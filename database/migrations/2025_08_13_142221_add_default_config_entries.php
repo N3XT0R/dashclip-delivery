@@ -40,7 +40,7 @@ return new class extends Migration {
                 'is_visible' => 1,
             ],
             [
-                'key' => 'ingest_inbox_absolute_path',
+                'key' => DefaultConfigEntry::INGEST_INBOX_ABSOLUTE_PATH,
                 'value' => '/srv/ingest/pending/',
                 'cast_type' => 'string',
                 'is_visible' => 1,
