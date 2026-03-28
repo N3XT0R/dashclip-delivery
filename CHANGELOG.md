@@ -49,6 +49,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - [#257](https://github.com/N3XT0R/dashclip-delivery/issues/257)
         - [#225](https://github.com/N3XT0R/dashclip-delivery/issues/225)
         - [#224](https://github.com/N3XT0R/dashclip-delivery/issues/224)
+- **Config**
+    - introduced constant classes for config categories:
+        - `DefaultConfigEntry`
+        - `EmailConfigEntry`
+        - `FFMPEGConfigEntry`
 
 ### Changed
 
@@ -77,6 +82,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       clearly separate the Admin panel from the default panel structure.
 - **console.php**
     - replaced hardcoded scheduler command names with command class references
+- **Config**
+    - replaced hardcoded config category strings in `ConfigService` calls with constants from:
+        - `DefaultConfigEntry`
+        - `EmailConfigEntry`
+        - `FFMPEGConfigEntry`
 
 ### Removed
 
