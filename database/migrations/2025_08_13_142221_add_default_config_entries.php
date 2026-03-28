@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\Config\DefaultConfigEntry;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,7 @@ return new class extends Migration {
                 'is_visible' => 1,
             ],
             [
-                'key' => 'assign_expire_cooldown_days',
+                'key' => DefaultConfigEntry::ASSIGN_EXPIRE_COOLDOWN_DAYS,
                 'value' => '14',
                 'cast_type' => 'int',
                 'is_visible' => 1,

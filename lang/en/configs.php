@@ -18,7 +18,7 @@ return [
         EmailConfigEntry::REMINDER_DAYS => 'Number of days before expiration for reminder emails',
         EmailConfigEntry::FAQ_EMAIL => 'Send FAQ email when replying to noreply messages?',
         'expire_after_days' => 'Assignment validity in days',
-        'assign_expire_cooldown_days' => 'Cooldown days per (channel, video)',
+        DefaultConfigEntry::ASSIGN_EXPIRE_COOLDOWN_DAYS => 'Cooldown days per (channel, video)',
         'ingest_inbox_absolute_path' => 'Inbox path for videos (absolute)',
         'post_expiry_retention_weeks' => 'Retention period after expiration (in weeks)',
         FFMPEGConfigEntry::BINARY => 'Path to FFmpeg binary (e.g. /usr/bin/ffmpeg)',
