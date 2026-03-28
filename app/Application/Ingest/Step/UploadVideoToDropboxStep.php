@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Application\Ingest\Step;
 
 use App\Application\Ingest\Context\IngestContext;
+use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\Ingest\IngestStepEnum;
+use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Upload\DropboxUploadService;
 
 readonly class UploadVideoToDropboxStep implements IngestStepInterface
 {
     public function __construct(
-        private DropboxUploadService $uploadService
+        private DropboxUploadService $uploadService,
+        private ConfigServiceInterface $configService
     ) {
     }
 
@@ -42,6 +45,15 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
         }
 
         $video = $context->video;
+        $defaultFileSystem = (string)$this->configService->get(
+            DefaultConfigEntry::DEFAULT_FILE_SYSTEM,
+            'default',
+            'local'
+        );
+
+        if ($defaultFileSystem !== 'dropbox') {
+            return $context;
+        }
 
         $this->uploadService->uploadFile(
             sourceDisk: $video->getDisk(),
