@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Constants\Config\DefaultConfigEntry;
+
 return [
     'labels' => [
         'description' => 'Description',
@@ -23,6 +25,6 @@ return [
         'ffmpeg_preset' => 'FFmpeg preset for speed/quality (e.g. medium)',
         'ffmpeg_crf' => 'CRF quality value 0–51 (e.g. 23)',
         'ffmpeg_video_args' => 'Additional FFmpeg options (e.g. -movflags +faststart)',
-        'default_file_system' => 'Default disk for video storage',
+        DefaultConfigEntry::DEFAULT_FILE_SYSTEM => 'Default disk for video storage',
     ],
 ];
