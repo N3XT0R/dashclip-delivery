@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Constants\Config\DefaultConfigEntry;
 use App\Facades\Cfg;
 use App\Services\AssignmentExpirer;
 use Illuminate\Console\Command;
@@ -22,7 +23,11 @@ class AssignExpire extends Command
     {
         $cooldownDays = (int)$this->option('cooldown-days');
         if (0 === $cooldownDays) {
-            $cooldownDays = (int)Cfg::get('assign_expire_cooldown_days', 'default', 14);
+            $cooldownDays = (int)Cfg::get(
+                DefaultConfigEntry::ASSIGN_EXPIRE_COOLDOWN_DAYS,
+                'default',
+                14
+            );
         }
         $expiredCount = $this->expirer->expire($cooldownDays);
         $this->info("Expired: {$expiredCount}");
