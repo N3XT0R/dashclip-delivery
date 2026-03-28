@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Constants\Config\DefaultConfigEntry;
+use App\Constants\Config\EmailConfigEntry;
 use App\Constants\Config\FFMPEGConfigEntry;
 
 return [
@@ -10,12 +11,12 @@ return [
         'description' => 'Description',
     ],
     'keys' => [
-        'email_admin_mail' => 'Admin email address',
-        'email_your_name' => 'Your display name',
-        'email_get_bcc_notification' => 'Receive channel notification emails as BCC',
-        'email_reminder' => 'Send reminder emails',
-        'email_reminder_days' => 'Number of days before expiration for reminder emails',
-        'faq_email' => 'Send FAQ email when replying to noreply messages?',
+        EmailConfigEntry::ADMIN_EMAIL => 'Admin email address',
+        EmailConfigEntry::YOUR_NAME => 'Your display name',
+        EmailConfigEntry::GET_BCC_NOTIFICATIONS => 'Receive channel notification emails as BCC',
+        EmailConfigEntry::REMINDER => 'Send reminder emails',
+        EmailConfigEntry::REMINDER_DAYS => 'Number of days before expiration for reminder emails',
+        EmailConfigEntry::FAQ_EMAIL => 'Send FAQ email when replying to noreply messages?',
         'expire_after_days' => 'Assignment validity in days',
         'assign_expire_cooldown_days' => 'Cooldown days per (channel, video)',
         'ingest_inbox_absolute_path' => 'Inbox path for videos (absolute)',
