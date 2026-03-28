@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\StatusEnum;
 use App\Facades\Cfg;
 use Illuminate\Database\Eloquent\Builder;
@@ -163,7 +164,7 @@ class Assignment extends Model
     public function setExpiresAt(?int $ttlDays = null): void
     {
         if (null === $ttlDays) {
-            $ttlDays = Cfg::get('expire_after_days', 'default', 6);
+            $ttlDays = Cfg::get(DefaultConfigEntry::EXPIRE_AFTER_DAYS, 'default', 6);
         }
 
         $expiry = $this->expires_at

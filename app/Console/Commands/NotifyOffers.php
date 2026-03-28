@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Constants\Config\DefaultConfigEntry;
 use App\Facades\Cfg;
 use App\Models\Batch;
 use App\Services\OfferNotifier;
@@ -24,7 +25,7 @@ class NotifyOffers extends Command
     {
         parent::configureUsingFluentDefinition();
         $option = $this->getDefinition()->getOption('ttl-days');
-        $option->setDefault(Cfg::get('expire_after_days', 'default', 6, true));
+        $option->setDefault(Cfg::get(DefaultConfigEntry::EXPIRE_AFTER_DAYS, 'default', 6, true));
     }
 
     public function handle(): int

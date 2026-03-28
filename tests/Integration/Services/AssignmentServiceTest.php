@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services;
 
+use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\StatusEnum;
 use App\Facades\Cfg;
 use App\Models\Assignment;
@@ -201,7 +202,7 @@ class AssignmentServiceTest extends DatabaseTestCase
                 'download_token' => null,
             ]);
 
-        $ttlDays = Cfg::get('expire_after_days', 'default', 6);
+        $ttlDays = Cfg::get(DefaultConfigEntry::EXPIRE_AFTER_DAYS, 'default', 6);
 
         // Act: prepare for download with TTL = 24 hours
         $url = $this->service->prepareDownload($assignment, $ttlDays);

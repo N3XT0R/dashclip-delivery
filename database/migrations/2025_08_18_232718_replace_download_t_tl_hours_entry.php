@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\Config\DefaultConfigEntry;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 
@@ -15,7 +16,7 @@ return new class extends Migration {
         $defaultId = DB::table('config_categories')->where('slug', 'default')->value('id');
         DB::table('configs')
             ->insert([
-                'key' => 'expire_after_days',
+                'key' => DefaultConfigEntry::EXPIRE_AFTER_DAYS,
                 'value' => '6',
                 'cast_type' => 'int',
                 'is_visible' => 1,

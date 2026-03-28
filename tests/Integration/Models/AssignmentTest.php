@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Models;
 
+use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\StatusEnum;
 use App\Facades\Cfg;
 use App\Models\Assignment;
@@ -100,7 +101,7 @@ final class AssignmentTest extends DatabaseTestCase
 
     public function testSetExpiresAtMutateAttributesToConfigTTLDate(): void
     {
-        $value = Cfg::get('expire_after_days', 'default', 6);
+        $value = Cfg::get(DefaultConfigEntry::EXPIRE_AFTER_DAYS, 'default', 6);
         $assignment = Assignment::factory()->create([
             'expires_at' => null,
             'status' => StatusEnum::QUEUED->value,
