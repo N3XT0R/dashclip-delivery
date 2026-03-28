@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\Config\DefaultConfigEntry;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,7 @@ return new class extends Migration {
         $defaultId = DB::table('config_categories')->where('slug', 'default')->value('id');
 
         DB::table('configs')->insert([
-            'key' => 'default_file_system',
+            'key' => DefaultConfigEntry::DEFAULT_FILE_SYSTEM,
             'value' => 'dropbox',
             'cast_type' => 'string',
             'is_visible' => 1,
