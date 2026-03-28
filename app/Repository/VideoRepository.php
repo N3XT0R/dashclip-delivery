@@ -269,4 +269,14 @@ class VideoRepository
     {
         return $video->delete();
     }
+
+    /**
+     * Saves the video model, which can be used for both creating new records and updating existing ones.
+     * @param Video $video
+     * @return bool
+     */
+    public function save(Video $video): bool
+    {
+        return $video->save();
+    }
 }

@@ -7,6 +7,7 @@ namespace App\Application\Ingest\Step;
 use App\Application\Ingest\Context\IngestContext;
 use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\Ingest\IngestStepEnum;
+use App\Repository\VideoRepository;
 use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Upload\DropboxUploadService;
 
@@ -14,7 +15,8 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
 {
     public function __construct(
         private DropboxUploadService $uploadService,
-        private ConfigServiceInterface $configService
+        private ConfigServiceInterface $configService,
+        private VideoRepository $videoRepository,
     ) {
     }
 
@@ -62,7 +64,7 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
         );
 
         $video->disk = 'dropbox';
-        $video->save();
+        $this->videoRepository->save($video);
 
         return $context;
     }
