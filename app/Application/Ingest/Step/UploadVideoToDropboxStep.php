@@ -61,6 +61,9 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
             targetPath: $video->path
         );
 
+        $video->disk = 'dropbox';
+        $video->save();
+
         return $context;
     }
 }
