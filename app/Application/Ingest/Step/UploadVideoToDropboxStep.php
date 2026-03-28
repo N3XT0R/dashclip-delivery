@@ -57,14 +57,19 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
             return $context;
         }
 
+        $sourceDisk = clone $video->getDisk();
+        $path = $video->path;
+
         $this->uploadService->uploadFile(
-            sourceDisk: $video->getDisk(),
-            relativePath: $video->path,
-            targetPath: $video->path
+            sourceDisk: $sourceDisk,
+            relativePath: $path,
+            targetPath: $path
         );
 
         $video->disk = 'dropbox';
-        $this->videoRepository->save($video);
+        if ($this->videoRepository->save($video)) {
+            $sourceDisk->delete($path);
+        }
 
         return $context;
     }
