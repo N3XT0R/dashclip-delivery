@@ -24,6 +24,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        DB::table('configs')->where('key', 'default_file_system')->delete();
+        DB::table('configs')->where('key', DefaultConfigEntry::DEFAULT_FILE_SYSTEM)->delete();
     }
 };
