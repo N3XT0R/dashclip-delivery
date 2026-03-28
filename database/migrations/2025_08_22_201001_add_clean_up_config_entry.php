@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\Config\DefaultConfigEntry;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 
@@ -13,7 +14,7 @@ return new class extends Migration {
         $id = DB::table('config_categories')->where('slug', 'default')->value('id');
         DB::table('configs')
             ->insert([
-                'key' => 'post_expiry_retention_weeks',
+                'key' => DefaultConfigEntry::POST_EXPIRY_RETENTION_WEEKS,
                 'value' => 1,
                 'cast_type' => 'int',
                 'config_category_id' => $id,
@@ -28,6 +29,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        DB::table('configs')->where('key', 'post_expiry_retention_weeks')->delete();
+        DB::table('configs')
+            ->where('key', DefaultConfigEntry::POST_EXPIRY_RETENTION_WEEKS)
+            ->delete();
     }
 };

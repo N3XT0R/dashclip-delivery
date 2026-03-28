@@ -20,7 +20,7 @@ return [
         DefaultConfigEntry::EXPIRE_AFTER_DAYS => 'Assignment validity in days',
         DefaultConfigEntry::ASSIGN_EXPIRE_COOLDOWN_DAYS => 'Cooldown days per (channel, video)',
         DefaultConfigEntry::INGEST_INBOX_ABSOLUTE_PATH => 'Inbox path for videos (absolute)',
-        'post_expiry_retention_weeks' => 'Retention period after expiration (in weeks)',
+        DefaultConfigEntry::POST_EXPIRY_RETENTION_WEEKS => 'Retention period after expiration (in weeks)',
         FFMPEGConfigEntry::BINARY => 'Path to FFmpeg binary (e.g. /usr/bin/ffmpeg)',
         FFMPEGConfigEntry::VIDEO_CODEC => 'Video codec for previews (e.g. libx264)',
         FFMPEGConfigEntry::AUDIO_CODEC => 'Audio codec for previews (e.g. aac)',
