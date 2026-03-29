@@ -104,8 +104,10 @@ final readonly class IngestStateService
         data_set($meta, "ingest.steps.{$step->value}.error", null);
         data_set($meta, "ingest.steps.{$step->value}.finished_at", now()->toDateTimeString());
 
+        $result = $this->persistMeta($video, $meta);
         VideoCompleted::dispatch($video, $this->videoRepository->getUploaderUser($video));
-        return $this->persistMeta($video, $meta);
+
+        return $result;
     }
 
     /**
