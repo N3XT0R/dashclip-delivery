@@ -14,7 +14,11 @@ class ScanMailReplies extends Command
 
     public function handle(MailReplyScanner $scanner): int
     {
-        $scanner->scan();
+        if (defined('IS_TESTING') || app()->environment('production')) {
+            $this->info('Scanning for mail replies and bounces...');
+            $scanner->scan();
+        }
+
         return self::SUCCESS;
     }
 }
