@@ -164,6 +164,8 @@ readonly class MailService
      * Send FAQ no-reply mail to the given email address.
      * @param string $email
      * @return void
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
      */
     public function sendFaqMail(string $email): void
     {
