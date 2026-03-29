@@ -2,7 +2,6 @@
 
 namespace App\Filament\Standard\Resources;
 
-use App\Application\Ingest\GetVideoIngestStatusUseCase;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
@@ -12,6 +11,7 @@ use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
@@ -65,36 +65,11 @@ class VideoResource extends Resource
                                             $record->clips()?->first()?->getAttribute('duration')
                                         );
                                     }),
-                                TextEntry::make('processing_status')
+                                ViewEntry::make('processing_status')
+                                    ->view('filament.standard.components.infolists.ingest.status')
                                     ->label('filament.video_resource.view.fields.processing_status')
                                     ->translateLabel()
-                                    ->badge()
-                                    ->formatStateUsing(function (Video $record) {
-                                        if ($record->processing_status === null) {
-                                            return __('status.processing_status.unknown');
-                                        }
-                                        return __('status.processing_status.' . $record->processing_status->value);
-                                    })
-                                    ->tooltip(function (Video $record) {
-                                        $status = app(GetVideoIngestStatusUseCase::class)->handle($record);
-
-                                        if ($status === null) {
-                                            return null;
-                                        }
-
-                                        $currentStepText = $status->currentStep !== null
-                                            ? __('ingest.status.current_step', [
-                                                'step' => __('ingest.steps.' . $status->currentStep),
-                                            ])
-                                            : __('ingest.status.no_active_step');
-
-                                        return __('ingest.status.tooltip', [
-                                            'completed' => $status->completedSteps,
-                                            'total' => $status->totalSteps,
-                                            'percent' => $status->progressPercent,
-                                            'current_step' => $currentStepText,
-                                        ]);
-                                    }),
+                                    ->columnSpanFull(),
                                 TextEntry::make('bundle_key')
                                     ->label('filament.video_resource.view.fields.bundle_key')
                                     ->translateLabel()

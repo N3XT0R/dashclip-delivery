@@ -1,12 +1,21 @@
 <?php
 
-declare(strict_types=1);
 return [
     'status' => [
-        'tooltip' => ':completed/:total completed (:percent%) • :current_step',
+        'progress' => 'Ingest progress',
+        'progress_label' => ':completed/:total completed (:percent%)',
         'current_step' => 'Current step: :step',
         'no_active_step' => 'No active step',
+        'current' => 'current',
     ],
+
+    'step_status' => [
+        'pending' => 'Pending',
+        'running' => 'Running',
+        'completed' => 'Completed',
+        'failed' => 'Failed',
+    ],
+
     'steps' => [
         'lookup_and_update_video_hash' => 'Calculate and update video hash',
         'generate_preview_for_clips' => 'Generate preview for clips',
