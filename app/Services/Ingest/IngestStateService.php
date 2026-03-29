@@ -33,10 +33,23 @@ final readonly class IngestStateService
     {
         $video->processing_status = $status;
 
-        return $this->videoRepository->updateProcessingStatus(
+        $result = $this->videoRepository->updateProcessingStatus(
             $video,
             $status
         );
+
+        $uploader = $this->videoRepository->getUploaderUser($video);
+
+        switch ($status) {
+            case ProcessingStatusEnum::Completed:
+                VideoCompleted::dispatch($video, $uploader);
+                break;
+            case ProcessingStatusEnum::Failed:
+                VideoFailed::dispatch($video, $uploader);
+                break;
+        }
+
+        return $result;
     }
 
     /**
@@ -105,10 +118,7 @@ final readonly class IngestStateService
         data_set($meta, "ingest.steps.{$step->value}.error", null);
         data_set($meta, "ingest.steps.{$step->value}.finished_at", now()->toDateTimeString());
 
-        $result = $this->persistMeta($video, $meta);
-        VideoCompleted::dispatch($video, $this->videoRepository->getUploaderUser($video));
-
-        return $result;
+        return $this->persistMeta($video, $meta);
     }
 
     /**
@@ -129,9 +139,7 @@ final readonly class IngestStateService
             'type' => $e::class,
         ]);
 
-        $result = $this->persistMeta($video, $meta);
-        VideoFailed::dispatch($video, $this->videoRepository->getUploaderUser($video));
-        return $result;
+        return $this->persistMeta($video, $meta);
     }
 
     /**
