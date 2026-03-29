@@ -60,7 +60,7 @@ final readonly class IngestStateService
      */
     public function isStepCompleted(Video $video, IngestStepEnum $step): bool
     {
-        return 'completed' === data_get(
+        return ProcessingStatusEnum::Completed->value === data_get(
                 $video->meta,
                 "ingest.steps.{$step->value}.status"
             );
