@@ -18,6 +18,16 @@
 @endphp
 
 <div class="space-y-4">
+    <div class="flex flex-col gap-1">
+        <h3 class="text-sm font-semibold text-gray-950 dark:text-white">
+            {{ __('ingest.status.heading') }}
+        </h3>
+
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ __('ingest.status.description') }}
+        </p>
+    </div>
+
     <div class="flex items-center gap-3">
         <x-filament::badge :color="$processingStatusColor">
             {{ $processingStatusLabel }}
@@ -49,7 +59,8 @@
             </div>
         </div>
 
-        <div class="rounded-xl border border-gray-200 bg-white divide-y divide-gray-200">
+        <div
+            class="rounded-xl border border-gray-200 bg-white divide-y divide-gray-200 dark:border-white/10 dark:bg-white/5 dark:divide-white/10">
             @foreach ($ingestStatus->steps as $step)
                 @php
                     $translatedStep = __('ingest.steps.' . $step->name);
@@ -67,12 +78,12 @@
 
                 <div class="flex items-center justify-between px-4 py-3">
                     <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-950">
+                        <span class="text-sm font-medium text-gray-950 dark:text-white">
                             {{ $stepLabel }}
                         </span>
 
                         @if ($step->isCurrent)
-                            <span class="text-xs text-gray-500">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
                                 {{ __('ingest.status.current') }}
                             </span>
                         @endif
