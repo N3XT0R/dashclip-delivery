@@ -1,9 +1,10 @@
 @php
+    use App\Enum\ProcessingStatusEnum;
     $video = $record->video ?? $record;
 
     $shouldPoll = !$video?->preview_url
-        && $video?->processing_status !== \App\Enum\ProcessingStatusEnum::Completed
-        && $video?->processing_status !== \App\Enum\ProcessingStatusEnum::Failed;
+        && $video?->processing_status !== ProcessingStatusEnum::Completed
+        && $video?->processing_status !== ProcessingStatusEnum::Failed;
 @endphp
 
 <div @if($shouldPoll) wire:poll.5s @endif>
