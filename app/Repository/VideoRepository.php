@@ -279,4 +279,18 @@ class VideoRepository
     {
         return $video->save();
     }
+
+    /**
+     * Updates the processing status of a video by its ID,
+     * which is useful for tracking the progress of video processing tasks.
+     * @param Video $video
+     * @param ProcessingStatusEnum $status
+     * @return bool
+     */
+    public function updateProcessingStatus(Video $video, ProcessingStatusEnum $status): bool
+    {
+        return $this->update($video, [
+            'processing_status' => $status->value,
+        ]);
+    }
 }

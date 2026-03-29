@@ -31,9 +31,10 @@ final readonly class IngestStateService
     {
         $video->processing_status = $status;
 
-        return $this->videoRepository->update($video, [
-            'processing_status' => $status->value,
-        ]);
+        return $this->videoRepository->updateProcessingStatus(
+            $video,
+            $status
+        );
     }
 
     /**
