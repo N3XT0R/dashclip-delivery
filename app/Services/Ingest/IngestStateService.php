@@ -6,6 +6,7 @@ namespace App\Services\Ingest;
 
 use App\Enum\Ingest\IngestStepEnum;
 use App\Enum\ProcessingStatusEnum;
+use App\Events\Ingest\VideoCompleted;
 use App\Models\Video;
 use App\Repository\VideoRepository;
 use Throwable;
@@ -103,6 +104,7 @@ final readonly class IngestStateService
         data_set($meta, "ingest.steps.{$step->value}.error", null);
         data_set($meta, "ingest.steps.{$step->value}.finished_at", now()->toDateTimeString());
 
+        VideoCompleted::dispatch($video, $this->videoRepository->getUploaderUser($video));
         return $this->persistMeta($video, $meta);
     }
 
