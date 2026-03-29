@@ -32,6 +32,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - `LookupAndUpdateVideoHashStep`
         - `GeneratePreviewForVideoClipsStep`
         - `UploadVideoToDropboxStep`
+- **Video Ingest Status Query**
+    - added `GetVideoIngestStatusUseCase` to provide a unified and frontend-friendly representation of the ingest
+      pipeline state per video
+    - combines the statically defined pipeline steps (via Laravel container tagging) with the persisted runtime state
+      stored in `video.meta`
+    - ensures a complete and deterministic step list, even if not all steps have been executed yet
+    - added `IngestStatusDto` as an aggregate data transfer object representing overall ingest progress
+    - added `IngestStepStatusDto` to encapsulate per-step status information (status, attempts, current step flag)
+    - calculates derived progress metrics such as total steps, completed steps, and percentage completion
+    - intentionally excludes error details from the DTO to provide a clean and UI-focused data structure
+    - enables frontend features such as progress bars and step-based status tables without exposing internal error
+      handling logic
 - **Event-driven Ingest Trigger**
     - Added `VideoCreatedForIngest` event to trigger the ingest workflow.
     - Added a dedicated listener to dispatch `ProcessVideoIngestJob`.
