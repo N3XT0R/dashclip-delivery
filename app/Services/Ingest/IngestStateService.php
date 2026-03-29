@@ -7,6 +7,7 @@ namespace App\Services\Ingest;
 use App\Enum\Ingest\IngestStepEnum;
 use App\Enum\ProcessingStatusEnum;
 use App\Events\Ingest\VideoCompleted;
+use App\Events\Ingest\VideoFailed;
 use App\Models\Video;
 use App\Repository\VideoRepository;
 use Throwable;
@@ -128,7 +129,9 @@ final readonly class IngestStateService
             'type' => $e::class,
         ]);
 
-        return $this->persistMeta($video, $meta);
+        $result = $this->persistMeta($video, $meta);
+        VideoFailed::dispatch($video, $this->videoRepository->getUploaderUser($video));
+        return $result;
     }
 
     /**
