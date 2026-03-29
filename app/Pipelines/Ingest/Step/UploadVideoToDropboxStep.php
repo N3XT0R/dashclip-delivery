@@ -34,6 +34,16 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
 
     public function isApplicable(IngestContext $context): bool
     {
+        $defaultFileSystem = (string)$this->configService->get(
+            DefaultConfigEntry::DEFAULT_FILE_SYSTEM,
+            'default',
+            'local'
+        );
+
+        if ($defaultFileSystem !== 'dropbox') {
+            return false;
+        }
+
         return false === $context->isDuplicate
             && false === $this->uploadService->exists(
                 $context->video->path
@@ -47,16 +57,6 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
         }
 
         $video = $context->video;
-        $defaultFileSystem = (string)$this->configService->get(
-            DefaultConfigEntry::DEFAULT_FILE_SYSTEM,
-            'default',
-            'local'
-        );
-
-        if ($defaultFileSystem !== 'dropbox') {
-            return $context;
-        }
-
         $sourceDisk = clone $video->getDisk();
         $path = $video->path;
 
