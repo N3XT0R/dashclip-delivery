@@ -101,6 +101,7 @@ final readonly class IngestStateService
 
         data_set($meta, "ingest.steps.{$step->value}.status", 'completed');
         data_set($meta, "ingest.steps.{$step->value}.error", null);
+        data_set($meta, "ingest.steps.{$step->value}.finished_at", now()->toDateTimeString());
 
         return $this->persistMeta($video, $meta);
     }
@@ -117,6 +118,7 @@ final readonly class IngestStateService
         $meta = $video->meta ?? [];
 
         data_set($meta, "ingest.steps.{$step->value}.status", 'failed');
+        data_set($meta, "ingest.steps.{$step->value}.finished_at", now()->toDateTimeString());
         data_set($meta, "ingest.steps.{$step->value}.error", [
             'message' => $e->getMessage(),
             'type' => $e::class,
