@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 use Throwable;
 
-final class PreviewService
+class PreviewService
 {
     /**
      * Generate a video preview for the given time range.
