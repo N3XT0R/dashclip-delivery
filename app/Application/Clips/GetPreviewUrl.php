@@ -10,8 +10,12 @@ use Illuminate\Support\Facades\Storage;
 class GetPreviewUrl
 {
 
-    public function handle(Clip $clip): ?string
+    public function handle(?Clip $clip): ?string
     {
+        if (!$clip) {
+            return null;
+        }
+
         if (!$clip->preview_disk || !$clip->preview_path) {
             return null;
         }
