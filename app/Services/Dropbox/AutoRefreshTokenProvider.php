@@ -51,7 +51,7 @@ class AutoRefreshTokenProvider implements TokenProvider
         $this->cache->forever($this->expireCacheKey, Carbon::now()->addSeconds($ttl));
 
         if (!$token) {
-            throw new \RuntimeException('Dropbox: Kein access_token in Token-Response.');
+            throw new \RuntimeException('Dropbox: No access_token in token response.');
         }
 
         if ($this->isValidRefreshToken($resp)) {
