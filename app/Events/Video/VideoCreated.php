@@ -10,7 +10,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-readonly class VideoCreated
+class VideoCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
