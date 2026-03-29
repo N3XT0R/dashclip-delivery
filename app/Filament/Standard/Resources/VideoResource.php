@@ -6,6 +6,7 @@ use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
 use App\Models\Video;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ViewField;
@@ -71,7 +72,7 @@ class VideoResource extends Resource
                                         if ($record->processing_status === null) {
                                             return __('status.processing_status.unknown');
                                         }
-                                        return __('status.processing_status.'.$record->processing_status->value);
+                                        return __('status.processing_status.' . $record->processing_status->value);
                                     }),
                                 TextEntry::make('bundle_key')
                                     ->label('filament.video_resource.view.fields.bundle_key')
@@ -134,7 +135,7 @@ class VideoResource extends Resource
                         if ($record->processing_status === null) {
                             return __('status.processing_status.unknown');
                         }
-                        return __('status.processing_status.'.$record->processing_status->value);
+                        return __('status.processing_status.' . $record->processing_status->value);
                     }),
                 TextColumn::make('bundle')
                     ->label(__('filament.video_resource.view.fields.bundle_key'))
@@ -224,6 +225,12 @@ class VideoResource extends Resource
                     ->label(__('filament.video_resource.view.fields.view_details'))
                     ->icon('heroicon-m-eye')
                     ->button(),
+                DeleteAction::make('delete')
+                    ->icon('heroicon-m-trash')
+                    ->button()
+                    ->requiresConfirmation()
+                    ->disabled(fn(Video $record) => $record->getAttribute('available_assignments_count') > 0)
+                    ->color('danger'),
             ])
             ->toolbarActions([])
             ->emptyStateHeading(__('filament.video_resource.view.messages.no_videos'))

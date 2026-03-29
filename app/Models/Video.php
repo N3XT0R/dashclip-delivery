@@ -39,7 +39,7 @@ class Video extends Model
         'processing_status' => ProcessingStatusEnum::class,
     ];
 
-    protected $append = [
+    protected array $append = [
         'human_readable_size',
     ];
 
