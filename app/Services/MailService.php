@@ -18,6 +18,8 @@ use App\Models\ChannelApplication;
 use App\Models\User;
 use App\Support\Mail\MailAddressResolver;
 use Carbon\Carbon;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Container\CircularDependencyException;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
@@ -31,6 +33,8 @@ readonly class MailService
      * @param string|User $mailable
      * @param MailableContract $mail
      * @return mixed
+     * @throws BindingResolutionException
+     * @throws CircularDependencyException
      */
     private function queueMail(string|User $mailable, MailableContract $mail): mixed
     {
