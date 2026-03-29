@@ -100,6 +100,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - `DefaultConfigEntry`
         - `EmailConfigEntry`
         - `FFMPEGConfigEntry`
+- **Preview**
+    - updated video preview component to automatically refresh using polling while the preview is not yet available
+    - stops polling once the preview has been generated or processing has completed/failed
+    - improves user experience by displaying the preview as soon as it becomes available without requiring a manual page
+      reload
 
 ### Removed
 
