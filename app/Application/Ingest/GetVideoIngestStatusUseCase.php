@@ -36,7 +36,7 @@ final readonly class GetVideoIngestStatusUseCase
         }
 
         $pipelineSteps = $this->getPipelineSteps();
-        $ingestData = $this->extractIngestData($video->processing_result ?? []);
+        $ingestData = $this->extractIngestData($video->meta ?? []);
 
         $storedSteps = $this->extractStoredSteps($ingestData);
         $currentStep = $this->extractCurrentStep($ingestData);
