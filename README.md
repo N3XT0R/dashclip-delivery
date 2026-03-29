@@ -10,7 +10,7 @@
 
 > **Notice**
 >
-> Starting with **v4.0**, this project follows a **Domain-Driven Design (DDD)** architecture.
+> Starting with **v4.0**, this project follows a **Domain-Driven Design (DDD)** light architecture.
 >
 > Learn more about Domain-Driven Design:  
 > https://domainlanguage.com/ddd/
