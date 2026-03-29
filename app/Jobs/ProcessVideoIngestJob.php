@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Application\Ingest\Context\IngestContext;
-use App\Application\Ingest\IngestPipeline;
 use App\Enum\ProcessingStatusEnum;
+use App\Pipelines\Ingest\Context\IngestContext;
+use App\Pipelines\Ingest\IngestPipeline;
 use App\Repository\VideoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;

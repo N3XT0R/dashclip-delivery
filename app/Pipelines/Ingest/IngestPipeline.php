@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Ingest;
+namespace App\Pipelines\Ingest;
 
-use App\Application\Ingest\Context\IngestContext;
-use App\Application\Ingest\Step\IngestStepInterface;
 use App\Enum\ProcessingStatusEnum;
+use App\Pipelines\Ingest\Context\IngestContext;
+use App\Pipelines\Ingest\Step\IngestStepInterface;
 use App\Services\Ingest\IngestStateService;
 use Throwable;
 
@@ -72,7 +72,7 @@ final readonly class IngestPipeline
             if (!$this->ingestStateService->dependenciesAreCompleted($context->video, $step->dependsOn())) {
                 continue;
             }
-            
+
             try {
                 if (!$step->isApplicable($context)) {
                     continue;

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Application\Ingest\IngestPipeline;
-use App\Application\Ingest\Step\GeneratePreviewForVideoClipsStep;
-use App\Application\Ingest\Step\IngestStepInterface;
-use App\Application\Ingest\Step\LookupAndUpdateVideoHashStep;
-use App\Application\Ingest\Step\UploadVideoToDropboxStep;
 use App\Enum\Ingest\IngestStepEnum;
+use App\Pipelines\Ingest\IngestPipeline;
+use App\Pipelines\Ingest\Step\GeneratePreviewForVideoClipsStep;
+use App\Pipelines\Ingest\Step\IngestStepInterface;
+use App\Pipelines\Ingest\Step\LookupAndUpdateVideoHashStep;
+use App\Pipelines\Ingest\Step\UploadVideoToDropboxStep;
 use App\Services\Ingest\IngestStateService;
 use Illuminate\Support\ServiceProvider;
 

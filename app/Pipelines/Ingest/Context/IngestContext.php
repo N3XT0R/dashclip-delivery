@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Ingest\Context;
+namespace App\Pipelines\Ingest\Context;
 
 use App\Models\Video;
 use Illuminate\Support\Collection;

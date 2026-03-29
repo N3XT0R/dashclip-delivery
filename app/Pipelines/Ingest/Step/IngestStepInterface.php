@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Ingest\Step;
+namespace App\Pipelines\Ingest\Step;
 
-use App\Application\Ingest\Context\IngestContext;
 use App\Enum\Ingest\IngestStepEnum;
+use App\Pipelines\Ingest\Context\IngestContext;
 
 interface IngestStepInterface
 {

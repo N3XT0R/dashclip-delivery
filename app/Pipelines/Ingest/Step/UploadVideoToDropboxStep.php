@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Ingest\Step;
+namespace App\Pipelines\Ingest\Step;
 
-use App\Application\Ingest\Context\IngestContext;
 use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\Ingest\IngestStepEnum;
+use App\Pipelines\Ingest\Context\IngestContext;
 use App\Repository\VideoRepository;
 use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Upload\DropboxUploadService;
