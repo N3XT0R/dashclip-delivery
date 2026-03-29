@@ -2,6 +2,7 @@
 
 namespace App\Filament\Standard\Resources;
 
+use App\Application\Ingest\GetVideoIngestStatusUseCase;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
@@ -65,10 +66,15 @@ class VideoResource extends Resource
                                             $record->clips()?->first()?->getAttribute('duration')
                                         );
                                     }),
-                                ViewEntry::make('processing_status')
+                                ViewEntry::make('ingest_status')
                                     ->view('filament.standard.components.infolists.ingest.status')
                                     ->label('filament.video_resource.view.fields.processing_status')
                                     ->translateLabel()
+                                    ->state(fn(Video $record) => [
+                                        'processingStatus' => $record->processing_status,
+                                        'ingestStatus' => app(GetVideoIngestStatusUseCase::class)
+                                            ->handle($record),
+                                    ])
                                     ->columnSpanFull(),
                                 TextEntry::make('bundle_key')
                                     ->label('filament.video_resource.view.fields.bundle_key')
