@@ -198,7 +198,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
         );
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Kein Refresh Token konfiguriert');
+        $this->expectExceptionMessage('No refresh token configured.');
 
         $provider->getToken();
     }
