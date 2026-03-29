@@ -16,7 +16,10 @@ class WeeklyRun extends Command
         $this->call('assign:uploader');
         $this->call('assign:expire');
         $this->call('assign:distribute');
-        $this->call('notify:offers');
+        if (defined('IS_TESTING') || app()->environment('production')) {
+            $this->call('notify:offers');
+        }
+
         return self::SUCCESS;
     }
 }
