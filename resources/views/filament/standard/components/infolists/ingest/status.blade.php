@@ -17,36 +17,38 @@
     };
 @endphp
 
-<div class="space-y-4">
-    <div class="flex flex-col gap-1">
-        <h3 class="text-sm font-semibold text-gray-950 dark:text-white">
-            {{ __('ingest.status.heading') }}
-        </h3>
+@if ($ingestStatus)
+    <div class="space-y-4">
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ __('ingest.status.description') }}
-        </p>
-    </div>
+        {{-- Header --}}
+        <div>
+            <div class="text-sm font-semibold text-gray-900">
+                {{ __('ingest.status.heading') }}
+            </div>
 
-    <div class="flex items-center gap-3">
-        <x-filament::badge :color="$processingStatusColor">
-            {{ $processingStatusLabel }}
-        </x-filament::badge>
+            <div class="text-sm text-gray-600">
+                {{ __('ingest.status.description') }}
+            </div>
+        </div>
 
-        @if ($ingestStatus !== null)
-            <span class="text-sm text-gray-500">
+        {{-- Status + Progress Summary --}}
+        <div class="flex items-center gap-3">
+            <x-filament::badge :color="$processingStatusColor">
+                {{ $processingStatusLabel }}
+            </x-filament::badge>
+
+            <span class="text-sm text-gray-700">
                 {{ __('ingest.status.progress_label', [
                     'completed' => $ingestStatus->completedSteps,
                     'total' => $ingestStatus->totalSteps,
                     'percent' => $ingestStatus->progressPercent,
                 ]) }}
             </span>
-        @endif
-    </div>
+        </div>
 
-    @if ($ingestStatus !== null)
-        <div class="space-y-2">
-            <div class="flex justify-between text-sm">
+        {{-- Progress Bar --}}
+        <div class="space-y-1">
+            <div class="flex justify-between text-sm text-gray-900">
                 <span>{{ __('ingest.status.progress') }}</span>
                 <span>{{ $ingestStatus->progressPercent }}%</span>
             </div>
@@ -59,8 +61,8 @@
             </div>
         </div>
 
-        <div
-            class="rounded-xl border border-gray-200 bg-white divide-y divide-gray-200 dark:border-white/10 dark:bg-white/5 dark:divide-white/10">
+        {{-- Steps --}}
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
             @foreach ($ingestStatus->steps as $step)
                 @php
                     $translatedStep = __('ingest.steps.' . $step->name);
@@ -76,16 +78,17 @@
                     };
                 @endphp
 
-                <div class="flex items-center justify-between px-4 py-3">
-                    <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-950 dark:text-white">
+                <div
+                    class="flex items-center justify-between px-4 py-3 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
+                    <div class="min-w-0">
+                        <div class="text-sm font-medium text-gray-900">
                             {{ $stepLabel }}
-                        </span>
+                        </div>
 
                         @if ($step->isCurrent)
-                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                            <div class="text-xs text-gray-500">
                                 {{ __('ingest.status.current') }}
-                            </span>
+                            </div>
                         @endif
                     </div>
 
@@ -95,5 +98,6 @@
                 </div>
             @endforeach
         </div>
-    @endif
-</div>
+
+    </div>
+@endif
