@@ -1,16 +1,18 @@
 @php
     use App\Enum\ProcessingStatusEnum;
     $video = $record->video ?? $record;
+    $clip = $video?->clips()->first();
+    $previewUrl = $clip->preview_path;
 
-    $shouldPoll = !$video?->preview_url
+    $shouldPoll = !$previewUrl
         && $video?->processing_status !== ProcessingStatusEnum::Completed
         && $video?->processing_status !== ProcessingStatusEnum::Failed;
 @endphp
 
 <div @if($shouldPoll) wire:poll.5s @endif>
-    @if ($video?->preview_url)
+    @if ($previewUrl)
         <video controls width="100%">
-            <source src="{{ $video->preview_url }}" type="video/mp4">
+            <source src="{{ $previewUrl }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     @else
