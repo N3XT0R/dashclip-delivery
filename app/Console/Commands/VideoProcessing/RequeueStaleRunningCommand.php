@@ -6,7 +6,6 @@ namespace App\Console\Commands\VideoProcessing;
 
 use App\Enum\ProcessingStatusEnum;
 use App\Repository\VideoRepository;
-use Illuminate\Console\Command;
 use Illuminate\Support\LazyCollection;
 use Symfony\Component\Console\Attribute\AsCommand;
 
@@ -16,7 +15,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 Requeue videos that have been in the running state for too long (potentially stuck), and are likely to be stale
 DESCRIPTION,
 )]
-class RequeueStaleRunningCommand extends Command
+class RequeueStaleRunningCommand extends AbstractRequeueVideosCommand
 {
     protected function getVideos(VideoRepository $videoRepository): LazyCollection
     {
