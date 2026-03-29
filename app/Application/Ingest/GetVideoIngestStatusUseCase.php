@@ -10,6 +10,7 @@ use App\Models\Video;
 use App\Pipelines\Ingest\Step\IngestStepInterface;
 use App\Repository\VideoRepository;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Carbon;
 
 use function count;
 use function is_array;
@@ -118,6 +119,7 @@ final readonly class GetVideoIngestStatusUseCase
 
             $status = $this->extractStatus($stepData);
             $attempts = $this->extractAttempts($stepData);
+            $finishedAt = $this->extractFinishedAt($stepData);
 
             if ($status === 'completed') {
                 ++$completedSteps;
@@ -126,6 +128,7 @@ final readonly class GetVideoIngestStatusUseCase
             $steps[] = new IngestStepStatusDto(
                 name: $stepName,
                 status: $status,
+                finishedAt: $finishedAt,
                 attempts: $attempts,
                 isCurrent: $currentStep === $stepName,
             );
@@ -142,6 +145,14 @@ final readonly class GetVideoIngestStatusUseCase
         return isset($stepData['status']) && is_string($stepData['status'])
             ? $stepData['status']
             : 'pending';
+    }
+
+    private function extractFinishedAt(array $stepData): Carbon
+    {
+        $time = new Carbon();
+        return isset($stepData['finished_at']) && is_string($stepData['finished_at'])
+            ? $time->setTimeFromTimeString($stepData['finished_at'])
+            : $time;
     }
 
     /**
