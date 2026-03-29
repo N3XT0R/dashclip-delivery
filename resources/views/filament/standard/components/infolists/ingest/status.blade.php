@@ -55,8 +55,8 @@
 
             <div class="h-2 overflow-hidden rounded-full bg-gray-200">
                 <div
-                    class="h-2 rounded-full bg-primary-600"
-                    style="width: {{ $ingestStatus->progressPercent }}%;"
+                    class="h-2 rounded-full bg-blue-500"
+                    style="width: {{ max(0, min(100, $ingestStatus->progressPercent)) }}%;"
                 ></div>
             </div>
         </div>
