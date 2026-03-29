@@ -72,14 +72,15 @@ final readonly class IngestPipeline
             if (!$this->ingestStateService->dependenciesAreCompleted($context->video, $step->dependsOn())) {
                 continue;
             }
-
-            if (!$step->isApplicable($context)) {
-                continue;
-            }
-
-            $this->ingestStateService->markStepRunning($context->video, $step->name());
-
+            
             try {
+                if (!$step->isApplicable($context)) {
+                    continue;
+                }
+
+                $this->ingestStateService->markStepRunning($context->video, $step->name());
+
+
                 $context = $step->handle($context);
                 $this->ingestStateService->markStepCompleted($context->video, $step->name());
             } catch (Throwable $e) {
