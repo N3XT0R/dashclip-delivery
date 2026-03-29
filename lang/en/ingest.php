@@ -2,6 +2,8 @@
 
 return [
     'status' => [
+        'heading' => 'Ingest status',
+        'description' => 'Status of the video processing pipeline and its steps.',
         'progress' => 'Ingest progress',
         'progress_label' => ':completed/:total completed (:percent%)',
         'current_step' => 'Current step: :step',
