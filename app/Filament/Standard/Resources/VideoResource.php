@@ -109,8 +109,8 @@ class VideoResource extends Resource
                         'processingStatus' => $record->processing_status,
                         'ingestStatus' => app(GetVideoIngestStatusUseCase::class)->handle($record),
                     ])
-                    ->columnSpanFull(),
-
+                    ->columnSpanFull()
+                    ->poll('5s'),
                 Grid::make()
                     ->schema([
                         TextEntry::make('assignmentWithNote.note')
