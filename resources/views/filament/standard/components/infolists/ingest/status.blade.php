@@ -90,6 +90,11 @@
                                 {{ __('ingest.status.current') }}
                             </div>
                         @endif
+                        @if ($step->finishedAt)
+                            <div class="text-xs text-gray-500">
+                                {{ $step->finishedAt->format('d.m.Y H:i:s') }}
+                            </div>
+                        @endif
                     </div>
 
                     <x-filament::badge :color="$stepColor" size="sm">
