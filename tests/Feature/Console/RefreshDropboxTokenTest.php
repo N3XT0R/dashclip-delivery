@@ -29,7 +29,7 @@ final class RefreshDropboxTokenTest extends DatabaseTestCase
         Http::preventStrayRequests(); // nothing should be called
 
         $this->artisan('dropbox:refresh-token')
-            ->expectsOutput('Dropbox: Kein Refresh Token konfiguriert.')
+            ->expectsOutput('Dropbox: No refresh token configured.')
             ->assertExitCode(Command::FAILURE);
     }
 }

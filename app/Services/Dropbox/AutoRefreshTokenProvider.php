@@ -42,7 +42,7 @@ class AutoRefreshTokenProvider implements TokenProvider
         }
 
         if (!$this->hasRefreshToken()) {
-            throw new \RuntimeException('Dropbox: Kein Refresh Token konfiguriert.');
+            throw new \RuntimeException('Dropbox: No refresh token configured.');
         }
 
         $resp = $this->getTokenResponse();
