@@ -25,11 +25,7 @@ final readonly class GetVideoIngestStatusUseCase
 
     public function handle(int|Video $video): ?IngestStatusDto
     {
-        if ($video instanceof Video) {
-            $video = $video->getKey();
-        } else {
-            $video = $this->videoRepository->findById($video);
-        }
+        $video = $this->resolveVideo($video);
 
         if (null === $video) {
             return null;
@@ -54,6 +50,15 @@ final readonly class GetVideoIngestStatusUseCase
         );
     }
 
+    private function resolveVideo(int|Video $video): ?Video
+    {
+        if ($video instanceof Video) {
+            return $video;
+        }
+
+        return $this->videoRepository->findById($video);
+    }
+
     /**
      * @return iterable<IngestStepInterface>
      */
@@ -63,13 +68,13 @@ final readonly class GetVideoIngestStatusUseCase
     }
 
     /**
-     * @param array<string, mixed> $processingResult
+     * @param array<string, mixed> $meta
      * @return array<string, mixed>
      */
-    private function extractIngestData(array $processingResult): array
+    private function extractIngestData(array $meta): array
     {
-        return is_array($processingResult['ingest'] ?? null)
-            ? $processingResult['ingest']
+        return is_array($meta['ingest'] ?? null)
+            ? $meta['ingest']
             : [];
     }
 
