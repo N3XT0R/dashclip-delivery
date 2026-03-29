@@ -53,11 +53,13 @@ class VideoResource extends Resource
                             ->view('filament.forms.components.video-preview')
                             ->columnSpan(1)
                             ->extraAttributes(['class' => 'rounded-lg shadow-md w-full max-w-xs']),
+
                         Grid::make()
                             ->schema([
                                 TextEntry::make('original_name')
                                     ->label('filament.video_resource.view.fields.original_name')
                                     ->translateLabel(),
+
                                 TextEntry::make('duration')
                                     ->label('filament.video_resource.view.fields.duration')
                                     ->translateLabel()
@@ -66,16 +68,7 @@ class VideoResource extends Resource
                                             $record->clips()?->first()?->getAttribute('duration')
                                         );
                                     }),
-                                ViewEntry::make('ingest_status')
-                                    ->view('filament.standard.components.infolists.ingest.status')
-                                    ->label('filament.video_resource.view.fields.processing_status')
-                                    ->translateLabel()
-                                    ->state(fn(Video $record) => [
-                                        'processingStatus' => $record->processing_status,
-                                        'ingestStatus' => app(GetVideoIngestStatusUseCase::class)
-                                            ->handle($record),
-                                    ])
-                                    ->columnSpanFull(),
+
                                 TextEntry::make('bundle_key')
                                     ->label('filament.video_resource.view.fields.bundle_key')
                                     ->translateLabel()
@@ -83,10 +76,12 @@ class VideoResource extends Resource
                                         return $record->clips()?->first()?->getAttribute('bundle_key');
                                     })
                                     ->extraAttributes(['class' => 'text-lg font-semibold']),
+
                                 TextEntry::make('created_at')
                                     ->label('filament.video_resource.view.fields.created_at')
                                     ->translateLabel()
                                     ->dateTime('d.m.Y, H:i'),
+
                                 TextEntry::make('status_label')
                                     ->label('filament.video_resource.view.fields.status')
                                     ->translateLabel()
@@ -94,22 +89,35 @@ class VideoResource extends Resource
                                     ->state(fn(Video $record) => self::determineStatusLabel($record))
                                     ->color(fn(Video $record) => self::statusColor(self::determineStatusLabel($record)))
                                     ->icon(fn(Video $record) => self::statusIcon(self::determineStatusLabel($record))),
+
                                 TextEntry::make('available_assignments_count')
                                     ->label('filament.video_resource.view.fields.available_assignments_count')
                                     ->translateLabel(),
+
                                 TextEntry::make('expired_assignments_count')
                                     ->label('filament.video_resource.view.fields.expired_assignments_count')
                                     ->translateLabel(),
                             ])
                             ->columns(2),
                     ]),
+
+                ViewEntry::make('ingest_status')
+                    ->view('filament.standard.components.infolists.ingest.status')
+                    ->label('filament.video_resource.view.fields.processing_status')
+                    ->translateLabel()
+                    ->state(fn(Video $record) => [
+                        'processingStatus' => $record->processing_status,
+                        'ingestStatus' => app(GetVideoIngestStatusUseCase::class)->handle($record),
+                    ])
+                    ->columnSpanFull(),
+
                 Grid::make()
                     ->schema([
                         TextEntry::make('assignmentWithNote.note')
                             ->label('filament.video_resource.view.fields.note')
                             ->visible(fn(Video $record) => !empty($record->assignmentWithNote?->note))
                             ->translateLabel(),
-                    ])
+                    ]),
             ]);
     }
 
