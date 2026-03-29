@@ -216,7 +216,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
         );
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Kein access_token');
+        $this->expectExceptionMessage('No access_token in token response');
 
         $provider->getToken();
     }
