@@ -108,7 +108,7 @@ class Video extends Model
 
     public function assignmentsPickedUp(): HasMany
     {
-        return $this->hasMany(Assignment::class)
+        return $this->assignments()
             ->where('status', StatusEnum::PICKEDUP->value);
     }
 }
