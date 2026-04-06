@@ -106,9 +106,9 @@ class Video extends Model
             ->orderBy('updated_at', 'desc');
     }
 
-    public function assignmentPickedUp(): HasOne
+    public function assignmentsPickedUp(): HasMany
     {
-        return $this->hasOne(Assignment::class)
+        return $this->hasMany(Assignment::class)
             ->where('status', StatusEnum::PICKEDUP->value);
     }
 }
