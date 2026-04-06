@@ -24,6 +24,17 @@ class VideoRepository
         return Video::query()->find($id);
     }
 
+    /**
+     * Checks if a video exists in the database by its primary key,
+     * which is useful for validating references before processing.
+     * @param Video $video
+     * @return bool
+     */
+    public function exists(Video $video): bool
+    {
+        return Video::query()->whereKey($video->getKey())->exists();
+    }
+
     public function filterDeletableVideoIds(Collection $candidateIds, Carbon $threshold): Collection
     {
         if ($candidateIds->isEmpty()) {

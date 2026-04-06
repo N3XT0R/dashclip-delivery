@@ -17,6 +17,10 @@ class DispatchService
 
     public function dispatchVideoQueuedForIngest(Video $video): void
     {
+        if ($this->videoRepository->exists($video)) {
+            return;
+        }
+
         if (!$video->getAttribute('path') || !$video->getAttribute('disk')) {
             return;
         }
