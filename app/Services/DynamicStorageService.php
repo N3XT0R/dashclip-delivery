@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\DTO\FileInfoDto;
+use App\Exceptions\IO\FileNotFoundException;
+use App\Exceptions\IO\FileReadException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +15,7 @@ class DynamicStorageService
 {
     /**
      * Create a filesystem disk from the given path.
-     * @param  string  $path
+     * @param string $path
      * @return Filesystem
      */
     public function fromPath(string $path): Filesystem
@@ -29,7 +31,7 @@ class DynamicStorageService
 
     /**
      * Assert that the given path is a directory.
-     * @param  string  $path
+     * @param string $path
      * @return void
      */
     private function assertDirectory(string $path): void
@@ -41,8 +43,8 @@ class DynamicStorageService
 
     /**
      * List all files in the given disk and base path.
-     * @param  Filesystem  $disk
-     * @param  string  $basePath
+     * @param Filesystem $disk
+     * @param string $basePath
      * @return Collection
      */
     public function listFiles(Filesystem $disk, string $basePath = ''): Collection
@@ -53,8 +55,8 @@ class DynamicStorageService
 
     /**
      * Get the hash for the given FileInfoDto.
-     * @param  Filesystem  $disk
-     * @param  FileInfoDto  $file
+     * @param Filesystem $disk
+     * @param FileInfoDto $file
      * @return string
      */
     public function getHashForFileInfoDto(Filesystem $disk, FileInfoDto $file): string
@@ -64,15 +66,18 @@ class DynamicStorageService
 
     /**
      * Get the hash for the given file path.
-     * @param  Filesystem  $disk
-     * @param  string  $relativePath
+     * @param Filesystem $disk
+     * @param string $relativePath
      * @return string
      */
     public function getHashForFilePath(Filesystem $disk, string $relativePath): string
     {
+        if (!$disk->exists($relativePath)) {
+            throw new FileNotFoundException("File not found: {$relativePath}");
+        }
         $stream = $disk->readStream($relativePath);
         if (!is_resource($stream)) {
-            throw new \RuntimeException("Konnte Datei nicht lesen: {$relativePath}");
+            throw new FileReadException("Konnte Datei nicht lesen: {$relativePath}");
         }
 
         $context = hash_init('sha256');
