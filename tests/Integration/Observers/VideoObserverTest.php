@@ -28,7 +28,7 @@ final class VideoObserverTest extends DatabaseTestCase
             'disk' => 'local',
         ]);
 
-        $this->assertTrue($video->delete());
+        $this->assertTrue($video->forceDelete());
 
         Storage::disk('local')->assertMissing($videoPath);
     }
@@ -50,7 +50,7 @@ final class VideoObserverTest extends DatabaseTestCase
             'disk' => 'fail-disk',
         ]);
 
-        $this->assertFalse($video->delete());
+        $this->assertFalse($video->forceDelete());
     }
 
     protected function tearDown(): void

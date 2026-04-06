@@ -59,7 +59,7 @@ final class VideoTest extends DatabaseTestCase
         $this->assertTrue(Storage::disk('tmp')->exists($video->path));
 
         // Act
-        $video->delete();
+        $video->forceDelete();
 
         // Assert
         Storage::disk('tmp')->assertMissing($video->path);
@@ -85,7 +85,7 @@ final class VideoTest extends DatabaseTestCase
         Storage::shouldReceive('disk')->with('tmp')->andThrow(new \RuntimeException('Fake failure'));
 
         // Act
-        $video->delete();
+        $video->forceDelete();
 
         // Assert
         $this->addToAssertionCount(1); // Just to mark it as handled
