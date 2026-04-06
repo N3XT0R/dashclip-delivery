@@ -105,6 +105,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - stops polling once the preview has been generated or processing has completed/failed
     - improves user experience by displaying the preview as soon as it becomes available without requiring a manual page
       reload
+- **Video Deletion Handling**
+    - introduced soft deletes for videos to prevent immediate physical data loss
+    - decoupled logical deletion from physical file removal to improve system consistency
+    - videos are now hidden from users via soft delete while underlying files remain intact until explicitly removed
+    - prepared the system for deferred cleanup strategies (e.g. scheduled force deletion and storage cleanup)
 
 ### Removed
 
