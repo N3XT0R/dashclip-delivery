@@ -77,7 +77,7 @@ class DynamicStorageService
         }
         $stream = $disk->readStream($relativePath);
         if (!is_resource($stream)) {
-            throw new FileReadException("Konnte Datei nicht lesen: {$relativePath}");
+            throw new FileReadException("Could not read file: {$relativePath}");
         }
 
         $context = hash_init('sha256');
