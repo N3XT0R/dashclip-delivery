@@ -21,7 +21,7 @@ class IsDeletableUseCase
             }
         }
 
-        if ($video->assignmentPickedUp()->count() > 0) {
+        if ($video->assignmentsPickedUp()->count() > 0) {
             return false;
         }
 
