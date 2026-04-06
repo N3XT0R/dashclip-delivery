@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enum\ProcessingStatusEnum;
-use App\Enum\StatusEnum;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -104,11 +103,5 @@ class Video extends Model
         return $this->hasOne(Assignment::class)
             ->whereNotNull('note')
             ->orderBy('updated_at', 'desc');
-    }
-
-    public function assignmentsPickedUp(): HasMany
-    {
-        return $this->assignments()
-            ->where('status', StatusEnum::PICKEDUP->value);
     }
 }

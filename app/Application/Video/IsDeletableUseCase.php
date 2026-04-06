@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Video;
 
+use App\Enum\StatusEnum;
 use App\Models\Video;
 
 class IsDeletableUseCase
@@ -21,7 +22,7 @@ class IsDeletableUseCase
             }
         }
 
-        if ($video->assignmentsPickedUp()->count() > 0) {
+        if ($video->assignments()->where('status', StatusEnum::PICKEDUP->value)->count() > 0) {
             return false;
         }
 
