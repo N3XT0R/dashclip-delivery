@@ -239,7 +239,7 @@ class VideoResource extends Resource
                     ->icon('heroicon-m-trash')
                     ->button()
                     ->requiresConfirmation()
-                    ->disabled(fn(Video $record) => $record->getAttribute('available_assignments_count') > 0)
+                    ->hidden(fn(Video $record) => $record->getAttribute('available_assignments_count') > 0)
                     ->color('danger'),
             ])
             ->toolbarActions([])
