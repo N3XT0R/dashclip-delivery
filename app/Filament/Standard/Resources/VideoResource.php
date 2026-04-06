@@ -3,6 +3,7 @@
 namespace App\Filament\Standard\Resources;
 
 use App\Application\Ingest\GetVideoIngestStatusUseCase;
+use App\Application\Video\IsDeletableUseCase;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
@@ -239,7 +240,7 @@ class VideoResource extends Resource
                     ->icon('heroicon-m-trash')
                     ->button()
                     ->requiresConfirmation()
-                    ->hidden(fn(Video $record) => $record->getAttribute('available_assignments_count') > 0)
+                    ->hidden(fn(Video $record) => app(IsDeletableUseCase::class)->handle($record))
                     ->color('danger'),
             ])
             ->toolbarActions([])
