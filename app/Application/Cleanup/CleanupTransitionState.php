@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\Cleanup;
 
-use App\Events\Video\VideoQueuedForIngest;
 use App\Repository\VideoRepository;
+use App\Services\DispatchService;
 
 readonly class CleanupTransitionState
 {
     public function __construct(
-        private VideoRepository $videoRepository
+        private VideoRepository $videoRepository,
+        private DispatchService $dispatchService,
     ) {
     }
 
@@ -23,7 +24,8 @@ readonly class CleanupTransitionState
             $this->videoRepository->update($video, [
                 'hash' => null,
             ]);
-            VideoQueuedForIngest::dispatch($video);
+
+            $this->dispatchService->dispatchVideoQueuedForIngest($video);
         }
     }
 }

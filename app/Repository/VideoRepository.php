@@ -271,6 +271,16 @@ class VideoRepository
     }
 
     /**
+     * Permanently deletes a video from the database, bypassing soft deletes, which is useful for cleanup operations.
+     * @param Video $video
+     * @return bool
+     */
+    public function forceDelete(Video $video): bool
+    {
+        return $video->forceDelete();
+    }
+
+    /**
      * Saves the video model, which can be used for both creating new records and updating existing ones.
      * @param Video $video
      * @return bool
