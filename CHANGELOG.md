@@ -38,6 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       use cases
     - simplified `GetVideoIngestStatusUseCase` by delegating state evaluation to the service layer
     - improves consistency between backend logic and frontend status representation
+- **Video Ingest Triggering**
+    - introduced a dispatch delay for `ProcessVideoIngestJob` to decouple ingest processing from the initial request
+      lifecycle
+    - prevents blocking behavior during video creation (e.g. Filament form submission and redirect) when using
+      synchronous or slow queue processing
+    - improves user experience by ensuring immediate response after form submission while deferring heavy ingest
+      processing to the background
 
 ## [4.0.0-alpha.1] - 2026-04-02
 
