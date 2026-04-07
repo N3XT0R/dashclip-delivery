@@ -6,6 +6,8 @@ namespace App\Enum\Ingest;
 
 enum IngestStepEnum: string
 {
+    case ValidateInputFile = 'validate_input_file';
+
     case LookupAndUpdateVideoHash = 'lookup_and_update_video_hash';
     case GeneratePreviewForVideoClips = 'generate_preview_for_clips';
     case UploadVideoToDropbox = 'upload_video_to_dropbox';
@@ -13,6 +15,7 @@ enum IngestStepEnum: string
     public static function order(): array
     {
         return [
+            self::ValidateInputFile,
             self::LookupAndUpdateVideoHash,
             self::GeneratePreviewForVideoClips,
             self::UploadVideoToDropbox,

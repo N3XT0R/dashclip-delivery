@@ -40,7 +40,9 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
 
     public function dependsOn(): array
     {
-        return [];
+        return [
+            IngestStepEnum::ValidateInputFile,
+        ];
     }
 
     public function handle(IngestContext $context): IngestContext
