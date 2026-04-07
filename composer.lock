@@ -10577,16 +10577,16 @@
     "packages-dev": [
         {
             "name": "barryvdh/laravel-debugbar",
-            "version": "v4.2.2",
+            "version": "v4.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fruitcake/laravel-debugbar.git",
-                "reference": "3831a10476663d8c2a6b9fa4f4b646879eb57199"
+                "reference": "3c70910acfb35850b9304278b4af97fecb1128f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fruitcake/laravel-debugbar/zipball/3831a10476663d8c2a6b9fa4f4b646879eb57199",
-                "reference": "3831a10476663d8c2a6b9fa4f4b646879eb57199",
+                "url": "https://api.github.com/repos/fruitcake/laravel-debugbar/zipball/3c70910acfb35850b9304278b4af97fecb1128f4",
+                "reference": "3c70910acfb35850b9304278b4af97fecb1128f4",
                 "shasum": ""
             },
             "require": {
@@ -10594,7 +10594,7 @@
                 "illuminate/session": "^11|^12|^13.0",
                 "illuminate/support": "^11|^12|^13.0",
                 "php": "^8.2",
-                "php-debugbar/php-debugbar": "^3.6",
+                "php-debugbar/php-debugbar": "^3.7",
                 "php-debugbar/symfony-bridge": "^1.1"
             },
             "require-dev": {
@@ -10660,7 +10660,7 @@
             ],
             "support": {
                 "issues": "https://github.com/fruitcake/laravel-debugbar/issues",
-                "source": "https://github.com/fruitcake/laravel-debugbar/tree/v4.2.2"
+                "source": "https://github.com/fruitcake/laravel-debugbar/tree/v4.2.4"
             },
             "funding": [
                 {
@@ -10672,7 +10672,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-04-01T16:27:33+00:00"
+            "time": "2026-04-04T08:05:27+00:00"
         },
         {
             "name": "brianium/paratest",
@@ -11643,16 +11643,16 @@
         },
         {
             "name": "php-debugbar/php-debugbar",
-            "version": "v3.6.3",
+            "version": "v3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-debugbar/php-debugbar.git",
-                "reference": "e8fb14e0641a364c7834de8ef7d4e7ac17525235"
+                "reference": "4b920b8aa8198a3b7206842825bf86f43c61606f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-debugbar/php-debugbar/zipball/e8fb14e0641a364c7834de8ef7d4e7ac17525235",
-                "reference": "e8fb14e0641a364c7834de8ef7d4e7ac17525235",
+                "url": "https://api.github.com/repos/php-debugbar/php-debugbar/zipball/4b920b8aa8198a3b7206842825bf86f43c61606f",
+                "reference": "4b920b8aa8198a3b7206842825bf86f43c61606f",
                 "shasum": ""
             },
             "require": {
@@ -11729,7 +11729,7 @@
             ],
             "support": {
                 "issues": "https://github.com/php-debugbar/php-debugbar/issues",
-                "source": "https://github.com/php-debugbar/php-debugbar/tree/v3.6.3"
+                "source": "https://github.com/php-debugbar/php-debugbar/tree/v3.7.0"
             },
             "funding": [
                 {
@@ -11741,7 +11741,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-04-02T18:44:47+00:00"
+            "time": "2026-04-04T08:04:02+00:00"
         },
         {
             "name": "php-debugbar/symfony-bridge",
