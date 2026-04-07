@@ -42,9 +42,16 @@ class ValidateInputFileStep implements IngestStepInterface
             return $context;
         }
 
-        $disk = Storage::disk($video->disk);
+        try {
+            $disk = Storage::disk($video->disk);
 
-        if (!$disk->exists($video->path)) {
+            if (!$disk->exists($video->path)) {
+                $this->videoRepository->delete($video);
+                $context->isInvalid = true;
+
+                return $context;
+            }
+        } catch (\Throwable) {
             $this->videoRepository->delete($video);
             $context->isInvalid = true;
 
