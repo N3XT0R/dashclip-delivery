@@ -9,11 +9,10 @@ use App\DTO\Ingest\IngestStepStatusDto;
 use App\Models\Video;
 use App\Pipelines\Ingest\Step\IngestStepInterface;
 use App\Repository\VideoRepository;
+use App\Services\Ingest\IngestStateService;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Support\Carbon;
 
 use function count;
-use function is_array;
 use function round;
 
 final readonly class GetVideoIngestStatusUseCase
@@ -21,6 +20,7 @@ final readonly class GetVideoIngestStatusUseCase
     public function __construct(
         private VideoRepository $videoRepository,
         private Container $container,
+        private IngestStateService $ingestStateService,
     ) {
     }
 
@@ -32,15 +32,12 @@ final readonly class GetVideoIngestStatusUseCase
             return null;
         }
 
-        $pipelineSteps = $this->getPipelineSteps();
-        $ingestData = $this->extractIngestData($video->meta ?? []);
-
-        $storedSteps = $this->extractStoredSteps($ingestData);
-        $currentStep = $this->extractCurrentStep($ingestData);
+        $pipelineSteps = array_values(iterator_to_array($this->getPipelineSteps()));
+        $currentStep = $this->ingestStateService->getCurrentStep($video);
 
         [$steps, $completedSteps] = $this->buildStepDtos(
+            $video,
             $pipelineSteps,
-            $storedSteps,
             $currentStep
         );
 
@@ -69,59 +66,28 @@ final readonly class GetVideoIngestStatusUseCase
     }
 
     /**
-     * @param array<string, mixed> $meta
-     * @return array<string, mixed>
-     */
-    private function extractIngestData(array $meta): array
-    {
-        return is_array($meta['ingest'] ?? null)
-            ? $meta['ingest']
-            : [];
-    }
-
-    /**
-     * @param array<string, mixed> $ingestData
-     * @return array<string, mixed>
-     */
-    private function extractStoredSteps(array $ingestData): array
-    {
-        return is_array($ingestData['steps'] ?? null)
-            ? $ingestData['steps']
-            : [];
-    }
-
-    private function extractCurrentStep(array $ingestData): ?string
-    {
-        return isset($ingestData['current_step']) && is_string($ingestData['current_step'])
-            ? $ingestData['current_step']
-            : null;
-    }
-
-    /**
+     * @param Video $video
      * @param iterable<IngestStepInterface> $pipelineSteps
-     * @param array<string, mixed> $storedSteps
+     * @param string|null $currentStep
      * @return array{0: list<IngestStepStatusDto>, 1: int}
      */
     private function buildStepDtos(
+        Video $video,
         iterable $pipelineSteps,
-        array $storedSteps,
         ?string $currentStep
     ): array {
         $steps = [];
         $completedSteps = 0;
 
         foreach ($pipelineSteps as $step) {
-            $stepName = $step->name()->value;
+            $stepEnum = $step->name();
+            $stepName = $stepEnum->value;
 
-            $stepData = is_array($storedSteps[$stepName] ?? null)
-                ? $storedSteps[$stepName]
-                : [];
+            $status = $this->ingestStateService->getStepStatus($video, $stepEnum);
+            $attempts = $this->ingestStateService->getStepAttempts($video, $stepEnum);
+            $finishedAt = $this->ingestStateService->getStepFinishedAt($video, $stepEnum);
 
-            $status = $this->extractStatus($stepData);
-            $attempts = $this->extractAttempts($stepData);
-            $finishedAt = $this->extractFinishedAt($stepData);
-
-            if ($status === 'completed') {
+            if ($this->ingestStateService->isStepCompleted($video, $stepEnum)) {
                 ++$completedSteps;
             }
 
@@ -135,34 +101,6 @@ final readonly class GetVideoIngestStatusUseCase
         }
 
         return [$steps, $completedSteps];
-    }
-
-    /**
-     * @param array<string, mixed> $stepData
-     */
-    private function extractStatus(array $stepData): string
-    {
-        return isset($stepData['status']) && is_string($stepData['status'])
-            ? $stepData['status']
-            : 'pending';
-    }
-
-    private function extractFinishedAt(array $stepData): ?Carbon
-    {
-        $time = new Carbon();
-        return isset($stepData['finished_at']) && is_string($stepData['finished_at'])
-            ? $time->setTimeFromTimeString($stepData['finished_at'])
-            : null;
-    }
-
-    /**
-     * @param array<string, mixed> $stepData
-     */
-    private function extractAttempts(array $stepData): int
-    {
-        return isset($stepData['attempts']) && is_int($stepData['attempts'])
-            ? $stepData['attempts']
-            : 0;
     }
 
     /**
