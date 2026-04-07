@@ -27,9 +27,9 @@ final class LookupAndUpdateVideoHashStepTest extends DatabaseTestCase
         self::assertSame(IngestStepEnum::LookupAndUpdateVideoHash, $this->step->name());
     }
 
-    public function testItHasNoDependencies(): void
+    public function testItHasDependencies(): void
     {
-        self::assertSame([], $this->step->dependsOn());
+        self::assertSame([IngestStepEnum::ValidateInputFile], $this->step->dependsOn());
     }
 
     public function testItIsApplicableWhenVideoHasNoHashAndIsNotDuplicate(): void
