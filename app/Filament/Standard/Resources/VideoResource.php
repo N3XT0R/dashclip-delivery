@@ -240,7 +240,7 @@ class VideoResource extends Resource
                     ->icon('heroicon-m-trash')
                     ->button()
                     ->requiresConfirmation()
-                    ->hidden(fn(Video $record) => app(IsDeletableUseCase::class)->handle($record))
+                    ->hidden(fn(Video $record) => false === app(IsDeletableUseCase::class)->handle($record))
                     ->color('danger'),
             ])
             ->toolbarActions([])
