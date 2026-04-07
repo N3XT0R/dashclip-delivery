@@ -10,6 +10,7 @@ use App\Events\Ingest\VideoCompleted;
 use App\Events\Ingest\VideoFailed;
 use App\Models\Video;
 use App\Repository\VideoRepository;
+use Carbon\Carbon;
 use Throwable;
 
 /**
@@ -156,4 +157,158 @@ final readonly class IngestStateService
             'meta' => $meta,
         ]);
     }
+
+    /**
+     * Retrieves the ingest-related meta information for the video, returning an empty array if not set.
+     * @param Video $video
+     * @return array<string, mixed>
+     */
+    public function getIngestData(Video $video): array
+    {
+        $meta = $video->meta ?? [];
+
+        return is_array($meta['ingest'] ?? null)
+            ? $meta['ingest']
+            : [];
+    }
+
+    /**
+     * Extracts the stored steps information from the ingest data, returning an empty array if not set.
+     * @param Video $video
+     * @return array<string, mixed>
+     */
+    public function getStoredSteps(Video $video): array
+    {
+        $ingestData = $this->getIngestData($video);
+
+        return is_array($ingestData['steps'] ?? null)
+            ? $ingestData['steps']
+            : [];
+    }
+
+    /**
+     * Extracts the current step information from the ingest data, returning null if not set or not a string.
+     * @param Video $video
+     * @return string|null
+     */
+    public function getCurrentStep(Video $video): ?string
+    {
+        $ingestData = $this->getIngestData($video);
+
+        return isset($ingestData['current_step']) && is_string($ingestData['current_step'])
+            ? $ingestData['current_step']
+            : null;
+    }
+
+    /**
+     * Extracts the status of the given step from the video's meta,
+     * returning it as a string if available and valid, or 'pending' otherwise.
+     * @param Video $video
+     * @param IngestStepEnum $step
+     * @return string
+     */
+    public function getStepStatus(Video $video, IngestStepEnum $step): string
+    {
+        $storedSteps = $this->getStoredSteps($video);
+        $stepData = is_array($storedSteps[$step->value] ?? null)
+            ? $storedSteps[$step->value]
+            : [];
+
+        return isset($stepData['status']) && is_string($stepData['status'])
+            ? $stepData['status']
+            : 'pending';
+    }
+
+    /**
+     * Extracts the number of attempts for the given step from the video's meta,
+     * returning it as an integer if available and valid, or 0 otherwise.
+     * @param Video $video
+     * @param IngestStepEnum $step
+     * @return int
+     */
+    public function getStepAttempts(Video $video, IngestStepEnum $step): int
+    {
+        $storedSteps = $this->getStoredSteps($video);
+        $stepData = is_array($storedSteps[$step->value] ?? null)
+            ? $storedSteps[$step->value]
+            : [];
+
+        return isset($stepData['attempts']) && is_int($stepData['attempts'])
+            ? $stepData['attempts']
+            : 0;
+    }
+
+    /**
+     * Extracts the finished_at timestamp for the given step from the video's meta,
+     * returning it as a Carbon instance if available and valid, or null otherwise.
+     * @param Video $video
+     * @param IngestStepEnum $step
+     * @return Carbon|null
+     */
+    public function getStepFinishedAt(Video $video, IngestStepEnum $step): ?Carbon
+    {
+        $storedSteps = $this->getStoredSteps($video);
+        $stepData = is_array($storedSteps[$step->value] ?? null)
+            ? $storedSteps[$step->value]
+            : [];
+
+        return isset($stepData['finished_at']) && is_string($stepData['finished_at'])
+            ? Carbon::parse($stepData['finished_at'])
+            : null;
+    }
+
+    /**
+     * Counts the number of completed steps for the given video based on the provided list of steps.
+     * @param list<IngestStepEnum> $steps
+     */
+    public function countCompletedSteps(Video $video, array $steps): int
+    {
+        $completedSteps = 0;
+
+        foreach ($steps as $step) {
+            if ($this->isStepCompleted($video, $step)) {
+                ++$completedSteps;
+            }
+        }
+
+        return $completedSteps;
+    }
+
+    /**
+     * Calculates the overall progress percentage of the ingest process based on the completed steps.
+     * The percentage is calculated as (completed steps / total steps) * 100 and rounded to the nearest integer.
+     * If there are no steps, it returns 0% to avoid division by zero.
+     * @param Video $video
+     * @param list<IngestStepEnum> $steps
+     * @return int
+     */
+    public function getProgressPercent(Video $video, array $steps): int
+    {
+        $totalSteps = count($steps);
+
+        if (0 === $totalSteps) {
+            return 0;
+        }
+
+        $completedSteps = $this->countCompletedSteps($video, $steps);
+
+        return (int)round(($completedSteps / $totalSteps) * 100);
+    }
+
+    /**
+     * Checks if there are any missing steps (not completed) for the given video based on the provided list of steps.
+     * @param list<IngestStepEnum> $steps
+     * @return bool
+     */
+    public function hasMissingSteps(Video $video, array $steps): bool
+    {
+        foreach ($steps as $step) {
+            if (!$this->isStepCompleted($video, $step)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
