@@ -93,7 +93,7 @@ final readonly class IngestPipeline
                 throw $e;
             }
 
-            if ($context->isDuplicate) {
+            if ($context->isDuplicate || $context->isInvalid) {
                 break;
             }
         }
