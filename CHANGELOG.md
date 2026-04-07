@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Video Ingest Pipeline**
+    - added `ValidateInputFileStep` as a preliminary validation step to ensure that the source file exists and is
+      processable before executing further ingest steps
+    - prevents downstream failures (e.g. hash calculation or preview generation) by stopping the pipeline early when the
+      input file is missing or invalid
+    - introduced `isInvalid` flag in `IngestContext` to distinguish invalid input from duplicate detection
+    - separates technical validation failures from business-level duplicate handling, improving pipeline semantics and
+      observability
+    - enhanced pipeline control flow to stop execution when a video is marked as invalid or duplicate
+    - ensures consistent early termination behavior across all ingest steps
+    - added support for detecting missing ingest steps for already processed videos via `IngestStateService`
+    - enables identification of videos that were processed with an outdated pipeline definition
+    - added maintenance command to requeue completed videos with missing ingest steps
+    - allows retroactive execution of newly added pipeline steps without reprocessing already completed ones
+
 ### Changed
 
 - **Video Deletion Handling**
@@ -14,6 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - decoupled logical deletion from physical file removal to improve system consistency
     - videos are now hidden from users via soft delete while underlying files remain intact until explicitly removed
     - prepared the system for deferred cleanup strategies (e.g. scheduled force deletion and storage cleanup)
+- **Video Ingest Status Query**
+    - refactored ingest metadata extraction and interpretation logic into `IngestStateService`
+    - centralized access to ingest step state (status, attempts, timestamps, current step) to avoid duplication across
+      use cases
+    - simplified `GetVideoIngestStatusUseCase` by delegating state evaluation to the service layer
+    - improves consistency between backend logic and frontend status representation
 
 ## [4.0.0-alpha.1] - 2026-04-02
 
