@@ -10,6 +10,7 @@ use App\Models\Video;
 use App\Pipelines\Ingest\Context\IngestContext;
 use App\Pipelines\Ingest\IngestPipeline;
 use App\Pipelines\Ingest\Step\LookupAndUpdateVideoHashStep;
+use App\Pipelines\Ingest\Step\ValidateInputFileStep;
 use App\Services\Ingest\IngestStateService;
 use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
@@ -28,6 +29,7 @@ final class IngestPipelineTest extends DatabaseTestCase
 
         $this->pipeline = new IngestPipeline(
             steps: [
+                $this->app->make(ValidateInputFileStep::class),
                 $this->app->make(LookupAndUpdateVideoHashStep::class),
             ],
             ingestStateService: $this->ingestStateService,
@@ -38,8 +40,9 @@ final class IngestPipelineTest extends DatabaseTestCase
     {
         $steps = array_values(iterator_to_array($this->pipeline->getSteps()));
 
-        self::assertCount(1, $steps);
-        self::assertInstanceOf(LookupAndUpdateVideoHashStep::class, $steps[0]);
+        self::assertCount(2, $steps);
+        self::assertInstanceOf(ValidateInputFileStep::class, $steps[0]);
+        self::assertInstanceOf(LookupAndUpdateVideoHashStep::class, $steps[1]);
     }
 
     public function testItProcessesLookupAndUpdateVideoHashStep(): void
@@ -139,6 +142,7 @@ final class IngestPipelineTest extends DatabaseTestCase
             video: $video,
             hash: null,
             isDuplicate: false,
+            isInvalid: false,
         );
     }
 }
