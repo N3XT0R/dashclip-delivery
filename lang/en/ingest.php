@@ -9,7 +9,7 @@ return [
         'current_step' => 'Current step: :step',
         'no_active_step' => 'No active step',
         'current' => 'current',
-        'not_finished' => 'Not completed',
+        'unknown' => 'Unknown',
     ],
 
     'step_status' => [

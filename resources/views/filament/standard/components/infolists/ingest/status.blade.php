@@ -96,7 +96,7 @@
                             </div>
                         @else
                             <div class="text-xs text-gray-500">
-                                {{ __('ingest.status.not_finished') }}
+                                {{ __('ingest.status.unknown') }}
                             </div>
                         @endif
                     </div>
