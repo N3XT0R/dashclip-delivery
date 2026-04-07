@@ -45,6 +45,7 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
         }
 
         return false === $context->isDuplicate
+            && false === $context->isInvalid
             && false === $this->uploadService->exists(
                 $context->video->path
             );

@@ -27,7 +27,7 @@ readonly class LookupAndUpdateVideoHashStep implements IngestStepInterface
 
     public function isApplicable(IngestContext $context): bool
     {
-        if ($context->isDuplicate) {
+        if ($context->isDuplicate || $context->isInvalid) {
             return false;
         }
 

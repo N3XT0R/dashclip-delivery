@@ -14,6 +14,7 @@ final class IngestContext
         public ?Collection $clips = null,
         public ?string $hash = null,
         public bool $isDuplicate = false,
+        public bool $isInvalid = false,
     ) {
         $this->clips = $clips ?? $video->clips ?? collect();
     }
