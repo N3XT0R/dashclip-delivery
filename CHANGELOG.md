@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.1] - 2026-04-07
+
+### Fixed
+
+- Fixed external package **filament-log-viewer**. The package was not compatible with the latest version of Filament and
+  caused errors in the admin panel. The package has been updated to the latest version, which resolves the compatibility
+  issues and restores full functionality to the admin interface.
+
 ## [3.13.0] - 2026-04-07
 
 ### Security
