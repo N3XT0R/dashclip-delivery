@@ -297,6 +297,7 @@ final readonly class IngestStateService
 
     /**
      * Checks if there are any missing steps (not completed) for the given video based on the provided list of steps.
+     * @param Video $video
      * @param list<IngestStepEnum> $steps
      * @return bool
      */
