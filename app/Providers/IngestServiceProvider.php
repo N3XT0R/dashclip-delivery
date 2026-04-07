@@ -10,6 +10,7 @@ use App\Pipelines\Ingest\Step\GeneratePreviewForVideoClipsStep;
 use App\Pipelines\Ingest\Step\IngestStepInterface;
 use App\Pipelines\Ingest\Step\LookupAndUpdateVideoHashStep;
 use App\Pipelines\Ingest\Step\UploadVideoToDropboxStep;
+use App\Pipelines\Ingest\Step\ValidateInputFileStep;
 use App\Services\Ingest\IngestStateService;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +38,7 @@ final class IngestServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->tag([
+            ValidateInputFileStep::class,
             LookupAndUpdateVideoHashStep::class,
             GeneratePreviewForVideoClipsStep::class,
             UploadVideoToDropboxStep::class,
