@@ -147,12 +147,12 @@ final readonly class GetVideoIngestStatusUseCase
             : 'pending';
     }
 
-    private function extractFinishedAt(array $stepData): Carbon
+    private function extractFinishedAt(array $stepData): ?Carbon
     {
         $time = new Carbon();
         return isset($stepData['finished_at']) && is_string($stepData['finished_at'])
             ? $time->setTimeFromTimeString($stepData['finished_at'])
-            : $time;
+            : null;
     }
 
     /**

@@ -94,6 +94,10 @@
                             <div class="text-xs text-gray-500">
                                 {{ $step->finishedAt->format('d.m.Y H:i:s') }}
                             </div>
+                        @else
+                            <div class="text-xs text-gray-500">
+                                {{ __('ingest.status.not_finished') }}
+                            </div>
                         @endif
                     </div>
 
