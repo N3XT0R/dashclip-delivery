@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       definition via `IngestStateService`
     - enables identification of videos that were processed with an outdated pipeline definition
     - added maintenance command to requeue completed videos with missing ingest steps
-    - allows retroactive execution of newly added pipeline steps without reprocessing already completed ones
+    - enables retroactive execution of newly added pipeline steps without reprocessing already completed steps
 
 ### Changed
 
