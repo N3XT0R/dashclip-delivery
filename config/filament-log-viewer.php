@@ -2,16 +2,45 @@
 
 declare(strict_types=1);
 
+use Filament\Support\Icons\Heroicon;
+
 return [
+
+    /* -----------------------------------------------------------------
+    | Driver
+    | -----------------------------------------------------------------
+    | Available drivers: 'daily', 'stack', 'raw'
+    | -----------------------------------------------------------------
+     */
+
+    'driver' => env('FILAMENT_LOG_VIEWER_DRIVER', env('LOG_CHANNEL', 'stack')),
 
     /* -----------------------------------------------------------------
     | Resource configuration
     | -----------------------------------------------------------------
      */
+
     'resource' => [
         'slug' => 'logs',
         'cluster' => null,
     ],
+
+    /* -----------------------------------------------------------------
+    | View log in modal
+    | -----------------------------------------------------------------
+    | When true, clicking "View" opens the log in a modal instead of a
+    | separate page. Set to false to use the full-page ViewLog page.
+    | -----------------------------------------------------------------
+     */
+
+    'view_in_modal' => env('FILAMENT_LOG_VIEWER_VIEW_IN_MODAL', false),
+
+    /* -----------------------------------------------------------------
+    | Logs files can be cleared
+    | -----------------------------------------------------------------
+    */
+
+    'clearable' => env('FILAMENT_LOG_VIEWER_CLEARABLE', false),
 
     /* -----------------------------------------------------------------
     |  Log files storage path
@@ -28,7 +57,7 @@ return [
     'pattern' => [
         'prefix' => 'laravel-',
         'date' => '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]',
-        'extension' => '.log'
+        'extension' => '.log',
     ],
 
     /* -----------------------------------------------------------------
@@ -61,15 +90,15 @@ return [
      */
 
     'icons' => [
-        'all' => 'fas-list', // http://fontawesome.io/icon/list/
-        'emergency' => 'fas-bug', // http://fontawesome.io/icon/bug/
-        'alert' => 'fas-bullhorn', // http://fontawesome.io/icon/bullhorn/
-        'critical' => 'fas-heartbeat', // http://fontawesome.io/icon/heartbeat/
-        'error' => 'fas-times-circle', // http://fontawesome.io/icon/times-circle/
-        'warning' => 'fas-exclamation-triangle', // http://fontawesome.io/icon/exclamation-triangle/
-        'notice' => 'fas-exclamation-circle', // http://fontawesome.io/icon/exclamation-circle/
-        'info' => 'fas-info-circle', // http://fontawesome.io/icon/info-circle/
-        'debug' => 'fas-life-ring', // http://fontawesome.io/icon/life-ring/
+        'all' => Heroicon::ListBullet,
+        'emergency' => Heroicon::BugAnt,
+        'alert' => Heroicon::Megaphone,
+        'critical' => Heroicon::Fire,
+        'error' => Heroicon::XCircle,
+        'warning' => Heroicon::ExclamationTriangle,
+        'notice' => Heroicon::ExclamationCircle,
+        'info' => Heroicon::InformationCircle,
+        'debug' => Heroicon::CommandLine,
     ],
 
     /* -----------------------------------------------------------------
@@ -79,7 +108,6 @@ return [
 
     'colors' => [
         'levels' => [
-            'empty' => '#D1D1D1',
             'all' => '#8A8A8A',
             'emergency' => '#B71C1C',
             'alert' => '#D32F2F',
@@ -98,6 +126,7 @@ return [
      */
 
     'highlight' => [
-        '^#\d+', '^Stack trace:',
+        '^#\d+',
+        '^Stack trace:',
     ],
 ];
