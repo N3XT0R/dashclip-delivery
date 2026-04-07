@@ -15,6 +15,6 @@ class DispatchVideoIngestJobListener
     public function handle(VideoQueuedForIngest $event): void
     {
         ProcessVideoIngestJob::dispatch($event->video->getKey())
-            ->delay(now()->addSeconds(10));
+            ->delay(now()->addSeconds(5));
     }
 }
