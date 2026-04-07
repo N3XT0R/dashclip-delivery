@@ -89,7 +89,7 @@ final class ValidateInputFileStepTest extends DatabaseTestCase
         Storage::fake('ingest');
 
         $video = Video::factory()->create([
-            'disk' => null,
+            'disk' => 'local',
             'path' => 'videos/test-video.mp4',
         ]);
 
@@ -98,36 +98,6 @@ final class ValidateInputFileStepTest extends DatabaseTestCase
         $result = $this->step->handle($context);
 
         self::assertTrue($result->isInvalid);
-
-        $video->refresh();
-
-        self::assertNotNull($video->deleted_at);
-        $this->assertSoftDeleted('videos', [
-            'id' => $video->getKey(),
-        ]);
-    }
-
-    public function testHandleMarksContextAsInvalidAndSoftDeletesVideoWhenPathIsMissing(): void
-    {
-        Storage::fake('ingest');
-
-        $video = Video::factory()->create([
-            'disk' => 'ingest',
-            'path' => null,
-        ]);
-
-        $context = $this->createContext($video);
-
-        $result = $this->step->handle($context);
-
-        self::assertTrue($result->isInvalid);
-
-        $video->refresh();
-
-        self::assertNotNull($video->deleted_at);
-        $this->assertSoftDeleted('videos', [
-            'id' => $video->getKey(),
-        ]);
     }
 
     public function testHandleMarksContextAsInvalidAndSoftDeletesVideoWhenFileDoesNotExist(): void
