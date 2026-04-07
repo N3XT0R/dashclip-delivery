@@ -28,7 +28,7 @@ class ValidateInputFileStep implements IngestStepInterface
 
     public function isApplicable(IngestContext $context): bool
     {
-        return !$context->isDuplicate;
+        return !$context->isDuplicate && !$context->isInvalid;
     }
 
     public function handle(IngestContext $context): IngestContext
