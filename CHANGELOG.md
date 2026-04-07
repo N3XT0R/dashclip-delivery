@@ -19,7 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       observability
     - enhanced pipeline control flow to stop execution when a video is marked as invalid or duplicate
     - ensures consistent early termination behavior across all ingest steps
-    - added support for detecting missing ingest steps for already processed videos via `IngestStateService`
+    - added support for detecting missing ingest steps for already processed videos based on the current pipeline
+      definition via `IngestStateService`
     - enables identification of videos that were processed with an outdated pipeline definition
     - added maintenance command to requeue completed videos with missing ingest steps
     - allows retroactive execution of newly added pipeline steps without reprocessing already completed ones
