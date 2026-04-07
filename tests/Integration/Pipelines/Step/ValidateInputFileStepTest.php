@@ -100,6 +100,22 @@ final class ValidateInputFileStepTest extends DatabaseTestCase
         self::assertTrue($result->isInvalid);
     }
 
+    public function testHandleMarksContextAsInvalidAndSoftDeletesVideoWhenDiskIsUnknown(): void
+    {
+        Storage::fake('ingest');
+
+        $video = Video::factory()->create([
+            'disk' => 'unknown-disk',
+            'path' => 'videos/test-video.mp4',
+        ]);
+
+        $context = $this->createContext($video);
+
+        $result = $this->step->handle($context);
+
+        self::assertTrue($result->isInvalid);
+    }
+
     public function testHandleMarksContextAsInvalidAndSoftDeletesVideoWhenFileDoesNotExist(): void
     {
         Storage::fake('ingest');
