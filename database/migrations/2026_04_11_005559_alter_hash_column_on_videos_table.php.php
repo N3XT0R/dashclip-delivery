@@ -11,8 +11,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('videos', static function (Blueprint $table) {
-            //$table->dropUnique(['hash']);
-            $table->string('hash', 255)->index()->change();
+            $table->dropUnique(['hash']);
+            $table->string('hash', 255)->nullable()->index()->change();
         });
     }
 
