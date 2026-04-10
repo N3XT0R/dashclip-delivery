@@ -228,7 +228,7 @@ Beispielkonfiguration in `/etc/supervisor/conf.d/laravel-worker.conf`:
 ```ini
 [program:horizon]
 process_name = %(program_name)s
-command = php  php /var/www/dashclip/artisan horizon
+command = php /var/www/dashclip/artisan horizon
 autostart = true
 autorestart = true
 user = www-data
