@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Filament\Facades\Filament;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
@@ -27,8 +27,9 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      */
     protected function gate(): void
     {
-        Gate::define('viewHorizon', function ($user = null) {
-            return Filament::getPanel('admin')?->auth()->check();
+        Gate::define('viewHorizon', static function (?Authenticatable $authUser = null) {
+            return $authUser?->hasRole('super_admin')
+                ?? app()->environment('local');
         });
     }
 }
