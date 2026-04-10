@@ -56,7 +56,7 @@ services:
             context: .
             dockerfile: app.Dockerfile
         working_dir: /var/www/html
-        command: php artisan horizon
+        command: php artisan horizon:listen
         volumes:
             - .:/var/www/html/
         environment:
