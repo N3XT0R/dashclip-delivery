@@ -12,6 +12,9 @@ Schedule::command(Commands\WeeklyRun::class)
 Schedule::command(Commands\AssignExpire::class)
     ->dailyAt('03:00');
 
+# horizon
+Schedule::command('horizon:snapshot')->everyFiveMinutes();
+
 # Ingest
 Schedule::command(Commands\AssignUploader::class)->everyTenMinutes();
 Schedule::command(Commands\AssignVideosToTeams::class)->everyFifteenMinutes();
