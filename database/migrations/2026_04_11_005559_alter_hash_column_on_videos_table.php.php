@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::table('videos', static function (Blueprint $table) {
             $table->dropUnique(['hash']);
-            $table->unique(['hash', 'disk']);
+            $table->string('hash', 64)->index()->change();
         });
     }
 
