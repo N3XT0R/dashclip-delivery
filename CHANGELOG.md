@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - supports multiple queue connections and job types with detailed metrics
     - allows for easy identification of failed or long-running jobs for troubleshooting
 
+### Changed
+
+- **Queue Worker Configuration**
+    - updated queue worker configuration to use Horizon's `horizon` connection for better performance and monitoring
+    - adjusted `ProcessVideoIngestJob` to be dispatched to the `horizon` queue connection
+    - ensures that all ingest processing benefits from Horizon's features and monitoring capabilities
+    - updated documentation to reflect the new queue configuration and Horizon setup instructions
+
 ## [4.0.0-alpha.2] - 2026-04-07
 
 ### Added
