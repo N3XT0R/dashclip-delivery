@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Laravel/horizon**
+    - added Laravel Horizon for advanced queue monitoring and management
+    - provides a dashboard to track job throughput, runtime, failures, and retry attempts
+    - enables real-time insights into queue performance and bottlenecks
+    - supports multiple queue connections and job types with detailed metrics
+    - allows for easy identification of failed or long-running jobs for troubleshooting
+
 ## [4.0.0-alpha.2] - 2026-04-07
 
 ### Added
