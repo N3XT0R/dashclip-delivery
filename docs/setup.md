@@ -226,15 +226,14 @@ Für das dauerhafte Ausführen von `queue:work` kann Supervisor verwendet werden
 Beispielkonfiguration in `/etc/supervisor/conf.d/laravel-worker.conf`:
 
 ```ini
-[program:laravel-worker]
-process_name = %(program_name)s_%(process_num)02d
-command = php /var/www/dashclip/artisan queue:work --sleep=3 --tries=3
+[program:horizon]
+process_name = %(program_name)s
+command = php  php /var/www/dashclip/artisan horizon
 autostart = true
 autorestart = true
 user = www-data
-numprocs = 4
 redirect_stderr = true
-stdout_logfile = /var/log/supervisor/laravel-worker.log
+stdout_logfile = /var/log/supervisor/horizon-worker.log
 stopwaitsecs = 3600
 ```
 
@@ -243,7 +242,7 @@ Supervisor neu laden und den Worker starten:
 ```bash
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl start laravel-worker:*
+sudo supervisorctl start horizon:*
 ```
 
 ## Seeder
