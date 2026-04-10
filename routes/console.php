@@ -29,4 +29,6 @@ Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
 # video processing
 Schedule::command(Commands\VideoProcessing\RequeueStaleRunningCommand::class)->everyFifteenMinutes();
 Schedule::command(Commands\VideoProcessing\RequeueFailedVideosCommand::class)->everyFifteenMinutes();
+Schedule::command(Commands\VideoProcessing\RequeueNeverRanVideosCommand::class)->everyFifteenMinutes();
 Schedule::command(Commands\VideoProcessing\RequeueMissingIngestStepsCommand::class)->daily();
+
