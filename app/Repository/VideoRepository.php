@@ -245,8 +245,7 @@ class VideoRepository
     {
         return Video::query()
             ->where('processing_status', ProcessingStatusEnum::Pending->value)
-            ->whereNotNull('hash')
-            ->where('hash', '!=', '')
+            ->whereNull('hash')
             ->orderBy('id')
             ->lazy($chunkSize);
     }
