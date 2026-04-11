@@ -23,6 +23,6 @@ return [
         'validate_input_file' => 'Überprüfung der Dateiintegrität',
         'lookup_and_update_video_hash' => 'Video-Hash berechnen und aktualisieren',
         'generate_preview_for_clips' => 'Vorschau für Clips erzeugen',
-        'upload_video_to_dropbox' => 'Video zu Dropbox hochladen',
+        'upload_video_to_dropbox' => 'Video zum Storage hochladen',
     ],
 ];
