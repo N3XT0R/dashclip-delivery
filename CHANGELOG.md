@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-    - Minor bugfixes around the application and ingest pipeline based on testing and feedback during the alpha phase.
+- Minor bugfixes around the application and ingest pipeline based on testing and feedback during the alpha phase.
 
 ## [4.0.0-alpha.2] - 2026-04-07
 
