@@ -38,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - refactored code to address any breaking changes introduced in Laravel 13
     - tested all major functionalities to ensure stability after the upgrade
 
+### Fixed
+
+    - Minor bugfixes around the application and ingest pipeline based on testing and feedback during the alpha phase.
+
 ## [4.0.0-alpha.2] - 2026-04-07
 
 ### Added
