@@ -104,6 +104,24 @@ return [
                 ],
             ],
         ],
+        'import' => [ //import disk zip/ftp
+            'driver' => 'local',
+            'root' => storage_path('app/import'),
+            'url' => env('APP_URL') . '/app/import',
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+            'permissions' => [
+                'file' => [
+                    'public' => 0775,
+                    'private' => 0775,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0775,
+                ],
+            ],
+        ],
 
         'public' => [
             'driver' => 'local',
