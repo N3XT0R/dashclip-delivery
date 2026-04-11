@@ -1,0 +1,4 @@
+[mcp_servers.laravel-boost]
+command = "wsl.exe"
+args = ["/usr/bin/php8.4", "/home/user/projects/video_sharing/artisan", "boost:mcp"]
+cwd = "/home/user/projects/video_sharing"
