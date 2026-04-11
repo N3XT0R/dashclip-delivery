@@ -25,6 +25,13 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel-echo (ECHO) - v2
 - tailwindcss (TAILWINDCSS) - v4
 
+## Docker / Local development (new)
+
+- This repository includes Docker support (see `app.Dockerfile`, `docker-compose.yml` and the `docker/` folder). For many developers running the full stack locally it's convenient to use Docker: `docker-compose up --build` will bring up the application, database and related services.
+- When using the repository's Docker setup, prefer running PHP commands inside the container (e.g. `docker-compose exec app php artisan migrate`) to ensure the correct PHP binary and extensions are used.
+- There's a `composer` script `dev` (see `composer.json`) that runs a concurrent development loop (serve, queue listener, pail, vite). Use `composer dev` for local development workflows that mirror the project's intended dev environment.
+- Note: `composer.json` declares `laravel/framework` ^13 — treat `composer.json` as the source of truth for framework versions (some docs or older attachments may mention Laravel 12).
+
 ## Skills Activation
 
 This project has domain-specific skills available. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
