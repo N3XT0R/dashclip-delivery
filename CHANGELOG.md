@@ -16,12 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - supports multiple queue connections and job types with detailed metrics
     - allows for easy identification of failed or long-running jobs for troubleshooting
 - **Laravel/Boost**
-    - added Laravel Boost to enable AI-assisted development with deep application context
-    - integrates an MCP (Model Context Protocol) server exposing 15+ tools for AI agents
-    - allows AI to inspect application structure, database, routes, logs, and execute code via Tinker
-    - provides access to version-specific Laravel documentation via a semantic search API
-    - introduces Laravel-maintained AI guidelines and skills to enforce framework best practices
-    - improves code generation, debugging, and refactoring accuracy when using AI tools
+    - added Laravel Boost integration
+    - exposes application context (routes, models, config, logs, etc.) to AI tools
+    - allows interaction with the application via MCP (Model Context Protocol)
+    - enables code execution and inspection through Tinker
+    - provides access to framework-specific documentation and conventions
+    - improves AI-assisted development (debugging, refactoring, code navigation)
 
 ### Changed
 
