@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Jobs;
 
+use App\DTO\Zip\AssignmentZipDto;
 use App\Enum\StatusEnum;
 use App\Jobs\BuildZipJob;
 use App\Models\Assignment;
@@ -87,12 +88,16 @@ final class BuildZipJobTest extends DatabaseTestCase
         // Provide all IDs; fetchForZip must filter them by batch/channel and ready statuses.
         $ids = [$a1->getKey(), $a2->getKey(), $a3->getKey(), $a4->getKey()];
 
-        $job = new BuildZipJob(
+        $dto = new AssignmentZipDto(
             batchId: $batch->getKey(),
             channelId: $channel->getKey(),
             assignmentIds: $ids,
             ip: '203.0.113.10',
             userAgent: null, // job passes '' to ZipService when null
+        );
+
+        $job = new BuildZipJob(
+            $dto,
         );
 
         // Act
@@ -148,12 +153,16 @@ final class BuildZipJobTest extends DatabaseTestCase
         $zipSpy = new SpyZipService();
         $assignmentService = app(AssignmentService::class);
 
-        $job = new BuildZipJob(
+        $dto = new AssignmentZipDto(
             batchId: $batch->getKey(),
             channelId: $channel->getKey(),
             assignmentIds: [], // none provided
             ip: '198.51.100.20',
             userAgent: 'TestAgent/1.0',
+        );
+
+        $job = new BuildZipJob(
+            $dto,
         );
 
         // Act
@@ -215,12 +224,16 @@ final class BuildZipJobTest extends DatabaseTestCase
         $zipSpy = new SpyZipService();
         $assignmentService = app(AssignmentService::class);
 
-        $job = new BuildZipJob(
+        $dto = new AssignmentZipDto(
             batchId: null,
             channelId: $channel->getKey(),
             assignmentIds: $ids,
             ip: '192.0.2.55',
             userAgent: null,
+        );
+
+        $job = new BuildZipJob(
+            $dto,
         );
 
         $job->handle($assignmentService, $zipSpy);
@@ -256,12 +269,16 @@ final class BuildZipJobTest extends DatabaseTestCase
         $assignmentService = app(AssignmentService::class);
         $zipSpy = new SpyZipService();
 
-        $job = new BuildZipJob(
+        $dto = new AssignmentZipDto(
             batchId: $batch->getKey(),
             channelId: $nonExistingChannelId,
             assignmentIds: [],
             ip: '203.0.113.77',
             userAgent: null,
+        );
+
+        $job = new BuildZipJob(
+            $dto,
         );
 
         $this->expectException(\RuntimeException::class);

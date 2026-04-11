@@ -2,11 +2,13 @@
 
 namespace App\Jobs;
 
+use App\DTO\Zip\AssignmentZipDto;
 use App\Repository\AssignmentRepository;
 use App\Repository\BatchRepository;
 use App\Repository\ChannelRepository;
 use App\Services\{AssignmentService, Zip\ZipService};
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -27,25 +29,18 @@ class BuildZipJob implements ShouldQueue
 
     /**
      * Create a new job instance.
-     * @param int|null $batchId
-     * @param int $channelId
-     * @param array $assignmentIds
-     * @param string $ip
-     * @param string|null $userAgent
-     * @todo refactor to DTO at v4.0
+     * @param AssignmentZipDto $assignmentZipDto
+     * @param Authenticatable|null $user
      */
     public function __construct(
-        private readonly ?int $batchId,
-        private readonly int $channelId,
-        private readonly array $assignmentIds,
-        private readonly string $ip,
-        private readonly ?string $userAgent,
+        protected AssignmentZipDto $assignmentZipDto,
+        protected ?Authenticatable $user = null,
     ) {
     }
 
     public function getAssignmentIds(): array
     {
-        return $this->assignmentIds;
+        return $this->assignmentZipDto->assignmentIds;
     }
 
     /**
@@ -57,14 +52,16 @@ class BuildZipJob implements ShouldQueue
     public function handle(AssignmentService $assignments, ZipService $svc): void
     {
         $jobId = null;
-        $batch = $this->batchId ? app(BatchRepository::class)->findById($this->batchId) : null;
-        $channel = app(ChannelRepository::class)->findById($this->channelId);
+        $batch = $this->assignmentZipDto->batchId
+            ? app(BatchRepository::class)->findById($this->assignmentZipDto->batchId)
+            : null;
+        $channel = app(ChannelRepository::class)->findById($this->assignmentZipDto->channelId);
 
         if (!$channel) {
-            throw new RuntimeException("Channel with ID {$this->channelId} not found");
+            throw new RuntimeException("Channel with ID {$this->assignmentZipDto->channelId} not found");
         }
 
-        $assignmentIds = collect($this->assignmentIds);
+        $assignmentIds = collect($this->assignmentZipDto->assignmentIds);
 
         if ($batch) {
             $items = $assignments->fetchForZip($batch, $channel, $assignmentIds);
@@ -74,22 +71,32 @@ class BuildZipJob implements ShouldQueue
                 $assignmentIds
             );
 
-            $jobId = 'channel_' . $this->channelId . '_' . hash('sha256', implode('_', $this->assignmentIds));
+            $jobId = 'channel_' . $this->assignmentZipDto->channelId . '_' . hash(
+                    'sha256',
+                    implode('_', $this->assignmentZipDto->assignmentIds)
+                );
         }
 
 
-        $svc->build($batch, $channel, $items, $this->ip, $this->userAgent ?? '', $jobId);
+        $svc->build(
+            $batch,
+            $channel,
+            $items,
+            $this->assignmentZipDto->ip,
+            $this->assignmentZipDto->userAgent ?? '',
+            $jobId
+        );
+
         activity()
-            ->causedBy(auth()?->user())
+            ->causedBy($this->user)
             ->performedOn($channel)
             ->withProperties([
                 'attributes' => [
-                    'channel_id' => $this->channelId,
+                    'channel_id' => $this->assignmentZipDto->channelId,
                     'channel_name' => $channel->name,
-                    'batch_id' => $this->batchId,
-                    'assignments' => count($this->assignmentIds),
+                    'batch_id' => $this->assignmentZipDto->batchId,
+                    'assignments' => count($this->assignmentZipDto->assignmentIds),
                 ],
-
             ])
             ->log('ZIP-File created');
     }

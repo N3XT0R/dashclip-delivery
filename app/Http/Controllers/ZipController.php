@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\DTO\Zip\AssignmentZipDto;
 use App\Enum\DownloadStatusEnum;
 use App\Jobs\BuildZipJob;
 use App\Models\Assignment;
@@ -15,14 +16,15 @@ use App\Services\DownloadCacheService;
 use Filament\Facades\Filament;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ZipController extends Controller
 {
     public function __construct(
-        private AssignmentService $assignments,
-        private DownloadCacheService $cache,
-        private AssignmentRepository $assignmentRepository,
+        private readonly AssignmentService $assignments,
+        private readonly DownloadCacheService $cache,
+        private readonly AssignmentRepository $assignmentRepository,
     ) {
     }
 
@@ -59,7 +61,15 @@ class ZipController extends Controller
         // initialer Status
         $this->cache->init($jobId);
 
-        BuildZipJob::dispatch($batchId, $channel->getKey(), $ids->all(), $req->ip(), $req->userAgent());
+        $dto = new AssignmentZipDto(
+            batchId: $batchId,
+            channelId: $channel->getKey(),
+            assignmentIds: $ids->all(),
+            ip: $req->ip(),
+            userAgent: $req->userAgent(),
+        );
+
+        BuildZipJob::dispatch($dto, Auth::user());
 
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
     }
@@ -92,12 +102,17 @@ class ZipController extends Controller
         // initialer Status
         $this->cache->init($jobId);
 
-        BuildZipJob::dispatch(
+        $dto = new AssignmentZipDto(
             batchId: null,
             channelId: $channel->getKey(),
             assignmentIds: $ids->all(),
             ip: $req->ip(),
             userAgent: $req->userAgent(),
+        );
+
+        BuildZipJob::dispatch(
+            $dto,
+            Auth::user()
         );
 
         return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
