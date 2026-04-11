@@ -12,8 +12,8 @@
          failOnIncomplete="true"
 >
     <coverage
-            includeUncoveredFiles="true"
-            pathCoverage="false"
+        includeUncoveredFiles="true"
+        pathCoverage="false"
     >
         <report>
             <clover outputFile="coverage/clover.xml"/>
@@ -37,8 +37,6 @@
         <exclude>
             <file>app/Console/Commands/WeeklyRun.php</file>
             <directory>app/Policies/</directory>
-            <!-- temporary till v4 -->
-            <directory>app/Service/Ingest/Steps/</directory>
         </exclude>
     </source>
     <php>
