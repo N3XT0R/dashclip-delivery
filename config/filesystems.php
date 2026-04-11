@@ -51,6 +51,7 @@ return [
         'videos' => [
             'driver' => 'local',
             'root' => storage_path('app/video'),
+            'url' => env('APP_URL') . '/app/video',
             'visibility' => 'public',
             'serve' => true,
             'throw' => false,
@@ -88,6 +89,7 @@ return [
         'uploads' => [
             'driver' => 'local',
             'root' => storage_path('app/uploads'),
+            'url' => env('APP_URL') . '/app/uploads',
             'serve' => true,
             'throw' => false,
             'report' => false,
