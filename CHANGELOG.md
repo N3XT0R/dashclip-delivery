@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - enables real-time insights into queue performance and bottlenecks
     - supports multiple queue connections and job types with detailed metrics
     - allows for easy identification of failed or long-running jobs for troubleshooting
+- **Laravel/Boost**
+    - added Laravel Boost for performance optimizations and enhanced developer experience
+    - provides features like preloading, route caching, and optimized class loading
+    - improves application startup time and overall performance in production environments
+    - offers a streamlined development workflow with faster feedback loops
 
 ### Changed
 
