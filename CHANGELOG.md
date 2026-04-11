@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - adjusted `ProcessVideoIngestJob` to be dispatched to the `horizon` queue connection
     - ensures that all ingest processing benefits from Horizon's features and monitoring capabilities
     - updated documentation to reflect the new queue configuration and Horizon setup instructions
+- **Laravel 13 Upgrade**
+    - upgraded Laravel framework to version 13 for improved performance, security, and new features
+    - updated related dependencies to ensure compatibility with Laravel 13
+    - refactored code to address any breaking changes introduced in Laravel 13
+    - tested all major functionalities to ensure stability after the upgrade
 
 ## [4.0.0-alpha.2] - 2026-04-07
 
