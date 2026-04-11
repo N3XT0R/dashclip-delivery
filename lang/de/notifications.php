@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Notifications\ChannelAccessApprovedNotification;
 use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;
 
@@ -11,6 +12,7 @@ return [
         'types' => [
             UserUploadDuplicatedNotification::class => 'Benachrichtigen bei doppelten Uploads',
             UserUploadProceedNotification::class => 'Benachrichtigen nach erfolgreicher Verarbeitung',
+            ChannelAccessApprovedNotification::class => 'Benachrichtigen wenn der Kanalzugriff genehmigt wurde'
         ],
 
     ],

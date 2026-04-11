@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Notifications\ChannelAccessApprovedNotification;
 use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;
 
@@ -11,6 +12,7 @@ return [
         'types' => [
             UserUploadDuplicatedNotification::class => 'Notify on duplicated entries',
             UserUploadProceedNotification::class => 'Notify when user upload is processed',
+            ChannelAccessApprovedNotification::class => 'Notify when channel access is approved',
         ],
     ],
     'channel_access_approved' => [
