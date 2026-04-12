@@ -58,7 +58,12 @@ class BuildZipJob implements ShouldQueue
         $channel = app(ChannelRepository::class)->findById($this->assignmentZipDto->channelId);
 
         if (!$channel) {
-            throw new RuntimeException("Channel with ID {$this->assignmentZipDto->channelId} not found");
+            throw new RuntimeException(
+                sprintf(
+                    'Channel with ID %s not found',
+                    $this->assignmentZipDto->channelId
+                )
+            );
         }
 
         $assignmentIds = collect($this->assignmentZipDto->assignmentIds);
