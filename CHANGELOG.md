@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Refactored ZIP job payload handling**
+    - Introduced `AssignmentZipDto` to encapsulate ZIP creation parameters
+    - Replaced primitive constructor arguments in `BuildZipJob` with DTO
+    - Improved separation between domain data and infrastructure layer
+    - Simplified method signatures and reduced parameter coupling
+
 ## [4.0.0-alpha.3] - 2026-04-11
 
 ### Added
