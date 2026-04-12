@@ -52,7 +52,7 @@ class BuildZipJob implements ShouldQueue
     public function handle(AssignmentService $assignments, ZipService $svc): void
     {
         $jobId = null;
-        $batch = $this->assignmentZipDto->batchId
+        $batch = $this->assignmentZipDto->isBatch()
             ? app(BatchRepository::class)->findById($this->assignmentZipDto->batchId)
             : null;
         $channel = app(ChannelRepository::class)->findById($this->assignmentZipDto->channelId);
