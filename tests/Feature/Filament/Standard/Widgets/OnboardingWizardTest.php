@@ -64,6 +64,6 @@ final class OnboardingWizardTest extends DatabaseTestCase
         $notifications = session('filament.notifications', []);
 
         $this->assertNotEmpty($notifications);
-        $this->assertSame('Onboarding abgeschlossen', $notifications[0]['title']);
+        $this->assertSame('Onboarding abgeschlossen', $notifications['claimed'][0]['title']);
     }
 }
