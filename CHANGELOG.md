@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       method-level PHPDoc conventions, changelog maintenance policy, and Conventional Commits
     - documented in `AGENTS.md` that project ADRs are binding guidance for future changes
     - documented in `AGENTS.md` that feature implementation should be token-efficient
+    - documented in `AGENTS.md` that Superpowers should only be used on explicit request
 
 ### Changed
 

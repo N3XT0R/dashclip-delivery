@@ -18,6 +18,7 @@ test, documentation, workflow, or architectural changes, review and apply the re
 
 When implementing features, work token-efficiently: gather only the context needed for the task, avoid rereading large
 files unnecessarily, keep searches focused, and prefer concise implementation updates over broad exploratory output.
+Only use Superpowers when the user explicitly asks for them.
 
 <laravel-boost-guidelines>
 === foundation rules ===
