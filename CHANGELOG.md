@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **adr**
+    - added architecture decision records for class naming, SOLID and design-pattern usage, exception hierarchies,
+      method-level PHPDoc conventions, changelog maintenance policy, and Conventional Commits
+
 ### Changed
 
 - **Refactored ZIP job payload handling**
@@ -212,4 +218,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Composer Packages**
     - upgraded packages to newest version (e.g. laravel)
-
