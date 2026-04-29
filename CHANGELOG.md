@@ -28,6 +28,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Dropbox / storage**
+    - fixed `/tmp` exhaustion caused by Guzzle buffering Dropbox response bodies via `php://temp`;
+      both the Storage disk driver and `DropboxUploadService` now pass `stream: true` to the Guzzle
+      client so file data streams directly from the socket without touching `/tmp`
+    - fixed a stream-leak in `ZipService` where a failed `stream_copy_to_stream` call (Laravel
+      converts PHP warnings to `ErrorException`) left the Guzzle HTTP stream unclosed, causing
+      `/tmp` files to accumulate across failed jobs until disk space was exhausted
+    - `ZipService::build()` now cleans up `zips/tmp/` staging files in a `finally` block so they
+      are always removed regardless of whether the job succeeds or fails
+
 - **testing**
     - fixed the OnboardingWizard notification assertion to use Filament's notification testing API
 
