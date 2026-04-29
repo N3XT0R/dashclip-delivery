@@ -11,8 +11,16 @@ Never run project commands directly on the host.
 
 ## Architecture Decision Records
 
-The architecture decision records in `docs/adr/` are binding project guidance. Before making code,
-test, documentation, workflow, or architectural changes, review and apply the relevant ADRs.
+The architecture decision records in `docs/adr/` are binding project guidance. This project follows
+the enterprise architecture rules defined by those ADRs, including SOLID compliance, established
+design patterns, explicit naming, exception hierarchies, PHPDoc contracts, changelog maintenance,
+and Conventional Commits. Before making code, test, documentation, workflow, or architectural
+changes, review and apply the relevant ADRs.
+
+When an ADR covers a topic, the ADR is the only normative project rule for that topic. This applies
+especially to code style, naming, comments, PHPDoc, testing approach, mocks/stubs, changelog entries,
+and commit messages. Laravel Boost and other generated framework guidance may still be used to look
+up framework APIs, but must not override or add stricter rules than the ADRs in these areas.
 
 ## Token Efficiency
 
@@ -25,8 +33,9 @@ Only use Superpowers when the user explicitly asks for them.
 
 # Laravel Boost Guidelines
 
-The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines
-should be followed closely to ensure the best experience when building Laravel applications.
+Laravel is infrastructure in this project. Laravel Boost is only auxiliary framework API reference
+for version-specific Laravel, Filament, Livewire, and ecosystem details. It is not project
+architecture guidance, not code-style policy, not testing policy, and not a replacement for the ADRs.
 
 ## Foundational Context
 
