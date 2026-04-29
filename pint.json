@@ -1,0 +1,6 @@
+{
+    "preset": "psr12",
+    "rules": {
+        "php_unit_method_casing": false
+    }
+}

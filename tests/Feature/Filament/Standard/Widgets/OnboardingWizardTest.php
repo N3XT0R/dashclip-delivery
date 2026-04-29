@@ -58,12 +58,9 @@ final class OnboardingWizardTest extends DatabaseTestCase
     public function testSubmitCompletesOnboardingAndStoresNotification(): void
     {
         Livewire::test(OnboardingWizard::class)
-            ->call('submit');
+            ->call('submit')
+            ->assertNotified('Onboarding abgeschlossen');
 
         $this->assertTrue($this->user->fresh()->onboarding_completed);
-        $notifications = session('filament.notifications', []);
-
-        $this->assertNotEmpty($notifications);
-        $this->assertSame('Onboarding abgeschlossen', $notifications[0]['title']);
     }
 }

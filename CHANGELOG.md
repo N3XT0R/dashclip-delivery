@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - documented in `AGENTS.md` that project ADRs are binding guidance for future changes
     - documented in `AGENTS.md` that feature implementation should be token-efficient
     - documented in `AGENTS.md` that Superpowers should only be used on explicit request
+- **tooling**
+    - added a Pint configuration using the PSR-12 preset while preserving camelCase PHPUnit method names
 
 ### Changed
 
@@ -23,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Replaced primitive constructor arguments in `BuildZipJob` with DTO
     - Improved separation between domain data and infrastructure layer
     - Simplified method signatures and reduced parameter coupling
+
+### Fixed
+
+- **testing**
+    - fixed the OnboardingWizard notification assertion to use Filament's notification testing API
 
 ## [4.0.0-alpha.3] - 2026-04-11
 
