@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **adr**
     - added architecture decision records for class naming, SOLID and design-pattern usage, exception hierarchies,
       method-level PHPDoc conventions, changelog maintenance policy, and Conventional Commits
+    - documented in `AGENTS.md` that project ADRs are binding guidance for future changes
 
 ### Changed
 

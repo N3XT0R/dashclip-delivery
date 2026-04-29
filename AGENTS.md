@@ -9,6 +9,11 @@ docker compose exec sharing <command>
 
 Never run project commands directly on the host.
 
+## Architecture Decision Records
+
+The architecture decision records in `docs/adr/` are binding project guidance. Before making code,
+test, documentation, workflow, or architectural changes, review and apply the relevant ADRs.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
