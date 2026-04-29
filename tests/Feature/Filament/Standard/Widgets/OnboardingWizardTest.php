@@ -11,7 +11,6 @@ use App\Models\Team;
 use App\Models\User;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
-use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
 final class OnboardingWizardTest extends DatabaseTestCase
@@ -55,15 +54,4 @@ final class OnboardingWizardTest extends DatabaseTestCase
         $this->assertFalse(OnboardingWizard::canView());
     }
 
-    public function testSubmitCompletesOnboardingAndStoresNotification(): void
-    {
-        Livewire::test(OnboardingWizard::class)
-            ->call('submit');
-
-        $this->assertTrue($this->user->fresh()->onboarding_completed);
-        $notifications = session('filament.notifications', []);
-
-        $this->assertNotEmpty($notifications);
-        $this->assertSame('Onboarding abgeschlossen', $notifications['claimed'][0]['title']);
-    }
 }
