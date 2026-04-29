@@ -12,13 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **adr**
     - added architecture decision records for class naming, SOLID and design-pattern usage, exception hierarchies,
       method-level PHPDoc conventions, changelog maintenance policy, and Conventional Commits
-    - documented in `AGENTS.md` that project ADRs are binding guidance for future changes
-    - clarified in `AGENTS.md` that ADRs are the only normative rules for covered topics such as code style,
-      comments, PHPDoc, testing approach, mocks, changelog entries, and commit messages
-    - clarified in `AGENTS.md` that enterprise architecture guidance comes from project ADRs, not Laravel Boost
-    - clarified in `AGENTS.md` that Laravel is infrastructure in this project
-    - documented in `AGENTS.md` that feature implementation should be token-efficient
-    - documented in `AGENTS.md` that Superpowers should only be used on explicit request
+    - documented in `AGENTS.md` that project ADRs are binding guidance, feature implementation should be
+      token-efficient, and Superpowers should only be used on explicit request
+    - clarified in `AGENTS.md` that project ADRs are the only normative rules for covered topics, enterprise
+      architecture guidance comes from ADRs, and Laravel is infrastructure
 - **tooling**
     - added a Pint configuration using the PSR-12 preset while preserving camelCase PHPUnit method names
 
