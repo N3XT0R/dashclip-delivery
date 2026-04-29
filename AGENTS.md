@@ -14,6 +14,11 @@ Never run project commands directly on the host.
 The architecture decision records in `docs/adr/` are binding project guidance. Before making code,
 test, documentation, workflow, or architectural changes, review and apply the relevant ADRs.
 
+## Token Efficiency
+
+When implementing features, work token-efficiently: gather only the context needed for the task, avoid rereading large
+files unnecessarily, keep searches focused, and prefer concise implementation updates over broad exploratory output.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
