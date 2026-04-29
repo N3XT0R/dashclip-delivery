@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 
 class DropboxUploadService
 {
-    private const CHUNK_SIZE = 150 * 1024 * 1024; // 150 MB
+    private const CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB
 
     public function __construct(
         private AutoRefreshTokenProvider $tokenProvider,
