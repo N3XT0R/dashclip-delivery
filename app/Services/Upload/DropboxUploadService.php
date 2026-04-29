@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 
 class DropboxUploadService
 {
-    private const CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB
+    private const CHUNK_SIZE = 150 * 1024 * 1024; // 150 MB
 
     public function __construct(
         private AutoRefreshTokenProvider $tokenProvider,
@@ -35,10 +35,10 @@ class DropboxUploadService
 
     /**
      * Upload a file to Dropbox using chunked upload for large files.
-     * @param Filesystem $sourceDisk
-     * @param string $relativePath
-     * @param string $targetPath
-     * @param ProgressBar|null $bar
+     * @param  Filesystem  $sourceDisk
+     * @param  string  $relativePath
+     * @param  string  $targetPath
+     * @param  ProgressBar|null  $bar
      * @return void
      * @throws \Throwable
      */
@@ -107,7 +107,7 @@ class DropboxUploadService
                 $bar?->advance(strlen($chunk));
             }
         } catch (\Throwable $e) {
-            Log::error('Dropbox-Upload: ' . $e->getMessage(), [
+            Log::error('Dropbox-Upload: '.$e->getMessage(), [
                 'session' => $cursor?->session_id,
                 'exception' => $e
             ]);
@@ -126,7 +126,7 @@ class DropboxUploadService
 
     /**
      * Delete a file from Dropbox.
-     * @param string $targetPath
+     * @param  string  $targetPath
      * @return void
      * @throws \Throwable
      */
@@ -140,7 +140,7 @@ class DropboxUploadService
             $client->delete($targetPath);
             Log::info('Dropbox upload: file deleted', ['path' => $targetPath]);
         } catch (\Throwable $e) {
-            Log::error('Dropbox upload: error deleting file: ' . $e->getMessage(), [
+            Log::error('Dropbox upload: error deleting file: '.$e->getMessage(), [
                 'path' => $targetPath,
                 'exception' => $e
             ]);
@@ -150,7 +150,7 @@ class DropboxUploadService
 
     /**
      * Check if a file exists in Dropbox.
-     * @param string $targetPath
+     * @param  string  $targetPath
      * @return bool
      * @throws \Throwable
      */
@@ -167,7 +167,7 @@ class DropboxUploadService
             if (str_contains($e->getMessage(), 'not_found')) {
                 return false; // file does not exist
             }
-            Log::error('Dropbox upload: error while checking file: ' . $e->getMessage(), [
+            Log::error('Dropbox upload: error while checking file: '.$e->getMessage(), [
                 'path' => $targetPath,
                 'exception' => $e
             ]);
@@ -177,7 +177,7 @@ class DropboxUploadService
 
     /**
      * Get a temporary link for a file in Dropbox.
-     * @param string $targetPath
+     * @param  string  $targetPath
      * @return string
      * @throws \Throwable
      */
@@ -189,7 +189,7 @@ class DropboxUploadService
         try {
             return $this->getClient()->getTemporaryLink($targetPath);
         } catch (\Throwable $e) {
-            Log::error('Dropbox upload: error retrieving temporary link: ' . $e->getMessage(), [
+            Log::error('Dropbox upload: error retrieving temporary link: '.$e->getMessage(), [
                 'path' => $targetPath,
                 'exception' => $e
             ]);
