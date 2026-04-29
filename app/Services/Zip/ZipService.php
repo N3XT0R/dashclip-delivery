@@ -54,13 +54,28 @@ class ZipService
         $this->cache->setAssignments($jobId, $items->pluck('id')->all());
 
         $zip = $this->createZipArchive($tmpPath, $items);
+        $tmpFiles = [];
 
-        $this->cache->setStatus($jobId, DownloadStatusEnum::PREPARING->value);
-        $this->cache->setProgress($jobId, 0);
+        try {
+            $this->cache->setStatus($jobId, DownloadStatusEnum::PREPARING->value);
+            $this->cache->setProgress($jobId, 0);
 
-        $tmpFiles = $this->addAssignmentsToZip($zip, $jobId, $items, $ip, $userAgent);
+            $tmpFiles = $this->addAssignmentsToZip($zip, $jobId, $items, $ip, $userAgent);
 
-        $this->finalizeZip($zip, $tmpFiles, $jobId, $tmpPath, $downloadName);
+            $this->finalizeZip($zip, $tmpFiles, $jobId, $tmpPath, $downloadName);
+        } catch (\Throwable $e) {
+            // zip->close() must be called even on failure or libzip leaks file handles
+            try {
+                $zip->close();
+            } catch (\Throwable) {
+            }
+            throw $e;
+        } finally {
+            // always wipe any Dropbox tmp copies regardless of success or failure
+            foreach ($tmpFiles as $file) {
+                Storage::delete($file);
+            }
+        }
 
         return $tmpPath;
     }
@@ -219,22 +234,29 @@ class ZipService
         $tmpFile = 'zips/tmp/' . Str::uuid()->toString();
         $tmpFiles[] = $tmpFile;
         $localPath = Storage::path($tmpFile);
-        $localHandle = fopen($localPath, 'w+b');
 
-        if ($localHandle === false) {
-            Log::channel('single')->warning('local handler failed', [
-                'localPath' => $localPath,
-                'video_id' => $video->getKey(),
-                'disk' => $video->getAttribute('disk'),
-                'exists' => file_exists($localPath),
-            ]);
+        try {
+            $localHandle = fopen($localPath, 'w+b');
+
+            if ($localHandle === false) {
+                Log::channel('single')->warning('local handler failed', [
+                    'localPath' => $localPath,
+                    'video_id' => $video->getKey(),
+                    'disk' => $video->getAttribute('disk'),
+                    'exists' => file_exists($localPath),
+                ]);
+                return null;
+            }
+
+            try {
+                stream_copy_to_stream($stream, $localHandle);
+            } finally {
+                fclose($localHandle);
+            }
+        } finally {
+            // always release the Guzzle/HTTP stream so its /tmp backing file is freed
             fclose($stream);
-            return null;
         }
-
-        stream_copy_to_stream($stream, $localHandle);
-        fclose($localHandle);
-        fclose($stream);
 
         $this->cache->setStatus($jobId, DownloadStatusEnum::DOWNLOADED->value);
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::DOWNLOADED->value);
@@ -279,4 +301,3 @@ class ZipService
     }
 
 }
-

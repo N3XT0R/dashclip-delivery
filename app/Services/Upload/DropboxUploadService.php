@@ -6,6 +6,8 @@ namespace App\Services\Upload;
 
 use App\Facades\PathBuilder;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
+use GrahamCampbell\GuzzleFactory\GuzzleFactory;
+use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Spatie\Dropbox\Client as DropboxClient;
@@ -24,7 +26,10 @@ class DropboxUploadService
 
     private function getClient(): DropboxClient
     {
-        return $this->client ??= new DropboxClient($this->tokenProvider);
+        return $this->client ??= new DropboxClient(
+            $this->tokenProvider,
+            new GuzzleClient(['handler' => GuzzleFactory::handler(), 'stream' => true]),
+        );
     }
 
 

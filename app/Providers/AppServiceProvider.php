@@ -17,6 +17,8 @@ use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
 use Filament\Resources\Resource;
+use GrahamCampbell\GuzzleFactory\GuzzleFactory;
+use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
@@ -96,12 +98,17 @@ class AppServiceProvider extends ServiceProvider
             ->setRoleClass(Role::class);
 
         Storage::extend('dropbox', static function ($app, $config) {
-            $client = new DropboxClient(app(AutoRefreshTokenProvider::class));
+            $client = new DropboxClient(
+                app(AutoRefreshTokenProvider::class),
+                // stream:true prevents Guzzle from buffering the response body via
+                // php://temp into /tmp; the file data streams directly from the socket.
+                // GuzzleFactory::handler() preserves Spatie's built-in retry logic.
+                new GuzzleClient(['handler' => GuzzleFactory::handler(), 'stream' => true]),
+            );
             $root = trim((string)($config['root'] ?? ''), '/');
             $adapter = new DropboxAdapter($client, $root);
 
-            $filesystem = new Filesystem($adapter);
-            return new FilesystemAdapter($filesystem, $adapter, $config);
+            return new FilesystemAdapter(new Filesystem($adapter), $adapter, $config);
         });
     }
 }
