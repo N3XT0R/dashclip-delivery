@@ -13,11 +13,13 @@ use App\Filament\Standard\Pages\MyOffers;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Filament\Standard\Widgets\OnboardingWizard;
 use App\Models\Team;
+use App\Models\User;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Enums\ThemeMode;
+use Filament\Forms\Components\Select;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -36,6 +38,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Vite;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use N3XT0R\LaravelWebdavServerFilament\LaravelWebdavServerFilamentPlugin;
 
@@ -184,7 +187,12 @@ class PanelUserPanelProvider extends PanelProvider
                 ->centralApp(false)
                 ->localizePermissionLabels()
                 ->scopeToTenant(false),
-            LaravelWebdavServerFilamentPlugin::make(),
+            LaravelWebdavServerFilamentPlugin::make()
+                ->userSelectUsing(function (Select $select): Select {
+                    return $select
+                        ->options(User::whereKey(Auth::id())->pluck('name', 'id'))
+                        ->searchable();
+                }),
         ]);
     }
 }
