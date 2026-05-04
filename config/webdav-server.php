@@ -26,7 +26,7 @@ return [
 
     'auth' => [
         'account_model' => WebDavAccountModel::class,
-        'user_model' => null,
+        'user_model' => \App\Models\User::class,
 
         'username_column' => 'username',
         'password_column' => 'password_encrypted',

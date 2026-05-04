@@ -37,6 +37,7 @@ use Illuminate\Foundation\Vite;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use N3XT0R\LaravelWebdavServerFilament\LaravelWebdavServerFilamentPlugin;
 
 class PanelUserPanelProvider extends PanelProvider
 {
@@ -183,6 +184,7 @@ class PanelUserPanelProvider extends PanelProvider
                 ->centralApp(false)
                 ->localizePermissionLabels()
                 ->scopeToTenant(false),
+            LaravelWebdavServerFilamentPlugin::make(),
         ]);
     }
 }
