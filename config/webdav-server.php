@@ -17,7 +17,7 @@ return [
         'default_space' => 'default',
         'spaces' => [
             'default' => [
-                'disk' => 'local',
+                'disk' => 'import',
                 'root' => 'webdav',
                 'prefix' => '/',
             ],
