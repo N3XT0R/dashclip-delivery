@@ -9,7 +9,7 @@ services:
       - traefik-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashclip-mailhog.rule=Host(`dashclip-mailhog.local`)"
+      - "traefik.http.routers.dashclip-mailhog.rule=Host(`dashclip-mailhog.lan`)"
       - "traefik.http.services.dashclip-mailhog.loadbalancer.server.port=8025"
       - "traefik.docker.network=traefik-network"
 
@@ -63,7 +63,7 @@ services:
       - traefik-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashclip-reverb.rule=Host(`dashclip-reverb.local`)"
+      - "traefik.http.routers.dashclip-reverb.rule=Host(`dashclip-reverb.lan`)"
       - "traefik.http.services.dashclip-reverb.loadbalancer.server.port=8080"
       - "traefik.http.middlewares.dashclip-reverb-ws.headers.customrequestheaders.Upgrade=websocket"
       - "traefik.http.middlewares.dashclip-reverb-ws.headers.customrequestheaders.Connection=Upgrade"
