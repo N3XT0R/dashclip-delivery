@@ -1,4 +1,27 @@
+# Copy this file to docker-compose.override.yml and adjust as needed:
+# cp docker-compose.override.yml.dist docker-compose.override.yml
+#
+# docker-compose.override.yml is listed in .gitignore and will not be committed.
+# This file is intended for local development without Traefik.
+
 services:
+  mailhog:
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+
+  reverb:
+    ports:
+      - "8080:8080"
+    environment:
+      REVERB_HOST: localhost
+      REVERB_PORT: 8080
+      REVERB_SCHEME: http
+
   web_sharing:
     ports:
       - "9300:80"
+
+  redis:
+    ports:
+      - "6379:6379"
