@@ -1,0 +1,4 @@
+services:
+  web_sharing:
+    ports:
+      - "9300:80"
