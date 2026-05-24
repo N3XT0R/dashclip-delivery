@@ -21,6 +21,7 @@ final class IngestWebDavCommandTest extends TestCase
         $this->artisan('ingest:webdav')->assertExitCode(0);
 
         Queue::assertPushed(ProcessWebDavZipJob::class, 2);
+        Queue::assertPushed(ProcessWebDavZipJob::class, fn($job) => $job->userId === null);
     }
 
     public function testDoesNothingWhenNoZipsFound(): void
