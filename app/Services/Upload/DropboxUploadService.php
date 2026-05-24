@@ -62,6 +62,7 @@ class DropboxUploadService
 
         $client = $this->getClient();
         $cursor = null;
+        $stream = Utils::streamFor($read);
 
         try {
             if ($bytes === 0) {
@@ -69,35 +70,23 @@ class DropboxUploadService
                 return;
             }
 
-            $chunkSize = self::CHUNK_SIZE;
-            $stream = Utils::streamFor($read);
-
-            if ($bytes <= $chunkSize) {
-                $meta = $client->upload($targetPath, $stream);
-                $bar?->advance($bytes);
-                Log::info('Dropbox-Upload direct finished', ['meta' => $meta]);
-                return;
-            }
-
+            // Always use the upload-session API so upload() — which calls
+            // fstat() and only accepts string|resource — is never touched.
             $prevTell = 0;
 
             while (!$stream->eof()) {
-                $offset = $stream->tell();
-                $isLast = ($offset + $chunkSize >= $bytes);
-                $chunkStream = new LimitStream($stream, $chunkSize, $offset);
-
-                if ($cursor === null) {
-                    $cursor = $client->uploadSessionStart($chunkStream);
-                } elseif ($isLast) {
-                    $meta = $client->uploadSessionFinish($chunkStream, $cursor, $targetPath);
-                    Log::info('Dropbox-Upload session finished', ['meta' => $meta]);
-                } else {
-                    $cursor = $client->uploadSessionAppend($chunkStream, $cursor);
-                }
+                $offset   = $stream->tell();
+                $chunk    = new LimitStream($stream, self::CHUNK_SIZE, $offset);
+                $cursor   = $cursor === null
+                    ? $client->uploadSessionStart($chunk)
+                    : $client->uploadSessionAppend($chunk, $cursor);
 
                 $bar?->advance($stream->tell() - $prevTell);
                 $prevTell = $stream->tell();
             }
+
+            $meta = $client->uploadSessionFinish('', $cursor, $targetPath);
+            Log::info('Dropbox-Upload session finished', ['meta' => $meta]);
         } catch (\Throwable $e) {
             Log::error('Dropbox-Upload: '.$e->getMessage(), [
                 'session' => $cursor?->session_id,
@@ -111,6 +100,7 @@ class DropboxUploadService
                 'relativePath' => $relativePath,
                 'session' => $cursor?->session_id,
             ]);
+            $stream->close();
             $bar?->finish();
         }
     }
