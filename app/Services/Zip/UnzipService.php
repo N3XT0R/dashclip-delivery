@@ -77,7 +77,7 @@ readonly class UnzipService implements UnzipServiceInterface
     /**
      * Extract only safe entries (prevents Zip-Slip / path traversal).
      */
-    protected function safeExtract(string $zipPath, string $targetDir): string
+    private function safeExtract(string $zipPath, string $targetDir): string
     {
         $zip = new ZipArchive();
 
@@ -122,7 +122,7 @@ readonly class UnzipService implements UnzipServiceInterface
         // No traversal segments or null bytes
         $parts = preg_split('#[\\\\/]+#', $name) ?: [];
         foreach ($parts as $p) {
-            if ($p === '..' || $p === "\0") {
+            if ($p === '..' || str_contains($p, "\0")) {
                 return false;
             }
         }

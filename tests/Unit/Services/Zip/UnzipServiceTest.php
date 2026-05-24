@@ -180,6 +180,7 @@ final class UnzipServiceTest extends TestCase
         $result = $service->extractSingle($zipPath, $this->tmpDir);
 
         $this->assertFalse($result);
+        $this->assertFileExists($zipPath); // corrupt archive must not be deleted on failure
     }
 
     public function testExtractSingleThrowsFileNotFoundExceptionForMissingZip(): void
