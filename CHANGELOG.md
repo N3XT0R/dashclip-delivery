@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **WebDAV policy**
+    - introduced `WebDavPathPolicy` that wraps the package's `PathPolicy` via composition (the
+      original class is `final`) and restricts `createFile` and `write` to `.zip` files only;
+      `read`, `delete`, and `createDirectory` remain unrestricted
+    - registered the policy in `PolicyServiceProvider` to override the package default for
+      `PathResourceDto`
+
 ### Fixed
 
 - **Dropbox upload**

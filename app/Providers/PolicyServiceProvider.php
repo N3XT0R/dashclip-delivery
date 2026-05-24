@@ -9,14 +9,17 @@ use App\Models\Channel;
 use App\Models\Team;
 use App\Models\User;
 use App\Policies\TeamPolicy;
+use App\Policies\WebDavPathPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
 
 class PolicyServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
         Gate::policy(Team::class, TeamPolicy::class);
+        Gate::policy(PathResourceDto::class, WebDavPathPolicy::class);
         $this->bootAbilities();
     }
 
