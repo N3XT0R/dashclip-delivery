@@ -28,6 +28,7 @@ Schedule::command(Commands\ScanMailReplies::class)->everyTenMinutes();
 
 # Cleanup
 Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
+Schedule::command(Commands\CleanFfmpegTmpCommand::class)->hourly();
 
 # video processing
 Schedule::command(Commands\VideoProcessing\RequeueStaleRunningCommand::class)->everyFifteenMinutes();
