@@ -8,6 +8,8 @@ use App\Facades\PathBuilder;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use GrahamCampbell\GuzzleFactory\GuzzleFactory;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Psr7\LimitStream;
+use GuzzleHttp\Psr7\Utils;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Spatie\Dropbox\Client as DropboxClient;
@@ -62,49 +64,39 @@ class DropboxUploadService
         $cursor = null;
 
         try {
-            // Edge case: empty file
             if ($bytes === 0) {
                 $client->upload($targetPath, '');
                 return;
             }
 
             $chunkSize = self::CHUNK_SIZE;
+            $stream = Utils::streamFor($read);
 
-            /**
-             * IMPORTANT:
-             * upload file direct if filesize smaller than chunk-size
-             */
             if ($bytes <= $chunkSize) {
-                $content = stream_get_contents($read);
-                $meta = $client->upload($targetPath, $content);
+                $meta = $client->upload($targetPath, $stream);
+                $bar?->advance($bytes);
                 Log::info('Dropbox-Upload direct finished', ['meta' => $meta]);
                 return;
             }
 
-            $firstChunk = fread($read, $chunkSize) ?: '';
-            $cursor = $client->uploadSessionStart($firstChunk);
-            $bar?->advance(strlen($firstChunk));
+            $prevTell = 0;
 
-            $transferred = strlen($firstChunk);
+            while (!$stream->eof()) {
+                $offset = $stream->tell();
+                $isLast = ($offset + $chunkSize >= $bytes);
+                $chunkStream = new LimitStream($stream, $chunkSize, $offset);
 
-            while (!feof($read)) {
-                $chunk = fread($read, $chunkSize) ?: '';
-                if ($chunk === '' || $chunk === false) {
-                    break; // safety break on empty chunk
-                }
-                $len = strlen($chunk);
-                $transferred += $len;
-
-                if ($transferred >= $bytes) {
-                    // Last chunk
-                    $meta = $client->uploadSessionFinish($chunk, $cursor, $targetPath);
+                if ($cursor === null) {
+                    $cursor = $client->uploadSessionStart($chunkStream);
+                } elseif ($isLast) {
+                    $meta = $client->uploadSessionFinish($chunkStream, $cursor, $targetPath);
                     Log::info('Dropbox-Upload session finished', ['meta' => $meta]);
                 } else {
-                    // Append with explicit offset
-                    $cursor = $client->uploadSessionAppend($chunk, $cursor);
+                    $cursor = $client->uploadSessionAppend($chunkStream, $cursor);
                 }
 
-                $bar?->advance(strlen($chunk));
+                $bar?->advance($stream->tell() - $prevTell);
+                $prevTell = $stream->tell();
             }
         } catch (\Throwable $e) {
             Log::error('Dropbox-Upload: '.$e->getMessage(), [
@@ -119,7 +111,6 @@ class DropboxUploadService
                 'relativePath' => $relativePath,
                 'session' => $cursor?->session_id,
             ]);
-            fclose($read);
             $bar?->finish();
         }
     }
