@@ -34,6 +34,12 @@ final class ProcessWebDavZipJob implements ShouldQueue
     ) {
     }
 
+    /**
+     * Extract the uploaded ZIP archive and queue each extracted video file for ingest.
+     *
+     * @param UnzipServiceInterface $unzip
+     * @param VideoService $videoService
+     */
     public function handle(UnzipServiceInterface $unzip, VideoService $videoService): void
     {
         $storage = Storage::disk($this->disk);
@@ -44,6 +50,7 @@ final class ProcessWebDavZipJob implements ShouldQueue
 
         if (!$ok) {
             Log::warning('WebDAV ZIP extraction failed', ['path' => $this->path, 'disk' => $this->disk]);
+            $this->fail();
             return;
         }
 

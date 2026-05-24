@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Listeners\WebDav;
 
 use App\Jobs\ProcessWebDavZipJob;
+use Illuminate\Database\Eloquent\Model;
 use N3XT0R\LaravelWebdavServer\Events\WebDav\FileCreatedEvent;
 use N3XT0R\LaravelWebdavServer\Events\WebDav\FileUpdatedEvent;
 
@@ -19,7 +20,9 @@ final class ZipUploadedListener
         ProcessWebDavZipJob::dispatch(
             disk: $event->disk,
             path: $event->path,
-            userId: $event->principal->user?->getKey(),
+            userId: $event->principal->user instanceof Model
+                ? $event->principal->user->getKey()
+                : null,
         );
     }
 }

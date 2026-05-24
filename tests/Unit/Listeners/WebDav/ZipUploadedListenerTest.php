@@ -50,6 +50,9 @@ final class ZipUploadedListenerTest extends TestCase
 
         app(ZipUploadedListener::class)->handle($event);
 
-        Queue::assertPushed(ProcessWebDavZipJob::class);
+        Queue::assertPushed(ProcessWebDavZipJob::class, function ($job) {
+            return $job->disk === 'import'
+                && $job->path === 'webdav/user-42/archive.zip';
+        });
     }
 }
