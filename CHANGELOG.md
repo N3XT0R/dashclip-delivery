@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WebDAV ingest pipeline**
+    - `ZipUploadedListener` handles `FileCreatedEvent` and `FileUpdatedEvent` from the WebDAV
+      package and dispatches `ProcessWebDavZipJob` for every `.zip` upload; registered in
+      `AppServiceProvider`
+    - `ProcessWebDavZipJob` extracts the archive via `UnzipService::extractSingle()`, creates
+      `Video` records on the `import` disk, and fires `VideoQueuedForIngest` for each new file —
+      the single entry point into the existing ingest pipeline
+    - `UnzipService` extended with `extractSingle(string $absoluteZipPath, string $absoluteTargetDir): bool`
+      for single-archive extraction with automatic deletion on success; uses `IO\FileNotFoundException`
+      on missing archive (ADR 0004)
+    - `ingest:webdav` Artisan command scans all WebDAV user directories for ZIP archives and queues
+      them via `ProcessWebDavZipJob`; acts as periodic fallback; scheduled every 15 minutes
+    - `clean:webdav-non-zip` Artisan command removes non-ZIP files from WebDAV user directories;
+      scheduled hourly
+
 - **WebDAV policy**
     - introduced `WebDavPathPolicy` that wraps the package's `PathPolicy` via composition (the
       original class is `final`) and restricts `createFile` and `write` to `.zip` files only;
