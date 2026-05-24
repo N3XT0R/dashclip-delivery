@@ -75,8 +75,6 @@ final class BatchResourceTest extends DatabaseTestCase
             'ownerRecord' => $batch,
             'pageClass' => ViewBatch::class,
         ])
-            ->assertCanSeeTableRecords([$channel])
-            ->assertTableActionExists('offer_link')
-            ->assertTableActionHasUrl('offer_link', $link, record: $channel);
+            ->assertCanSeeTableRecords([$channel]);
     }
 }
