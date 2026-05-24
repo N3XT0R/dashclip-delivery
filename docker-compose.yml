@@ -1,60 +1,121 @@
 services:
-  db_sharing:
-    image: mysql:8.0
-    volumes:
-      - ./docker/data/db/:/var/lib/mysql
-    ports:
-      - "3800:3306"
-    environment:
-      - MYSQL_DATABASE=laravel
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-  sharing:
-    user: "${UID:-1000}:${GID:-1000}"
-    depends_on:
-      - db_sharing
-      - redis
-    build:
-      context: .
-      dockerfile: app.Dockerfile
-    volumes:
-      - .:/var/www/html/:consistent
-      - ./.gnupg:/root/.gnupg
-    networks:
-      - default
-    environment:
-      XDEBUG_MODE: "coverage"
-      BROADCAST_CONNECTION: reverb
-      REVERB_HOST: reverb
-      REVERB_PORT: 8080
-      REVERB_SCHEME: http
-      GNUPGHOME: /root/.gnupg
-      GPG_TTY: "/dev/tty"
-  reverb:
-    user: "${UID:-1000}:${GID:-1000}"
-    depends_on:
-      - redis
-    build:
-      context: .
-      dockerfile: app.Dockerfile
-    working_dir: /var/www/html
-    command: php artisan reverb:start --no-interaction --host=0.0.0.0 --port=8080
-    volumes:
-      - .:/var/www/html/
-    expose:
-      - "8080"
-  web_sharing:
-    image: nginx:latest
-    volumes:
-      - .:/var/www/html:ro
-      - ./docker/vhost.conf:/etc/nginx/conf.d/default.conf
-    ports:
-      - "9300:80"
-    depends_on:
-      - sharing
-  redis:
-    image: 'redis:alpine'
-    ports:
-      - '6379:6379'
+    mailhog:
+        image: mailhog/mailhog
+        expose:
+            - "1025"
+            - "8025"
+        networks:
+            - default
+            - traefik-network
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dashclip-mailhog.rule=Host(`dashclip-mailhog.lan`)"
+            - "traefik.http.services.dashclip-mailhog.loadbalancer.server.port=8025"
+            - "traefik.docker.network=traefik-network"
+
+    db_sharing:
+        image: mariadb:10.11
+        volumes:
+            - ./docker/data/db/:/var/lib/mysql
+        ports:
+            - "3800:3306"
+        environment:
+            - MYSQL_DATABASE=laravel
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+
+    sharing:
+        user: "${UID:-1000}:${GID:-1000}"
+        depends_on:
+            - db_sharing
+            - redis
+        build:
+            context: .
+            dockerfile: app.Dockerfile
+        volumes:
+            - .:/var/www/html/:consistent
+            - ./.gnupg:/root/.gnupg
+        networks:
+            - default
+        environment:
+            XDEBUG_MODE: "coverage"
+            BROADCAST_CONNECTION: reverb
+            REVERB_HOST: dashclip-reverb.lan
+            REVERB_PORT: 80
+            REVERB_SCHEME: http
+            GNUPGHOME: /root/.gnupg
+            GPG_TTY: "/dev/tty"
+
+    reverb:
+        user: "${UID:-1000}:${GID:-1000}"
+        depends_on:
+            - redis
+        build:
+            context: .
+            dockerfile: app.Dockerfile
+        working_dir: /var/www/html
+        command: php artisan reverb:start --no-interaction --host=0.0.0.0 --port=8080
+        volumes:
+            - .:/var/www/html/
+        expose:
+            - "8080"
+        networks:
+            - default
+            - traefik-network
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dashclip-reverb.rule=Host(`dashclip-reverb.lan`)"
+            - "traefik.http.services.dashclip-reverb.loadbalancer.server.port=8080"
+            - "traefik.http.middlewares.dashclip-reverb-ws.headers.customrequestheaders.Upgrade=websocket"
+            - "traefik.http.middlewares.dashclip-reverb-ws.headers.customrequestheaders.Connection=Upgrade"
+            - "traefik.http.routers.dashclip-reverb.middlewares=dashclip-reverb-ws"
+            - "traefik.docker.network=traefik-network"
+
+    horizon:
+        user: "${UID:-1000}:${GID:-1000}"
+        depends_on:
+            - redis
+            - db_sharing
+        build:
+            context: .
+            dockerfile: app.Dockerfile
+        working_dir: /var/www/html
+        command: php artisan horizon:listen
+        volumes:
+            - .:/var/www/html/
+        environment:
+            BROADCAST_CONNECTION: reverb
+            REVERB_HOST: dashclip-reverb.lan
+            REVERB_PORT: 80
+            REVERB_SCHEME: http
+        restart: unless-stopped
+
+    web_sharing:
+        image: nginx:latest
+        volumes:
+            - .:/var/www/html:ro
+            - ./docker/vhost.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - sharing
+            - reverb
+        networks:
+            - default
+            - traefik-network
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dashclip-delivery.rule=Host(`dashclip-delivery.lan`)"
+            - "traefik.http.services.dashclip-delivery.loadbalancer.server.port=80"
+            - "traefik.docker.network=traefik-network"
+
+    redis:
+        image: 'redis:alpine'
+        expose:
+            - "6379"
+
 volumes:
-  vendor:
-  node_modules:
+    vendor:
+    node_modules:
+
+networks:
+    traefik-network:
+        external: true
+    default:
