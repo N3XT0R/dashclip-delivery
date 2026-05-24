@@ -22,7 +22,12 @@ final class DropboxUploadServiceTest extends TestCase
         $cursor = new UploadSessionCursor('session123', 3);
 
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('uploadSessionStart')->once()->andReturn($cursor);
+        $client->shouldReceive('uploadSessionStart')
+            ->once()
+            ->andReturnUsing(function ($chunk) use ($cursor) {
+                $chunk->getContents();
+                return $cursor;
+            });
         $client->shouldReceive('uploadSessionAppend')->never();
         $client->shouldReceive('uploadSessionFinish')
             ->once()
@@ -47,8 +52,18 @@ final class DropboxUploadServiceTest extends TestCase
         $cursor = new UploadSessionCursor('session123', 0);
 
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('uploadSessionStart')->once()->andReturn($cursor);
-        $client->shouldReceive('uploadSessionAppend')->twice()->andReturn($cursor);
+        $client->shouldReceive('uploadSessionStart')
+            ->once()
+            ->andReturnUsing(function ($chunk) use ($cursor) {
+                $chunk->getContents();
+                return $cursor;
+            });
+        $client->shouldReceive('uploadSessionAppend')
+            ->twice()
+            ->andReturnUsing(function ($chunk, $cur) {
+                $chunk->getContents();
+                return $cur;
+            });
         $client->shouldReceive('uploadSessionFinish')
             ->once()
             ->withArgs(fn($content) => $content === '')
