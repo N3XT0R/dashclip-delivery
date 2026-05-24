@@ -30,6 +30,10 @@ Schedule::command(Commands\ScanMailReplies::class)->everyTenMinutes();
 Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
 Schedule::command(Commands\CleanFfmpegTmpCommand::class)->hourly();
 
+# WebDAV ingest
+Schedule::command(Commands\IngestWebDavCommand::class)->everyFifteenMinutes();
+Schedule::command(Commands\CleanWebDavNonZipCommand::class)->hourly();
+
 # video processing
 Schedule::command(Commands\VideoProcessing\RequeueStaleRunningCommand::class)->everyFifteenMinutes();
 Schedule::command(Commands\VideoProcessing\RequeueFailedVideosCommand::class)->everyFifteenMinutes();
