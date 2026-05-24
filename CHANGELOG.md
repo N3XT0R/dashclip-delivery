@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **FFmpeg / storage**
+    - redirected FFmpeg temporary files from `/tmp` to `storage/app/ffmpeg-tmp` via `laravel-ffmpeg`
+      config (`temporary_files_root` and `temporary_files_encrypted_hls`); stale temp files from
+      crashed Horizon workers no longer exhaust the system `/tmp` partition
+    - added `clean:ffmpeg-tmp` Artisan command that removes files older than 2 hours from
+      `storage/app/ffmpeg-tmp`; scheduled to run hourly via the Laravel scheduler
+
 ## [4.0.0-alpha.4] - 2026-04-29
 
 ### Added
