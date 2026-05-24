@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Zip;
 
+use App\Exceptions\IO\FileNotFoundException;
 use App\Services\Contracts\UnzipServiceInterface;
 use App\Services\Zip\Dto\UnzipStats;
 use Illuminate\Filesystem\Filesystem;
@@ -55,9 +56,28 @@ readonly class UnzipService implements UnzipServiceInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function extractSingle(string $absoluteZipPath, string $absoluteTargetDir): bool
+    {
+        if (!file_exists($absoluteZipPath)) {
+            throw new FileNotFoundException("ZIP not found: {$absoluteZipPath}");
+        }
+
+        $result = $this->safeExtract($absoluteZipPath, $absoluteTargetDir);
+
+        if ($result === SafeExtractResult::EXTRACTED) {
+            @unlink($absoluteZipPath);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Extract only safe entries (prevents Zip-Slip / path traversal).
      */
-    private function safeExtract(string $zipPath, string $targetDir): string
+    protected function safeExtract(string $zipPath, string $targetDir): string
     {
         $zip = new ZipArchive();
 

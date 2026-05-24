@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Zip;
 
+use App\Exceptions\IO\FileNotFoundException;
 use App\Services\Zip\UnzipService;
 use Illuminate\Filesystem\Filesystem;
 use PHPUnit\Framework\TestCase;
@@ -153,6 +154,41 @@ final class UnzipServiceTest extends TestCase
         // Assert: listed as failed and still present
         $this->assertContains('broken.zip', $stats->failedArchives);
         $this->assertFileExists($archive);
+    }
+
+    public function testExtractSingleExtractsAndDeletesZip(): void
+    {
+        $service = new UnzipService($this->fs);
+
+        $zipPath = $this->tmp('test.zip');
+        $this->createZip($zipPath, ['video.mp4' => 'fake-video-content']);
+
+        $result = $service->extractSingle($zipPath, $this->tmpDir);
+
+        $this->assertTrue($result);
+        $this->assertFileDoesNotExist($zipPath);
+        $this->assertFileExists($this->tmpDir.'/video.mp4');
+    }
+
+    public function testExtractSingleReturnsFalseForCorruptZip(): void
+    {
+        $service = new UnzipService($this->fs);
+
+        $zipPath = $this->tmp('corrupt.zip');
+        file_put_contents($zipPath, 'not a zip');
+
+        $result = $service->extractSingle($zipPath, $this->tmpDir);
+
+        $this->assertFalse($result);
+    }
+
+    public function testExtractSingleThrowsFileNotFoundExceptionForMissingZip(): void
+    {
+        $service = new UnzipService($this->fs);
+
+        $this->expectException(FileNotFoundException::class);
+
+        $service->extractSingle('/nonexistent/path/archive.zip', sys_get_temp_dir());
     }
 
     // ───────────────────────────────────────────────────────────────────────────────
