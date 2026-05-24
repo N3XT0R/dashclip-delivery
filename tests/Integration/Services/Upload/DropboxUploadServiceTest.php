@@ -10,21 +10,24 @@ use Illuminate\Support\Facades\Storage;
 use Mockery;
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\UploadSessionCursor;
-use Tests\DatabaseTestCase;
+use Tests\TestCase;
 
-final class DropboxUploadServiceTest extends DatabaseTestCase
+final class DropboxUploadServiceTest extends TestCase
 {
-    public function testUploadFileWithSmallFileUsesDirectUpload(): void
+    public function testUploadFileWithSmallFileUsesSessionUpload(): void
     {
         Storage::fake('tmp');
         Storage::disk('tmp')->put('foo.txt', 'bar');
 
+        $cursor = new UploadSessionCursor('session123', 3);
+
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('upload')
+        $client->shouldReceive('uploadSessionStart')->once()->andReturn($cursor);
+        $client->shouldReceive('uploadSessionAppend')->never();
+        $client->shouldReceive('uploadSessionFinish')
             ->once()
-            ->withArgs(fn($path, $content) => str_contains($path, 'foo.txt') && $content === 'bar'
-            )
-            ->andReturn(['mocked' => true]);
+            ->withArgs(fn($content) => $content === '')
+            ->andReturn(['finished' => true]);
 
         $service = new DropboxUploadService(
             Mockery::mock(AutoRefreshTokenProvider::class),
@@ -39,23 +42,16 @@ final class DropboxUploadServiceTest extends DatabaseTestCase
     public function testUploadFileWithChunkedUploadSplitsAndFinishes(): void
     {
         Storage::fake('tmp');
-        $bigContent = str_repeat('A', 20 * 1024 * 1024); // 20 MB -> 2x Append + Finish
-        Storage::disk('tmp')->put('big.bin', $bigContent);
+        Storage::disk('tmp')->put('big.bin', str_repeat('A', 20 * 1024 * 1024)); // 20 MB → Start + 2× Append + Finish
 
         $cursor = new UploadSessionCursor('session123', 0);
 
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('uploadSessionStart')
-            ->once()
-            ->andReturn($cursor);
-        $client->shouldReceive('uploadSessionAppend')
-            ->atLeast()->once()
-            ->andReturnUsing(function ($chunk, $cur) {
-                $cur->offset += strlen($chunk);
-                return $cur;
-            });
+        $client->shouldReceive('uploadSessionStart')->once()->andReturn($cursor);
+        $client->shouldReceive('uploadSessionAppend')->twice()->andReturn($cursor);
         $client->shouldReceive('uploadSessionFinish')
             ->once()
+            ->withArgs(fn($content) => $content === '')
             ->andReturn(['finished' => true]);
 
         $service = new DropboxUploadService(
