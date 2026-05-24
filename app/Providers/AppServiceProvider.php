@@ -16,14 +16,18 @@ use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
+use App\Listeners\WebDav\ZipUploadedListener;
 use Filament\Resources\Resource;
 use GrahamCampbell\GuzzleFactory\GuzzleFactory;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\FileCreatedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\FileUpdatedEvent;
 use League\Flysystem\Filesystem;
 use Spatie\Dropbox\Client as DropboxClient;
 use Spatie\FlysystemDropbox\DropboxAdapter;
@@ -92,6 +96,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(
+            [FileCreatedEvent::class, FileUpdatedEvent::class],
+            ZipUploadedListener::class
+        );
+
         Resource::scopeToTenant(false);
         app(PermissionRegistrar::class)
             ->setPermissionClass(Permission::class)
