@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Dropbox upload**
+    - `DropboxUploadService` switched to exclusively session-based uploads
+      (`uploadSessionStart` → `uploadSessionAppend` → `uploadSessionFinish`); `upload()` is now
+      only called for empty files, since it internally uses `fstat()` and does not accept PSR-7
+      streams
+    - Chunks are now passed as `LimitStream` (PSR-7) instead of strings via `fread()`;
+      Guzzle no longer buffers the request bodies through `php://temp` to `/tmp`
+
 - **FFmpeg / storage**
     - redirected FFmpeg temporary files from `/tmp` to `storage/app/ffmpeg-tmp` via `laravel-ffmpeg`
       config (`temporary_files_root` and `temporary_files_encrypted_hls`); stale temp files from
