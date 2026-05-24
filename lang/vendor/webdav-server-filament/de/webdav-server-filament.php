@@ -46,6 +46,14 @@ return [
                 'password_reset' => 'Passwort erfolgreich zurückgesetzt',
                 'webdav_url_copied' => 'WebDAV-URL kopiert',
             ],
+            'pages' => [
+                'list' => [
+                    'description' => 'Hier verwaltest du deine WebDAV-Konten. Über WebDAV kannst du ZIP-Archive mit Videos hochladen, die anschließend automatisch als Massenupload verarbeitet werden.',
+                ],
+                'create' => [
+                    'description' => 'Lege hier ein neues WebDAV-Konto an, um ZIP-Archive mit Videos per WebDAV-Client hochzuladen. Die Archive werden automatisch als Massenupload verarbeitet.',
+                ],
+            ],
         ],
     ],
     'notifications' => [
