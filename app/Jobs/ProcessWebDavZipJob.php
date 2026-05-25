@@ -60,6 +60,7 @@ final class ProcessWebDavZipJob implements ShouldQueue
         $user = $this->userId ? User::find($this->userId) : null;
         $userDir = dirname($this->path);
 
+        $newVideos = [];
         foreach ($storage->files($userDir) as $relativePath) {
             if (str_ends_with(strtolower($relativePath), '.zip')) {
                 continue;
@@ -73,10 +74,14 @@ final class ProcessWebDavZipJob implements ShouldQueue
             $video = $videoService->createVideoBydDiskAndFileInfoDto($this->disk, $storage, $fileInfo);
 
             if ($video->wasRecentlyCreated) {
-                VideoQueuedForIngest::dispatch($video, $user);
+                $newVideos[] = $video;
             }
         }
 
         $csvService->importCsvForDisk($storage, $userDir, deleteAfterSuccess: true);
+
+        foreach ($newVideos as $video) {
+            VideoQueuedForIngest::dispatch($video, $user);
+        }
     }
 }
