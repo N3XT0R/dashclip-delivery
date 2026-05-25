@@ -14,8 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       package and dispatches `ProcessWebDavZipJob` for every `.zip` upload; registered in
       `AppServiceProvider`
     - `ProcessWebDavZipJob` extracts the archive via `UnzipService::extractSingle()`, creates
-      `Video` records on the `import` disk, and fires `VideoQueuedForIngest` for each new file —
-      the single entry point into the existing ingest pipeline
+      `Video` records on the `import` disk, fires `VideoQueuedForIngest` for each new file —
+      the single entry point into the existing ingest pipeline — and imports any accompanying
+      CSV metadata file (same `info.csv` column format) via `CsvService::importCsvForDisk()`
     - `UnzipService` extended with `extractSingle(string $absoluteZipPath, string $absoluteTargetDir): bool`
       for single-archive extraction with automatic deletion on success; uses `IO\FileNotFoundException`
       on missing archive (ADR 0004)
