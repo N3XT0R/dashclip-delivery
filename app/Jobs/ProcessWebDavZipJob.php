@@ -8,6 +8,7 @@ use App\DTO\FileInfoDto;
 use App\Events\Video\VideoQueuedForIngest;
 use App\Models\User;
 use App\Services\Contracts\UnzipServiceInterface;
+use App\Services\CsvService;
 use App\Services\VideoService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,12 +36,14 @@ final class ProcessWebDavZipJob implements ShouldQueue
     }
 
     /**
-     * Extract the uploaded ZIP archive and queue each extracted video file for ingest.
+     * Extract the uploaded ZIP archive, queue each extracted video file for ingest,
+     * and import any accompanying CSV metadata file (same format as info.csv).
      *
      * @param UnzipServiceInterface $unzip
      * @param VideoService $videoService
+     * @param CsvService $csvService
      */
-    public function handle(UnzipServiceInterface $unzip, VideoService $videoService): void
+    public function handle(UnzipServiceInterface $unzip, VideoService $videoService, CsvService $csvService): void
     {
         $storage = Storage::disk($this->disk);
         $absoluteZip = $storage->path($this->path);
@@ -62,6 +65,10 @@ final class ProcessWebDavZipJob implements ShouldQueue
                 continue;
             }
 
+            if (preg_match('/\.(csv|txt)$/i', basename($relativePath))) {
+                continue;
+            }
+
             $fileInfo = FileInfoDto::fromPath($relativePath);
             $video = $videoService->createVideoBydDiskAndFileInfoDto($this->disk, $storage, $fileInfo);
 
@@ -69,5 +76,7 @@ final class ProcessWebDavZipJob implements ShouldQueue
                 VideoQueuedForIngest::dispatch($video, $user);
             }
         }
+
+        $csvService->importCsvForDisk($storage, $userDir, deleteAfterSuccess: true);
     }
 }
