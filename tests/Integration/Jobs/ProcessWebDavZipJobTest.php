@@ -37,6 +37,7 @@ final class ProcessWebDavZipJobTest extends DatabaseTestCase
 
         $this->assertSame(1, $fakeUnzip->extractSingleCallCount);
         Event::assertDispatched(VideoQueuedForIngest::class);
+        Storage::disk('import')->assertMissing('webdav/42/archive.zip');
     }
 
     public function testCsvFileIsSkippedFromVideoCreationAndDoesNotTriggerIngest(): void
@@ -59,6 +60,7 @@ final class ProcessWebDavZipJobTest extends DatabaseTestCase
 
         // only the video file triggers ingest — not the CSV
         Event::assertDispatched(VideoQueuedForIngest::class, 1);
+        Storage::disk('import')->assertMissing('webdav/42/archive.zip');
     }
 
     public function testSkipsIfZipExtractionFails(): void
@@ -77,5 +79,6 @@ final class ProcessWebDavZipJobTest extends DatabaseTestCase
         );
 
         Event::assertNotDispatched(VideoQueuedForIngest::class);
+        Storage::disk('import')->assertExists('webdav/42/broken.zip');
     }
 }
