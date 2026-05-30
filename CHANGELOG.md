@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **ChannelWorkspace cluster access**
-    - Added a missing access check to `ChannelWorkspace::canAccess()`: the
-      Channel-Workspace cluster was previously visible without proper permission
-      validation. Access is now restricted to users holding the
+    - Fixed missing permission validation in `ChannelWorkspace::canAccess()`: the
+      Channel-Workspace cluster did not properly enforce access restrictions and
+      could appear in navigation without the intended authorization check.
+      Visibility is now limited to users with the
       `page.channels.access` permission (Channel-Operators).
 
 ## [4.0.0-beta.1] - 2026-05-29
