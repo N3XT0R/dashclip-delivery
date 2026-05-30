@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0-beta.2] - 2026-05-30
+
+### Fixed
+
+- **ChannelWorkspace cluster access**
+    - `ChannelWorkspace::canAccess()` had an incorrect fallback value (`?? true`): users without
+      an active session were incorrectly granted access to the Channel-Workspace navigation entry;
+      corrected to `?? false` so the cluster is exclusively visible to users holding the
+      `page.channels.access` permission (Channel-Operators)
+
 ## [4.0.0-beta.1] - 2026-05-29
 
 ### Added

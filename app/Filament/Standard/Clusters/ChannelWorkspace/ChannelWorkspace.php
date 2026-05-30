@@ -40,7 +40,7 @@ class ChannelWorkspace extends Cluster
     {
         $canAccess = parent::canAccess();
         if ($canAccess) {
-            $canAccess = auth()->user()?->can('page.channels.access') ?? true;
+            $canAccess = auth()->user()?->can('page.channels.access') ?? false;
         }
 
         return $canAccess;
