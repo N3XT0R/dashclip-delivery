@@ -9,7 +9,6 @@ use App\Pipelines\Ingest\Context\IngestContext;
 use App\Pipelines\Ingest\IngestPipeline;
 use App\Repository\VideoRepository;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
