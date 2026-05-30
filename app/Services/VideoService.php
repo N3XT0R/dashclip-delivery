@@ -105,7 +105,7 @@ readonly class VideoService
             $disk->delete($video->path);
         }
 
-        $user ??= $this->videoRepository->getUploaderUser($video);
+        $user = $this->videoRepository->getUploaderUser($video);
         if (null === $user) {
             $user = $video->team()->first()?->owner;
         }
