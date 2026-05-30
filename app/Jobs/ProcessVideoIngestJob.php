@@ -31,6 +31,8 @@ final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUniqueUntilPro
 
     public int $tries = 3;
 
+    public int $timeout = 3600; // 1h
+
     public function __construct(
         public readonly int $videoId
     ) {
