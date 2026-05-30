@@ -62,4 +62,57 @@ final class ViewVideoPageTest extends DatabaseTestCase
         Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
             ->assertStatus(200);
     }
+
+    public function testFormStateContainsOriginalNameAndExt(): void
+    {
+        $video = Video::factory()->create([
+            'original_name' => 'integration-test.mp4',
+            'ext' => 'mp4',
+        ]);
+
+        $this->actingAs($this->admin);
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertSet('data.original_name', 'integration-test.mp4')
+            ->assertSet('data.ext', 'mp4');
+    }
+
+    public function testFormStateContainsDiskAndHash(): void
+    {
+        $video = Video::factory()->create([
+            'disk' => 'local',
+            'hash' => 'abc123def456',
+        ]);
+
+        $this->actingAs($this->admin);
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertSet('data.disk', 'local')
+            ->assertSet('data.hash', 'abc123def456');
+    }
+
+    public function testFormStateContainsByteValue(): void
+    {
+        $video = Video::factory()->create(['bytes' => 2_097_152]);
+
+        $this->actingAs($this->admin);
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertSet('data.bytes', 2_097_152);
+    }
+
+    public function testFormStateContainsMetaArray(): void
+    {
+        $meta = ['codec' => 'h264', 'fps' => 30];
+        $video = Video::factory()->create(['meta' => $meta]);
+
+        $this->actingAs($this->admin);
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertSet('data.meta', $meta);
+    }
 }
