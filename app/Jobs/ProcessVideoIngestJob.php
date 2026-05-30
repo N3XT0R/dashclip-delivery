@@ -10,6 +10,7 @@ use App\Pipelines\Ingest\IngestPipeline;
 use App\Repository\VideoRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -22,7 +23,7 @@ use function in_array;
  * This job is responsible for processing the video ingest pipeline. It retrieves the video by its ID,
  *
  */
-final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
+final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -38,7 +39,11 @@ final class ProcessVideoIngestJob implements ShouldQueue, ShouldBeUnique
 
     public function uniqueId(): string
     {
-        return 'ingest_job_video_id_' . $this->videoId;
+        return sprintf(
+            '%s:ingest_job_video_id_%d',
+            app()->environment(),
+            $this->videoId
+        );
     }
 
     public function backoff(): array

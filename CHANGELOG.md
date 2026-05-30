@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Horizon video ingest job dispatching**
+    - Fixed an issue where `ProcessVideoIngestJob` could silently stop being
+      dispatched when stale unique job locks remained after interrupted
+      processing or worker timeouts.
+      Replaced `ShouldBeUnique` with
+      `ShouldBeUniqueUntilProcessing` to prevent persistent locks from blocking
+      future ingest jobs.
+      Unique job identifiers are now environment-aware to avoid collisions
+      between staging and production environments sharing the same Redis
+      instance.
+
 ## [4.0.0-beta.2] - 2026-05-30
 
 ### Fixed
