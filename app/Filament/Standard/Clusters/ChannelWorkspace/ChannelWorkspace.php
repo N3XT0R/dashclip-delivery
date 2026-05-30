@@ -35,4 +35,14 @@ class ChannelWorkspace extends Cluster
     {
         return __('channel-workspace.title');
     }
+
+    public static function canAccess(): bool
+    {
+        $canAccess = parent::canAccess();
+        if ($canAccess) {
+            $canAccess = auth()->user()?->can('page.channels.access') ?? true;
+        }
+
+        return $canAccess;
+    }
 }
