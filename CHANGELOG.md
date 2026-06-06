@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **AssignmentService**: Fixed a null pointer exception in `canReturnAssignment()` when `expires_at` is `null` — assignments without an expiry date are now correctly treated as non-expired.
+- **AssignmentService**: 
+  - Fixed a null pointer exception in `canReturnAssignment()` when `expires_at` is `null` 
+    assignments without an expiry date are now correctly treated as non-expired.
+
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
 
 ## [4.0.0-beta.3] - 2026-05-30
 
