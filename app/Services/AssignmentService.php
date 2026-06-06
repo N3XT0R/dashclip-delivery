@@ -142,7 +142,7 @@ readonly class AssignmentService
             return false;
         }
 
-        if ($assignment->expires_at->isPast()) {
+        if ($assignment->expires_at?->isPast()) {
             return false;
         }
 

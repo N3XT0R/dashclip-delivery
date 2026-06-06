@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **AssignmentService**: Fixed a null pointer exception in `canReturnAssignment()` when `expires_at` is `null` — assignments without an expiry date are now correctly treated as non-expired.
+
 ## [4.0.0-beta.3] - 2026-05-30
 
 ### Fixed

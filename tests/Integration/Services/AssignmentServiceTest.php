@@ -415,6 +415,20 @@ class AssignmentServiceTest extends DatabaseTestCase
         }
     }
 
+    public function testCanReturnAssignmentReturnsTrueWhenExpiresAtIsNullAndStatusIsReturnable(): void
+    {
+        $assignment = Assignment::factory()
+            ->for(Batch::factory()->type('assign')->finished(), 'batch')
+            ->for(Channel::factory(), 'channel')
+            ->for(Video::factory(), 'video')
+            ->create([
+                'status' => StatusEnum::NOTIFIED->value,
+                'expires_at' => null,
+            ]);
+
+        $this->assertTrue($this->service->canReturnAssignment($assignment));
+    }
+
     public function testReturnAssignmentSetsStatusRejectedAndReturnsTrue(): void
     {
         $assignment = Assignment::factory()
