@@ -15,6 +15,7 @@
     "skills": [
         "laravel-best-practices",
         "configuring-horizon",
+        "echo-development",
         "tailwindcss-development",
         "debug-using-debugbar"
     ]
