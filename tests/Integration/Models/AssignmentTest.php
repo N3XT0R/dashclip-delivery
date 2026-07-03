@@ -14,6 +14,7 @@ use App\Models\Download;
 use App\Models\User;
 use App\Models\Video;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Tests\DatabaseTestCase;
 
 final class AssignmentTest extends DatabaseTestCase
@@ -117,6 +118,30 @@ final class AssignmentTest extends DatabaseTestCase
             $this->assertTrue($assignment->expires_at->isSameSecond($expectedExpiry));
         } finally {
             Carbon::setTestNow();
+        }
+    }
+
+    public function testSetExpiresAtAcceptsStringConfigTTLDate(): void
+    {
+        Cache::forever('configs::default::'.DefaultConfigEntry::EXPIRE_AFTER_DAYS, '6');
+
+        $assignment = Assignment::factory()->create([
+            'expires_at' => null,
+            'status' => StatusEnum::QUEUED->value,
+            'last_notified_at' => null,
+            'batch_id' => Batch::factory()->create(),
+        ]);
+
+        Carbon::setTestNow($now = now());
+
+        try {
+            $assignment->setExpiresAt();
+
+            $this->assertNotNull($assignment->expires_at);
+            $this->assertTrue($assignment->expires_at->isSameSecond($now->copy()->addDays(6)->endOfDay()));
+        } finally {
+            Carbon::setTestNow();
+            Cache::forget('configs::default::'.DefaultConfigEntry::EXPIRE_AFTER_DAYS);
         }
     }
 

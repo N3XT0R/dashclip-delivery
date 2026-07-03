@@ -164,7 +164,7 @@ class Assignment extends Model
     public function setExpiresAt(?int $ttlDays = null): void
     {
         if (null === $ttlDays) {
-            $ttlDays = Cfg::get(DefaultConfigEntry::EXPIRE_AFTER_DAYS, 'default', 6);
+            $ttlDays = (int)Cfg::get(DefaultConfigEntry::EXPIRE_AFTER_DAYS, 'default', 6);
         }
 
         $expiry = $this->expires_at
