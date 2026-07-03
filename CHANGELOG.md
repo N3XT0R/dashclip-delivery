@@ -7,12 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0-beta.5] - 2026-07-03
+
 ### Fixed
 
 - **Assignments**
     - fixed assignment expiration calculation when cached configuration values for the default TTL are stored as strings.
-
-## [4.0.0-beta.5] - 2026-07-03
 
 ### Security
 
