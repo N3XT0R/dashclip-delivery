@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
+use App\Enum\BatchTypeEnum;
 use App\Enum\ProcessingStatusEnum;
+use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -59,6 +61,52 @@ final class AssignDistributeTest extends DatabaseTestCase
             $this->assertContains($a->video_id, $videoIds, 'Unexpected video assigned.');
             $this->assertSame('queued', $a->status, 'Expected new assignments to be queued.');
         }
+    }
+
+    public function testDistributePrioritizesChannelsWithLowerWeeklyUsageAcrossBatches(): void
+    {
+        Channel::query()->delete();
+
+        $channels = collect([
+            Channel::factory()->create(['weekly_quota' => 5, 'weight' => 1]),
+            Channel::factory()->create(['weekly_quota' => 5, 'weight' => 1]),
+            Channel::factory()->create(['weekly_quota' => 5, 'weight' => 1]),
+            Channel::factory()->create(['weekly_quota' => 5, 'weight' => 1]),
+        ]);
+
+        $previousBatch = Batch::factory()->type(BatchTypeEnum::ASSIGN->value)->finished()->create();
+        $assignedThisWeek = now()->startOfWeek()->addDay();
+
+        foreach ($channels->take(2) as $channel) {
+            Assignment::factory()
+                ->forChannel($channel)
+                ->withBatch($previousBatch)
+                ->create([
+                    'status' => StatusEnum::PICKEDUP->value,
+                    'created_at' => $assignedThisWeek,
+                    'updated_at' => $assignedThisWeek,
+                ]);
+        }
+
+        $videos = Video::factory()
+            ->count(2)
+            ->create(['processing_status' => ProcessingStatusEnum::Completed]);
+
+        $this->artisan('assign:distribute')
+            ->assertExitCode(Command::SUCCESS);
+
+        $batch = Batch::query()->where('type', BatchTypeEnum::ASSIGN->value)->latest('id')->first();
+
+        $assignedChannelIds = Assignment::query()
+            ->where('batch_id', $batch?->getKey())
+            ->whereIn('video_id', $videos->pluck('id'))
+            ->pluck('channel_id')
+            ->all();
+
+        $this->assertEqualsCanonicalizing(
+            $channels->slice(2)->pluck('id')->all(),
+            $assignedChannelIds
+        );
     }
 
     /**

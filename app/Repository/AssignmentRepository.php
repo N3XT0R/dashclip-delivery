@@ -12,6 +12,7 @@ use App\Models\ChannelVideoBlock;
 use App\Models\Download;
 use App\Models\User;
 use App\Models\Video;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
@@ -35,6 +36,22 @@ class AssignmentRepository
         ]);
     }
 
+    /**
+     * Count assignments created for each channel since a given point in time.
+     *
+     * @return Collection<int, int> channel_id => assignment count
+     */
+    public function countAssignmentsByChannelSince(CarbonInterface $since): Collection
+    {
+        return Assignment::query()
+            ->where('created_at', '>=', $since)
+            ->select('channel_id')
+            ->selectRaw('COUNT(*) as assignments_count')
+            ->groupBy('channel_id')
+            ->pluck('assignments_count', 'channel_id')
+            ->map(fn (int|string $count): int => (int)$count);
+    }
+
 
     /**
      * Lade alle bereits (irgendwann) zugewiesenen Kanäle je Video vor,
@@ -48,7 +65,7 @@ class AssignmentRepository
             ->whereIn('video_id', $poolVideos->pluck('id'))
             ->get()
             ->groupBy('video_id')
-            ->map(fn(Collection $rows) => $rows->pluck('channel_id')->unique())
+            ->map(fn (Collection $rows) => $rows->pluck('channel_id')->unique())
             ->all();
     }
 

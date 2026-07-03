@@ -12,6 +12,7 @@ use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;
 use App\Models\Video;
+use App\Repository\AssignmentRepository;
 use App\Repository\ChannelRepository;
 use App\Repository\TeamRepository;
 use Illuminate\Support\Collection;
@@ -24,7 +25,7 @@ class ChannelService
     }
 
     /**
-     * Prepare active channels, rotation pool, and quota mapping.
+     * Prepare active channels, rotation pool, and remaining weekly quota mapping.
      * @param int|null $quotaOverride
      * @param string $uploaderType
      * @param string|int $uploaderId
@@ -36,11 +37,19 @@ class ChannelService
         string|int $uploaderId,
     ): ChannelPoolDto {
         $teamRepository = app(TeamRepository::class);
+        $weeklyAssignmentCounts = $quotaOverride === null
+            ? app(AssignmentRepository::class)->countAssignmentsByChannelSince(now()->startOfWeek())
+            : collect();
         $channels = $this->channelRepository->getActiveChannels();
 
         /** @var array<int,int> $quota */
         $quota = $channels
-            ->mapWithKeys(fn(Channel $c) => [$c->getKey() => (int)($quotaOverride ?: $c->weekly_quota)])
+            ->mapWithKeys(fn (Channel $c) => [
+                $c->getKey() => max(
+                    0,
+                    (int)($quotaOverride ?: $c->weekly_quota) - (int)$weeklyAssignmentCounts->get($c->getKey(), 0)
+                ),
+            ])
             ->all();
 
         if ($uploaderType === UploaderTypeEnum::TEAM->value) {
@@ -49,11 +58,18 @@ class ChannelService
             if ($team) {
                 $teamChannels = $this->channelRepository->getTeamAssignedChannels($team);
                 $quota = $teamChannels
-                    ->mapWithKeys(fn(Channel $channel) => [$channel->getKey() => (int)$channel->pivot?->quota])
+                    ->mapWithKeys(fn (Channel $channel) => [
+                        $channel->getKey() => max(
+                            0,
+                            (int)$channel->pivot?->quota - (int)$weeklyAssignmentCounts->get($channel->getKey(), 0)
+                        ),
+                    ])
                     ->all();
                 $channels = $teamChannels;
             }
         }
+
+        $channels = $this->orderChannelsForDistribution($channels, $weeklyAssignmentCounts);
 
         $rotationPool = collect();
         foreach ($channels as $channel) {
@@ -67,6 +83,31 @@ class ChannelService
             rotationPool: $rotationPool,
             quota: $quota,
         );
+    }
+
+    private function orderChannelsForDistribution(Collection $channels, Collection $weeklyAssignmentCounts): Collection
+    {
+        return $channels
+            ->sort(function (Channel $left, Channel $right) use ($weeklyAssignmentCounts): int {
+                $leftWeight = max(1, (int)$left->weight);
+                $rightWeight = max(1, (int)$right->weight);
+                $leftUsageScore = (int)$weeklyAssignmentCounts->get($left->getKey(), 0) / $leftWeight;
+                $rightUsageScore = (int)$weeklyAssignmentCounts->get($right->getKey(), 0) / $rightWeight;
+                $usageComparison = $leftUsageScore <=> $rightUsageScore;
+
+                if ($usageComparison !== 0) {
+                    return $usageComparison;
+                }
+
+                $weightComparison = $rightWeight <=> $leftWeight;
+
+                if ($weightComparison !== 0) {
+                    return $weightComparison;
+                }
+
+                return $left->getKey() <=> $right->getKey();
+            })
+            ->values();
     }
 
     /**

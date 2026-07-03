@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Assignments**
+    - respected channel weekly quotas across assignment batches so channels that already reached
+      their weekly limit no longer keep receiving new offers in later distribution runs.
+
 ## [4.0.0-beta.5] - 2026-07-03
 
 ### Fixed
