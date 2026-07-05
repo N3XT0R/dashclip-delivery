@@ -26,6 +26,11 @@ class ChannelResource extends Resource
     protected static ?string $modelLabel = 'filament.admin.labels.channel';
     protected static ?string $pluralModelLabel = 'filament.admin.labels.channels';
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.media');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.channel');

@@ -15,6 +15,11 @@ class MailLogResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.system';
     protected static ?string $label = 'filament.admin.labels.mail_log';
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.system');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.mail_log');

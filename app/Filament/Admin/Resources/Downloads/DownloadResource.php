@@ -18,6 +18,11 @@ class DownloadResource extends Resource
     protected static ?string $modelLabel = 'filament.admin.labels.download';
     protected static ?string $pluralModelLabel = 'filament.admin.labels.downloads';
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.media');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.download');

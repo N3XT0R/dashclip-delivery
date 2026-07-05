@@ -26,6 +26,11 @@ class TeamResource extends Resource
     protected static ?string $modelLabel = 'filament.admin.labels.team';
     protected static ?string $pluralModelLabel = 'filament.admin.labels.teams';
 
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return __('filament.admin.navigation.system');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.team');

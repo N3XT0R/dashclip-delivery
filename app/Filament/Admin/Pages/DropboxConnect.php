@@ -22,6 +22,21 @@ class DropboxConnect extends Page
 
     protected string $view = 'filament.pages.dropbox-connect';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.admin.labels.dropbox');
+    }
+
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.settings');
+    }
+
+    public function getTitle(): string
+    {
+        return __('filament.admin.labels.dropbox_connect');
+    }
+
     public bool $connected = false;
 
     public ?Carbon $expiresAt = null;

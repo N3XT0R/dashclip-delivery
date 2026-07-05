@@ -32,6 +32,11 @@ class VideoResource extends Resource
 
     protected static bool $isScopedToTenant = false;
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.media');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.video');

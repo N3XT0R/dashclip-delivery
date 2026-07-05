@@ -28,6 +28,11 @@ class ChannelTeamResource extends Resource
     protected static ?string $modelLabel = 'filament.standard.channel_team.model_label';
     protected static ?string $pluralModelLabel = 'filament.standard.channel_team.plural_model_label';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.standard.channel_team.navigation_label');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.standard.channel_team.model_label');

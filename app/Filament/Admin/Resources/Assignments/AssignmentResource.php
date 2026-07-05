@@ -28,6 +28,11 @@ class AssignmentResource extends Resource
     protected static ?string $pluralModelLabel = 'filament.admin.labels.assignments';
     protected static bool $shouldRegisterNavigation = false;
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.media');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.assignment');

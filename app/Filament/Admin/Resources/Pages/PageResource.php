@@ -23,6 +23,11 @@ class PageResource extends Resource
     protected static ?string $modelLabel = 'filament.admin.labels.page';
     protected static ?string $pluralModelLabel = 'filament.admin.labels.pages';
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.content');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.page');

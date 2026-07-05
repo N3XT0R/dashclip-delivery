@@ -22,6 +22,11 @@ class ActivityResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'filament.admin.navigation.system';
 
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return __('filament.admin.navigation.system');
+    }
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['description', 'event', 'subject_type', 'causer.name'];

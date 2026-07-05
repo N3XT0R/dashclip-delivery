@@ -27,6 +27,11 @@ class ConfigResource extends Resource
     protected static ?string $modelLabel = 'filament.admin.labels.config';
     protected static ?string $pluralModelLabel = 'filament.admin.labels.configs';
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.settings');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.config');

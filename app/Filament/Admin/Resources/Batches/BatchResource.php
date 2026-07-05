@@ -23,6 +23,11 @@ class BatchResource extends Resource
     protected static ?string $modelLabel = 'filament.admin.labels.batch';
     protected static ?string $pluralModelLabel = 'filament.admin.labels.batches';
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.system');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.batch');

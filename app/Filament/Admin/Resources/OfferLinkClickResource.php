@@ -18,6 +18,11 @@ class OfferLinkClickResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.media';
     protected static ?string $label = 'filament.admin.labels.offer_link_clicks';
 
+    public static function getNavigationGroup(): string|\UnitEnum|null
+    {
+        return __('filament.admin.navigation.media');
+    }
+
     public static function getModelLabel(): string
     {
         return __('filament.admin.labels.offer_link_clicks');

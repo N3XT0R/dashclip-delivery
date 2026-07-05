@@ -26,6 +26,11 @@ class UserResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'filament.admin.navigation.system';
 
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return __('filament.admin.navigation.system');
+    }
+
     public static function getNavigationBadge(): ?string
     {
         return auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value) ? static::getModel()::count() : null;
