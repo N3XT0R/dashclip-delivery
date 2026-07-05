@@ -1,12 +1,9 @@
 <x-filament-panels::page>
-    <div class="channel-application-benefits-panel mb-6 rounded border p-4">
-        <h2 class="channel-application-benefits-panel__title mb-2 text-lg font-semibold">
-            {{ __('filament.channel_application.form.about_title') }}
-        </h2>
-        <p class="mb-4">
-            {{ __('filament.channel_application.form.about_intro') }}
-        </p>
-        <div class="mb-4 space-y-2">
+    <x-filament::section class="mb-6" :heading="__('filament.channel_application.form.about_title')">
+        <div class="fi-prose">
+            <p>
+                {{ __('filament.channel_application.form.about_intro') }}
+            </p>
             <p><strong>{{ __('filament.channel_application.form.about_benefit_security_title') }}</strong><br>
                 {{ __('filament.channel_application.form.about_benefit_security') }}</p>
             <p><strong>{{ __('filament.channel_application.form.about_benefit_control_title') }}</strong><br>
@@ -16,10 +13,11 @@
             <p><strong>{{ __('filament.channel_application.form.about_benefit_remain_title') }}</strong><br>
                 {{ __('filament.channel_application.form.about_benefit_remain') }}</p>
         </div>
-        <p class="channel-application-benefits-panel__footer text-sm">
+
+        <x-slot name="footer">
             {{ __('filament.channel_application.form.about_footer') }}
-        </p>
-    </div>
+        </x-slot>
+    </x-filament::section>
     @if($this->table->getAllSelectableRecordsCount() > 0)
         <div class="mb-6">
             {{$this->table}}
