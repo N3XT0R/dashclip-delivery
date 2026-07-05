@@ -4,7 +4,6 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enum\Users\RoleEnum;
 use App\Filament\Admin\Resources\UserResource\RelationManagers\ChannelsRelationManager;
-use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
@@ -25,7 +24,7 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static string|UnitEnum|null $navigationGroup = 'System';
+    protected static string|UnitEnum|null $navigationGroup = 'filament.admin.navigation.system';
 
     public static function getNavigationBadge(): ?string
     {
@@ -52,19 +51,19 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('submitted_name')
                     ->unique('users'),
                 Forms\Components\TextInput::make('email')
-                    ->label('Email address')
+                    ->label(__('filament.admin.labels.email_address'))
                     ->email()
                     ->required(),
                 Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
                     ->password(),
                 Forms\Components\Select::make('roles')
-                    ->label('Roles')
+                    ->label(__('filament.admin.labels.roles'))
                     ->multiple()
                     ->relationship('roles', 'name')
                     ->preload()
                     ->getOptionLabelFromRecordUsing(
-                        fn(Role $record): string => "{$record->name} ({$record->guard_name})"
+                        fn (Role $record): string => "{$record->name} ({$record->guard_name})"
                     ),
                 Forms\Components\Textarea::make('app_authentication_secret')
                     ->columnSpanFull(),
@@ -92,13 +91,13 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('submitted_name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email address')
+                    ->label(__('filament.admin.labels.email_address'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('roles.name')
-                    ->label('Roles')
+                    ->label(__('filament.admin.labels.roles'))
                     ->badge()
                     ->colors(['success']),
                 Tables\Columns\TextColumn::make('created_at')
@@ -118,19 +117,19 @@ class UserResource extends Resource
             ->recordActions([
                 Actions\EditAction::make(),
                 Actions\Action::make('activities')->url(
-                    fn(User $record) => static::getUrl(
+                    fn (User $record) => static::getUrl(
                         'activities',
                         ['record' => $record]
                     )
                 ),
                 Actions\Action::make('resetPassword')
-                    ->label('Reset Password')
+                    ->label(__('filament.admin.labels.reset_password'))
                     ->icon('heroicon-o-key')
                     ->action(function (User $record) {
                         $password = Str::password(12);
                         $record->update(['password' => bcrypt($password)]);
                         Notification::make()
-                            ->title('Password reset to "' . $password . '"')
+                            ->title(__('filament.admin.messages.password_reset_to', ['password' => $password]))
                             ->success()
                             ->send();
                     })

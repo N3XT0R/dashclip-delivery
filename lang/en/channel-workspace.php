@@ -8,6 +8,11 @@ return [
         'relation_manager' => [
             'users' => [
                 'title' => 'assigned Users',
+                'columns' => [
+                    'channel' => 'Channel',
+                    'email' => 'Email',
+                    'verified' => 'Verified',
+                ],
             ],
         ],
     ],

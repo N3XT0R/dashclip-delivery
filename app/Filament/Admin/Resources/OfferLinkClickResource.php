@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Resources\OfferLinkClickResource\Pages;
 use App\Models\OfferLinkClick;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -16,8 +15,13 @@ class OfferLinkClickResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Media';
-    protected static ?string $label = 'Offer Link Clicks';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.media';
+    protected static ?string $label = 'filament.admin.labels.offer_link_clicks';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.offer_link_clicks');
+    }
 
     public static function table(Table $table): Table
     {
@@ -27,41 +31,41 @@ class OfferLinkClickResource extends Resource
                     ->label('#')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('User')
+                    ->label(__('filament.admin.labels.user'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('batch.type')
-                    ->label('Batch')
+                    ->label(__('filament.admin.labels.batch'))
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('channel.name')
-                    ->label('Channel')
+                    ->label(__('filament.admin.labels.channel'))
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('clicked_at')
-                    ->label('Clicked At')
+                    ->label(__('filament.admin.labels.clicked_at'))
                     ->since()
                     ->dateTimeTooltip()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('user_agent')
-                    ->label('User Agent')
+                    ->label(__('filament.admin.labels.user_agent'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->limit(80)
                     ->wrap(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('batch_id')
-                    ->label('Batch')
+                    ->label(__('filament.admin.labels.batch'))
                     ->relationship('batch', 'type'),
 
                 Tables\Filters\SelectFilter::make('channel_id')
-                    ->label('Channel')
+                    ->label(__('filament.admin.labels.channel'))
                     ->relationship('channel', 'name'),
 
                 Tables\Filters\SelectFilter::make('user_id')
-                    ->label('User')
+                    ->label(__('filament.admin.labels.user'))
                     ->relationship('user', 'name'),
             ])
             ->recordActions([

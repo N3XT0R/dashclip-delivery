@@ -20,15 +20,15 @@ class ViewMailLog extends ViewRecord
     {
         return $schema
             ->schema([
-                TextEntry::make('direction')->label('Richtung'),
-                TextEntry::make('to')->label('Empfänger'),
-                TextEntry::make('subject')->label('Betreff'),
-                TextEntry::make('status')->label('Status'),
-                TextEntry::make('created_at')->dateTime('d.m.Y H:i')->label('Gesendet'),
-                TextEntry::make('bounced_at')->dateTime('d.m.Y H:i')->label('Bounced'),
-                TextEntry::make('replied_at')->dateTime('d.m.Y H:i')->label('Geantwortet'),
+                TextEntry::make('direction')->label(__('filament.admin.labels.direction')),
+                TextEntry::make('to')->label(__('filament.admin.labels.recipient')),
+                TextEntry::make('subject')->label(__('filament.admin.labels.subject')),
+                TextEntry::make('status')->label(__('filament.admin.labels.status')),
+                TextEntry::make('created_at')->dateTime('d.m.Y H:i')->label(__('filament.admin.labels.sent')),
+                TextEntry::make('bounced_at')->dateTime('d.m.Y H:i')->label(__('filament.admin.labels.bounced')),
+                TextEntry::make('replied_at')->dateTime('d.m.Y H:i')->label(__('filament.admin.labels.replied_at')),
                 TextEntry::make('meta')
-                    ->label('Header')
+                    ->label(__('filament.admin.labels.headers'))
                     ->getStateUsing(function (MailLog $record) {
                         $headers = $record->meta['headers'] ?? [];
 
@@ -64,15 +64,15 @@ class ViewMailLog extends ViewRecord
     {
         return [
             Action::make('showContent')
-                ->label('Show Email Content')
+                ->label(__('filament.admin.labels.show_email_content'))
                 ->icon('heroicon-o-eye')
-                ->modalHeading('Email Content')
+                ->modalHeading(__('filament.admin.labels.email_content'))
                 ->modalWidth('5xl')
                 ->modalContent(function (MailLog $record) {
                     $content = $record->meta['content'] ?? '';
 
                     if (trim($content) === '') {
-                        return new HtmlString('<em>Kein Inhalt vorhanden</em>');
+                        return new HtmlString(sprintf('<em>%s</em>', e(__('filament.admin.messages.empty_email_content'))));
                     }
 
                     $isHtml = str_contains($content, '<html') || preg_match('/<\/?[a-z][\s>]/i', $content);
@@ -116,7 +116,7 @@ class ViewMailLog extends ViewRecord
                     HTML
                     );
                 })
-                ->visible(fn(MailLog $record) => !empty($record->meta['content']))
+                ->visible(fn (MailLog $record) => !empty($record->meta['content']))
                 ->modalSubmitAction(false),
         ];
     }

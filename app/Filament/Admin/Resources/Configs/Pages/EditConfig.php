@@ -43,8 +43,8 @@ class EditConfig extends EditRecord
                 ->log('config-entry changed');
         } catch (ValidationException $e) {
             Notification::make()
-                ->title('Speichern fehlgeschlagen')
-                ->body('Die Konfiguration konnte nicht gespeichert werden. Bitte prüfen Sie Ihre Eingaben.')
+                ->title(__('filament.admin.messages.config_save_failed_title'))
+                ->body(__('filament.admin.messages.config_save_failed_body'))
                 ->danger()
                 ->send();
 

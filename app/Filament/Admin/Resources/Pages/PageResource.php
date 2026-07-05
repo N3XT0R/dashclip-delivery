@@ -19,9 +19,19 @@ class PageResource extends Resource
     protected static ?string $model = Page::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
-    protected static ?string $modelLabel = 'Page';
-    protected static ?string $pluralModelLabel = 'Pages';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.content';
+    protected static ?string $modelLabel = 'filament.admin.labels.page';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.pages';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.page');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.pages');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -30,12 +40,12 @@ class PageResource extends Resource
                 ->required()
                 ->maxLength(255),
             TextInput::make('section')
-                ->label('Section')
+                ->label(__('filament.admin.labels.section'))
                 ->required()
                 ->maxLength(255)
                 ->disabled(),
             MarkdownEditor::make('content')
-                ->label('Content')
+                ->label(__('filament.admin.labels.content'))
                 ->required()
                 ->columnSpanFull(),
         ]);
@@ -49,7 +59,7 @@ class PageResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('section')
-                    ->label('Section')
+                    ->label(__('filament.admin.labels.section'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('updated_at')

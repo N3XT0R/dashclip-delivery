@@ -200,7 +200,7 @@ final class VideoResourceTest extends DatabaseTestCase
             // Header on the page
             ->assertSeeText('Video ansehen')
             // Relation tabs that are always present for this resource
-            ->assertSeeText('Assignments')
-            ->assertSeeText('Clips');
+            ->assertSeeText(__('filament.admin.labels.assignments'))
+            ->assertSeeText(__('filament.admin.labels.clips'));
     }
 }

@@ -11,7 +11,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use App\Enum\ConfigTypeEnum;
 use App\Support\ConfigCaster;
-use Filament\Forms;
 
 /**
  * Maps a ConfigTypeEnum (via normalized cast_type) to Filament components.
@@ -33,7 +32,7 @@ class ConfigFilamentMapper
         if ($selectable !== null && $selectable !== []) {
             $options = array_combine($selectable, $selectable);
             $field = Select::make('value')
-                ->label('Value')
+                ->label(__('filament.admin.labels.value'))
                 ->required()
                 ->options($options);
 
@@ -47,26 +46,26 @@ class ConfigFilamentMapper
         return match ($type) {
             ConfigTypeEnum::BOOL => [
                 Toggle::make('value')
-                    ->label('Value')
+                    ->label(__('filament.admin.labels.value'))
                     ->required(),
             ],
 
             ConfigTypeEnum::INT, ConfigTypeEnum::FLOAT => [
                 TextInput::make('value')
                     ->numeric()
-                    ->label('Value')
+                    ->label(__('filament.admin.labels.value'))
                     ->required(),
             ],
 
             ConfigTypeEnum::JSON => [
                 KeyValue::make('value')
-                    ->label('Value')
+                    ->label(__('filament.admin.labels.value'))
                     ->required(),
             ],
 
             ConfigTypeEnum::STRING => [
                 Textarea::make('value')
-                    ->label('Value')
+                    ->label(__('filament.admin.labels.value'))
                     ->required()
                     ->columnSpanFull(),
             ],

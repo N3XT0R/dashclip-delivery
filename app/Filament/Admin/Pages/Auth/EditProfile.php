@@ -44,7 +44,7 @@ class EditProfile extends BaseEditProfile
     {
         return TextInput::make('submitted_name')
             ->required()
-            ->label('Einsender-Name')
+            ->label(__('filament.admin.labels.applicant_name'))
             ->unique('users')
             ->maxLength(255);
     }
@@ -69,7 +69,7 @@ class EditProfile extends BaseEditProfile
                         return Checkbox::make($key)
                             ->translateLabel()
                             ->label($key)
-                            ->formatStateUsing(fn() => ($isAllowed));
+                            ->formatStateUsing(fn () => ($isAllowed));
                     })->toArray()
             );
     }

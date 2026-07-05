@@ -10,7 +10,7 @@ class EditTenantProfile extends BaseProfile
 {
     public static function getLabel(): string
     {
-        return 'Profile';
+        return __('filament.standard.profile.label');
     }
 
 }

@@ -14,11 +14,11 @@ class DropboxConnect extends Page
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cloud';
 
-    protected static ?string $navigationLabel = 'Dropbox';
+    protected static ?string $navigationLabel = 'filament.admin.labels.dropbox';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.settings';
 
-    protected static ?string $title = 'Dropbox verbinden';
+    protected static ?string $title = 'filament.admin.labels.dropbox_connect';
 
     protected string $view = 'filament.pages.dropbox-connect';
 

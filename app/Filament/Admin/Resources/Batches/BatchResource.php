@@ -19,9 +19,19 @@ class BatchResource extends Resource
     protected static ?string $model = Batch::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-queue-list';
-    protected static string|\UnitEnum|null $navigationGroup = 'System';
-    protected static ?string $modelLabel = 'Batch';
-    protected static ?string $pluralModelLabel = 'Batches';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.system';
+    protected static ?string $modelLabel = 'filament.admin.labels.batch';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.batches';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.batch');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.batches');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -66,7 +76,7 @@ class BatchResource extends Resource
                     ->toggleable(),
                 TextColumn::make('assignments_count')
                     ->counts('assignments')
-                    ->label('Assignments'),
+                    ->label('filament.admin.labels.assignments'),
             ])
             ->filters([]);
     }

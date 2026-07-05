@@ -9,62 +9,67 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 class AssignmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'assignments';
-    protected static ?string $title = 'Assignments';
+    protected static ?string $title = 'filament.standard.video_assignments.title';
 
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('filament.standard.video_assignments.title');
+    }
 
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['channel', 'downloads']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['channel', 'downloads']))
             ->recordTitleAttribute('id')
             ->columns([
                 TextColumn::make('channel.name')
-                    ->label('Channel')
-                    ->description('Ziel-Channel für dieses Angebot')
+                    ->label(__('filament.standard.video_assignments.columns.channel'))
+                    ->description(__('filament.standard.video_assignments.descriptions.channel'))
                     ->icon('heroicon-m-link')
                     ->limit(30)
                     ->toggleable(),
 
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('filament.standard.video_assignments.columns.status'))
                     ->badge()
-                    ->icon(fn(string $state) => $this->statusIcon($state))
-                    ->color(fn(string $state) => $this->statusColor($state))
+                    ->icon(fn (string $state) => $this->statusIcon($state))
+                    ->color(fn (string $state) => $this->statusColor($state))
                     ->sortable(),
 
                 TextColumn::make('expires_at')
-                    ->label('Gültig bis')
+                    ->label(__('filament.standard.video_assignments.columns.valid_until'))
                     ->dateTime('d.m.Y H:i')
-                    ->description('Offer-Link läuft ab')
+                    ->description(__('filament.standard.video_assignments.descriptions.expires_at'))
                     ->sortable(),
 
                 TextColumn::make('download_state')
-                    ->label('Download-Status')
-                    ->state(fn(Assignment $record) => $this->downloadLabel($record))
-                    ->icon(fn(Assignment $record) => $this->downloadIcon($record))
-                    ->color(fn(Assignment $record) => $this->downloadColor($record))
+                    ->label(__('filament.standard.video_assignments.columns.download_status'))
+                    ->state(fn (Assignment $record) => $this->downloadLabel($record))
+                    ->icon(fn (Assignment $record) => $this->downloadIcon($record))
+                    ->color(fn (Assignment $record) => $this->downloadColor($record))
                     ->wrap(),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('Status filtern')
+                    ->label(__('filament.standard.video_assignments.filters.status'))
                     ->options([
-                        StatusEnum::QUEUED->value => 'Offen',
-                        StatusEnum::NOTIFIED->value => 'Verfügbar',
-                        StatusEnum::PICKEDUP->value => 'Angenommen',
-                        StatusEnum::REJECTED->value => 'Zurückgegeben',
-                        StatusEnum::EXPIRED->value => 'Abgelaufen',
+                        StatusEnum::QUEUED->value => __('filament.standard.video_assignments.options.queued'),
+                        StatusEnum::NOTIFIED->value => __('filament.standard.video_assignments.options.notified'),
+                        StatusEnum::PICKEDUP->value => __('filament.standard.video_assignments.options.picked_up'),
+                        StatusEnum::REJECTED->value => __('filament.standard.video_assignments.options.rejected'),
+                        StatusEnum::EXPIRED->value => __('filament.standard.video_assignments.options.expired'),
                     ]),
             ])
             ->headerActions([])
             ->recordActions([])
-            ->emptyStateHeading('Keine Assignments vorhanden')
-            ->emptyStateDescription('Sobald dieses Video verteilt wird, siehst du hier alle Offers.');
+            ->emptyStateHeading(__('filament.standard.video_assignments.empty.heading'))
+            ->emptyStateDescription(__('filament.standard.video_assignments.empty.description'));
     }
 
     private function downloadLabel(Assignment $assignment): string
@@ -72,18 +77,20 @@ class AssignmentsRelationManager extends RelationManager
         $latestDownload = $assignment->downloads->sortByDesc('downloaded_at')->first();
 
         if ($assignment->status === StatusEnum::REJECTED->value) {
-            return 'Zurückgegeben';
+            return __('filament.standard.video_assignments.download.returned');
         }
 
         if ($assignment->status === StatusEnum::EXPIRED->value) {
-            return 'Abgelaufen';
+            return __('filament.standard.video_assignments.download.expired');
         }
 
         if ($latestDownload?->downloaded_at) {
-            return 'Heruntergeladen am '.Carbon::parse($latestDownload?->downloaded_at)->isoFormat('DD.MM.YYYY HH:mm');
+            return __('filament.standard.video_assignments.download.downloaded_at', [
+                'date' => Carbon::parse($latestDownload?->downloaded_at)->isoFormat('DD.MM.YYYY HH:mm'),
+            ]);
         }
 
-        return 'Noch nicht heruntergeladen';
+        return __('filament.standard.video_assignments.download.not_downloaded');
     }
 
     private function downloadIcon(Assignment $assignment): string

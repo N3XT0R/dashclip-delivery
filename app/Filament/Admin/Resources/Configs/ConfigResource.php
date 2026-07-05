@@ -23,9 +23,19 @@ class ConfigResource extends Resource
     protected static ?string $model = Config::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
-    protected static ?string $modelLabel = 'Config';
-    protected static ?string $pluralModelLabel = 'Configs';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.settings';
+    protected static ?string $modelLabel = 'filament.admin.labels.config';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.configs';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.config');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.configs');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -39,13 +49,13 @@ class ConfigResource extends Resource
                 ->reactive()
                 ->dehydrated(false),
             Hidden::make('selectable')
-                ->default(fn(?Config $record) => $record?->getAttribute('selectable'))
+                ->default(fn (?Config $record) => $record?->getAttribute('selectable'))
                 ->dehydrated(false),
             TextEntry::make('cast_type_display')
-                ->label('Cast Type')
-                ->state(fn(Get $get) => ConfigFilamentMapper::typeLabel($get('cast_type'))),
+                ->label(__('filament.admin.labels.cast_type'))
+                ->state(fn (Get $get) => ConfigFilamentMapper::typeLabel($get('cast_type'))),
             Group::make()
-                ->schema(fn(Get $get) => ConfigFilamentMapper::valueFormComponents(
+                ->schema(fn (Get $get) => ConfigFilamentMapper::valueFormComponents(
                     $get('cast_type'),
                     $get('selectable')
                 ))
@@ -61,7 +71,7 @@ class ConfigResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('key_label')
-                    ->state(fn(Config $record) => __('configs.keys.' . $record->getAttribute('key')))
+                    ->state(fn (Config $record) => __('configs.keys.' . $record->getAttribute('key')))
                     ->label(__('configs.labels.description')),
                 TextColumn::make('value')
                     ->limit(50)

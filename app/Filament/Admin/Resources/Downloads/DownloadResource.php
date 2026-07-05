@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources\Downloads;
 
 use App\Filament\Admin\Resources\Downloads\Pages\ListDownloads;
-use App\Filament\Resources\DownloadResource\Pages;
 use App\Models\Download;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -15,9 +14,19 @@ class DownloadResource extends Resource
     protected static ?string $model = Download::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
-    protected static string|\UnitEnum|null $navigationGroup = 'Media';
-    protected static ?string $modelLabel = 'Download';
-    protected static ?string $pluralModelLabel = 'Downloads';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.media';
+    protected static ?string $modelLabel = 'filament.admin.labels.download';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.downloads';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.download');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.downloads');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -30,10 +39,10 @@ class DownloadResource extends Resource
             ->defaultSort('downloaded_at', 'desc')
             ->columns([
                 TextColumn::make('assignment.id')
-                    ->label('Assignment ID')
+                    ->label(__('filament.admin.labels.assignment_id'))
                     ->sortable(),
                 TextColumn::make('assignment.status')
-                    ->label('Status')
+                    ->label(__('filament.admin.labels.status'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('ip')
@@ -43,7 +52,7 @@ class DownloadResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('assignment.channel.name')
-                    ->label('Channel')
+                    ->label(__('filament.admin.labels.channel'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('assignment.video.original_name')
@@ -52,10 +61,10 @@ class DownloadResource extends Resource
                             'preview_url'
                         );
                     }, true)
-                    ->label('Video')
+                    ->label(__('filament.admin.labels.video'))
                     ->sortable(),
                 TextColumn::make('downloaded_at')
-                    ->label('Downloaded at')
+                    ->label(__('filament.admin.labels.downloaded_at'))
                     ->dateTime()
                     ->since()
                     ->dateTimeTooltip()

@@ -36,10 +36,10 @@ final class Columns
     public function videoPreview(MyOffers $page): ViewColumn
     {
         return ViewColumn::make('video_preview')
-            ->label('Preview')
+            ->label(__('filament.video_resource.view.fields.preview'))
             ->view('filament.forms.components.video-preview')
             ->visible(
-                fn(): bool => in_array($page->activeTab, ['available', 'downloaded'], true)
+                fn (): bool => in_array($page->activeTab, ['available', 'downloaded'], true)
             );
     }
 
@@ -51,7 +51,7 @@ final class Columns
             ->sortable()
             ->limit(40)
             ->tooltip(
-                fn(Assignment $record): string => $record->video->original_name ?? ''
+                fn (Assignment $record): string => $record->video->original_name ?? ''
             );
     }
 
@@ -60,7 +60,7 @@ final class Columns
         return TextColumn::make('video.clips.user.display_name')
             ->label(__('my_offers.table.columns.uploader'))
             ->formatStateUsing(
-                fn(Assignment $record): string => $this->resolveUploaders($record, $page)
+                fn (Assignment $record): string => $this->resolveUploaders($record, $page)
             )
             ->limit(30);
     }
@@ -69,20 +69,20 @@ final class Columns
     {
         return TextColumn::make('expires_at')
             ->label(
-                fn(): string => $page->activeTab === 'expired'
+                fn (): string => $page->activeTab === 'expired'
                     ? __('my_offers.table.columns.expired_at')
                     : __('my_offers.table.columns.valid_until')
             )
             ->dateTime('d.m.Y H:i')
             ->description(
-                fn(Assignment $record): string => $this->expiresDescription($record, $page)
+                fn (Assignment $record): string => $this->expiresDescription($record, $page)
             )
             ->color(
-                fn(Assignment $record): string => $this->expiresColor($record, $page)
+                fn (Assignment $record): string => $this->expiresColor($record, $page)
             )
             ->sortable()
             ->visible(
-                fn(): bool => in_array($page->activeTab, ['available', 'expired'], true)
+                fn (): bool => in_array($page->activeTab, ['available', 'expired'], true)
             );
     }
 
@@ -92,17 +92,17 @@ final class Columns
             ->label(__('my_offers.table.columns.status'))
             ->badge()
             ->formatStateUsing(
-                fn(Assignment $record): string => $record->downloads->isNotEmpty()
+                fn (Assignment $record): string => $record->downloads->isNotEmpty()
                     ? __('my_offers.table.status_badges.downloaded')
                     : __('my_offers.table.status_badges.available')
             )
             ->color(
-                fn(Assignment $record): string => $record->downloads->isNotEmpty()
+                fn (Assignment $record): string => $record->downloads->isNotEmpty()
                     ? 'success'
                     : 'warning'
             )
             ->visible(
-                fn(): bool => $page->activeTab === 'available'
+                fn (): bool => $page->activeTab === 'available'
             );
     }
 
@@ -113,7 +113,7 @@ final class Columns
             ->dateTime('d.m.Y H:i')
             ->sortable()
             ->visible(
-                fn(): bool => in_array($page->activeTab, ['downloaded', 'expired', 'returned'], true)
+                fn (): bool => in_array($page->activeTab, ['downloaded', 'expired', 'returned'], true)
             );
     }
 
@@ -122,7 +122,7 @@ final class Columns
         return TextColumn::make('downloads.downloaded_at')
             ->label(__('my_offers.table.columns.downloaded_at'))
             ->formatStateUsing(
-                fn(Assignment $record): string => $record->downloads
+                fn (Assignment $record): string => $record->downloads
                     ->sortByDesc('downloaded_at')
                     ->first()
                     ?->downloaded_at
@@ -131,7 +131,7 @@ final class Columns
             )
             ->sortable()
             ->visible(
-                fn(): bool => $page->activeTab === 'downloaded'
+                fn (): bool => $page->activeTab === 'downloaded'
             );
     }
 
@@ -142,7 +142,7 @@ final class Columns
             ->dateTime('d.m.Y H:i')
             ->sortable()
             ->visible(
-                fn(): bool => $page->activeTab === 'returned'
+                fn (): bool => $page->activeTab === 'returned'
             );
     }
 

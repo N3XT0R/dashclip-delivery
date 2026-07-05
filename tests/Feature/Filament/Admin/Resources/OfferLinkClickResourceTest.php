@@ -13,7 +13,6 @@ use Tests\DatabaseTestCase;
 
 final class OfferLinkClickResourceTest extends DatabaseTestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -50,7 +49,7 @@ final class OfferLinkClickResourceTest extends DatabaseTestCase
     public function testModelAndLabelConfiguration(): void
     {
         $this->assertSame(OfferLinkClick::class, OfferLinkClickResource::getModel());
-        $this->assertSame('Offer Link Clicks', OfferLinkClickResource::getModelLabel());
+        $this->assertSame(__('filament.admin.labels.offer_link_clicks'), OfferLinkClickResource::getModelLabel());
     }
 
     public function testTableHasExpectedColumns(): void

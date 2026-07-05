@@ -72,12 +72,12 @@ class CreateVideo extends CreateRecord
                         TextEntry::make('upload_hint')
                             ->label(__('filament.video_upload.form.fields.upload_hint'))
                             ->state(__('filament.video_upload.form.fields.upload_hint_state'))
-                            ->visible(fn(Get $get): bool => (int)($get('duration') ?? 0) < 1)
+                            ->visible(fn (Get $get): bool => (int)($get('duration') ?? 0) < 1)
                             ->extraAttributes(['class' => 'text-sm text-gray-500 italic'])
                             ->columnSpanFull(),
                         $this->timeFields(),
                         $this->getClipSelectorComponent(),
-                        Textarea::make('clip.note')->label('Notiz')
+                        Textarea::make('clip.note')->label(__('filament.video_upload.form.fields.note'))
                             ->rows(5)
                             ->autosize()
                             ->trim(),
@@ -86,7 +86,7 @@ class CreateVideo extends CreateRecord
                             ->datalist(
                                 Clip::query()
                                     ->whereNotNull('bundle_key')
-                                    ->whereHas('video', fn($q) => $q->doesntHave('assignments'))
+                                    ->whereHas('video', fn ($q) => $q->doesntHave('assignments'))
                                     ->pluck('bundle_key')
                                     ->unique()
                                     ->values()
@@ -175,8 +175,8 @@ class CreateVideo extends CreateRecord
                         $seconds = $state % 60;
                         $component->state(sprintf('%02d:%02d', $minutes, $seconds));
                     })
-                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state))
-                    ->disabled(fn(Get $get) => (int)($get('clip.duration') ?? 0) < 1)
+                    ->dehydrateStateUsing(fn ($state) => static::toSeconds($state))
+                    ->disabled(fn (Get $get) => (int)($get('clip.duration') ?? 0) < 1)
                     ->reactive(),
 
                 TextInput::make('clip.end_sec')
@@ -217,8 +217,8 @@ class CreateVideo extends CreateRecord
                         $seconds = $state % 60;
                         $component->state(sprintf('%02d:%02d', $minutes, $seconds));
                     })
-                    ->dehydrateStateUsing(fn($state) => static::toSeconds($state))
-                    ->disabled(fn(Get $get) => (int)($get('clip.duration') ?? 0) < 1)
+                    ->dehydrateStateUsing(fn ($state) => static::toSeconds($state))
+                    ->disabled(fn (Get $get) => (int)($get('clip.duration') ?? 0) < 1)
                     ->reactive(),
             ]);
     }

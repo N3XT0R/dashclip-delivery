@@ -27,18 +27,18 @@ class UsersRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Channel')
+                    ->label(__('channel-workspace.channel_resource.relation_manager.users.columns.channel'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('channel-workspace.channel_resource.relation_manager.users.columns.email'))
                     ->searchable(),
                 Tables\Columns\IconColumn::make('pivot.is_user_verified')
-                    ->label('Verified')
+                    ->label(__('channel-workspace.channel_resource.relation_manager.users.columns.verified'))
                     ->boolean(),
             ])
             ->recordActions([
                 Action::make('revokeAccess')
-                    ->visible(fn(User $record): bool => auth()->user()->getKey() !== $record->getKey())
+                    ->visible(fn (User $record): bool => auth()->user()->getKey() !== $record->getKey())
                     ->label(__('filament.user_revoke_channel_access.label'))
                     ->requiresConfirmation()
                     ->action(function (User $record): void {

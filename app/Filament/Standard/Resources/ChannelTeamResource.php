@@ -22,11 +22,21 @@ class ChannelTeamResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'Channels';
+    protected static ?string $navigationLabel = 'filament.standard.channel_team.navigation_label';
 
 
-    protected static ?string $modelLabel = 'Kanal-Zuweisung';
-    protected static ?string $pluralModelLabel = 'Kanal-Zuweisungen';
+    protected static ?string $modelLabel = 'filament.standard.channel_team.model_label';
+    protected static ?string $pluralModelLabel = 'filament.standard.channel_team.plural_model_label';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.standard.channel_team.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.standard.channel_team.plural_model_label');
+    }
 
     public static function getNavigationGroup(): string
     {
@@ -67,14 +77,14 @@ class ChannelTeamResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('Kanäle')
+            ->recordTitleAttribute('channel.name')
             ->columns([
                 Tables\Columns\TextColumn::make('channel.name')
-                    ->label('Name'),
+                    ->label(__('filament.standard.channel_team.fields.name')),
                 Tables\Columns\TextColumn::make('channel.youtube_name')
-                    ->label('Youtube-Kanal')
+                    ->label(__('filament.standard.channel_team.fields.youtube_channel'))
                     ->inline()
-                    ->formatStateUsing(fn($state) => $state ? '@' . $state : '-')
+                    ->formatStateUsing(fn ($state) => $state ? '@' . $state : '-')
                     ->url(function (ChannelTeamPivot $record) {
                         $channel = $record->channel;
                         if ($channel->youtube_name) {
@@ -86,7 +96,7 @@ class ChannelTeamResource extends Resource
                     ->openUrlInNewTab()
                     ->limit(40),
                 Tables\Columns\TextColumn::make('quota')
-                    ->label('Quota (Videos/Woche)')
+                    ->label(__('filament.standard.channel_team.fields.quota'))
                     ->sortable()
                     ->inline(),
             ])

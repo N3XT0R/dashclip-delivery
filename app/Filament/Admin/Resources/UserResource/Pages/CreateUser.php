@@ -27,15 +27,15 @@ class CreateUser extends CreateRecord
                     ->required(),
                 Forms\Components\TextInput::make('submitted_name'),
                 Forms\Components\TextInput::make('email')
-                    ->label('Email address')
+                    ->label(__('filament.admin.labels.email_address'))
                     ->email()
                     ->required(),
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->label('Passwort')
-                    ->helperText('Wenn du nichts angibst, wird ein zufälliges Passwort generiert.'),
+                    ->label(__('filament.admin.labels.password'))
+                    ->helperText(__('filament.admin.messages.password_helper')),
                 Forms\Components\Select::make('roles')
-                    ->label('Roles')
+                    ->label(__('filament.admin.labels.roles'))
                     ->multiple()
                     ->relationship('roles', 'name')
                     ->preload(),

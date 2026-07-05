@@ -24,14 +24,15 @@ class ViewVideo extends ViewRecord
         return [
             Group::make()
                 ->schema([
-                    TextInput::make('original_name')->label('Dateiname')->disabled(),
+                    TextInput::make('original_name')->label(__('filament.admin.labels.file_name'))->disabled(),
                     TextInput::make('ext')->disabled(),
-                    TextInput::make('bytes')->label('Größe')->disabled()
-                        ->formatStateUsing(fn($state
+                    TextInput::make('bytes')->label(__('filament.admin.labels.size'))->disabled()
+                        ->formatStateUsing(fn (
+                            $state
                         ) => $state ? Number::fileSize((int)$state) : '–'),
                     TextInput::make('disk')->disabled(),
                     TextInput::make('hash')->disabled(),
-                    KeyValue::make('meta')->label('Meta')->disabled()->columnSpanFull(),
+                    KeyValue::make('meta')->label(__('filament.admin.labels.meta'))->disabled()->columnSpanFull(),
                 ]),
         ];
     }

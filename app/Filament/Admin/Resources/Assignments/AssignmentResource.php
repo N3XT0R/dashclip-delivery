@@ -23,10 +23,20 @@ class AssignmentResource extends Resource
     protected static ?string $model = Assignment::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static string|\UnitEnum|null $navigationGroup = 'Media';
-    protected static ?string $modelLabel = 'Assignment';
-    protected static ?string $pluralModelLabel = 'Assignments';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.media';
+    protected static ?string $modelLabel = 'filament.admin.labels.assignment';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.assignments';
     protected static bool $shouldRegisterNavigation = false;
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.assignment');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.assignments');
+    }
 
     public static function table(Table $table): Table
     {
@@ -37,13 +47,13 @@ class AssignmentResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('channel.name')
-                    ->label('Channel')
+                    ->label(__('filament.admin.labels.channel'))
                     ->sortable()
                     ->searchable(),
 
                 // Show related video name if you have it; fallback to ID if not.
                 TextColumn::make('video.original_name')
-                    ->label('Video')
+                    ->label(__('filament.admin.labels.video'))
                     ->toggleable()
                     ->limit(40)
                     ->url(function (Assignment $assignment) {
@@ -72,7 +82,7 @@ class AssignmentResource extends Resource
                     ->searchable(),
 
                 TextColumn::make('attempts')
-                    ->label('Attempts')
+                    ->label(__('filament.admin.labels.attempts'))
                     ->numeric()
                     ->sortable(),
 
@@ -83,7 +93,7 @@ class AssignmentResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('filament.admin.labels.created'))
                     ->since()
                     ->dateTimeTooltip()
                     ->sortable(),
@@ -100,8 +110,8 @@ class AssignmentResource extends Resource
                 // Date range by created_at
                 Filter::make('created_range')
                     ->schema([
-                        DatePicker::make('from')->label('from'),
-                        DatePicker::make('until')->label('until'),
+                        DatePicker::make('from')->label(__('filament.admin.labels.from')),
+                        DatePicker::make('until')->label(__('filament.admin.labels.to')),
                     ])
                     ->query(function ($query, array $data) {
                         return $query
@@ -111,13 +121,13 @@ class AssignmentResource extends Resource
 
                 // Quick "expired" filter
                 Filter::make('expired')
-                    ->label('Expired')
+                    ->label(__('filament.admin.labels.expired'))
                     ->query(fn ($q) => $q->whereNotNull('expires_at')->where('expires_at', '<', now())),
             ])
             ->recordActions([
                 ViewAction::make(),
                 Action::make('offer')
-                    ->label('Open Offer')
+                    ->label(__('filament.admin.labels.open_offer'))
                     ->url(fn (Assignment $assignment): ?string => (
                         $assignment->batch && $assignment->channel
                     )

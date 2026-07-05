@@ -22,9 +22,19 @@ class ChannelResource extends Resource
     protected static ?string $model = Channel::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-envelope';
-    protected static string|\UnitEnum|null $navigationGroup = 'Media';
-    protected static ?string $modelLabel = 'Channel';
-    protected static ?string $pluralModelLabel = 'Channels';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.media';
+    protected static ?string $modelLabel = 'filament.admin.labels.channel';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.channels';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.channel');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.channels');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -33,7 +43,7 @@ class ChannelResource extends Resource
                 ->required()
                 ->maxLength(255),
             TextInput::make('creator_name')
-                ->label('Creator')
+                ->label(__('filament.admin.labels.creator'))
                 ->maxLength(255),
             TextInput::make('email')
                 ->email()
@@ -44,10 +54,10 @@ class ChannelResource extends Resource
             TextInput::make('weight')
                 ->numeric(),
             TextInput::make('weekly_quota')
-                ->label('Weekly quota')
+                ->label(__('filament.admin.labels.weekly_quota'))
                 ->numeric(),
             Checkbox::make('is_video_reception_paused')
-                ->label('Pause video reception')
+                ->label(__('filament.admin.labels.pause_video_reception'))
                 ->default(1),
         ]);
     }
@@ -60,7 +70,7 @@ class ChannelResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('creator_name')
-                    ->label('Creator')
+                    ->label(__('filament.admin.labels.creator'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('email')
@@ -72,7 +82,7 @@ class ChannelResource extends Resource
                 TextColumn::make('weight')
                     ->sortable(),
                 TextColumn::make('weekly_quota')
-                    ->label('Weekly quota')
+                    ->label(__('filament.admin.labels.weekly_quota'))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i')
@@ -85,7 +95,7 @@ class ChannelResource extends Resource
                     ->dateTimeTooltip()
                     ->sortable(),
                 IconColumn::make('is_video_reception_paused')
-                    ->label('Paused video reception')
+                    ->label(__('filament.admin.labels.paused_video_reception'))
                     ->boolean()
                     ->sortable(),
             ])

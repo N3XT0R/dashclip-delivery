@@ -29,13 +29,13 @@ class ChannelsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Channel')
+                    ->label(__('filament.admin.labels.channel'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('filament.admin.labels.email'))
                     ->searchable(),
                 Tables\Columns\IconColumn::make('pivot.is_user_verified')
-                    ->label('Verified')
+                    ->label(__('filament.admin.labels.verified'))
                     ->boolean(),
             ])
             ->recordActions([
@@ -60,4 +60,3 @@ class ChannelsRelationManager extends RelationManager
             ]);
     }
 }
-

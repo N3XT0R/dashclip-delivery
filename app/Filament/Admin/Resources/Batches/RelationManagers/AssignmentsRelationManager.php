@@ -9,11 +9,17 @@ use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class AssignmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'assignments';
-    protected static ?string $title = 'Assignments';
+    protected static ?string $title = 'filament.admin.labels.assignments';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('filament.admin.labels.assignments');
+    }
 
     public function table(Table $table): Table
     {
@@ -30,7 +36,7 @@ class AssignmentsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('channel.name')
-                    ->label('Channel')
+                    ->label(__('filament.admin.labels.channel'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('status')->badge()->sortable(),
@@ -38,8 +44,8 @@ class AssignmentsRelationManager extends RelationManager
                 TextColumn::make('expires_at')->dateTime()->since()->dateTimeTooltip()->sortable(),
                 TextColumn::make('last_notified_at')->dateTime()->since()->dateTimeTooltip()->sortable()->toggleable(),
                 TextColumn::make('video.preview_url')
-                    ->label('Preview')
-                    ->formatStateUsing(fn () => 'Open')
+                    ->label(__('filament.admin.labels.preview'))
+                    ->formatStateUsing(fn () => __('filament.admin.labels.open'))
                     ->url(fn (
                         Assignment $assignment
                     ) => $assignment->video ? (string)$assignment->video->getAttribute('preview_url') : null)
@@ -49,12 +55,12 @@ class AssignmentsRelationManager extends RelationManager
             ->headerActions([])
             ->recordActions([
                 Action::make('open')
-                    ->label('Open')
+                    ->label(__('filament.admin.labels.open'))
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (Assignment $assignment) => AssignmentResource::getUrl('view', ['record' => $assignment]))
                     ->openUrlInNewTab(),
                 Action::make('offer_link')
-                    ->label('Open Offer')
+                    ->label(__('filament.admin.labels.open_offer'))
                     ->url($linkCallback)
                     ->openUrlInNewTab(),
             ])

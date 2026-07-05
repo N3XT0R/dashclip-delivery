@@ -26,11 +26,21 @@ class VideoResource extends Resource
     protected static ?string $model = Video::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-film';
-    protected static string|\UnitEnum|null $navigationGroup = 'Media';
-    protected static ?string $modelLabel = 'Video';
-    protected static ?string $pluralModelLabel = 'Videos';
+    protected static string|\UnitEnum|null $navigationGroup = 'filament.admin.navigation.media';
+    protected static ?string $modelLabel = 'filament.admin.labels.video';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.videos';
 
     protected static bool $isScopedToTenant = false;
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.video');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.videos');
+    }
 
     public static function table(Table $table): Table
     {
@@ -38,7 +48,7 @@ class VideoResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('original_name')
-                    ->label('Dateiname')
+                    ->label(__('filament.admin.labels.file_name'))
                     ->searchable()
                     ->wrap(false)
                     ->limit(40),
@@ -46,22 +56,22 @@ class VideoResource extends Resource
                 TextColumn::make('ext')
                     ->badge()
                     ->sortable()
-                    ->label('Ext'),
+                    ->label(__('filament.admin.labels.ext')),
 
                 TextColumn::make('bytes')
-                    ->label('Größe')
+                    ->label(__('filament.admin.labels.size'))
                     ->sortable()
                     ->formatStateUsing(fn ($state) => $state ? Number::fileSize((int)$state) : '–'),
 
                 TextColumn::make('disk')
                     ->sortable()
                     ->toggleable()
-                    ->label('Disk'),
+                    ->label(__('filament.admin.labels.disk')),
                 TextColumn::make('assignments_count')
                     ->counts('assignments')
-                    ->label('Assignments'),
+                    ->label(__('filament.admin.labels.assignments')),
                 TextColumn::make('clips.user.display_name')
-                    ->label('Einsender-Account')
+                    ->label(__('filament.admin.labels.submitted_account'))
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('clips.user', function (Builder $userQuery) use ($search) {
                             $userQuery->where('submitted_name', 'like', "%{$search}%")
@@ -73,30 +83,30 @@ class VideoResource extends Resource
                 TextColumn::make('clips.submitted_by')
                     ->sortable()
                     ->searchable()
-                    ->label('Einsender'),
+                    ->label(__('filament.admin.labels.submitted_by')),
 
                 TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i')
                     ->since()
                     ->dateTimeTooltip()
                     ->sortable()
-                    ->label('Erstellt'),
+                    ->label(__('filament.admin.labels.created')),
             ])
             ->filters([
                 SelectFilter::make('disk')
-                    ->label('Disk')
+                    ->label(__('filament.admin.labels.disk'))
                     ->options(fn () => Video::query()
                         ->select('disk')->whereNotNull('disk')->distinct()->pluck('disk', 'disk')->toArray()),
 
                 SelectFilter::make('ext')
-                    ->label('Ext')
+                    ->label(__('filament.admin.labels.ext'))
                     ->options(fn () => Video::query()
                         ->select('ext')->whereNotNull('ext')->distinct()->pluck('ext', 'ext')->toArray()),
 
                 Filter::make('created_at')
                     ->schema([
-                        DatePicker::make('from')->label('von'),
-                        DatePicker::make('until')->label('bis'),
+                        DatePicker::make('from')->label(__('filament.admin.labels.from')),
+                        DatePicker::make('until')->label(__('filament.admin.labels.to')),
                     ])
                     ->query(function ($query, array $data) {
                         return $query
@@ -107,7 +117,7 @@ class VideoResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 Action::make('preview')
-                    ->label('Preview')
+                    ->label(__('filament.admin.labels.preview'))
                     ->icon('heroicon-m-play')
                     ->url(fn (Video $video) => app(GetPreviewUrl::class)->handle($video->clips()->first()))
                     ->openUrlInNewTab(),

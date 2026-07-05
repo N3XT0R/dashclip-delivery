@@ -13,11 +13,17 @@ use Filament\Forms\Components\ViewField;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class ClipsRelationManager extends RelationManager
 {
     protected static string $relationship = 'clips';
-    protected static ?string $title = 'Clips';
+    protected static ?string $title = 'filament.admin.labels.clips';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('filament.admin.labels.clips');
+    }
 
     public function table(Table $table): Table
     {
@@ -26,12 +32,12 @@ class ClipsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('video.original_name')
-                    ->label('Video')
+                    ->label(__('filament.admin.labels.video'))
                     ->searchable()
                     ->limit(40),
-                TextColumn::make('start_sec')->label('Start'),
-                TextColumn::make('end_sec')->label('End'),
-                TextColumn::make('submitted_by')->label('Submitted By'),
+                TextColumn::make('start_sec')->label(__('filament.admin.labels.start')),
+                TextColumn::make('end_sec')->label(__('filament.admin.labels.end')),
+                TextColumn::make('submitted_by')->label(__('filament.admin.labels.submitted_by')),
                 TextColumn::make('created_at')->dateTime()->since()->dateTimeTooltip(),
             ])
             ->headerActions([])
@@ -40,7 +46,7 @@ class ClipsRelationManager extends RelationManager
                     ->icon('heroicon-m-eye')
                     ->schema($this->getSchemaForViewAction()),
                 Action::make('preview')
-                    ->label('Preview')
+                    ->label(__('filament.admin.labels.preview'))
                     ->icon('heroicon-m-play')
                     ->url(fn ($record) => app(GetPreviewUrl::class)->handle($record))
                     ->visible(fn ($record) => null !== $record->preview_path)
@@ -53,26 +59,26 @@ class ClipsRelationManager extends RelationManager
     {
         return [
             TextInput::make('id')
-                ->label('Clip ID')
+                ->label(__('filament.admin.labels.clip_id'))
                 ->disabled(),
             TextInput::make('original_name')
-                ->label('Video Name')
+                ->label(__('filament.admin.labels.video_name'))
                 ->formatStateUsing(fn ($record) => $record->video?->original_name)
                 ->disabled(),
             TextInput::make('start_sec')
-                ->label('Start Time')
+                ->label(__('filament.admin.labels.start_time'))
                 ->disabled(),
             TextInput::make('end_sec')
-                ->label('End Time')
+                ->label(__('filament.admin.labels.end_time'))
                 ->disabled(),
             Textarea::make('note')
-                ->label('Note')
+                ->label(__('filament.admin.labels.note'))
                 ->disabled(),
             TextInput::make('submitted_by')
-                ->label('Submitted by')
+                ->label(__('filament.admin.labels.submitted_by'))
                 ->disabled(),
             ViewField::make('video_preview')
-                ->label('Preview')
+                ->label(__('filament.admin.labels.preview'))
                 ->view('filament.forms.components.video-preview')
                 ->columnSpanFull(),
         ];

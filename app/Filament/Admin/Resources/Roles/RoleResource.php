@@ -47,7 +47,7 @@ class RoleResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'System';
+        return __('filament.admin.navigation.system');
     }
 
     public static function canAccess(): bool
@@ -76,7 +76,8 @@ class RoleResource extends Resource
                                         modifyRuleUsing: function (Unique $rule, callable $get) {
                                             return $rule
                                                 ->where('guard_name', $get('guard_name'))
-                                                ->where(fn($query) => Utils::isTenancyEnabled()
+                                                ->where(
+                                                    fn ($query) => Utils::isTenancyEnabled()
                                                     ? $query->where(
                                                         Utils::getTenantModelForeignKey(),
                                                         Filament::getTenant()?->getKey()
@@ -99,16 +100,16 @@ class RoleResource extends Resource
                                     ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
                                     /** @phpstan-ignore-next-line */
                                     ->default(Filament::getTenant()?->getKey())
-                                    ->options(fn(): array => in_array(
+                                    ->options(fn (): array => in_array(
                                         Utils::getTenantModel(),
                                         [null, '', '0'],
                                         true
                                     ) ? [] : Utils::getTenantModel()::pluck('name', 'id')->toArray())
                                     ->visible(
-                                        fn(): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()
+                                        fn (): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()
                                     )
                                     ->dehydrated(
-                                        fn(): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()
+                                        fn (): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()
                                     ),
                                 static::getSelectAllFormComponent(),
 
@@ -131,7 +132,7 @@ class RoleResource extends Resource
                 TextColumn::make('name')
                     ->weight(FontWeight::Medium)
                     ->label(__('filament-shield::filament-shield.column.name'))
-                    ->formatStateUsing(fn(string $state): string => Str::headline($state))
+                    ->formatStateUsing(fn (string $state): string => Str::headline($state))
                     ->searchable(),
                 TextColumn::make('guard_name')
                     ->badge()
@@ -140,10 +141,10 @@ class RoleResource extends Resource
                 TextColumn::make('team.name')
                     ->default('Global')
                     ->badge()
-                    ->color(fn(mixed $state): string => str($state)->contains('Global') ? 'gray' : 'primary')
+                    ->color(fn (mixed $state): string => str($state)->contains('Global') ? 'gray' : 'primary')
                     ->label(__('filament-shield::filament-shield.column.team'))
                     ->searchable()
-                    ->visible(fn(): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()),
+                    ->visible(fn (): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()),
                 TextColumn::make('permissions_count')
                     ->badge()
                     ->label(__('filament-shield::filament-shield.column.permissions'))
@@ -186,7 +187,7 @@ class RoleResource extends Resource
     {
         return collect(config('auth.guards'))
             ->keys()
-            ->mapWithKeys(fn($guard) => [$guard => ucfirst($guard)])
+            ->mapWithKeys(fn ($guard) => [$guard => ucfirst($guard)])
             ->toArray();
     }
 

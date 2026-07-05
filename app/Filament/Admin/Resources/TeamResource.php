@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Resources\TeamResource\Pages;
 use App\Models\Team;
 use BackedEnum;
 use Filament\Actions;
@@ -21,10 +20,21 @@ class TeamResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static string|UnitEnum|null $navigationGroup = 'System';
+    protected static string|UnitEnum|null $navigationGroup = 'filament.admin.navigation.system';
 
-    protected static ?string $recordTitleAttribute = 'Team';
-    protected static ?string $pluralModelLabel = 'Teams';
+    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $modelLabel = 'filament.admin.labels.team';
+    protected static ?string $pluralModelLabel = 'filament.admin.labels.teams';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.admin.labels.team');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.admin.labels.teams');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -36,7 +46,7 @@ class TeamResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required(),
                 Select::make('owner_id')
-                    ->label('Owner')
+                    ->label(__('filament.admin.labels.owner'))
                     ->relationship('users', 'name')
                     ->preload()
                     ->searchable()
@@ -48,12 +58,12 @@ class TeamResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('Team')
+            ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('owner.name')
-                    ->label('Owner')
+                    ->label(__('filament.admin.labels.owner'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

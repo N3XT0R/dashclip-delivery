@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Resources\ActivityResource\Pages;
 use App\Models\Activity;
 use BackedEnum;
 use Filament\Actions;
@@ -21,7 +20,7 @@ class ActivityResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
 
-    protected static string|UnitEnum|null $navigationGroup = 'System';
+    protected static string|UnitEnum|null $navigationGroup = 'filament.admin.navigation.system';
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -39,13 +38,13 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('event')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subject')
-                    ->formatStateUsing(fn(Model $state) => sprintf(
+                    ->formatStateUsing(fn (Model $state) => sprintf(
                         '%s (%s)',
                         $state->getKey() ?? '-',
                         get_class($state)
                     )),
                 Tables\Columns\TextColumn::make('causer')
-                    ->formatStateUsing(fn(?Model $activityItem) => $activityItem?->causer?->name),
+                    ->formatStateUsing(fn (?Model $activityItem) => $activityItem?->causer?->name),
                 Tables\Columns\TextColumn::make('properties')
                     ->searchable()
                     ->listWithLineBreaks()

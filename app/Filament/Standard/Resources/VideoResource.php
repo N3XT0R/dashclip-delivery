@@ -28,10 +28,20 @@ class VideoResource extends Resource
 {
     protected static ?string $model = Video::class;
 
-    protected static ?string $modelLabel = 'Video';
-    protected static ?string $pluralModelLabel = 'Videos';
+    protected static ?string $modelLabel = 'filament.video_resource.model_label';
+    protected static ?string $pluralModelLabel = 'filament.video_resource.plural_model_label';
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedFilm;
     protected static ?string $recordTitleAttribute = 'original_name';
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.video_resource.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.video_resource.plural_model_label');
+    }
 
 
     public static function getNavigationGroup(): string
@@ -49,7 +59,7 @@ class VideoResource extends Resource
                     ])
                     ->schema([
                         ViewField::make('video_preview')
-                            ->label('filament.video_resource.view.fields.video_preview')
+                            ->label(__('filament.video_resource.view.fields.video_preview'))
                             ->translateLabel()
                             ->view('filament.forms.components.video-preview')
                             ->columnSpan(1)
@@ -58,11 +68,11 @@ class VideoResource extends Resource
                         Grid::make()
                             ->schema([
                                 TextEntry::make('original_name')
-                                    ->label('filament.video_resource.view.fields.original_name')
+                                    ->label(__('filament.video_resource.view.fields.original_name'))
                                     ->translateLabel(),
 
                                 TextEntry::make('duration')
-                                    ->label('filament.video_resource.view.fields.duration')
+                                    ->label(__('filament.video_resource.view.fields.duration'))
                                     ->translateLabel()
                                     ->state(function (Video $record) {
                                         return self::formatDuration(
@@ -71,7 +81,7 @@ class VideoResource extends Resource
                                     }),
 
                                 TextEntry::make('bundle_key')
-                                    ->label('filament.video_resource.view.fields.bundle_key')
+                                    ->label(__('filament.video_resource.view.fields.bundle_key'))
                                     ->translateLabel()
                                     ->state(function (Video $record) {
                                         return $record->clips()?->first()?->getAttribute('bundle_key');
@@ -79,24 +89,24 @@ class VideoResource extends Resource
                                     ->extraAttributes(['class' => 'text-lg font-semibold']),
 
                                 TextEntry::make('created_at')
-                                    ->label('filament.video_resource.view.fields.created_at')
+                                    ->label(__('filament.video_resource.view.fields.created_at'))
                                     ->translateLabel()
                                     ->dateTime('d.m.Y, H:i'),
 
                                 TextEntry::make('status_label')
-                                    ->label('filament.video_resource.view.fields.status')
+                                    ->label(__('filament.video_resource.view.fields.status'))
                                     ->translateLabel()
                                     ->badge()
-                                    ->state(fn(Video $record) => self::determineStatusLabel($record))
-                                    ->color(fn(Video $record) => self::statusColor(self::determineStatusLabel($record)))
-                                    ->icon(fn(Video $record) => self::statusIcon(self::determineStatusLabel($record))),
+                                    ->state(fn (Video $record) => self::determineStatusLabel($record))
+                                    ->color(fn (Video $record) => self::statusColor(self::determineStatusLabel($record)))
+                                    ->icon(fn (Video $record) => self::statusIcon(self::determineStatusLabel($record))),
 
                                 TextEntry::make('available_assignments_count')
-                                    ->label('filament.video_resource.view.fields.available_assignments_count')
+                                    ->label(__('filament.video_resource.view.fields.available_assignments_count'))
                                     ->translateLabel(),
 
                                 TextEntry::make('expired_assignments_count')
-                                    ->label('filament.video_resource.view.fields.expired_assignments_count')
+                                    ->label(__('filament.video_resource.view.fields.expired_assignments_count'))
                                     ->translateLabel(),
                             ])
                             ->columns(2),
@@ -104,9 +114,9 @@ class VideoResource extends Resource
 
                 ViewEntry::make('ingest_status')
                     ->view('filament.standard.components.infolists.ingest.status')
-                    ->label('filament.video_resource.view.fields.processing_status')
+                    ->label(__('filament.video_resource.view.fields.processing_status'))
                     ->translateLabel()
-                    ->state(fn(Video $record) => [
+                    ->state(fn (Video $record) => [
                         'processingStatus' => $record->processing_status,
                         'ingestStatus' => app(GetVideoIngestStatusUseCase::class)->handle($record),
                     ])
@@ -115,8 +125,8 @@ class VideoResource extends Resource
                 Grid::make()
                     ->schema([
                         TextEntry::make('assignmentWithNote.note')
-                            ->label('filament.video_resource.view.fields.note')
-                            ->visible(fn(Video $record) => !empty($record->assignmentWithNote?->note))
+                            ->label(__('filament.video_resource.view.fields.note'))
+                            ->visible(fn (Video $record) => !empty($record->assignmentWithNote?->note))
                             ->translateLabel(),
                     ]),
             ]);
@@ -126,7 +136,7 @@ class VideoResource extends Resource
     {
         return $table
             ->defaultSort('created_at', 'desc')
-            ->recordUrl(fn(Video $record) => static::getUrl('view', ['record' => $record]))
+            ->recordUrl(fn (Video $record) => static::getUrl('view', ['record' => $record]))
             ->columns([
                 ViewColumn::make('video_preview')
                     ->label(__('filament.video_resource.view.fields.preview'))
@@ -139,7 +149,7 @@ class VideoResource extends Resource
                     ->searchable()
                     ->limit(60),
                 TextColumn::make('processing_status')
-                    ->label('filament.video_resource.view.fields.processing_status')
+                    ->label(__('filament.video_resource.view.fields.processing_status'))
                     ->translateLabel()
                     ->badge()
                     ->formatStateUsing(function (Video $record) {
@@ -162,12 +172,13 @@ class VideoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable()
-                    ->getStateUsing(fn(?Video $record) => $record->clips()?->first()?->getAttribute('role')),
+                    ->getStateUsing(fn (?Video $record) => $record->clips()?->first()?->getAttribute('role')),
                 TextColumn::make('duration')
                     ->label(__('filament.video_resource.view.fields.duration'))
-                    ->state(fn(Video $record
+                    ->state(fn (
+                        Video $record
                     ) => self::formatDuration($record->clips()?->first()?->getAttribute('duration')))
-                    ->tooltip('Gesamtlänge des Videos')
+                    ->tooltip(__('filament.video_resource.view.fields.duration_tooltip'))
                     ->sortable(),
 
                 TextColumn::make('created_at')
@@ -178,10 +189,10 @@ class VideoResource extends Resource
                 TextColumn::make('status_label')
                     ->label(__('filament.video_resource.view.fields.status'))
                     ->badge()
-                    ->state(fn(Video $record) => self::determineStatusLabel($record))
-                    ->color(fn(Video $record) => self::statusColor(self::determineStatusLabel($record)))
-                    ->icon(fn(Video $record) => self::statusIcon(self::determineStatusLabel($record)))
-                    ->sortable(query: fn(
+                    ->state(fn (Video $record) => self::determineStatusLabel($record))
+                    ->color(fn (Video $record) => self::statusColor(self::determineStatusLabel($record)))
+                    ->icon(fn (Video $record) => self::statusIcon(self::determineStatusLabel($record)))
+                    ->sortable(query: fn (
                         Builder $query,
                         string $direction
                     ) => $query->orderBy('available_assignments_count', $direction)),
@@ -214,14 +225,14 @@ class VideoResource extends Resource
                             }),
                             'downloaded' => $query->whereHas(
                                 'assignments',
-                                fn(Builder $assignmentQuery) => $assignmentQuery->where(
+                                fn (Builder $assignmentQuery) => $assignmentQuery->where(
                                     'status',
                                     StatusEnum::PICKEDUP->value
                                 )
                             ),
                             'expired' => $query->whereHas(
                                 'assignments',
-                                fn(Builder $assignmentQuery) => $assignmentQuery->where(
+                                fn (Builder $assignmentQuery) => $assignmentQuery->where(
                                     'status',
                                     StatusEnum::EXPIRED->value
                                 )
@@ -240,7 +251,7 @@ class VideoResource extends Resource
                     ->icon('heroicon-m-trash')
                     ->button()
                     ->requiresConfirmation()
-                    ->hidden(fn(Video $record) => false === app(IsDeletableUseCase::class)->handle($record))
+                    ->hidden(fn (Video $record) => false === app(IsDeletableUseCase::class)->handle($record))
                     ->color('danger'),
             ])
             ->toolbarActions([])
@@ -280,11 +291,11 @@ class VideoResource extends Resource
                                 ->orWhere('expires_at', '>', now());
                         });
                 },
-                'assignments as expired_assignments_count' => fn(Builder $query) => $query->where(
+                'assignments as expired_assignments_count' => fn (Builder $query) => $query->where(
                     'status',
                     StatusEnum::EXPIRED->value
                 ),
-                'assignments as downloaded_assignments_count' => fn(Builder $query) => $query->where(
+                'assignments as downloaded_assignments_count' => fn (Builder $query) => $query->where(
                     'status',
                     StatusEnum::PICKEDUP->value
                 ),
