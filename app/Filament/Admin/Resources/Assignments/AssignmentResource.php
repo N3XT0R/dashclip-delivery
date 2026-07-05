@@ -6,7 +6,6 @@ use App\Enum\StatusEnum;
 use App\Filament\Admin\Resources\Assignments\Pages\ListAssignments;
 use App\Filament\Admin\Resources\Assignments\Pages\ViewAssignment;
 use App\Filament\Admin\Resources\Videos\VideoResource;
-use App\Filament\Resources\AssignmentResource\Pages;
 use App\Models\Assignment;
 use App\Services\LinkService;
 use Carbon\Carbon;
@@ -55,17 +54,19 @@ class AssignmentResource extends Resource
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
                 TextColumn::make('expires_at')
                     ->dateTime()
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
                     ->colors([
-                        'success' => fn($state) => $state === StatusEnum::PICKEDUP->value,
-                        'warning' => fn($state) => $state === StatusEnum::QUEUED->value,
-                        'info' => fn($state) => $state === StatusEnum::NOTIFIED->value,
+                        'success' => fn ($state) => $state === StatusEnum::PICKEDUP->value,
+                        'warning' => fn ($state) => $state === StatusEnum::QUEUED->value,
+                        'info' => fn ($state) => $state === StatusEnum::NOTIFIED->value,
                     ])
                     ->sortable()
                     ->searchable(),
@@ -78,17 +79,19 @@ class AssignmentResource extends Resource
                 TextColumn::make('last_notified_at')
                     ->dateTime()
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
             ])
             ->filters([
                 // Distinct status filter
                 SelectFilter::make('status')
-                    ->options(fn() => Assignment::query()
+                    ->options(fn () => Assignment::query()
                         ->whereNotNull('status')
                         ->distinct()
                         ->pluck('status', 'status')
@@ -102,20 +105,20 @@ class AssignmentResource extends Resource
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['from'] ?? null, fn($q, $d) => $q->whereDate('created_at', '>=', $d))
-                            ->when($data['until'] ?? null, fn($q, $d) => $q->whereDate('created_at', '<=', $d));
+                            ->when($data['from'] ?? null, fn ($q, $d) => $q->whereDate('created_at', '>=', $d))
+                            ->when($data['until'] ?? null, fn ($q, $d) => $q->whereDate('created_at', '<=', $d));
                     }),
 
                 // Quick "expired" filter
                 Filter::make('expired')
                     ->label('Expired')
-                    ->query(fn($q) => $q->whereNotNull('expires_at')->where('expires_at', '<', now())),
+                    ->query(fn ($q) => $q->whereNotNull('expires_at')->where('expires_at', '<', now())),
             ])
             ->recordActions([
                 ViewAction::make(),
                 Action::make('offer')
                     ->label('Open Offer')
-                    ->url(fn(Assignment $assignment): ?string => (
+                    ->url(fn (Assignment $assignment): ?string => (
                         $assignment->batch && $assignment->channel
                     )
                         ? app(LinkService::class)->getOfferUrl(

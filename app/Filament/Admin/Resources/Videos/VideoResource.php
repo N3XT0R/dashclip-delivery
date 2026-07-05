@@ -51,7 +51,7 @@ class VideoResource extends Resource
                 TextColumn::make('bytes')
                     ->label('Größe')
                     ->sortable()
-                    ->formatStateUsing(fn($state) => $state ? Number::fileSize((int)$state) : '–'),
+                    ->formatStateUsing(fn ($state) => $state ? Number::fileSize((int)$state) : '–'),
 
                 TextColumn::make('disk')
                     ->sortable()
@@ -78,18 +78,19 @@ class VideoResource extends Resource
                 TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i')
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable()
                     ->label('Erstellt'),
             ])
             ->filters([
                 SelectFilter::make('disk')
                     ->label('Disk')
-                    ->options(fn() => Video::query()
+                    ->options(fn () => Video::query()
                         ->select('disk')->whereNotNull('disk')->distinct()->pluck('disk', 'disk')->toArray()),
 
                 SelectFilter::make('ext')
                     ->label('Ext')
-                    ->options(fn() => Video::query()
+                    ->options(fn () => Video::query()
                         ->select('ext')->whereNotNull('ext')->distinct()->pluck('ext', 'ext')->toArray()),
 
                 Filter::make('created_at')
@@ -99,8 +100,8 @@ class VideoResource extends Resource
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['from'] ?? null, fn($q, $d) => $q->whereDate('created_at', '>=', $d))
-                            ->when($data['until'] ?? null, fn($q, $d) => $q->whereDate('created_at', '<=', $d));
+                            ->when($data['from'] ?? null, fn ($q, $d) => $q->whereDate('created_at', '>=', $d))
+                            ->when($data['until'] ?? null, fn ($q, $d) => $q->whereDate('created_at', '<=', $d));
                     }),
             ])
             ->recordActions([
@@ -108,7 +109,7 @@ class VideoResource extends Resource
                 Action::make('preview')
                     ->label('Preview')
                     ->icon('heroicon-m-play')
-                    ->url(fn(Video $video) => app(GetPreviewUrl::class)->handle($video->clips()->first()))
+                    ->url(fn (Video $video) => app(GetPreviewUrl::class)->handle($video->clips()->first()))
                     ->openUrlInNewTab(),
                 DeleteAction::make()
                     ->visible(auth()->user()->hasRole(RoleEnum::SUPER_ADMIN->value))

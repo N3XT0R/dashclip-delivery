@@ -29,16 +29,16 @@ class AssignmentsRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('status')->badge()->sortable(),
                 TextColumn::make('attempts')->numeric()->sortable(),
-                TextColumn::make('expires_at')->dateTime()->since()->sortable(),
-                TextColumn::make('last_notified_at')->dateTime()->since()->sortable()->toggleable(),
-                TextColumn::make('created_at')->dateTime()->since()->sortable(),
+                TextColumn::make('expires_at')->dateTime()->since()->dateTimeTooltip()->sortable(),
+                TextColumn::make('last_notified_at')->dateTime()->since()->dateTimeTooltip()->sortable()->toggleable(),
+                TextColumn::make('created_at')->dateTime()->since()->dateTimeTooltip()->sortable(),
             ])
             ->headerActions([]) // read-only
             ->recordActions([
                 Action::make('open')
                     ->label('Open')
                     ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->url(fn(Assignment $assignment) => AssignmentResource::getUrl('view', ['record' => $assignment]))
+                    ->url(fn (Assignment $assignment) => AssignmentResource::getUrl('view', ['record' => $assignment]))
                     ->openUrlInNewTab(),
             ])
             ->toolbarActions([]);

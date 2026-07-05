@@ -24,7 +24,7 @@ class ClipsRelationManager extends RelationManager
                 TextColumn::make('submitted_by'),
                 TextColumn::make('start_time')->label('Start'),
                 TextColumn::make('end_time')->label('End'),
-                TextColumn::make('created_at')->dateTime()->since(),
+                TextColumn::make('created_at')->dateTime()->since()->dateTimeTooltip(),
             ])
             ->headerActions([])
             ->recordActions([])

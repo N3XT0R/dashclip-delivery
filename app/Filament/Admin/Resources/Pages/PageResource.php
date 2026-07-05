@@ -55,6 +55,7 @@ class PageResource extends Resource
                 TextColumn::make('updated_at')
                     ->dateTime('Y-m-d H:i')
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
             ])
             ->filters([

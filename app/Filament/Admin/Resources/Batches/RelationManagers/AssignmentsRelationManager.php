@@ -35,22 +35,23 @@ class AssignmentsRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('status')->badge()->sortable(),
                 TextColumn::make('attempts')->numeric()->sortable(),
-                TextColumn::make('expires_at')->dateTime()->since()->sortable(),
-                TextColumn::make('last_notified_at')->dateTime()->since()->sortable()->toggleable(),
+                TextColumn::make('expires_at')->dateTime()->since()->dateTimeTooltip()->sortable(),
+                TextColumn::make('last_notified_at')->dateTime()->since()->dateTimeTooltip()->sortable()->toggleable(),
                 TextColumn::make('video.preview_url')
                     ->label('Preview')
-                    ->formatStateUsing(fn() => 'Open')
-                    ->url(fn(Assignment $assignment
+                    ->formatStateUsing(fn () => 'Open')
+                    ->url(fn (
+                        Assignment $assignment
                     ) => $assignment->video ? (string)$assignment->video->getAttribute('preview_url') : null)
                     ->openUrlInNewTab(),
-                TextColumn::make('created_at')->dateTime()->since()->sortable(),
+                TextColumn::make('created_at')->dateTime()->since()->dateTimeTooltip()->sortable(),
             ])
             ->headerActions([])
             ->recordActions([
                 Action::make('open')
                     ->label('Open')
                     ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->url(fn(Assignment $assignment) => AssignmentResource::getUrl('view', ['record' => $assignment]))
+                    ->url(fn (Assignment $assignment) => AssignmentResource::getUrl('view', ['record' => $assignment]))
                     ->openUrlInNewTab(),
                 Action::make('offer_link')
                     ->label('Open Offer')

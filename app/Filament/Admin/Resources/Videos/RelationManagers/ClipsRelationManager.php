@@ -32,7 +32,7 @@ class ClipsRelationManager extends RelationManager
                 TextColumn::make('start_sec')->label('Start'),
                 TextColumn::make('end_sec')->label('End'),
                 TextColumn::make('submitted_by')->label('Submitted By'),
-                TextColumn::make('created_at')->dateTime()->since(),
+                TextColumn::make('created_at')->dateTime()->since()->dateTimeTooltip(),
             ])
             ->headerActions([])
             ->recordActions([
@@ -42,8 +42,8 @@ class ClipsRelationManager extends RelationManager
                 Action::make('preview')
                     ->label('Preview')
                     ->icon('heroicon-m-play')
-                    ->url(fn($record) => app(GetPreviewUrl::class)->handle($record))
-                    ->visible(fn($record) => null !== $record->preview_path)
+                    ->url(fn ($record) => app(GetPreviewUrl::class)->handle($record))
+                    ->visible(fn ($record) => null !== $record->preview_path)
                     ->openUrlInNewTab()
             ])
             ->toolbarActions([]);
@@ -57,7 +57,7 @@ class ClipsRelationManager extends RelationManager
                 ->disabled(),
             TextInput::make('original_name')
                 ->label('Video Name')
-                ->formatStateUsing(fn($record) => $record->video?->original_name)
+                ->formatStateUsing(fn ($record) => $record->video?->original_name)
                 ->disabled(),
             TextInput::make('start_sec')
                 ->label('Start Time')

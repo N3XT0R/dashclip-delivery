@@ -5,7 +5,6 @@ namespace App\Filament\Admin\Resources\Channels;
 use App\Filament\Admin\Resources\Channels\Pages\CreateChannel;
 use App\Filament\Admin\Resources\Channels\Pages\EditChannel;
 use App\Filament\Admin\Resources\Channels\Pages\ListChannels;
-use App\Filament\Resources\ChannelResource\Pages;
 use App\Models\Channel;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -78,10 +77,12 @@ class ChannelResource extends Resource
                 TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i')
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->dateTime('Y-m-d H:i')
                     ->since()
+                    ->dateTimeTooltip()
                     ->sortable(),
                 IconColumn::make('is_video_reception_paused')
                     ->label('Paused video reception')

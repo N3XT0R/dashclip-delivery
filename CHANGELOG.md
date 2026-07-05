@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **UX**
+    - added exact date-time tooltips to relative date columns in admin Filament resources.
+
 ## [4.0.0-beta.6] - 2026-07-03
 
 ### Fixed
