@@ -29,9 +29,9 @@ final class ChannelResourceTest extends DatabaseTestCase
     {
         $this->assertSame(Channel::class, ChannelResource::getModel());
         $this->assertSame('heroicon-o-envelope', ChannelResource::getNavigationIcon());
-        $this->assertSame('Media', ChannelResource::getNavigationGroup());
-        $this->assertSame('Channel', ChannelResource::getModelLabel());
-        $this->assertSame('Channels', ChannelResource::getPluralModelLabel());
+        $this->assertSame(__('filament.admin.navigation.media'), ChannelResource::getNavigationGroup());
+        $this->assertSame(__('filament.admin.labels.channel'), ChannelResource::getModelLabel());
+        $this->assertSame(__('filament.admin.labels.channels'), ChannelResource::getPluralModelLabel());
     }
 
     public function testResourceRegistersExpectedPages(): void

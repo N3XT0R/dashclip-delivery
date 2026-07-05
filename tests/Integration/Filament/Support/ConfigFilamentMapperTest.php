@@ -26,7 +26,7 @@ final class ConfigFilamentMapperTest extends TestCase
         $this->assertInstanceOf(Select::class, $select);
         $this->assertSame('value', $select->getName());
         $this->assertSame(['one' => 'one', 'two' => 'two'], $select->getOptions());
-        $this->assertSame('Value', $select->getLabel());
+        $this->assertSame(__('filament.admin.labels.value'), $select->getLabel());
         $this->assertTrue($select->isRequired());
         $this->assertFalse($select->isMultiple());
     }
@@ -53,7 +53,7 @@ final class ConfigFilamentMapperTest extends TestCase
 
         $this->assertInstanceOf(Toggle::class, $toggle);
         $this->assertSame('value', $toggle->getName());
-        $this->assertSame('Value', $toggle->getLabel());
+        $this->assertSame(__('filament.admin.labels.value'), $toggle->getLabel());
         $this->assertTrue($toggle->isRequired());
     }
 
@@ -68,7 +68,7 @@ final class ConfigFilamentMapperTest extends TestCase
 
             $this->assertInstanceOf(TextInput::class, $textInput);
             $this->assertSame('value', $textInput->getName());
-            $this->assertSame('Value', $textInput->getLabel());
+            $this->assertSame(__('filament.admin.labels.value'), $textInput->getLabel());
             $this->assertTrue($textInput->isRequired());
             $this->assertTrue($textInput->isNumeric());
         }
@@ -84,7 +84,7 @@ final class ConfigFilamentMapperTest extends TestCase
 
         $this->assertInstanceOf(KeyValue::class, $keyValue);
         $this->assertSame('value', $keyValue->getName());
-        $this->assertSame('Value', $keyValue->getLabel());
+        $this->assertSame(__('filament.admin.labels.value'), $keyValue->getLabel());
         $this->assertTrue($keyValue->isRequired());
     }
 
@@ -98,7 +98,7 @@ final class ConfigFilamentMapperTest extends TestCase
 
         $this->assertInstanceOf(Textarea::class, $textarea);
         $this->assertSame('value', $textarea->getName());
-        $this->assertSame('Value', $textarea->getLabel());
+        $this->assertSame(__('filament.admin.labels.value'), $textarea->getLabel());
         $this->assertTrue($textarea->isRequired());
         $this->assertSame('full', $textarea->getColumnSpan()['default']);
     }
