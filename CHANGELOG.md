@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **UX**
     - added exact date-time tooltips to relative date columns in admin Filament resources.
     - moved hardcoded Filament resource and page labels into English and German language files.
+    - fixed the channel application benefits panel contrast in dark mode.
 
 ## [4.0.0-beta.6] - 2026-07-03
 

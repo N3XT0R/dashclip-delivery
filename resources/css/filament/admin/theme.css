@@ -4,3 +4,31 @@
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 @source '../../../../vendor/gboquizosanchez/filament-log-viewer/resources/views/**/*.blade.php';
+
+.channel-application-benefits-panel {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    color: #374151;
+}
+
+.channel-application-benefits-panel__title {
+    color: #111827;
+}
+
+.channel-application-benefits-panel__footer {
+    color: #6b7280;
+}
+
+.dark .channel-application-benefits-panel {
+    background-color: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
+}
+
+.dark .channel-application-benefits-panel__title {
+    color: #ffffff;
+}
+
+.dark .channel-application-benefits-panel__footer {
+    color: #9ca3af;
+}

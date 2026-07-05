@@ -1,6 +1,6 @@
 <x-filament-panels::page>
-    <div class="mb-6 p-4 rounded bg-gray-50 border border-gray-200">
-        <h2 class="text-lg font-semibold mb-2">
+    <div class="channel-application-benefits-panel mb-6 rounded border p-4">
+        <h2 class="channel-application-benefits-panel__title mb-2 text-lg font-semibold">
             {{ __('filament.channel_application.form.about_title') }}
         </h2>
         <p class="mb-4">
@@ -16,7 +16,7 @@
             <p><strong>{{ __('filament.channel_application.form.about_benefit_remain_title') }}</strong><br>
                 {{ __('filament.channel_application.form.about_benefit_remain') }}</p>
         </div>
-        <p class="text-sm text-gray-500">
+        <p class="channel-application-benefits-panel__footer text-sm">
             {{ __('filament.channel_application.form.about_footer') }}
         </p>
     </div>
@@ -28,20 +28,20 @@
 
 
     @if ($pendingApplication)
-        <div class="p-4 rounded bg-yellow-50 border border-yellow-400 text-yellow-800 mb-6">
+        <div class="mb-6 rounded border border-yellow-400 bg-yellow-50 p-4 text-yellow-800 dark:border-yellow-500/50 dark:bg-yellow-950/30 dark:text-yellow-100">
             <h3 class="font-semibold mb-2">
                 {{ __('filament.channel_application.form.status_title', ['channel' => $pendingApplication->meta->channel['name'] ?? optional($pendingApplication->channel)->name]) }}
             </h3>
             <p class="mb-2">
                 {{ __('filament.channel_application.form.status_message', ['status' => __(sprintf('filament.channel_application.status.%s', $pendingApplication->status))]) }}
             </p>
-            <div class="text-sm text-gray-700">
+            <div class="text-sm text-yellow-900 dark:text-yellow-100">
                 <b>{{ __('filament.channel_application.form.submitted_at') }}</b>
                 {{ $pendingApplication->created_at->format('d.m.Y H:i') }}
                 <br>
             </div>
             @if (!empty($pendingApplication->meta->channel['name'] ?? null))
-                <div class="mt-2 text-sm text-gray-700">
+                <div class="mt-2 text-sm text-yellow-900 dark:text-yellow-100">
                     <b>{{ __('filament.channel_application.form.new_channel_name_label') }}</b>
                     {{ $pendingApplication->meta->channel['name'] }}
                     <br>
@@ -55,7 +55,7 @@
                     {{ $pendingApplication->meta->channel['youtube_name'] }}
                 </div>
             @endif
-            <p class="text-gray-500 text-xs mt-4">
+            <p class="mt-4 text-xs text-yellow-700 dark:text-yellow-200/80">
                 {{ __('filament.channel_application.form.status_note') }}
             </p>
         </div>
