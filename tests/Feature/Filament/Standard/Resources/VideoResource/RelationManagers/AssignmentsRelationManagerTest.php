@@ -21,6 +21,7 @@ use App\Models\Video;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Tests\DatabaseTestCase;
@@ -64,7 +65,7 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
             ->type(BatchTypeEnum::ASSIGN->value)
             ->create();
 
-        $pendingChannel = Channel::factory()->create();
+        $pendingChannel = Channel::factory()->create(['name' => 'RLP DashCam']);
         $rejectedChannel = Channel::factory()->create();
         $downloadedChannel = Channel::factory()->create();
 
@@ -74,8 +75,14 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
             ->withBatch($batch)
             ->create([
                 'status' => StatusEnum::QUEUED->value,
-                'expires_at' => Carbon::parse('2030-01-02 10:00:00'),
+                'expires_at' => null,
             ]);
+
+        DB::table('assignments')
+            ->where('id', $pendingAssignment->getKey())
+            ->update(['expires_at' => '2026-07-11 00:00:00.000']);
+
+        $pendingAssignment->refresh();
 
         $rejectedAssignment = Assignment::factory()
             ->forVideo($video)
@@ -108,9 +115,13 @@ final class AssignmentsRelationManagerTest extends DatabaseTestCase
                 $rejectedAssignment,
                 $downloadedAssignment,
             ])
+            ->assertSee('RLP DashCam')
+            ->assertSee('queued')
             ->assertTableColumnStateSet('status', StatusEnum::QUEUED->value, record: $pendingAssignment)
             ->assertTableColumnStateSet('status', StatusEnum::REJECTED->value, record: $rejectedAssignment)
             ->assertTableColumnStateSet('status', StatusEnum::PICKEDUP->value, record: $downloadedAssignment)
+            ->assertTableColumnFormattedStateSet('expires_at', '11.07.2026 00:00', record: $pendingAssignment)
+            ->assertSee('11.07.2026 00:00')
             ->assertTableColumnStateSet('download_state', 'Noch nicht heruntergeladen', record: $pendingAssignment)
             ->assertTableColumnStateSet('download_state', 'Zurückgegeben', record: $rejectedAssignment)
             ->assertTableColumnStateSet('download_state', 'Heruntergeladen am 05.04.2030 15:30', record: $downloadedAssignment);
