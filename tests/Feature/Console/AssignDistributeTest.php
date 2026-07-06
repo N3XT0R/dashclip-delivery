@@ -10,8 +10,12 @@ use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Models\Clip;
+use App\Models\User;
 use App\Models\Video;
+use App\Repository\AssignmentRepository;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Tests\DatabaseTestCase;
 
 /**
@@ -20,6 +24,13 @@ use Tests\DatabaseTestCase;
  */
 final class AssignDistributeTest extends DatabaseTestCase
 {
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
+    }
+
     /**
      * Happy path: with two eligible channels and two videos, the command should
      * create an "assign" batch and queued assignments for our entities.
@@ -65,6 +76,7 @@ final class AssignDistributeTest extends DatabaseTestCase
 
     public function testDistributePrioritizesChannelsWithLowerWeeklyUsageAcrossBatches(): void
     {
+        Carbon::setTestNow('2026-07-06 08:00:00');
         Channel::query()->delete();
 
         $channels = collect([
@@ -80,6 +92,7 @@ final class AssignDistributeTest extends DatabaseTestCase
         foreach ($channels->take(2) as $channel) {
             Assignment::factory()
                 ->forChannel($channel)
+                ->forVideo(Video::factory()->create())
                 ->withBatch($previousBatch)
                 ->create([
                     'status' => StatusEnum::PICKEDUP->value,
@@ -88,9 +101,18 @@ final class AssignDistributeTest extends DatabaseTestCase
                 ]);
         }
 
+        $weeklyAssignmentCounts = app(AssignmentRepository::class)->countAssignmentsByChannelSince(now()->startOfWeek());
+        $this->assertSame(1, $weeklyAssignmentCounts->get($channels[0]->getKey()));
+        $this->assertSame(1, $weeklyAssignmentCounts->get($channels[1]->getKey()));
+        $this->assertNull($weeklyAssignmentCounts->get($channels[2]->getKey()));
+        $this->assertNull($weeklyAssignmentCounts->get($channels[3]->getKey()));
+
+        $uploader = User::factory()->create();
         $videos = Video::factory()
             ->count(2)
             ->create(['processing_status' => ProcessingStatusEnum::Completed]);
+
+        $videos->each(fn (Video $video) => Clip::factory()->for($video)->forUser($uploader)->create());
 
         $this->artisan('assign:distribute')
             ->assertExitCode(Command::SUCCESS);
