@@ -173,6 +173,22 @@ class AssignmentRepository
     }
 
     /**
+     * Mark ready assignments in a channel offer batch as notified with the shared offer expiry.
+     */
+    public function markReadyAsNotifiedForChannel(Batch $batch, Channel $channel, CarbonInterface $expiresAt): int
+    {
+        return Assignment::query()
+            ->where('batch_id', $batch->getKey())
+            ->where('channel_id', $channel->getKey())
+            ->whereIn('status', StatusEnum::getReadyStatus())
+            ->update([
+                'status' => StatusEnum::NOTIFIED->value,
+                'expires_at' => $expiresAt,
+                'last_notified_at' => now(),
+            ]);
+    }
+
+    /**
      * Get the count of available offers for a user.
      * @param User $user
      * @return int

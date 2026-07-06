@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Assignments**
+    - persisted offer notification expiry timestamps on assignments so newly distributed videos can
+      expire and requeue correctly after notification.
 
 ## [4.0.0-beta.7] - 2026-07-05
 

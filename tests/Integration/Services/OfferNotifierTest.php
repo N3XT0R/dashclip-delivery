@@ -93,6 +93,16 @@ class OfferNotifierTest extends DatabaseTestCase
         // Assert: returned stats
         $this->assertSame(['sent' => 2, 'batchId' => $assignBatch->getKey()], $result);
 
+        $this->assertSame(
+            3,
+            Assignment::query()
+                ->where('batch_id', $assignBatch->getKey())
+                ->where('status', StatusEnum::NOTIFIED->value)
+                ->where('expires_at', $expireDate)
+                ->whereNotNull('last_notified_at')
+                ->count()
+        );
+
         // Assert: one mail per channel queued
         Mail::assertQueued(NewOfferMail::class, function (NewOfferMail $m) use ($ch1) {
             return $m->hasTo($ch1->email);

@@ -61,9 +61,28 @@ final class NotifyOffersTest extends DatabaseTestCase
         $this->artisan('notify:offers --ttl-days=5')
             ->assertExitCode(Command::SUCCESS);
 
+        $expiresAt = now()->addDays(5);
+
+        $this->assertDatabaseHas('assignments', [
+            'batch_id' => $assignBatch->getKey(),
+            'channel_id' => $ch1->getKey(),
+            'status' => StatusEnum::NOTIFIED->value,
+            'expires_at' => $expiresAt,
+        ]);
+
+        $this->assertSame(
+            3,
+            Assignment::query()
+                ->where('batch_id', $assignBatch->getKey())
+                ->where('status', StatusEnum::NOTIFIED->value)
+                ->where('expires_at', $expiresAt)
+                ->whereNotNull('last_notified_at')
+                ->count()
+        );
+
         // One mail per channel queued
-        Mail::assertQueued(NewOfferMail::class, fn(NewOfferMail $m) => $m->hasTo($ch1->email));
-        Mail::assertQueued(NewOfferMail::class, fn(NewOfferMail $m) => $m->hasTo($ch2->email));
+        Mail::assertQueued(NewOfferMail::class, fn (NewOfferMail $m) => $m->hasTo($ch1->email));
+        Mail::assertQueued(NewOfferMail::class, fn (NewOfferMail $m) => $m->hasTo($ch2->email));
 
         // A "notify" batch with correct stats exists
         $notify = Batch::query()->where('type', 'notify')->latest('id')->first();

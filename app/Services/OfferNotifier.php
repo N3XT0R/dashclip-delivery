@@ -6,15 +6,16 @@ namespace App\Services;
 
 use App\Enum\{BatchTypeEnum, StatusEnum};
 use App\Models\{Assignment, Batch, Channel};
+use App\Repository\AssignmentRepository;
 use App\Services\Channel\ChannelOperatorService;
 use Carbon\CarbonInterface;
 
 class OfferNotifier
 {
-
     public function __construct(
         private BatchService $batchService,
-        private ChannelOperatorService $channelOperatorService
+        private ChannelOperatorService $channelOperatorService,
+        private AssignmentRepository $assignmentRepository
     ) {
     }
 
@@ -67,9 +68,9 @@ class OfferNotifier
             return;
         }
 
+        $this->assignmentRepository->markReadyAsNotifiedForChannel($assignBatch, $channel, $expireDate);
 
         $isOperator = $this->channelOperatorService->isChannelEmailOwnerChannelOperator($channel);
         app(MailService::class)->sendNewOfferMail($channel, $assignBatch, $expireDate, $isOperator);
     }
 }
-
