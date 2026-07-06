@@ -151,8 +151,8 @@ return [
     'video_upload' => [
         'navigation_label' => 'Video Upload',
         'navigation_group' => __('nav.media'),
-        'subheading' => 'Diese Seite ist noch experementell',
-        'title' => 'Video Upload (beta)',
+        'subheading' => 'Lade hier deine Videos hoch. Wir benachrichtigen dich, sobald die Verarbeitung abgeschlossen ist.',
+        'title' => 'Video hochladen',
         'form' => [
             'fields' => [
                 'file' => 'Videodatei',
@@ -163,7 +163,7 @@ return [
                 'upload_hint_state' => 'Die Zeitfelder werden automatisch freigeschaltet, sobald ein Video hochgeladen wurde.',
                 'note' => 'Notiz',
                 'bundle_key' => 'Bundle ID',
-                'bundle_key_helper_text' => 'Optional: Verwende denselben Bundle-Key für mehrere Uploads, damit diese Videos als zusammengehörige Gruppe behandelt werden.',
+                'bundle_key_helper_text' => 'Optional: Verwende dieselbe Bundle-ID für Videos, die zusammengehören. Sie werden gemeinsam an denselben Kanal gesendet, damit z. B. mehrere Perspektiven oder Teile einer zusammenhängenden Story kombiniert werden können.',
                 'role' => 'Rolle',
                 'role_helper_text' => 'Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R)',
             ],

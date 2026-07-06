@@ -151,8 +151,8 @@ return [
     'video_upload' => [
         'navigation_label' => 'Video Upload',
         'navigation_group' => __('nav.media'),
-        'subheading' => 'This page is still experimental',
-        'title' => 'Video Upload (alpha)',
+        'subheading' => 'Upload your videos here. We will notify you once processing is complete.',
+        'title' => 'Upload videos',
         'form' => [
             'fields' => [
                 'file' => 'Select video file',
@@ -163,7 +163,7 @@ return [
                 'upload_hint_state' => 'The time fields will automatically unlock once a video has been uploaded.',
                 'note' => 'Note',
                 'bundle_key' => 'Bundle ID',
-                'bundle_key_helper_text' => 'Optional: Use the same bundle key for multiple uploads so that these videos are treated as a related group.',
+                'bundle_key_helper_text' => 'Optional: Use the same bundle ID for videos that belong together. They will be sent to the same channel as a group, so multiple perspectives or parts of one connected story can be combined.',
                 'role' => 'Role',
                 'role_helper_text' => 'Optional: Specifies the camera position or perspective of the video, e.g., Front (F) or Rear (R).',
             ],

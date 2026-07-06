@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **UX**
+    - replaced the experimental video upload page title, subheading, and bundle ID helper text with clearer upload guidance.
+
 ## [4.0.0-beta.8] - 2026-07-06
 
 ### Fixed
