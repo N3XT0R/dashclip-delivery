@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Marked v4 as the first stable releas
+- Marked v4 as the first stable release
 
 ## [4.0.0-beta.9] - 2026-07-07
 
