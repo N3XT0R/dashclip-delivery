@@ -12,6 +12,7 @@ use App\Models\Batch;
 use App\Models\Video;
 use App\Repository\BatchRepository;
 use App\ValueObjects\IngestStats;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use RuntimeException;
 
@@ -114,6 +115,10 @@ class BatchService
         $requeueIds = Assignment::query()
             ->whereIn('status', StatusEnum::getRequeueStatuses())
             ->whereDoesntHave('downloads')
+            ->whereDoesntHave('video.assignments', fn (Builder $query): Builder => $query->where(
+                'status',
+                StatusEnum::PICKEDUP->value
+            ))
             ->pluck('video_id')
             ->unique();
 

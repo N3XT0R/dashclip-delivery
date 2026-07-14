@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Assignment distribution**
+    - returned expired videos without a download to subsequent distribution pools and stopped
+      expired queued offers from being displayed as fully distributed.
+    - marked both queued and notified assignments as expired after their TTL so undownloaded videos
+      can be triggered again by subsequent distribution runs.
+    - stopped requeueing a video as soon as any of its assignments has been picked up.
+- **Standard panel video search**
+    - fixed text searches failing when Filament searched computed bundle and role fields as video
+      table columns instead of querying the related clips.
 
 ## [4.0.1] - 2026-07-15
 

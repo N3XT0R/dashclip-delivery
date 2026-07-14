@@ -59,6 +59,35 @@ final class VideoResourceTest extends DatabaseTestCase
             ->assertCanNotSeeTableRecords([$otherVideo]);
     }
 
+    public function testListVideosCanBeSearchedByTextFields(): void
+    {
+        $matchingVideo = Video::factory()
+            ->for($this->tenant, 'team')
+            ->withClips(1, $this->user)
+            ->create(['original_name' => 'Quarterly Launch.mp4']);
+
+        $otherVideo = Video::factory()
+            ->for($this->tenant, 'team')
+            ->withClips(1, $this->user)
+            ->create(['original_name' => 'Unrelated Video.mp4']);
+
+        $matchingVideo->clips()->firstOrFail()->update([
+            'bundle_key' => 'summer-campaign',
+            'role' => 'presenter',
+        ]);
+
+        Livewire::test(ListVideos::class)
+            ->searchTable('Quarterly Launch')
+            ->assertCanSeeTableRecords([$matchingVideo])
+            ->assertCanNotSeeTableRecords([$otherVideo])
+            ->searchTable('summer-campaign')
+            ->assertCanSeeTableRecords([$matchingVideo])
+            ->assertCanNotSeeTableRecords([$otherVideo])
+            ->searchTable('presenter')
+            ->assertCanSeeTableRecords([$matchingVideo])
+            ->assertCanNotSeeTableRecords([$otherVideo]);
+    }
+
     public function testAssignmentStateFilterKeepsOnlyActiveOffers(): void
     {
         $activeVideo = Video::factory()
@@ -114,6 +143,28 @@ final class VideoResourceTest extends DatabaseTestCase
             ->assertTableColumnExists('available_assignments_count')
             ->assertTableColumnExists('expired_assignments_count')
             ->assertSeeText('Heruntergeladen');
+    }
+
+    public function testListVideosShowsExpiredQueuedAssignmentAsExpired(): void
+    {
+        $video = Video::factory()
+            ->for($this->tenant, 'team')
+            ->withClips(1, $this->user)
+            ->create();
+
+        Assignment::factory()
+            ->forVideo($video)
+            ->withBatch()
+            ->state([
+                'status' => StatusEnum::QUEUED->value,
+                'expires_at' => now()->subDay(),
+            ])
+            ->create();
+
+        Livewire::test(ListVideos::class)
+            ->assertCanSeeTableRecords([$video])
+            ->assertSeeText('Abgelaufen')
+            ->assertDontSeeText('Alle verteilt');
     }
 
     private function grantVideoPermissions(): void

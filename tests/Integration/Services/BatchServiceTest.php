@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Tests\Integration\Services;
 
 use App\Enum\BatchTypeEnum;
+use App\Enum\ProcessingStatusEnum;
+use App\Enum\StatusEnum;
+use App\Models\Assignment;
 use App\Models\Batch;
+use App\Models\Channel;
+use App\Models\Video;
 use App\Services\BatchService;
 use App\ValueObjects\IngestStats;
 use RuntimeException;
@@ -61,6 +66,75 @@ class BatchServiceTest extends DatabaseTestCase
 
         // Act
         $this->batchService->getLatestAssignBatch();
+    }
+
+    public function testCollectPoolVideosRequeuesExpiredVideoWithoutDownload(): void
+    {
+        $batch = Batch::factory()->type(BatchTypeEnum::ASSIGN->value)->finished()->create();
+        $video = Video::factory()->create([
+            'processing_status' => ProcessingStatusEnum::Completed,
+            'created_at' => now()->subMonth(),
+        ]);
+
+        Assignment::factory()
+            ->forVideo($video)
+            ->forChannel(Channel::factory()->create())
+            ->withBatch($batch)
+            ->create([
+                'status' => StatusEnum::EXPIRED->value,
+                'expires_at' => now()->subDay(),
+            ]);
+
+        $pool = $this->batchService->collectPoolVideos($batch);
+
+        $this->assertTrue($pool->contains($video));
+    }
+
+    public function testCollectPoolVideosDoesNotRequeueQueuedVideoBeforeExpiration(): void
+    {
+        $batch = Batch::factory()->type(BatchTypeEnum::ASSIGN->value)->finished()->create();
+        $video = Video::factory()->create([
+            'processing_status' => ProcessingStatusEnum::Completed,
+            'created_at' => now()->subMonth(),
+        ]);
+
+        Assignment::factory()
+            ->forVideo($video)
+            ->forChannel(Channel::factory()->create())
+            ->withBatch($batch)
+            ->create([
+                'status' => StatusEnum::QUEUED->value,
+                'expires_at' => now()->addDay(),
+            ]);
+
+        $pool = $this->batchService->collectPoolVideos($batch);
+
+        $this->assertFalse($pool->contains($video));
+    }
+
+    public function testCollectPoolVideosDoesNotRequeueVideoAfterAnotherAssignmentWasPickedUp(): void
+    {
+        $batch = Batch::factory()->type(BatchTypeEnum::ASSIGN->value)->finished()->create();
+        $video = Video::factory()->create([
+            'processing_status' => ProcessingStatusEnum::Completed,
+            'created_at' => now()->subMonth(),
+        ]);
+
+        Assignment::factory()
+            ->forVideo($video)
+            ->forChannel(Channel::factory()->create())
+            ->withBatch($batch)
+            ->create(['status' => StatusEnum::EXPIRED->value]);
+
+        Assignment::factory()
+            ->forVideo($video)
+            ->forChannel(Channel::factory()->create())
+            ->withBatch($batch)
+            ->create(['status' => StatusEnum::PICKEDUP->value]);
+
+        $pool = $this->batchService->collectPoolVideos($batch);
+
+        $this->assertFalse($pool->contains($video));
     }
 
     public function testItUpdatesTheBatchWithTheGivenIngestStats(): void

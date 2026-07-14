@@ -53,7 +53,7 @@ final class AssignExpireTest extends DatabaseTestCase
             ->for($baseBatch, 'batch')->for($ch3, 'channel')->for($v3, 'video')
             ->create(['status' => 'notified', 'expires_at' => now()->addHour()]);
 
-        // Different status → must be ignored
+        // Queued and past TTL → must also expire
         $queued = Assignment::factory()
             ->for($baseBatch, 'batch')->for($ch1, 'channel')->for(Video::factory(), 'video')
             ->create(['status' => 'queued', 'expires_at' => now()->subDay()]);
@@ -61,16 +61,16 @@ final class AssignExpireTest extends DatabaseTestCase
         // Act: run the real command with a custom cooldown
         $cooldownDays = 10;
         $this->artisan("assign:expire --cooldown-days={$cooldownDays}")
-            ->expectsOutput('Expired: 2')
+            ->expectsOutput('Expired: 3')
             ->assertExitCode(Command::SUCCESS);
 
         // Assert: expired statuses
         $this->assertDatabaseHas('assignments', ['id' => $a1->getKey(), 'status' => 'expired']);
         $this->assertDatabaseHas('assignments', ['id' => $a2->getKey(), 'status' => 'expired']);
 
-        // Assert: unaffected items
+        // Assert: future item remains unaffected while queued past-TTL item expires
         $this->assertDatabaseHas('assignments', ['id' => $a3->getKey(), 'status' => 'notified']);
-        $this->assertDatabaseHas('assignments', ['id' => $queued->getKey(), 'status' => 'queued']);
+        $this->assertDatabaseHas('assignments', ['id' => $queued->getKey(), 'status' => 'expired']);
 
         // Assert: cooldown blocks created/updated with correct "until"
         $until = now()->addDays($cooldownDays);
@@ -90,7 +90,7 @@ final class AssignExpireTest extends DatabaseTestCase
         $this->assertNotNull($newBatch->started_at);
         $this->assertNotNull($newBatch->finished_at);
         $this->assertIsArray($newBatch->stats);
-        $this->assertSame(['expired' => 2], $newBatch->stats);
+        $this->assertSame(['expired' => 3], $newBatch->stats);
     }
 
     /** When nothing is past TTL, the command still succeeds and reports zero. */

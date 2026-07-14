@@ -161,7 +161,10 @@ class VideoResource extends Resource
                 TextColumn::make('bundle')
                     ->label(__('filament.video_resource.view.fields.bundle_key'))
                     ->sortable()
-                    ->searchable()
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereHas(
+                        'clips',
+                        fn (Builder $clipQuery): Builder => $clipQuery->where('bundle_key', 'like', "%{$search}%")
+                    ))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->getStateUsing(function (Video $record) {
                         return $record->clips()?->first()?->getAttribute('bundle_key');
@@ -171,7 +174,10 @@ class VideoResource extends Resource
                     ->label(__('filament.video_resource.view.fields.view_type'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
-                    ->searchable()
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereHas(
+                        'clips',
+                        fn (Builder $clipQuery): Builder => $clipQuery->where('role', 'like', "%{$search}%")
+                    ))
                     ->getStateUsing(fn (?Video $record) => $record->clips()?->first()?->getAttribute('role')),
                 TextColumn::make('duration')
                     ->label(__('filament.video_resource.view.fields.duration'))
@@ -292,8 +298,12 @@ class VideoResource extends Resource
                         });
                 },
                 'assignments as expired_assignments_count' => fn (Builder $query) => $query->where(
-                    'status',
-                    StatusEnum::EXPIRED->value
+                    fn (Builder $statusQuery) => $statusQuery
+                        ->where('status', StatusEnum::EXPIRED->value)
+                        ->orWhere(fn (Builder $readyQuery) => $readyQuery
+                            ->whereIn('status', StatusEnum::getReadyStatus())
+                            ->whereNotNull('expires_at')
+                            ->where('expires_at', '<=', now()))
                 ),
                 'assignments as downloaded_assignments_count' => fn (Builder $query) => $query->where(
                     'status',

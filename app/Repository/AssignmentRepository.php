@@ -314,9 +314,8 @@ class AssignmentRepository
     public function expireAssignments(int $cooldownDays): int
     {
         $count = 0;
-        Assignment::query()->where('status', StatusEnum::NOTIFIED->value)
+        Assignment::query()->whereIn('status', StatusEnum::getReadyStatus())
             ->where('expires_at', '<', now())
-            ->whereNot('status', StatusEnum::PICKEDUP->value)
             ->chunkById(500, function ($items) use (&$count, $cooldownDays) {
                 foreach ($items as $assignment) {
                     $assignment->update(['status' => StatusEnum::EXPIRED->value]);

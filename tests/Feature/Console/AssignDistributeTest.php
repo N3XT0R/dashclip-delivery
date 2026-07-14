@@ -131,6 +131,47 @@ final class AssignDistributeTest extends DatabaseTestCase
         );
     }
 
+    public function testDistributeReassignsQueuedVideoWithoutDownloadInSubsequentRun(): void
+    {
+        Channel::query()->delete();
+
+        $previousChannel = Channel::factory()->create(['weekly_quota' => 10, 'weight' => 1]);
+        $nextChannel = Channel::factory()->create(['weekly_quota' => 10, 'weight' => 1]);
+        $previousBatch = Batch::factory()->type(BatchTypeEnum::ASSIGN->value)->finished()->create();
+        $video = Video::factory()->create([
+            'processing_status' => ProcessingStatusEnum::Completed,
+            'created_at' => now()->subMonth(),
+        ]);
+
+        Assignment::factory()
+            ->forVideo($video)
+            ->forChannel($previousChannel)
+            ->withBatch($previousBatch)
+            ->create([
+                'status' => StatusEnum::QUEUED->value,
+                'expires_at' => now()->subDay(),
+            ]);
+
+        $this->artisan('assign:expire --cooldown-days=1')
+            ->assertExitCode(Command::SUCCESS);
+
+        $this->assertDatabaseHas('assignments', [
+            'video_id' => $video->getKey(),
+            'channel_id' => $previousChannel->getKey(),
+            'status' => StatusEnum::EXPIRED->value,
+        ]);
+
+        $this->artisan('assign:distribute')
+            ->assertExitCode(Command::SUCCESS);
+
+        $this->assertDatabaseHas('assignments', [
+            'video_id' => $video->getKey(),
+            'channel_id' => $nextChannel->getKey(),
+            'status' => StatusEnum::QUEUED->value,
+        ]);
+        $this->assertSame(2, Assignment::query()->whereBelongsTo($video)->count());
+    }
+
     /**
      * No eligible work: many distributors treat this as an error and throw,
      * so the command returns FAILURE. We only assert that no assignments were created.

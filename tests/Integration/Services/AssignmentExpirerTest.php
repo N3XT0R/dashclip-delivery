@@ -54,7 +54,7 @@ class AssignmentExpirerTest extends DatabaseTestCase
             ->for($ch, 'channel')->for(Video::factory(), 'video')->for($assignBatch, 'batch')
             ->create(['status' => 'notified', 'expires_at' => $future]);
 
-        // Different status -> should be ignored even if past
+        // Queued and past TTL -> should also expire
         $a4 = Assignment::factory()
             ->for($ch, 'channel')->for(Video::factory(), 'video')->for($assignBatch, 'batch')
             ->create(['status' => 'queued', 'expires_at' => $past]);
@@ -62,17 +62,17 @@ class AssignmentExpirerTest extends DatabaseTestCase
         // Act
         $expiredCount = app(AssignmentExpirer::class)->expire($cooldownDays);
 
-        // Assert: two items expired
-        $this->assertSame(2, $expiredCount);
+        // Assert: all three ready assignments past their TTL expired
+        $this->assertSame(3, $expiredCount);
 
         // Reload and assert statuses
         $this->assertSame('expired', $a1->fresh()->status);
         $this->assertSame('expired', $a2->fresh()->status);
         $this->assertSame('notified', $a3->fresh()->status);
-        $this->assertSame('queued', $a4->fresh()->status);
+        $this->assertSame('expired', $a4->fresh()->status);
 
-        // Assert: exactly two blocks exist (one updated for vid1, one newly created for vid2)
-        $this->assertDatabaseCount('channel_video_blocks', 2);
+        // Assert: exactly three blocks exist (one updated for vid1 and two newly created)
+        $this->assertDatabaseCount('channel_video_blocks', 3);
 
         // (ch, vid1) block was updated in-place (same id) and has the new "until"
         $updatedBlock1 = ChannelVideoBlock::query()
@@ -97,7 +97,7 @@ class AssignmentExpirerTest extends DatabaseTestCase
         $this->assertSame('assign', $createdBatch->type);
         $this->assertNotNull($createdBatch->started_at);
         $this->assertNotNull($createdBatch->finished_at);
-        $this->assertEquals(['expired' => 2], $createdBatch->stats);
+        $this->assertEquals(['expired' => 3], $createdBatch->stats);
     }
 
     public function testExpireWhenNoMatchesCreatesBatchWithZeroStats(): void
@@ -114,10 +114,10 @@ class AssignmentExpirerTest extends DatabaseTestCase
             ->for($ch, 'channel')->for($vid1, 'video')->for($assignBatch, 'batch')
             ->create(['status' => 'notified', 'expires_at' => now()->addDay()]);
 
-        // Past expiry but status != notified -> ignored
+        // Picked-up assignments must never expire
         Assignment::factory()
             ->for($ch, 'channel')->for($vid2, 'video')->for($assignBatch, 'batch')
-            ->create(['status' => 'queued', 'expires_at' => now()->subDay()]);
+            ->create(['status' => 'picked_up', 'expires_at' => now()->subDay()]);
 
         // Act
         $expiredCount = app(AssignmentExpirer::class)->expire(3);
