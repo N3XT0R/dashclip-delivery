@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       direct-permission lookup by permission name, and added support for restoring optional tenant,
       user, and user-tenant data.
 
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
 ## [4.0.0] - 2026-07-07
 
 ### Changed
