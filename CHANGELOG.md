@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Authorization / Shield seeding**
+    - regenerated the Shield seeder with the current role and permission assignments, corrected
+      direct-permission lookup by permission name, and added support for restoring optional tenant,
+      user, and user-tenant data.
+
 ## [4.0.0] - 2026-07-07
 
 ### Changed
