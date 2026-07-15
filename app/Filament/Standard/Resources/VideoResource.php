@@ -8,6 +8,8 @@ use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
 use App\Models\Video;
+use App\Repository\VideoRepository;
+use Auth;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
@@ -51,7 +53,7 @@ class VideoResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return app(VideoRepository::class)->getVideoCountForUser(Auth::user());
     }
 
     public static function infolist(Schema $schema): Schema
