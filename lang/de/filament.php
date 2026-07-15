@@ -144,7 +144,7 @@ return [
             ],
             'messages' => [
                 'no_videos' => 'Es sind keine Videos verfügbar.',
-                'table_description' => 'Hier siehst du alle Videos, die du selbst hochgeladen hast.',
+                'table_description' => 'Hier siehst du alle Videos, die du selbst für andere Kanäle hochgeladen hast.',
             ],
         ],
     ],
