@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Standard\Pages;
 
+use App\Application\Channel\GetCurrentChannel;
 use App\Application\Offer\DispatchZipDownload;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
@@ -12,6 +13,7 @@ use App\Filament\Standard\Widgets\ChannelWidgets\AvailableOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\DownloadedOffersStatsWidget;
 use App\Filament\Standard\Widgets\ChannelWidgets\ExpiredOffersStatsWidget;
 use App\Models\Assignment;
+use App\Repository\AssignmentRepository;
 use App\Services\LinkService;
 use BackedEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -49,6 +51,13 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
     public static function getNavigationLabel(): string
     {
         return __('my_offers.navigation_label');
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $channel = app(GetCurrentChannel::class)->handle();
+
+        return (string) app(AssignmentRepository::class)->getAvailableOffersCountForChannel($channel);
     }
 
     public static function getNavigationGroup(): string|UnitEnum|null
@@ -133,7 +142,7 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
     {
         $channel = $this->getCurrentChannelOnlyIfHaveAccess();
         $table = app(AssignmentTable::class)->make($table, $this, $channel);
-        $table->modifyQueryUsing(fn(Builder $query): Builder => $this->modifyQueryWithActiveTab($query));
+        $table->modifyQueryUsing(fn (Builder $query): Builder => $this->modifyQueryWithActiveTab($query));
 
         return $table;
     }
@@ -189,7 +198,7 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                             ]),
                     ])
                     ->collapsible()
-                    ->hidden(fn(): bool => $assignment->video->clips->isEmpty()),
+                    ->hidden(fn (): bool => $assignment->video->clips->isEmpty()),
             ]);
     }
 

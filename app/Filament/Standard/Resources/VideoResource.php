@@ -49,6 +49,11 @@ class VideoResource extends Resource
         return __('nav.media');
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function infolist(Schema $schema): Schema
     {
         return $schema

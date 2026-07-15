@@ -7,6 +7,7 @@ namespace Tests\Feature\Standard\Pages;
 use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
+use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
@@ -82,6 +83,40 @@ final class MyOffersTest extends DatabaseTestCase
             ->assertSee(__('my_offers.tabs.returned'));
     }
 
+    public function testNavigationBadgeShowsTotalAvailableOffersForCurrentChannel(): void
+    {
+        $user = User::factory()->create();
+        $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
+        $channel = Channel::factory()->create();
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
+
+        Assignment::factory()->withBatch()->forChannel($channel)->create([
+            'status' => StatusEnum::QUEUED->value,
+            'expires_at' => null,
+        ]);
+        Assignment::factory()->withBatch()->forChannel($channel)->create([
+            'status' => StatusEnum::NOTIFIED->value,
+            'expires_at' => now()->addDay(),
+        ]);
+        Assignment::factory()->withBatch()->forChannel($channel)->create([
+            'status' => StatusEnum::QUEUED->value,
+            'expires_at' => now()->subDay(),
+        ]);
+        Assignment::factory()->withBatch()->forChannel($channel)->create([
+            'status' => StatusEnum::PICKEDUP->value,
+        ]);
+        Assignment::factory()->withBatch()->create([
+            'status' => StatusEnum::QUEUED->value,
+            'expires_at' => null,
+        ]);
+
+        Filament::setTenant($team, true);
+        Filament::auth()->login($user);
+        $this->actingAs($user, GuardEnum::STANDARD->value);
+
+        self::assertSame('2', MyOffers::getNavigationBadge());
+    }
+
     public function testZipFormAnchorIsRenderedWhenChannelExists(): void
     {
         $user = User::factory()->create();
@@ -135,7 +170,7 @@ final class MyOffersTest extends DatabaseTestCase
 
         $tabs->make(null)['available']
             ->getQuery()
-            ->modifyQueryUsing(fn($q) => $q);
+            ->modifyQueryUsing(fn ($q) => $q);
     }
 
 
@@ -178,7 +213,7 @@ final class MyOffersTest extends DatabaseTestCase
 
     public function testCanAccessReturnsTrueWhenAbilityAllows(): void
     {
-        $ability = new class {
+        $ability = new class () {
             public function check(User $user): bool
             {
                 return $user instanceof User;
@@ -197,7 +232,7 @@ final class MyOffersTest extends DatabaseTestCase
     {
         $channel = Channel::factory()->create();
 
-        $this->app->bind(LinkService::class, static fn() => new class {
+        $this->app->bind(LinkService::class, static fn () => new class () {
             public function getZipSelectedUrlForChannel(Channel $channel, $expires): string
             {
                 return 'zip-url-' . $channel->getKey();
@@ -214,7 +249,7 @@ final class MyOffersTest extends DatabaseTestCase
 
     public function testMergeComponentsKeepsComponentsWhenChannelMissing(): void
     {
-        $this->app->bind(LinkService::class, static fn() => new class {
+        $this->app->bind(LinkService::class, static fn () => new class () {
             public function getZipSelectedUrlForChannel(Channel $channel, $expires): string
             {
                 return 'zip-url';

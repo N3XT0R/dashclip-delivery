@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.0] - 2026-07-15
+
+### Added
+
+- **My Offers navigation**
+    - added a navigation badge showing the current channel's total number of available video offers,
+      improving visibility and orientation for less experienced users in line with ISO 9241
+      usability principles.
+
 ### Fixed
 
 - **Assignment distribution**
