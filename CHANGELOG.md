@@ -7,13 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-07-25
+
 ### Fixed
 
 - **Admin activity log**
     - fixed activity properties failing to render after the Filament 5.7 update by normalizing
       property values into displayable text.
-
-## [4.2.0] - 2026-07-25
 
 ### Security
 - **Packages**
