@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Admin\Resources\ActivityResource\Pages\ListActivities;
 use App\Models\Activity;
 use BackedEnum;
 use Filament\Actions;
@@ -51,6 +52,23 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('causer')
                     ->formatStateUsing(fn (?Model $activityItem) => $activityItem?->causer?->name),
                 Tables\Columns\TextColumn::make('properties')
+                    ->state(fn (Activity $record): array => $record->properties
+                        ->map(static function (mixed $value, string|int $key): string {
+                            $formattedValue = match (true) {
+                                is_string($value) => $value,
+                                is_bool($value) => $value ? 'true' : 'false',
+                                is_int($value), is_float($value) => (string) $value,
+                                $value === null => '-',
+                                default => json_encode(
+                                    $value,
+                                    JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                                ),
+                            };
+
+                            return "{$key}: {$formattedValue}";
+                        })
+                        ->values()
+                        ->all())
                     ->searchable()
                     ->listWithLineBreaks()
                     ->wrap(),
@@ -89,7 +107,7 @@ class ActivityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \App\Filament\Admin\Resources\ActivityResource\Pages\ListActivities::route('/'),
+            'index' => ListActivities::route('/'),
         ];
     }
 }

@@ -59,7 +59,9 @@ final class ActivityResourceTest extends DatabaseTestCase
             'description' => 'uploaded a video',
         ]);
 
-        $record = Activity::latest()->firstOrFail();
+        $record = Activity::query()
+            ->where('description', 'uploaded a video')
+            ->firstOrFail();
 
         Livewire::test(ListActivities::class)
             ->assertStatus(200)
@@ -69,7 +71,10 @@ final class ActivityResourceTest extends DatabaseTestCase
             ->assertTableColumnStateSet('event', $record->event, record: $record)
             ->assertTableColumnStateSet('subject', $record->subject, record: $record)
             ->assertTableColumnStateSet('causer', $record->causer, record: $record)
-            ->assertTableColumnExists('properties', record: $record)
+            ->assertTableColumnStateSet('properties', [
+                'action: upload',
+                'file: holiday.mp4',
+            ], record: $record)
             ->assertTableColumnExists('created_at', record: $record);
     }
 }
