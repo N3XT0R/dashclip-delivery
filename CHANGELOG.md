@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Channel video reception paused notification**
+    - sends the channel owner an email when an admin pauses video reception for their channel,
+      including a two-step reactivation link (confirm page → submit) backed by the existing
+      ActionToken system with a one-month expiry and automatic deduplication of outstanding tokens.
+
 ## [4.2.0] - 2026-08-01
 
 ### Security

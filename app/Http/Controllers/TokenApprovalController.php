@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Enum\TokenPurposeEnum;
 use App\Services\ActionTokenService;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
 final class TokenApprovalController extends Controller
@@ -15,21 +17,32 @@ final class TokenApprovalController extends Controller
     ) {
     }
 
-    public function update(string $purpose, string $token)
+    public function update(string $purpose, string $token): View|HttpResponse
     {
         $purposeEnum = TokenPurposeEnum::tryFrom($purpose);
         if (!$purposeEnum) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $actionToken = $this->actionTokenService->consume($purposeEnum, $token);
+        // Two-step purposes: validate without consuming, show confirmation page
+        if ($purposeEnum === TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION) {
+            $actionToken = $this->actionTokenService->findValid($purposeEnum, $token);
+            if (!$actionToken) {
+                abort(Response::HTTP_GONE);
+            }
+            return view('tokens.channel-reception-confirm', [
+                'token'      => $actionToken,
+                'purpose'    => $purposeEnum,
+                'plainToken' => $token,
+            ]);
+        }
 
+        $actionToken = $this->actionTokenService->consume($purposeEnum, $token);
         if (!$actionToken) {
             abort(Response::HTTP_GONE);
         }
 
         $view = $this->resolveViewForPurpose($purposeEnum);
-
         if ($view && view()->exists($view)) {
             return view($view, ['token' => $actionToken, 'purpose' => $purposeEnum]);
         }
@@ -37,14 +50,34 @@ final class TokenApprovalController extends Controller
         return response()->noContent();
     }
 
+    public function store(string $purpose, string $token): View
+    {
+        $purposeEnum = TokenPurposeEnum::tryFrom($purpose);
+        if (!$purposeEnum || $purposeEnum !== TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $actionToken = $this->actionTokenService->consume($purposeEnum, $token);
+        if (!$actionToken) {
+            abort(Response::HTTP_GONE);
+        }
+
+        return view('tokens.channel-reception-reactivated', [
+            'token'   => $actionToken,
+            'purpose' => $purposeEnum,
+        ]);
+    }
+
     private function resolveViewForPurpose(TokenPurposeEnum $purpose): ?string
     {
         return match ($purpose) {
             TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL =>
-            'tokens.channel-access-approved',
+                'tokens.channel-access-approved',
 
             TokenPurposeEnum::CHANNEL_ACTIVATION_APPROVAL =>
-            'tokens.channel-activation-approved',
+                'tokens.channel-activation-approved',
+
+            default => null,
         };
     }
 }

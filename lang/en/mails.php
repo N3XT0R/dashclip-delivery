@@ -58,4 +58,12 @@ return [
         'after_confirmation' => 'After confirmation, you will automatically receive new videos at the usual intervals. If you no longer wish to receive them, just send a short email to <a href="mailto::email">:email</a>.',
         'signature' => 'Best regards,<br>Your :app_name Team',
     ],
+    'channel_reception_paused' => [
+        'subject'        => 'Video reception paused – :channel',
+        'headline'       => 'Your video reception has been paused',
+        'greeting'       => 'Hello,',
+        'body'           => 'The weekly video reception for channel <strong>:channel</strong> has been paused by an administrator. If you did not request this, you can reactivate reception using the button below.',
+        'reactivate_cta' => 'Reactivate reception',
+        'signature'      => 'Best regards,<br>Your :app team',
+    ],
 ];

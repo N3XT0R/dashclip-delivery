@@ -58,4 +58,12 @@ return [
         'after_confirmation' => 'Nach der Bestätigung bekommst du automatisch die neuen Videos im gewohnten Rhythmus. Wenn du das irgendwann nicht mehr möchtest, reicht eine kurze Mail an <a href="mailto::email">:email</a>.',
         'signature' => 'Viele Grüße<br>Dein :app_name-Team',
     ],
+    'channel_reception_paused' => [
+        'subject'        => 'Video-Empfang pausiert – :channel',
+        'headline'       => 'Dein Video-Empfang wurde pausiert',
+        'greeting'       => 'Hallo,',
+        'body'           => 'Der wöchentliche Video-Empfang für den Kanal <strong>:channel</strong> wurde durch einen Administrator pausiert. Wenn du das nicht möchtest, kannst du den Empfang über den folgenden Button wieder aktivieren.',
+        'reactivate_cta' => 'Empfang reaktivieren',
+        'signature'      => 'Viele Grüße<br>Dein :app-Team',
+    ],
 ];

@@ -18,6 +18,10 @@ use App\Services\Mail\Scanner\Handlers\InboundHandler;
 use App\Services\Mail\Scanner\Handlers\ReplyHandler;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use App\Services\Zip\UnzipService;
+use App\Events\ActionToken\ActionTokenConsumed;
+use App\Events\Channel\ChannelVideoReceptionPaused;
+use App\Listeners\Channel\HandleChannelReceptionReactivation;
+use App\Listeners\SendChannelVideoReceptionPausedMail;
 use App\Listeners\WebDav\ZipUploadedListener;
 use Filament\Resources\Resource;
 use GrahamCampbell\GuzzleFactory\GuzzleFactory;
@@ -102,6 +106,9 @@ class AppServiceProvider extends ServiceProvider
             [FileCreatedEvent::class, FileUpdatedEvent::class],
             ZipUploadedListener::class
         );
+
+        Event::listen(ActionTokenConsumed::class, HandleChannelReceptionReactivation::class);
+        Event::listen(ChannelVideoReceptionPaused::class, SendChannelVideoReceptionPausedMail::class);
 
         Resource::scopeToTenant(false);
         app(PermissionRegistrar::class)

@@ -96,4 +96,84 @@ final class TokenApprovalControllerTest extends DatabaseTestCase
             '/does-not-exist'
         )->assertStatus(Response::HTTP_GONE);
     }
+
+    public function testChannelReceptionConfirmPageShowsWithoutConsumingToken(): void
+    {
+        $service = $this->app->make(\App\Services\ActionTokenService::class);
+        $channel = \App\Models\Channel::factory()->create(['is_video_reception_paused' => true]);
+
+        $plainToken = $service->issue(
+            \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
+            subject: $channel,
+            expiresAt: \Carbon\Carbon::now()->addMonth(),
+        );
+
+        $urlSegment = \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION->value;
+
+        // GET: should show confirm view WITHOUT consuming the token
+        $this->get("/action-tokens/approve/{$urlSegment}/{$plainToken}")
+            ->assertStatus(200)
+            ->assertViewIs('tokens.channel-reception-confirm')
+            ->assertViewHas('plainToken', $plainToken);
+
+        // Token must still be valid (not consumed)
+        $this->assertNotNull(
+            $service->findValid(\App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION, $plainToken)
+        );
+    }
+
+    public function testChannelReceptionPostConsumesTokenAndReactivatesChannel(): void
+    {
+        $service = $this->app->make(\App\Services\ActionTokenService::class);
+        $channel = \App\Models\Channel::factory()->create(['is_video_reception_paused' => true]);
+
+        $plainToken = $service->issue(
+            \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
+            subject: $channel,
+            expiresAt: \Carbon\Carbon::now()->addMonth(),
+        );
+
+        $urlSegment = \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION->value;
+
+        $this->post("/action-tokens/approve/{$urlSegment}/{$plainToken}")
+            ->assertStatus(200)
+            ->assertViewIs('tokens.channel-reception-reactivated');
+
+        $this->assertDatabaseHas('channels', [
+            'id'                       => $channel->getKey(),
+            'is_video_reception_paused' => false,
+        ]);
+
+        // second POST → 410 (token consumed)
+        $this->post("/action-tokens/approve/{$urlSegment}/{$plainToken}")
+            ->assertStatus(410);
+    }
+
+    public function testChannelReceptionGetReturns410WhenTokenConsumed(): void
+    {
+        $service = $this->app->make(\App\Services\ActionTokenService::class);
+        $channel = \App\Models\Channel::factory()->create(['is_video_reception_paused' => true]);
+
+        $plainToken = $service->issue(
+            \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
+            subject: $channel,
+            expiresAt: \Carbon\Carbon::now()->addMonth(),
+        );
+
+        $urlSegment = \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION->value;
+
+        $service->consume(\App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION, $plainToken);
+
+        $this->get("/action-tokens/approve/{$urlSegment}/{$plainToken}")
+            ->assertStatus(410);
+    }
+
+    public function testPostForNonReactivationPurposeReturns404(): void
+    {
+        $this->post(
+            '/action-tokens/approve/' .
+            \App\Enum\TokenPurposeEnum::CHANNEL_ACCESS_APPROVAL->value .
+            '/some-token'
+        )->assertStatus(404);
+    }
 }

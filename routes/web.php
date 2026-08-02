@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\AssignmentDownloadController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
@@ -51,5 +53,8 @@ Route::get('/zips/{id}/download', [ZipController::class, 'download'])->name('zip
 
 Route::get('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'update'])
     ->name('tokens.update');
+
+Route::post('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'store'])
+    ->name('tokens.store');
 
 
