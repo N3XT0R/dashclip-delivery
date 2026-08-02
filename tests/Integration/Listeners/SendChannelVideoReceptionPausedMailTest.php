@@ -41,4 +41,24 @@ final class SendChannelVideoReceptionPausedMailTest extends DatabaseTestCase
 
         Mail::assertNothingSent();
     }
+
+    public function testMailIsQueuedWhenChannelReceptionIsPausedViaEloquent(): void
+    {
+        Mail::fake();
+
+        $channel = Channel::factory()->create([
+            'email'                    => 'owner@example.com',
+            'is_video_reception_paused' => false,
+        ]);
+
+        // Trigger via Eloquent — exercises the full observer → event → listener chain
+        $channel->update(['is_video_reception_paused' => true]);
+
+        Mail::assertQueued(
+            ChannelVideoReceptionPausedMail::class,
+            static fn(ChannelVideoReceptionPausedMail $mail) =>
+                $mail->hasTo('owner@example.com') &&
+                $mail->channel->is($channel)
+        );
+    }
 }

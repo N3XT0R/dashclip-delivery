@@ -181,6 +181,16 @@ readonly class MailService
     {
         $expireAt = Carbon::now()->addMonth();
         $tokenService = app(ActionTokenService::class);
+
+        // Invalidate any existing unconsumed reactivation token for this channel
+        $existingToken = app(\App\Repository\ActionTokenRepository::class)->findByPurposeAndSubject(
+            TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION->value,
+            $channel
+        );
+        if ($existingToken && $existingToken->used_at === null) {
+            $existingToken->delete();
+        }
+
         $plainToken = $tokenService->issue(
             purpose: TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
             subject: $channel,

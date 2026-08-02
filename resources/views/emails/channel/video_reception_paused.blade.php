@@ -19,7 +19,7 @@
             <p>{{ __('mails.channel_reception_paused.greeting') }}</p>
 
             <p>
-                {!! __('mails.channel_reception_paused.body', ['channel' => $channel->name]) !!}
+                {!! __('mails.channel_reception_paused.body', ['channel' => e($channel->name)]) !!}
             </p>
 
             <p style="text-align:center; margin:24px 0;">

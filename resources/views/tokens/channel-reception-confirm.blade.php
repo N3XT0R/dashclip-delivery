@@ -16,7 +16,7 @@
 
         <p style="line-height: 1.6; margin-bottom: 24px;">
             {!! __('action-tokens.channel_reception_reactivation.confirm.body', [
-                'channel' => $channel?->name ?? '',
+                'channel' => e($channel?->name ?? ''),
             ]) !!}
         </p>
 
