@@ -93,6 +93,7 @@
                 <li>Eingang von Video-Angeboten</li>
                 <li>Erinnerungen vor Ablauf von Angeboten</li>
                 <li>Upload-Ergebnissen</li>
+                <li>Pausierung des Video-Empfangs durch den Betreiber</li>
             </ul>
             <p>
                 Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
@@ -141,7 +142,7 @@
                 Zusätzlich wird Ihre Theme-Einstellung lokal im Browser gespeichert.
                 Es findet kein Tracking durch Drittanbieter statt.
             </p>
-            <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.</p>
+            <p>Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG i.&nbsp;V.&nbsp;m. Art. 6 Abs. 1 lit. f DSGVO.</p>
         </section>
 
         {{-- DROPBOX --}}
@@ -152,9 +153,10 @@
                 Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO.
             </p>
             <p>
-                Dropbox ist ein US-Anbieter; die Übertragung erfolgt auf Basis von
-                Standardvertragsklauseln.
-                Die Integration kann jederzeit deaktiviert werden.
+                Dropbox ist ein US-Anbieter. Die Datenübertragung in die USA erfolgt auf Grundlage des
+                EU-US-Datenschutzrahmens (Angemessenheitsbeschluss der EU-Kommission vom 10.&nbsp;Juli 2023),
+                unter dem Dropbox Inc. zertifiziert ist. Ergänzend stützt sich die Übertragung auf
+                EU-Standardvertragsklauseln. Die Integration kann jederzeit deaktiviert werden.
             </p>
         </section>
 
@@ -244,6 +246,21 @@
                 Sie können Ihre Einwilligung jederzeit widerrufen; ein Widerruf führt jedoch dazu,
                 dass Ihr Benutzerkonto deaktiviert wird und die Plattform nicht weiter genutzt werden kann.
                 Die bis zum Widerruf erfolgte Verarbeitung bleibt rechtmäßig.
+            </p>
+        </section>
+
+        {{-- KI --}}
+        <section class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">Einsatz von KI-Systemen</h2>
+            <p>
+                Diese Plattform setzt keine KI-Systeme ein, die gegenüber Nutzern KI-generierte Inhalte
+                (Text, Bilder, Audio, Video) ausgeben oder eine automatisierte Interaktion simulieren.
+                Sämtliche auf der Plattform verteilten Videoinhalte stammen von menschlichen Uploadern;
+                eine KI-gestützte Inhaltsgenerierung findet nicht statt.
+            </p>
+            <p class="mt-2">
+                Sollten künftig KI-gestützte Funktionen eingeführt werden, wird diese Erklärung entsprechend
+                aktualisiert und eine gesonderte Hinweispflicht gemäß Art. 50 EU-KI-Verordnung erfüllt.
             </p>
         </section>
 
