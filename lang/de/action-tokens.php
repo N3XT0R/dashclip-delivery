@@ -39,5 +39,19 @@ return [
 
         'back' => 'Zur Startseite',
     ],
+    'channel_reception_reactivation' => [
+        'confirm' => [
+            'title'    => 'Empfang reaktivieren',
+            'headline' => 'Video-Empfang reaktivieren',
+            'body'     => 'Möchtest du den wöchentlichen Video-Empfang für den Kanal <strong>:channel</strong> wieder aktivieren?',
+            'cta'      => 'Ja, Empfang reaktivieren',
+        ],
+        'success' => [
+            'title'    => 'Empfang reaktiviert',
+            'headline' => 'Video-Empfang erfolgreich reaktiviert',
+            'body'     => 'Der wöchentliche Video-Empfang für den Kanal :channel wurde erfolgreich wieder aktiviert.',
+            'back'     => 'Zur Startseite',
+        ],
+    ],
 ];
 

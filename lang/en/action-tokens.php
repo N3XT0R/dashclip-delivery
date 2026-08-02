@@ -39,4 +39,18 @@ return [
 
         'back' => 'Back to home',
     ],
+    'channel_reception_reactivation' => [
+        'confirm' => [
+            'title'    => 'Reactivate reception',
+            'headline' => 'Reactivate video reception',
+            'body'     => 'Do you want to reactivate the weekly video reception for channel <strong>:channel</strong>?',
+            'cta'      => 'Yes, reactivate reception',
+        ],
+        'success' => [
+            'title'    => 'Reception reactivated',
+            'headline' => 'Video reception successfully reactivated',
+            'body'     => 'The weekly video reception for channel :channel has been successfully reactivated.',
+            'back'     => 'Back to home',
+        ],
+    ],
 ];
