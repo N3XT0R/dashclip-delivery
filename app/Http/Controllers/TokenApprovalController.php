@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Enum\TokenPurposeEnum;
 use App\Services\ActionTokenService;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
 final class TokenApprovalController extends Controller
@@ -15,7 +17,7 @@ final class TokenApprovalController extends Controller
     ) {
     }
 
-    public function update(string $purpose, string $token)
+    public function update(string $purpose, string $token): View|HttpResponse
     {
         $purposeEnum = TokenPurposeEnum::tryFrom($purpose);
         if (!$purposeEnum) {
@@ -48,7 +50,7 @@ final class TokenApprovalController extends Controller
         return response()->noContent();
     }
 
-    public function store(string $purpose, string $token)
+    public function store(string $purpose, string $token): View
     {
         $purposeEnum = TokenPurposeEnum::tryFrom($purpose);
         if (!$purposeEnum || $purposeEnum !== TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION) {

@@ -52,6 +52,18 @@ final readonly class ActionTokenService
     }
 
     /**
+     * Delete the existing unconsumed token for a given purpose and subject, if any.
+     * Uses delete() rather than markUsed() to avoid triggering consumed-token listeners.
+     */
+    public function invalidateExistingFor(TokenPurposeEnum $purpose, Model $subject): void
+    {
+        $existing = $this->repository->findByPurposeAndSubject($purpose->value, $subject);
+        if ($existing && $existing->used_at === null) {
+            $existing->delete();
+        }
+    }
+
+    /**
      * Find a valid (not consumed, not expired) token without consuming it.
      */
     public function findValid(TokenPurposeEnum $purpose, string $plainToken): ?ActionToken

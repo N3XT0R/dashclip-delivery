@@ -139,7 +139,10 @@ final class TokenApprovalControllerTest extends DatabaseTestCase
             ->assertStatus(200)
             ->assertViewIs('tokens.channel-reception-reactivated');
 
-        $this->assertFalse($channel->fresh()->is_video_reception_paused);
+        $this->assertDatabaseHas('channels', [
+            'id'                       => $channel->getKey(),
+            'is_video_reception_paused' => false,
+        ]);
 
         // second POST → 410 (token consumed)
         $this->post("/action-tokens/approve/{$urlSegment}/{$plainToken}")

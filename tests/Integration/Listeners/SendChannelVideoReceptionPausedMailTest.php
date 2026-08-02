@@ -40,6 +40,7 @@ final class SendChannelVideoReceptionPausedMailTest extends DatabaseTestCase
         (new SendChannelVideoReceptionPausedMail())->handle($event);
 
         Mail::assertNothingSent();
+        Mail::assertNothingQueued();
     }
 
     public function testMailIsQueuedWhenChannelReceptionIsPausedViaEloquent(): void

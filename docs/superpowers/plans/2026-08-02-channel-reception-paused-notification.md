@@ -677,6 +677,10 @@ public function sendChannelVideoReceptionPausedMail(Channel $channel): void
 {
     $expireAt = Carbon::now()->addMonth();
     $tokenService = app(ActionTokenService::class);
+
+    // Invalidate any existing unconsumed reactivation token so the old link stops working
+    $tokenService->invalidateExistingFor(TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION, $channel);
+
     $plainToken = $tokenService->issue(
         purpose: TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
         subject: $channel,

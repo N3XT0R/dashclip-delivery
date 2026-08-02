@@ -172,4 +172,4 @@ action-tokens.channel_reception_reactivation.success.back
 - **Token already consumed:** Step 1 GET aborts with 410 Gone (existing `findValid()` behavior).
 - **Token expired:** Same — 410 Gone.
 - **Channel already active when token consumed:** `HandleChannelReceptionReactivation` saves `is_video_reception_paused = false` regardless (idempotent, no harm).
-- **Admin re-pauses while token is live:** A new token is issued; the old token remains valid until expiry. Both would reactivate the channel — acceptable since both originate from a legitimate pause action.
+- **Admin re-pauses while token is live:** The existing unconsumed token is deleted before a new one is issued. The old reactivation link becomes invalid and returns HTTP 410 Gone; only the freshest link works.
