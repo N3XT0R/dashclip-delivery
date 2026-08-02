@@ -89,4 +89,42 @@ class ActionTokenServiceTest extends DatabaseTestCase
 
         $this->assertNull($token);
     }
+
+    public function testFindValidReturnsTokenWhenValidAndUnused(): void
+    {
+        $service = $this->app->make(\App\Services\ActionTokenService::class);
+        $channel = \App\Models\Channel::factory()->create();
+
+        $plainToken = $service->issue(
+            \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
+            subject: $channel,
+            expiresAt: \Carbon\Carbon::now()->addMonth(),
+        );
+
+        $found = $service->findValid(
+            \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
+            $plainToken
+        );
+
+        $this->assertNotNull($found);
+        $this->assertSame($channel->getKey(), $found->subject_id);
+    }
+
+    public function testFindValidReturnsNullAfterConsumption(): void
+    {
+        $service = $this->app->make(\App\Services\ActionTokenService::class);
+        $channel = \App\Models\Channel::factory()->create();
+
+        $plainToken = $service->issue(
+            \App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
+            subject: $channel,
+            expiresAt: \Carbon\Carbon::now()->addMonth(),
+        );
+
+        $service->consume(\App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION, $plainToken);
+
+        $this->assertNull(
+            $service->findValid(\App\Enum\TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION, $plainToken)
+        );
+    }
 }

@@ -52,6 +52,15 @@ final readonly class ActionTokenService
     }
 
     /**
+     * Find a valid (not consumed, not expired) token without consuming it.
+     */
+    public function findValid(TokenPurposeEnum $purpose, string $plainToken): ?ActionToken
+    {
+        $tokenHash = hash('sha256', $plainToken);
+        return $this->repository->findValid($purpose->value, $tokenHash);
+    }
+
+    /**
      * Consume an action token.
      * @param TokenPurposeEnum $purpose
      * @param string $plainToken
