@@ -14,6 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       including a two-step reactivation link (confirm page → submit) backed by the existing
       ActionToken system with a one-month expiry and automatic deduplication of outstanding tokens.
 
+### Changed
+
+- **Legal pages updated to current statutes**
+    - Impressum: references updated from TMG to DDG (§§ 7–10, in force since 14 May 2024);
+      added standard liability clauses for content awareness and link integrity.
+    - Datenschutz: cookie legal basis updated to § 25 Abs. 2 Nr. 2 TDDDG (TTDSG successor);
+      Dropbox transfer basis updated to the EU-US Data Privacy Framework (adequacy decision
+      10 July 2023); added reception-paused notification to the email processing list;
+      added AI systems section clarifying no AI-generated content is served to users
+      (ref. Art. 50 EU AI Act, applicable from 2 August 2026).
+
 ## [4.2.0] - 2026-08-01
 
 ### Security
