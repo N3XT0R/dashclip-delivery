@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Enum\TokenPurposeEnum;
 use App\Mail\ChannelAccessApprovalRequestedMail;
+use App\Mail\ChannelVideoReceptionPausedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Mail\NewOfferMail;
 use App\Mail\NoReplyFAQMail;
@@ -170,5 +171,29 @@ readonly class MailService
     public function sendFaqMail(string $email): void
     {
         $this->queueMail($email, new NoReplyFAQMail());
+    }
+
+    /**
+     * Send channel video reception paused notification to the channel owner.
+     * @throws \Random\RandomException
+     */
+    public function sendChannelVideoReceptionPausedMail(Channel $channel): void
+    {
+        $expireAt = Carbon::now()->addMonth();
+        $tokenService = app(ActionTokenService::class);
+        $plainToken = $tokenService->issue(
+            purpose: TokenPurposeEnum::CHANNEL_RECEPTION_REACTIVATION,
+            subject: $channel,
+            expiresAt: $expireAt,
+        );
+
+        $this->queueMail(
+            $channel->email,
+            new ChannelVideoReceptionPausedMail(
+                channel: $channel,
+                plainToken: $plainToken,
+                expireAt: $expireAt,
+            )
+        );
     }
 }
