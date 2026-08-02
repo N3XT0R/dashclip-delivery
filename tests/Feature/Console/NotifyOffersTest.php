@@ -57,6 +57,8 @@ final class NotifyOffersTest extends DatabaseTestCase
             ->for($assignBatch, 'batch')->for($ch2, 'channel')->for($v3, 'video')
             ->create(['status' => StatusEnum::QUEUED->value]);
 
+        $this->freezeTime();
+
         // Act
         $this->artisan('notify:offers --ttl-days=5')
             ->assertExitCode(Command::SUCCESS);
