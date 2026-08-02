@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       including a two-step reactivation link (confirm page → submit) backed by the existing
       ActionToken system with a one-month expiry and automatic deduplication of outstanding tokens.
 
+### Fixed
+
+- **Cookie consent banner**
+    - banner reappeared on every page load because Laravel's `EncryptCookies` middleware
+      discarded the JavaScript-set cookie as undecryptable; `cookie_consent` is now excluded
+      from encryption so the consent is correctly persisted across requests.
+
 ### Changed
 
 - **Legal pages updated to current statutes**
