@@ -18,11 +18,20 @@ Bestehende Referenzen im Code:
   (kein eigenes Blade-Template nötig).
 - `App\Filament\Standard\Pages\ChannelApplication` — Beispiel für eine einfache, ungetabbte
   Standard-Panel-Page mit eigenem, auf den aktuellen User gescopten Table-Query.
+- `App\Repository\DownloadRepository` / `App\Repository\VideoRepository` — bestehende Repository-Klassen,
+  die Query-Konstruktion für `Download`/`Video` kapseln und von Filament-Resources/-Pages aufgerufen werden.
+- `App\Models\Assignment::scopeHasUsersClips(Builder $query, User $user)` — bestehender, wiederverwendbarer
+  Scope: „Assignments, deren Video Clips des angegebenen Users enthält".
 
 Datenmodell: `Download belongsTo Assignment`, `Assignment belongsTo Video` + `belongsTo Channel`,
 `Video hasMany Clip` (`Clip.user_id` verweist auf den Ersteller). Ein Download-Datensatz repräsentiert
 ein einzelnes Download-Ereignis (`downloaded_at`); ein Assignment kann theoretisch mehrfach heruntergeladen
 werden (`Assignment hasMany Download`).
+
+**ADR-Bezug:** [ADR 0003](../../adr/0003-solid-compliance-and-established-design-patterns.md), Rule 1
+(„Filament resources do not own business workflows") und Rule 2 („Repositories encapsulate data access")
+verlangen, dass die Query-Konstruktion nicht direkt in der Page landet, sondern in einer
+Repository-Methode gekapselt wird. Die Page delegiert an das Repository.
 
 ## Ziel
 
@@ -54,19 +63,29 @@ Neue Klasse `App\Filament\Standard\Pages\DownloadHistory` (Auto-Discovery via
 
 ## Datenquelle & Scoping
 
-Basis-Query auf dem `Download`-Model (ein Download-Ereignis = eine Zeile), gescoped auf Downloads von
-Videos, die Clips des eingeloggten Users enthalten — analog zur Scoping-Logik in `VideoResource`:
+Neue Methode `DownloadRepository::forUser(User $user): Builder`, die den bestehenden
+`Assignment::scopeHasUsersClips()`-Scope wiederverwendet, statt die Verschachtelung erneut von Hand
+nachzubauen:
 
 ```php
-Download::query()
-    ->whereHas('assignment', fn (Builder $q) => $q->whereHas('video', fn (Builder $q) => $q->whereHas(
-        'clips',
-        fn (Builder $q) => $q->where('clips.user_id', Filament::auth()->id())
-    )))
-    ->with(['assignment.video', 'assignment.channel']);
+// App\Repository\DownloadRepository
+public function forUser(User $user): Builder
+{
+    return Download::query()
+        ->whereHas('assignment', fn (Builder $q) => $q->hasUsersClips($user))
+        ->with(['assignment.video', 'assignment.channel']);
+}
 ```
 
-`defaultSort('downloaded_at', 'desc')`.
+Die Page ruft ausschließlich das Repository auf und übernimmt keine eigene Query-Konstruktion:
+
+```php
+// App\Filament\Standard\Pages\DownloadHistory::table()
+$table
+    ->query(fn () => app(DownloadRepository::class)->forUser(auth()->user()))
+    ->defaultSort('downloaded_at', 'desc')
+    ->columns([...]);
+```
 
 ## Tabelle
 
@@ -105,6 +124,21 @@ Enthalten: `title`, `navigation_label`, `table.columns.{video,channel,downloaded
 3. Die Tabelle ist standardmäßig chronologisch absteigend nach `downloaded_at` sortiert.
 4. Der Video-Link (Spalte) sowie die „Video ansehen"-Action zeigen auf die korrekte
    `VideoResource`-`ViewVideo`-URL des jeweiligen Videos.
+
+Zusätzlich ein fokussierter Unit-/Repository-Test für `DownloadRepository::forUser()` (Query-Scoping
+isoliert von der Filament-Page geprüft), passend zur in [ADR 0001](../../adr/0001-test-architecture-and-layering.md)
+beschriebenen Schichtung von Tests.
+
+## ADR-Konformität
+
+- **ADR 0001** (Test-Architektur/Layering): Repository-Logik wird separat vom Filament-Page-Test
+  abgedeckt, nicht nur indirekt über die UI-Tabelle.
+- **ADR 0002** (Klassennamen-Suffixe): `DownloadHistory` folgt Filaments eigener Page-Namenskonvention
+  (wie `MyOffers`, `ChannelApplication`, `Dashboard`) — kein künstliches Suffix nötig.
+- **ADR 0003** (SOLID/Design Patterns): Query-Konstruktion liegt im `DownloadRepository`, nicht in der
+  Page (Rule 1 + Rule 2); die Page delegiert nur.
+- **ADR 0005** (Method-Level PHPDoc): `DownloadRepository::forUser()` erhält einen PHPDoc-Block
+  (Zweck, `$user`-Bedeutung, Rückgabewert), FQCN werden per `use`-Import referenziert, nicht inline.
 
 ## Out of Scope
 
