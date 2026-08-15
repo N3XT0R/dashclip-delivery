@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Repository;
 
+use App\Enum\Guard\GuardEnum;
 use App\Models\User;
 use App\Repository\UserRepository;
+use Illuminate\Support\Carbon;
 use Tests\DatabaseTestCase;
 
-class UserRepositoryTest extends DatabaseTestCase
+final class UserRepositoryTest extends DatabaseTestCase
 {
     protected UserRepository $userRepository;
 
@@ -103,5 +105,74 @@ class UserRepositoryTest extends DatabaseTestCase
         $count = $all->count();
 
         $this->assertDatabaseCount('users', $count);
+    }
+
+    public function testExcludesUserWhoNeverLoggedIn(): void
+    {
+        $user = User::factory()->standard(GuardEnum::STANDARD)->create([
+            'last_login_at' => null,
+        ]);
+
+        $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
+
+        $this->assertNotContains($user->getKey(), $ids->all());
+    }
+
+    public function testExcludesUserWhoLoggedInRecently(): void
+    {
+        $user = User::factory()->standard(GuardEnum::STANDARD)->create([
+            'last_login_at' => now()->subDays(3),
+        ]);
+
+        $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
+
+        $this->assertNotContains($user->getKey(), $ids->all());
+    }
+
+    public function testIncludesInactiveUserWithNoPriorReminder(): void
+    {
+        $user = User::factory()->standard(GuardEnum::STANDARD)->create([
+            'last_login_at' => now()->subDays(8),
+            'last_login_reminder_sent_at' => null,
+        ]);
+
+        $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
+
+        $this->assertContains($user->getKey(), $ids->all());
+    }
+
+    public function testExcludesUserRemindedRecently(): void
+    {
+        $user = User::factory()->standard(GuardEnum::STANDARD)->create([
+            'last_login_at' => now()->subDays(10),
+            'last_login_reminder_sent_at' => now()->subDays(2),
+        ]);
+
+        $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
+
+        $this->assertNotContains($user->getKey(), $ids->all());
+    }
+
+    public function testIncludesUserRemindedLongAgo(): void
+    {
+        $user = User::factory()->standard(GuardEnum::STANDARD)->create([
+            'last_login_at' => now()->subDays(20),
+            'last_login_reminder_sent_at' => now()->subDays(9),
+        ]);
+
+        $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
+
+        $this->assertContains($user->getKey(), $ids->all());
+    }
+
+    public function testExcludesUserWithoutStandardGuardRole(): void
+    {
+        $user = User::factory()->admin(GuardEnum::DEFAULT)->create([
+            'last_login_at' => now()->subDays(10),
+        ]);
+
+        $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
+
+        $this->assertNotContains($user->getKey(), $ids->all());
     }
 }

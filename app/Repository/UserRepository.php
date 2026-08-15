@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Enum\Guard\GuardEnum;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository
@@ -54,6 +56,28 @@ class UserRepository
         return User::query()
             ->where('email', $email)
             ->first();
+    }
+
+    /**
+     * Users eligible for the inactivity reminder: have logged in at least once, their last login is
+     * at least $days ago, no reminder was sent in the last $days (or none yet), and they hold a role
+     * on the standard-panel guard (excludes pure admin-only accounts).
+     *
+     * @return Collection<User>
+     */
+    public function getUsersEligibleForInactivityReminder(int $days = 7): Collection
+    {
+        $threshold = now()->subDays($days);
+
+        return User::query()
+            ->whereNotNull('last_login_at')
+            ->where('last_login_at', '<=', $threshold)
+            ->where(function (Builder $query) use ($threshold) {
+                $query->whereNull('last_login_reminder_sent_at')
+                    ->orWhere('last_login_reminder_sent_at', '<=', $threshold);
+            })
+            ->whereHas('roles', fn (Builder $query) => $query->where('guard_name', GuardEnum::STANDARD->value))
+            ->get();
     }
 
 }
