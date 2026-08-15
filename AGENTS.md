@@ -4,7 +4,7 @@ All project commands (tests, Artisan, Pint, Tinker, npm, etc.) must run inside t
 
 ```
 docker compose exec sharing <command>
-# e.g. docker compose exec sharing php artisan test --compact
+# e.g. docker compose exec sharing php artisan test --parallel --compact
 ```
 
 Never run project commands directly on the host.
@@ -139,7 +139,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 # Test Enforcement
 
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
-- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --parallel --compact` with a specific filename or filter.
 
 === laravel/core rules ===
 
@@ -191,10 +191,11 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## Running Tests
 
+- Always pass `--parallel` (matches CI, see `.github/workflows/ci.yml`), even for focused/filtered runs — it is faster and keeps local runs consistent with CI.
 - Run the minimal number of tests, using an appropriate filter, before finalizing.
-- To run all tests: `php artisan test --compact`.
-- To run all tests in a file: `php artisan test --compact tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
+- To run all tests: `php artisan test --parallel --compact`.
+- To run all tests in a file: `php artisan test --parallel --compact tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `php artisan test --parallel --compact --filter=testName` (recommended after making a change to a related file).
 
 === filament/filament/core rules ===
 

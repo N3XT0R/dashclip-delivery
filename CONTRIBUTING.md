@@ -92,10 +92,10 @@ All contributions should include tests:
 composer test
 
 # Run specific test
-php artisan test --filter=IngestScanTest
+php artisan test --parallel --filter=IngestScanTest
 
 # Run with coverage
-php artisan test --coverage
+php artisan test --parallel --coverage
 ```
 
 Test types:

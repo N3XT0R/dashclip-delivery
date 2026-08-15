@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Download history (Standard panel)**
+    - new, read-only page under "My Media" that shows, per download event, which of the
+      user's own videos was downloaded by which channel; links directly to the video entry.
+
+### Changed
+- **Developer workflow**
+    - `php artisan test` is now documented consistently with `--parallel` in AGENTS.md/CONTRIBUTING.md,
+      matching the CI configuration.
+
 ## [4.3.2] - 2026-08-015
 
 ### Security
