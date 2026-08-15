@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Download-Verlauf (Standard-Panel)**
+    - neue, rein lesende Seite unter „Meine Inhalte", die pro Download-Ereignis zeigt, welches
+      eigene Video von welchem Kanal heruntergeladen wurde; verlinkt direkt auf den Video-Eintrag.
+
+### Changed
+- **Entwickler-Workflow**
+    - `php artisan test` wird in AGENTS.md/CONTRIBUTING.md jetzt durchgängig mit `--parallel`
+      dokumentiert, passend zur CI-Konfiguration.
+
 ## [4.3.2] - 2026-08-015
 
 ### Security

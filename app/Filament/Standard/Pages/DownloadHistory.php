@@ -60,18 +60,14 @@ class DownloadHistory extends Page implements HasTable
             ->columns([
                 TextColumn::make('assignment.video.original_name')
                     ->label(__('download_history.table.columns.video'))
-                    ->url(fn (Download $record) => VideoResource::getUrl(
-                        'view',
-                        ['record' => $record->assignment->video]
-                    ))
+                    ->url(fn (Download $record) => $this->videoUrl($record))
                     ->limit(60),
                 TextColumn::make('assignment.channel.name')
                     ->label(__('download_history.table.columns.channel')),
                 TextColumn::make('downloaded_at')
                     ->label(__('download_history.table.columns.downloaded_at'))
-                    ->dateTime('d.m.Y, H:i')
                     ->since()
-                    ->dateTimeTooltip()
+                    ->dateTimeTooltip('d.m.Y, H:i')
                     ->sortable(),
             ])
             ->recordActions([
@@ -80,13 +76,15 @@ class DownloadHistory extends Page implements HasTable
                     ->icon('heroicon-m-eye')
                     ->color('gray')
                     ->button()
-                    ->url(fn (Download $record) => VideoResource::getUrl(
-                        'view',
-                        ['record' => $record->assignment->video]
-                    )),
+                    ->url(fn (Download $record) => $this->videoUrl($record)),
             ])
             ->toolbarActions([])
             ->emptyStateHeading(__('download_history.table.empty_state.heading'))
             ->emptyStateDescription(__('download_history.table.empty_state.description'));
+    }
+
+    private function videoUrl(Download $record): string
+    {
+        return VideoResource::getUrl('view', ['record' => $record->assignment->video]);
     }
 }
