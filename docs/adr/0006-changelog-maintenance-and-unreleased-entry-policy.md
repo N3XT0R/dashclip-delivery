@@ -47,6 +47,9 @@ The changelog policy is:
 
 ### Required format rules
 
+- entries must be written in English, matching every existing entry in `CHANGELOG.md`, regardless of
+  the language used in the surrounding spec, plan, PR description, or conversation that produced the
+  change
 - entries belong under existing Keep a Changelog categories such as `Added`, `Changed`, `Fixed`,
   `Removed`, `Deprecated`, and `Security` when appropriate
 - within a category, changes should be grouped under a short topical label in the current house
