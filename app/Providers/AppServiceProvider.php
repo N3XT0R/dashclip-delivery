@@ -21,11 +21,13 @@ use App\Services\Zip\UnzipService;
 use App\Events\ActionToken\ActionTokenConsumed;
 use App\Events\Channel\ChannelVideoReceptionPaused;
 use App\Listeners\Channel\HandleChannelReceptionReactivation;
+use App\Listeners\RecordUserLastLoginListener;
 use App\Listeners\SendChannelVideoReceptionPausedMail;
 use App\Listeners\WebDav\ZipUploadedListener;
 use Filament\Resources\Resource;
 use GrahamCampbell\GuzzleFactory\GuzzleFactory;
 use GuzzleHttp\Client as GuzzleClient;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Cache;
@@ -109,6 +111,7 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(ActionTokenConsumed::class, HandleChannelReceptionReactivation::class);
         Event::listen(ChannelVideoReceptionPaused::class, SendChannelVideoReceptionPausedMail::class);
+        Event::listen(Login::class, RecordUserLastLoginListener::class);
 
         Resource::scopeToTenant(false);
         app(PermissionRegistrar::class)
