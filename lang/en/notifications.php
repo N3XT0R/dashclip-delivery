@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Notifications\ChannelAccessApprovedNotification;
+use App\Notifications\UserInactivityReminderNotification;
 use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;
 
@@ -13,6 +14,7 @@ return [
             UserUploadDuplicatedNotification::class => 'Notify on duplicated entries',
             UserUploadProceedNotification::class => 'Notify when user upload is processed',
             ChannelAccessApprovedNotification::class => 'Notify when channel access is approved',
+            UserInactivityReminderNotification::class => 'Remind me when I haven\'t logged in for a while',
         ],
     ],
     'channel_access_approved' => [

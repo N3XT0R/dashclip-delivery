@@ -66,4 +66,13 @@ return [
         'reactivate_cta' => 'Empfang reaktivieren',
         'signature'      => 'Viele Grüße<br>Dein :app-Team',
     ],
+    'user_inactivity_reminder' => [
+        'subject' => 'Du warst länger nicht mehr da',
+        'headline' => 'Wir haben dich vermisst',
+        'greeting' => 'Hallo :name,',
+        'body' => 'du hast dich seit dem :date nicht mehr bei :app eingeloggt. Schau doch mal wieder vorbei!',
+        'cta' => 'Jetzt einloggen',
+        'opt_out_hint' => 'Diese Erinnerung kannst du jederzeit in deinem Profil unter "Benachrichtigungen per E-Mail" abstellen.',
+        'signature' => 'Viele Grüße<br>Dein :app-Team',
+    ],
 ];

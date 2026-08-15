@@ -66,4 +66,13 @@ return [
         'reactivate_cta' => 'Reactivate reception',
         'signature'      => 'Best regards,<br>Your :app team',
     ],
+    'user_inactivity_reminder' => [
+        'subject' => 'We haven\'t seen you in a while',
+        'headline' => 'We missed you',
+        'greeting' => 'Hi :name,',
+        'body' => 'you haven\'t logged in to :app since :date. Come back and check what\'s new!',
+        'cta' => 'Log in now',
+        'opt_out_hint' => 'You can turn off this reminder any time in your profile under "Notifications per Mail".',
+        'signature' => 'Best regards<br>Your :app team',
+    ],
 ];
