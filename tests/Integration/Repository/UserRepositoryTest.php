@@ -7,7 +7,6 @@ namespace Tests\Integration\Repository;
 use App\Enum\Guard\GuardEnum;
 use App\Models\User;
 use App\Repository\UserRepository;
-use Illuminate\Support\Carbon;
 use Tests\DatabaseTestCase;
 
 final class UserRepositoryTest extends DatabaseTestCase
