@@ -26,3 +26,5 @@ Thumbs.db
 deploy.php
 report/
 coverage/
+# superpowers subagent-driven-development scratch workspace
+/.superpowers/
