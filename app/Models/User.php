@@ -106,12 +106,33 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             'app_authentication_recovery_codes' => 'encrypted:array',
             'has_email_authentication' => 'boolean',
             'onboarding_completed' => 'boolean',
+            'last_login_at' => 'datetime',
+            'last_login_reminder_sent_at' => 'datetime',
         ];
     }
 
     public function canAccessPanel(Panel $panel): bool
     {
         return app(RoleRepository::class)->canAccessPanel($this, $panel);
+    }
+
+    /**
+     * Record that the user just logged in and reset any pending inactivity reminder cycle.
+     */
+    public function recordLogin(): void
+    {
+        $this->setAttribute('last_login_at', now());
+        $this->setAttribute('last_login_reminder_sent_at', null);
+        $this->save();
+    }
+
+    /**
+     * Record that an inactivity reminder was (attempted to be) sent to the user.
+     */
+    public function markInactivityReminderSent(): void
+    {
+        $this->setAttribute('last_login_reminder_sent_at', now());
+        $this->save();
     }
 
     public function getAppAuthenticationSecret(): ?string

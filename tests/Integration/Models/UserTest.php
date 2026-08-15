@@ -9,6 +9,7 @@ use App\Enum\PanelEnum;
 use App\Models\Team;
 use App\Models\User;
 use Filament\Panel;
+use Illuminate\Support\Carbon;
 use Tests\DatabaseTestCase;
 
 /**
@@ -212,5 +213,41 @@ final class UserTest extends DatabaseTestCase
 
         $this->assertCount(2, $user->mailConfigs);
         $this->assertEqualsCanonicalizing($configs->pluck('key')->all(), $user->mailConfigs->pluck('key')->all());
+    }
+
+    public function testRecordLoginSetsLastLoginAtAndResetsReminderTimestamp(): void
+    {
+        Carbon::setTestNow('2026-08-15 10:00:00');
+
+        $user = User::factory()->create();
+        $user->markInactivityReminderSent();
+        $this->assertNotNull($user->fresh()->last_login_reminder_sent_at);
+
+        $user->recordLogin();
+
+        $fresh = $user->fresh();
+        $this->assertTrue($fresh->last_login_at->equalTo(Carbon::now()));
+        $this->assertNull($fresh->last_login_reminder_sent_at);
+    }
+
+    public function testMarkInactivityReminderSentSetsTimestamp(): void
+    {
+        Carbon::setTestNow('2026-08-15 10:00:00');
+
+        $user = User::factory()->create();
+        $user->markInactivityReminderSent();
+
+        $this->assertTrue($user->fresh()->last_login_reminder_sent_at->equalTo(Carbon::now()));
+    }
+
+    public function testLastLoginColumnsAreCastToDatetime(): void
+    {
+        $user = User::factory()->create([
+            'last_login_at' => '2026-08-01 09:00:00',
+            'last_login_reminder_sent_at' => '2026-08-05 09:00:00',
+        ]);
+
+        $this->assertInstanceOf(Carbon::class, $user->last_login_at);
+        $this->assertInstanceOf(Carbon::class, $user->last_login_reminder_sent_at);
     }
 }
