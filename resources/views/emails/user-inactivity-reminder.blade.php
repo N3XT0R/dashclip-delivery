@@ -14,7 +14,7 @@
                 {{ __('mails.user_inactivity_reminder.headline') }}
             </h1>
             <p style="margin:0 0 16px 0;">
-                {!! __('mails.user_inactivity_reminder.greeting', ['name' => $user->name]) !!}
+                {{ __('mails.user_inactivity_reminder.greeting', ['name' => $user->name]) }}
             </p>
             <p style="margin:0 0 20px 0;">
                 {{ __('mails.user_inactivity_reminder.body', [
