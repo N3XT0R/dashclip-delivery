@@ -8,9 +8,11 @@ use App\Models\ChannelApplication;
 use App\Models\User;
 use App\Models\Video;
 use App\Notifications\ChannelAccessApprovedNotification;
+use App\Notifications\UserInactivityReminderNotification;
 use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;
 use App\Services\NotificationService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Tests\DatabaseTestCase;
 
@@ -104,6 +106,22 @@ class NotificationServiceTest extends DatabaseTestCase
             UserUploadProceedNotification::class,
             function (UserUploadProceedNotification $notification) {
                 return str_contains($notification->note, 'final.mp4');
+            }
+        );
+    }
+
+    public function testItSendsInactivityReminderNotificationToUser(): void
+    {
+        $user = User::factory()->create();
+        $lastLoginAt = Carbon::now()->subDays(10);
+
+        $this->notificationService->notifyUserInactivity($user, $lastLoginAt);
+
+        Notification::assertSentTo(
+            $user,
+            UserInactivityReminderNotification::class,
+            function (UserInactivityReminderNotification $notification) use ($lastLoginAt) {
+                return $notification->lastLoginAt->equalTo($lastLoginAt);
             }
         );
     }

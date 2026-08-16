@@ -8,8 +8,10 @@ use App\Models\ChannelApplication;
 use App\Models\User;
 use App\Models\Video;
 use App\Notifications\ChannelAccessApprovedNotification;
+use App\Notifications\UserInactivityReminderNotification;
 use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;
+use Carbon\CarbonInterface;
 
 class NotificationService
 {
@@ -54,5 +56,16 @@ class NotificationService
                 note: __('notifications.user_upload_proceed.body', ['filename' => $video->original_name]),
             )
         );
+    }
+
+    /**
+     * Send the inactivity reminder notification to the user.
+     * @param User $user
+     * @param CarbonInterface $lastLoginAt
+     * @return void
+     */
+    public function notifyUserInactivity(User $user, CarbonInterface $lastLoginAt): void
+    {
+        $user->notify(new UserInactivityReminderNotification($lastLoginAt));
     }
 }
