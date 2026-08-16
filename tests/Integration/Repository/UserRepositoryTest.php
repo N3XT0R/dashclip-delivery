@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Integration\Repository;
 
 use App\Enum\Guard\GuardEnum;
+use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Repository\UserRepository;
+use Spatie\Permission\Models\Role;
 use Tests\DatabaseTestCase;
 
 final class UserRepositoryTest extends DatabaseTestCase
@@ -169,6 +171,23 @@ final class UserRepositoryTest extends DatabaseTestCase
         $user = User::factory()->admin(GuardEnum::DEFAULT)->create([
             'last_login_at' => now()->subDays(10),
         ]);
+
+        $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
+
+        $this->assertNotContains($user->getKey(), $ids->all());
+    }
+
+    public function testExcludesUserWithSuperAdminRoleEvenIfTheyAlsoHaveStandardGuardRole(): void
+    {
+        $user = User::factory()
+            ->standard(GuardEnum::STANDARD)
+            ->create(['last_login_at' => now()->subDays(10)]);
+
+        $superAdminRole = Role::firstOrCreate([
+            'name' => RoleEnum::SUPER_ADMIN->value,
+            'guard_name' => GuardEnum::DEFAULT->value,
+        ]);
+        $user->assignRole($superAdminRole);
 
         $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
 

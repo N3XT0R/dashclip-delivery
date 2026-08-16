@@ -22,6 +22,7 @@ class UserInactivityReminderNotification extends AbstractUserNotification implem
 
     public function toMail(User $notifiable): UserInactivityReminderMail
     {
-        return new UserInactivityReminderMail($notifiable, $this->lastLoginAt);
+        return (new UserInactivityReminderMail($notifiable, $this->lastLoginAt))
+            ->to($notifiable->email);
     }
 }

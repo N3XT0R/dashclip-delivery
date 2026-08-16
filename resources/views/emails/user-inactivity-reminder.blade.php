@@ -33,7 +33,7 @@
                 </tr>
             </table>
             <p style="margin:0 0 20px 0; font-size:13px; color:#64748b;">
-                {!! __('mails.user_inactivity_reminder.opt_out_hint') !!}
+                {{ __('mails.user_inactivity_reminder.opt_out_hint') }}
             </p>
             <p style="margin:0 0 24px 0;">
                 {!! __('mails.user_inactivity_reminder.signature', ['app' => config('app.name')]) !!}

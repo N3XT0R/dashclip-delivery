@@ -6,6 +6,7 @@ namespace Tests\Integration\Mail;
 
 use App\Mail\UserInactivityReminderMail;
 use App\Models\User;
+use App\Notifications\UserInactivityReminderNotification;
 use Illuminate\Support\Carbon;
 use Tests\DatabaseTestCase;
 
@@ -48,8 +49,18 @@ final class UserInactivityReminderMailTest extends DatabaseTestCase
         $html = $mail->render();
 
         $this->assertStringContainsString(
-            __('mails.user_inactivity_reminder.opt_out_hint'),
+            e(__('mails.user_inactivity_reminder.opt_out_hint')),
             $html
         );
+    }
+
+    public function testToMailSetsRecipientToUserEmail(): void
+    {
+        $user = User::factory()->create(['email' => 'inactive@example.test']);
+        $notification = new UserInactivityReminderNotification(Carbon::now()->subDays(10));
+
+        $mail = $notification->toMail($user);
+
+        $this->assertTrue($mail->hasTo('inactive@example.test'));
     }
 }
