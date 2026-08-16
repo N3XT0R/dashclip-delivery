@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Download history (Standard panel)**
     - new, read-only page under "My Media" that shows, per download event, which of the
       user's own videos was downloaded by which channel; links directly to the video entry.
+- **Last-login tracking & inactivity reminder**
+    - the app now records each user's last login timestamp (across both the admin and standard
+      panels); users who have not logged in for 7+ days receive a reminder email, repeated every
+      7 days while inactivity continues, resettable by logging in again, and toggleable per-user
+      in the profile's "Notifications per Mail" settings like any other notification.
 
 ### Changed
 - **Developer workflow**
