@@ -6,6 +6,7 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Filament\Pages\Auth\Login;
+use App\Http\Middleware\SetUserLocale;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
@@ -105,6 +106,7 @@ class AdminPanelProvider extends PanelProvider
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             AuthenticateSession::class,
+            SetUserLocale::class,
             ShareErrorsFromSession::class,
             PreventRequestForgery::class,
             SubstituteBindings::class,

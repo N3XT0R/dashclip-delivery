@@ -12,6 +12,7 @@ use App\Filament\Standard\Pages\Dashboard;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Filament\Standard\Widgets\OnboardingWizard;
+use App\Http\Middleware\SetUserLocale;
 use App\Models\Team;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
@@ -144,6 +145,7 @@ class PanelUserPanelProvider extends PanelProvider
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             AuthenticateSession::class,
+            SetUserLocale::class,
             ShareErrorsFromSession::class,
             PreventRequestForgery::class,
             SubstituteBindings::class,
