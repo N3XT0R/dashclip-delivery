@@ -222,6 +222,8 @@ return [
             'file_name' => 'File name',
             'from' => 'from',
             'headers' => 'Headers',
+            'locale' => 'Language',
+            'locale_system_default' => 'System default',
             'mail_log' => 'Mail Log',
             'meta' => 'Meta',
             'note' => 'Note',

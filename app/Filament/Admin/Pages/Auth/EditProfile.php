@@ -7,8 +7,10 @@ namespace App\Filament\Admin\Pages\Auth;
 use App\Facades\NotificationDiscovery;
 use App\Models\User;
 use App\Repository\UserMailConfigRepository;
+use App\Services\LocaleDiscoveryService;
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
@@ -36,6 +38,7 @@ class EditProfile extends BaseEditProfile
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getPasswordConfirmationFormComponent(),
+                $this->getLocaleComponent(),
                 $this->getNotificationComponent(),
             ]);
     }
@@ -47,6 +50,20 @@ class EditProfile extends BaseEditProfile
             ->label(__('filament.admin.labels.applicant_name'))
             ->unique('users')
             ->maxLength(255);
+    }
+
+    protected function getLocaleComponent(): Component
+    {
+        $discovery = app(LocaleDiscoveryService::class);
+        $options = collect($discovery->list())
+            ->mapWithKeys(fn (string $locale) => [$locale => $discovery->label($locale)])
+            ->toArray();
+
+        return Select::make('locale')
+            ->label(__('filament.admin.labels.locale'))
+            ->options($options)
+            ->native(false)
+            ->placeholder(__('filament.admin.labels.locale_system_default'));
     }
 
 
