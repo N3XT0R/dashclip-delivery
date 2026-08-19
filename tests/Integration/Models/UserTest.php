@@ -250,4 +250,26 @@ final class UserTest extends DatabaseTestCase
         $this->assertInstanceOf(Carbon::class, $user->last_login_at);
         $this->assertInstanceOf(Carbon::class, $user->last_login_reminder_sent_at);
     }
+
+    public function testPreferredLocaleReturnsStoredLocale(): void
+    {
+        $user = User::factory()->create(['locale' => 'en']);
+
+        $this->assertSame('en', $user->preferredLocale());
+    }
+
+    public function testPreferredLocaleFallsBackToAppDefaultWhenNull(): void
+    {
+        $user = User::factory()->create(['locale' => null]);
+
+        $this->assertSame(config('app.locale'), $user->preferredLocale());
+    }
+
+    public function testLocaleIsMassAssignable(): void
+    {
+        $user = User::factory()->make();
+        $user->fill(['locale' => 'en']);
+
+        $this->assertSame('en', $user->locale);
+    }
 }

@@ -45,6 +45,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     protected $fillable = [
         'name',
         'submitted_name',
+        'locale',
         'email',
         'password',
         'onboarding_completed',
@@ -267,6 +268,6 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function preferredLocale(): string
     {
-        return config('app.locale');
+        return $this->locale ?? config('app.locale');
     }
 }
