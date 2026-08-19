@@ -101,18 +101,21 @@ class AdminPanelProvider extends PanelProvider
 
     protected function addMiddlewares(Panel $panel): Panel
     {
-        return $panel->middleware([
+        $panel->middleware([
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             AuthenticateSession::class,
-            SetUserLocale::class,
             ShareErrorsFromSession::class,
             PreventRequestForgery::class,
             SubstituteBindings::class,
             DisableBladeIconComponents::class,
             DispatchServingFilamentEvent::class,
         ]);
+
+        return $panel->middleware([
+            SetUserLocale::class,
+        ], isPersistent: true);
     }
 
     protected function addPlugins(Panel $panel): Panel

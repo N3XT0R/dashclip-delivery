@@ -40,7 +40,13 @@ readonly class MailService
     private function queueMail(string|User $mailable, MailableContract $mail): mixed
     {
         $email = app(MailAddressResolver::class)->resolve($mailable);
-        return Mail::to($email)->queue($mail);
+        $pendingMail = Mail::to($email);
+
+        if ($mailable instanceof User) {
+            $pendingMail->locale($mailable->preferredLocale());
+        }
+
+        return $pendingMail->queue($mail);
     }
 
 
@@ -136,7 +142,7 @@ readonly class MailService
      */
     public function sendUserWelcomeEmail(User $user, bool $fromBackend = false, ?string $plainPassword = null): void
     {
-        $this->queueMail($user->email, new UserWelcomeMail($user, $fromBackend, $plainPassword));
+        $this->queueMail($user, new UserWelcomeMail($user, $fromBackend, $plainPassword));
     }
 
     /**

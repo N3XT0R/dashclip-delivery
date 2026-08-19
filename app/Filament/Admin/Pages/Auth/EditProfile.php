@@ -66,7 +66,6 @@ class EditProfile extends BaseEditProfile
             ->placeholder(__('filament.admin.labels.locale_system_default'));
     }
 
-
     protected function getNotificationComponent(): Component
     {
         /**

@@ -206,4 +206,15 @@ class MailServiceTest extends DatabaseTestCase
             return $mail->hasTo('faq@example.com');
         });
     }
+
+    public function test_it_queues_user_welcome_mail_with_users_preferred_locale(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create(['email' => 'locale-user@example.com', 'locale' => 'en']);
+
+        (new MailService())->sendUserWelcomeEmail($user);
+
+        Mail::assertQueued(UserWelcomeMail::class, fn (UserWelcomeMail $mail) => $mail->locale === 'en');
+    }
 }

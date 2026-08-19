@@ -20,7 +20,7 @@ class LocaleDiscoveryService
     {
         $locales = [];
 
-        foreach (scandir(lang_path()) as $entry) {
+        foreach (scandir(lang_path()) ?: [] as $entry) {
             if ($entry === '.' || $entry === '..' || $entry === 'vendor') {
                 continue;
             }
