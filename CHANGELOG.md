@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `php artisan test` is now documented consistently with `--parallel` in AGENTS.md/CONTRIBUTING.md,
       matching the CI configuration.
 
-## [4.3.2] - 2026-08-015
+## [4.3.2] - 2026-08-15
 
 ### Security
 - **Packages**
