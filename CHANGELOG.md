@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       panels); users who have not logged in for 7+ days receive a reminder email, repeated every
       7 days while inactivity continues, resettable by logging in again, and toggleable per-user
       in the profile's "Notifications per Mail" settings like any other notification.
+- **User language preference**
+    - users can now pick a preferred language in their profile; it is applied to both the Admin
+      and Standard panel UI and to outgoing mail/notifications, with a "system default" option
+      when left unset.
 
 ### Changed
 - **Developer workflow**
