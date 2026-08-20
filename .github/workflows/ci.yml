@@ -46,6 +46,9 @@ jobs:
         with:
           composer-options: --no-progress --no-interaction --prefer-dist
 
+      - name: Generate Passport Encryption Keys
+        run: php artisan passport:keys --force
+
       - name: Run PHPUnit Tests
         env:
           FFMPEG_BINARIES: ${{ env.FFMPEG_BINARIES }}
