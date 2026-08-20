@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **REST API OAuth2 foundation** - Passport is wired up end-to-end (bearer-token authentication via a new `api` guard, verified through a `GET /api/user` sanity-check endpoint). Standard-panel users can now self-manage their own OAuth clients and personal access tokens with their assigned scopes; the admin panel retains full client/token management. This is the foundation sub-project for the broader REST API (Ticket #250) — actual domain endpoints follow in a later sub-project.
+
 ## [4.4.0] - 2026-08-20
 
 ### Added
