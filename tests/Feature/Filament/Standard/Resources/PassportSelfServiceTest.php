@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Standard\Resources;
 
+use App\Enum\Guard\GuardEnum;
+use App\Enum\PanelEnum;
 use App\Models\User;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
 use Livewire\Livewire;
 use N3XT0R\FilamentPassportUi\Database\Factories\ClientFactory;
 use N3XT0R\FilamentPassportUi\Resources\ClientResource\Pages\ListClients;
+use N3XT0R\FilamentPassportUi\Resources\TokenResource\Pages\ListTokens;
+use N3XT0R\LaravelPassportAuthorizationCore\Database\Factories\TokenFactory;
 use Tests\DatabaseTestCase;
 
 final class PassportSelfServiceTest extends DatabaseTestCase
@@ -29,16 +33,37 @@ final class PassportSelfServiceTest extends DatabaseTestCase
             'owner_type' => $otherUser->getMorphClass(),
         ]);
 
-        Filament::setCurrentPanel(Filament::getPanel('standard'));
+        Filament::setCurrentPanel(Filament::getPanel(PanelEnum::STANDARD->value));
         Filament::setTenant($tenant, true);
-        Filament::auth()->login($user);
-        $this->actingAs($user, 'standard');
+        $this->actingAs($user, GuardEnum::STANDARD->value);
 
         Livewire::test(ListClients::class)
             ->assertCanSeeTableRecords([$ownClient])
             ->assertCanNotSeeTableRecords(
                 \N3XT0R\LaravelPassportAuthorizationCore\Models\Passport\Client::query()
                     ->whereKeyNot($ownClient->getKey())
+                    ->get()
+            );
+    }
+
+    public function testStandardUserOnlySeesOwnTokens(): void
+    {
+        $user = User::factory()->withOwnTeam()->standard()->create();
+        $otherUser = User::factory()->withOwnTeam()->standard()->create();
+        $tenant = app(TeamRepository::class)->getDefaultTeamForUser($user);
+
+        $ownToken = TokenFactory::new()->withUserId($user->getKey())->create();
+        TokenFactory::new()->withUserId($otherUser->getKey())->create();
+
+        Filament::setCurrentPanel(Filament::getPanel(PanelEnum::STANDARD->value));
+        Filament::setTenant($tenant, true);
+        $this->actingAs($user, GuardEnum::STANDARD->value);
+
+        Livewire::test(ListTokens::class)
+            ->assertCanSeeTableRecords([$ownToken])
+            ->assertCanNotSeeTableRecords(
+                \Laravel\Passport\Token::query()
+                    ->whereKeyNot($ownToken->getKey())
                     ->get()
             );
     }

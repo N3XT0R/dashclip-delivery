@@ -49,3 +49,8 @@ host('prd')
 // Hooks
 after('deploy:failed', 'deploy:unlock');
 after('deploy:cleanup', 'artisan:up');
+// Passport encryption keys live in the shared storage dir and must persist across
+// releases. 'artisan:passport:keys' runs `passport:keys` without --force, which is
+// idempotent-safe: Laravel skips generation if the keys already exist, so previously
+// issued tokens/sessions are never invalidated by a later deploy.
+after('deploy:vendors', 'artisan:passport:keys');
