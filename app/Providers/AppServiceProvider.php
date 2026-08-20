@@ -26,6 +26,7 @@ use App\Listeners\SendChannelVideoReceptionPausedMail;
 use App\Listeners\WebDav\ZipUploadedListener;
 use Filament\Resources\Resource;
 use GrahamCampbell\GuzzleFactory\GuzzleFactory;
+use Laravel\Passport\Passport;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Container\Container as Application;
@@ -112,6 +113,10 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(ActionTokenConsumed::class, HandleChannelReceptionReactivation::class);
         Event::listen(ChannelVideoReceptionPaused::class, SendChannelVideoReceptionPausedMail::class);
         Event::listen(Login::class, RecordUserLastLoginListener::class);
+
+        Passport::tokensExpireIn(now()->addDays(15));
+        Passport::refreshTokensExpireIn(now()->addDays(30));
+        Passport::personalAccessTokensExpireIn(now()->addMonths(6));
 
         Resource::scopeToTenant(false);
         app(PermissionRegistrar::class)
