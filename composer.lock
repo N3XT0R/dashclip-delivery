@@ -5510,16 +5510,16 @@
         },
         {
             "name": "n3xt0r/filament-passport-ui",
-            "version": "2.4.0",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/N3XT0R/filament-passport-ui.git",
-                "reference": "debfafa3b57ec03aa41ee3a232a5a0096fed147f"
+                "reference": "67c2a93cdd7975c65812b9a62dd6daa18743255c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/N3XT0R/filament-passport-ui/zipball/debfafa3b57ec03aa41ee3a232a5a0096fed147f",
-                "reference": "debfafa3b57ec03aa41ee3a232a5a0096fed147f",
+                "url": "https://api.github.com/repos/N3XT0R/filament-passport-ui/zipball/67c2a93cdd7975c65812b9a62dd6daa18743255c",
+                "reference": "67c2a93cdd7975c65812b9a62dd6daa18743255c",
                 "shasum": ""
             },
             "require": {
@@ -5600,7 +5600,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-20T21:24:02+00:00"
+            "time": "2026-08-21T07:02:37+00:00"
         },
         {
             "name": "n3xt0r/laravel-passport-authorization-core",
