@@ -20,6 +20,8 @@ class StoreVideoRequest extends FormRequest
                 'required',
                 'file',
                 'mimetypes:video/mp4,video/quicktime,video/x-matroska',
+                // NOSONAR (S5693): the ~2GB limit is intentional for video delivery; it is
+                // enforced via the shared Livewire upload rule and covered by a 422 test.
                 $this->resolveMaxFileSizeRule(),
             ],
             'clip' => ['required', 'array'],
