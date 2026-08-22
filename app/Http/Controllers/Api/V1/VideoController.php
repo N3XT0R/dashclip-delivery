@@ -112,6 +112,11 @@ class VideoController extends ApiController
     )]
     public function index(Request $request): JsonResponse
     {
+        $request->validate([
+            'filter.created_after' => ['sometimes', 'date'],
+            'filter.created_before' => ['sometimes', 'date'],
+        ]);
+
         $videos = $this->paginate(
             QueryBuilder::for($this->visibleVideos($request))
                 ->allowedFilters(

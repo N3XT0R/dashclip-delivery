@@ -10,6 +10,7 @@ use App\Models\Channel;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
 use App\Services\BatchService;
+use Illuminate\Support\Facades\DB;
 
 readonly class CreateOfferUseCase
 {
@@ -22,15 +23,21 @@ readonly class CreateOfferUseCase
     /**
      * Create a manual API offer: wraps the assignment in a fresh batch of type
      * "api" and applies the default expiry TTL.
+     *
+     * Batch and assignment creation are wrapped in a single transaction so a
+     * race that still hits the assignments video_id/channel_id unique index
+     * cannot leave an orphaned batch behind.
      */
     public function handle(Video $video, Channel $channel): Assignment
     {
-        $batch = $this->batchService->startBatch(BatchTypeEnum::API);
+        return DB::transaction(function () use ($video, $channel): Assignment {
+            $batch = $this->batchService->startBatch(BatchTypeEnum::API);
 
-        $offer = $this->assignmentRepository->createAssignment($video, $channel, $batch);
-        $offer->setExpiresAt();
-        $offer->save();
+            $offer = $this->assignmentRepository->createAssignment($video, $channel, $batch);
+            $offer->setExpiresAt();
+            $offer->save();
 
-        return $offer;
+            return $offer;
+        });
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http\Api\V1;
 
+use App\Enum\Guard\GuardEnum;
+use App\Enum\Users\RoleEnum;
 use App\Models\User;
 use App\Models\Video;
 use Laravel\Passport\Passport;
@@ -90,5 +92,28 @@ final class VideoReadEndpointsTest extends DatabaseTestCase
     public function testUnauthenticatedReturns401(): void
     {
         $this->getJson('/api/v1/videos')->assertUnauthorized();
+    }
+
+    public function testUserWithoutViewAnyVideoPermissionReturns403(): void
+    {
+        // A freshly created user is auto-assigned the "panel_user" role (which grants
+        // ViewAny:Video) by UserObserver, so a genuinely role-less user isn't reachable
+        // through the factory. Use "channel_operator" instead: a real standard-guard
+        // role that does not carry ViewAny:Video, to prove standard.permission:ViewAny:Video
+        // is actually enforced on the real /api/v1/videos route.
+        $user = User::factory()->withOwnTeam()
+            ->withRole(RoleEnum::CHANNEL_OPERATOR, GuardEnum::STANDARD->value)->create();
+        Passport::actingAs($user, ['videos:read']);
+
+        $this->getJson('/api/v1/videos')->assertForbidden();
+    }
+
+    public function testCreatedAfterFilterWithInvalidDateReturns422(): void
+    {
+        $this->actingUser();
+
+        $this->getJson('/api/v1/videos?filter[created_after]=not-a-date')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['filter.created_after']);
     }
 }

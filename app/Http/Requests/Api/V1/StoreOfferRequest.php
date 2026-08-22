@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api\V1;
 
 use App\Models\User;
+use App\Repository\AssignmentRepository;
 use App\Repository\ChannelRepository;
 use App\Repository\VideoRepository;
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,6 +17,7 @@ class StoreOfferRequest extends FormRequest
     public function __construct(
         private readonly VideoRepository $videoRepository,
         private readonly ChannelRepository $channelRepository,
+        private readonly AssignmentRepository $assignmentRepository,
     ) {
         parent::__construct();
     }
@@ -50,18 +52,36 @@ class StoreOfferRequest extends FormRequest
                 /** @var User $user */
                 $user = $this->user('api');
 
-                if (
-                    $this->filled('video_id')
-                    && !$this->videoRepository->visibleForUser($user)->whereKey($this->input('video_id'))->exists()
-                ) {
-                    $validator->errors()->add('video_id', 'The selected video is not accessible.');
+                $videoVisible = false;
+                if ($this->filled('video_id')) {
+                    $videoVisible = $this->videoRepository->visibleForUser($user)
+                        ->whereKey($this->input('video_id'))->exists();
+                    if (!$videoVisible) {
+                        $validator->errors()->add('video_id', 'The selected video is not accessible.');
+                    }
+                }
+
+                $channelVisible = false;
+                if ($this->filled('channel_id')) {
+                    $channelVisible = $this->channelRepository->visibleForUser($user)
+                        ->whereKey($this->input('channel_id'))->exists();
+                    if (!$channelVisible) {
+                        $validator->errors()->add('channel_id', 'The selected channel is not accessible.');
+                    }
                 }
 
                 if (
-                    $this->filled('channel_id')
-                    && !$this->channelRepository->visibleForUser($user)->whereKey($this->input('channel_id'))->exists()
+                    $videoVisible
+                    && $channelVisible
+                    && $this->assignmentRepository->existsForVideoAndChannel(
+                        (int)$this->input('video_id'),
+                        (int)$this->input('channel_id'),
+                    )
                 ) {
-                    $validator->errors()->add('channel_id', 'The selected channel is not accessible.');
+                    $validator->errors()->add(
+                        'video_id',
+                        'An offer for this video and channel already exists.',
+                    );
                 }
             },
         ];

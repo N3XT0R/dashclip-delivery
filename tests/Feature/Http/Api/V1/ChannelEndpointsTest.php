@@ -40,6 +40,7 @@ final class ChannelEndpointsTest extends DatabaseTestCase
             ->assertOk()->json('data');
         $this->assertArrayNotHasKey('weight', $json);
         $this->assertArrayNotHasKey('weekly_quota', $json);
+        $this->assertArrayNotHasKey('approved_at', $json);
     }
 
     public function testUpdateTogglesVideoReceptionPause(): void

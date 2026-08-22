@@ -55,6 +55,20 @@ class AssignmentRepository
     }
 
     /**
+     * Determine whether an assignment already links this video to this channel.
+     * @param int $videoId
+     * @param int $channelId
+     * @return bool
+     */
+    public function existsForVideoAndChannel(int $videoId, int $channelId): bool
+    {
+        return Assignment::query()
+            ->where('video_id', $videoId)
+            ->where('channel_id', $channelId)
+            ->exists();
+    }
+
+    /**
      * Count assignments created for each channel since a given point in time.
      *
      * @return Collection<int, int> channel_id => assignment count

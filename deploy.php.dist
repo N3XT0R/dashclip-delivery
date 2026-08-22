@@ -54,3 +54,6 @@ after('deploy:cleanup', 'artisan:up');
 // idempotent-safe: Laravel skips generation if the keys already exist, so previously
 // issued tokens/sessions are never invalidated by a later deploy.
 after('deploy:vendors', 'artisan:passport:keys');
+// storage/api-docs is gitignored and l5-swagger's generate_always is false, so the
+// spec served at /api/documentation must be (re)generated on every deploy.
+after('deploy:vendors', 'artisan:l5-swagger:generate');
