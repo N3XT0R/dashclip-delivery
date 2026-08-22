@@ -8,8 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **REST API OAuth2 foundation** - Passport is wired up end-to-end (bearer-token authentication via a new `api` guard, verified through a `GET /api/user` sanity-check endpoint). Standard-panel users can now self-manage their own OAuth clients and personal access tokens with their assigned scopes; the admin panel retains full client/token management. This is the foundation sub-project for the broader REST API (Ticket #250) — actual domain endpoints follow in a later sub-project.
-- **Deploy: Passport key provisioning** - deploys now run `passport:keys` (without `--force`) after installing vendors, so the OAuth encryption keys exist in the shared `storage` directory from the first deploy onward; the command is idempotent and never overwrites keys that already exist, so previously issued tokens/sessions stay valid.
+- **REST API OAuth2 foundation**
+    - Passport is wired up end-to-end: bearer-token authentication via a new `api` guard,
+      verified through a `GET /api/user` sanity-check endpoint.
+    - Standard-panel users can now self-manage their own OAuth clients and personal access
+      tokens with their assigned scopes; the admin panel retains full client/token management.
+    - This is the foundation sub-project for the broader REST API (Ticket #250) — actual
+      domain endpoints follow in a later sub-project.
+- **Deploy: Passport key provisioning**
+    - deploys now run `passport:keys` (without `--force`) after installing vendors, so the
+      OAuth encryption keys exist in the shared `storage` directory from the first deploy
+      onward; the command is idempotent and never overwrites keys that already exist, so
+      previously issued tokens/sessions stay valid.
 
 ## [4.4.0] - 2026-08-20
 
@@ -134,7 +144,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **UX**
-    - replaced the experimental video upload page title, subheading, and bundle ID helper text with clearer upload guidance.
+    - replaced the experimental video upload page title, subheading, and bundle ID helper
+      text with clearer upload guidance.
 
 ## [4.0.0-beta.8] - 2026-07-06
 
@@ -166,7 +177,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Assignments**
-    - fixed assignment expiration calculation when cached configuration values for the default TTL are stored as strings.
+    - fixed assignment expiration calculation when cached configuration values for the
+      default TTL are stored as strings.
 
 ### Security
 
