@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TeamRepository
@@ -53,15 +54,17 @@ class TeamRepository
      */
     public function createTeamForOwner(User $owner, string $name): Team
     {
-        $team = Team::query()->create([
-            'name' => $name,
-            'slug' => Str::slug($name) . '-' . Str::lower(Str::random(6)),
-            'owner_id' => $owner->getKey(),
-        ]);
+        return DB::transaction(function () use ($owner, $name): Team {
+            $team = Team::query()->create([
+                'name' => $name,
+                'slug' => Str::slug($name) . '-' . Str::lower(Str::random(6)),
+                'owner_id' => $owner->getKey(),
+            ]);
 
-        $team->users()->attach($owner->getKey());
+            $team->users()->attach($owner->getKey());
 
-        return $team;
+            return $team;
+        });
     }
 
     /**

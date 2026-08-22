@@ -58,10 +58,17 @@ final class OfferEndpointsTest extends DatabaseTestCase
         ]);
 
         $response->assertCreated();
-        $offer = Assignment::query()->findOrFail($response->json('data.id'));
-        $this->assertSame('api', $offer->batch->type);
-        $this->assertSame('queued', $offer->status);
-        $this->assertNotNull($offer->expires_at);
+        $this->assertDatabaseHas('assignments', [
+            'id' => $response->json('data.id'),
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel->getKey(),
+            'status' => 'queued',
+        ]);
+        $this->assertDatabaseMissing('assignments', [
+            'id' => $response->json('data.id'),
+            'expires_at' => null,
+        ]);
+        $this->assertDatabaseHas('batches', ['type' => 'api']);
     }
 
     public function testStoreRejectsInvisibleVideoOrChannel(): void

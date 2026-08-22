@@ -40,7 +40,10 @@ final class TeamEndpointsTest extends DatabaseTestCase
         $response = $this->postJson('/api/v1/teams', ['name' => 'API Crew']);
 
         $response->assertCreated()->assertJsonPath('data.name', 'API Crew');
-        $this->assertSame($user->getKey(), Team::query()->findOrFail($response->json('data.id'))->owner_id);
+        $this->assertDatabaseHas('teams', [
+            'id' => $response->json('data.id'),
+            'owner_id' => $user->getKey(),
+        ]);
     }
 
     public function testDestroyByNonOwnerReturns404(): void
@@ -58,7 +61,7 @@ final class TeamEndpointsTest extends DatabaseTestCase
         $team = Team::factory()->create(['owner_id' => $user->getKey()]);
 
         $this->deleteJson('/api/v1/teams/' . $team->getKey())->assertNoContent();
-        $this->assertNull(Team::query()->find($team->getKey()));
+        $this->assertDatabaseMissing('teams', ['id' => $team->getKey()]);
     }
 
     public function testShowWithNonNumericIdReturns404(): void

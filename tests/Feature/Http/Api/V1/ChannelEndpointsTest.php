@@ -58,7 +58,7 @@ final class ChannelEndpointsTest extends DatabaseTestCase
 
         $this->patchJson('/api/v1/channels/' . $channel->getKey(), ['weight' => 99])
             ->assertUnprocessable();
-        $this->assertNotSame(99, $channel->refresh()->weight);
+        $this->assertDatabaseMissing('channels', ['id' => $channel->getKey(), 'weight' => 99]);
     }
 
     public function testForeignChannelReturns404(): void

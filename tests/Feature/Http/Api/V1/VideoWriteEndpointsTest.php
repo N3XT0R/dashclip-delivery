@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http\Api\V1;
 
+use App\Application\Video\UploadVideoUseCase;
 use App\Events\Video\VideoQueuedForIngest;
 use App\Models\User;
 use App\Models\Video;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
@@ -41,6 +43,28 @@ final class VideoWriteEndpointsTest extends DatabaseTestCase
         $this->assertSame($user->getKey(), $video->clips()->firstOrFail()->user_id);
         $this->assertSame(5, $video->clips()->firstOrFail()->start_sec);
         Event::assertDispatched(VideoQueuedForIngest::class);
+    }
+
+    public function testStoreRollsBackVideoAndDeletesUploadedFileWhenClipCreationFails(): void
+    {
+        Storage::fake('videos');
+        $user = User::factory()->make(['id' => 999999999]);
+        $videoCountBefore = Video::query()->count();
+
+        try {
+            app(UploadVideoUseCase::class)->handle(
+                file: UploadedFile::fake()->create('dashcam.mp4', 2048, 'video/mp4'),
+                startSec: 5,
+                endSec: 30,
+                user: $user,
+            );
+            $this->fail('Expected the clip insert to fail on the unsatisfiable user_id foreign key.');
+        } catch (QueryException) {
+            // Expected: the clip's user_id foreign key does not resolve to a persisted user.
+        }
+
+        $this->assertSame($videoCountBefore, Video::query()->count());
+        Storage::disk('videos')->assertEmpty();
     }
 
     public function testStoreRejectsFileExceedingConfiguredSizeLimit(): void

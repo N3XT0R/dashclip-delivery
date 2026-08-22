@@ -19,8 +19,8 @@ final class PassportScopeTaxonomySeederTest extends DatabaseTestCase
         $scopes = app(ScopeRegistryService::class)->allScopeNames()->pluck('scope');
         $expected = [
             'videos:read', 'videos:write', 'videos:delete',
-            'channels:read', 'channels:write',
-            'offers:read', 'offers:write',
+            'channels:read', 'channels:write', 'channels:delete',
+            'offers:read', 'offers:write', 'offers:delete',
             'teams:read', 'teams:write', 'teams:delete',
         ];
         foreach ($expected as $scope) {
