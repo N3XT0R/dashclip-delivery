@@ -16,6 +16,7 @@
         "infer-conventions",
         "laravel-best-practices",
         "configuring-horizon",
+        "passport-development",
         "echo-development",
         "tailwindcss-development",
         "debug-using-debugbar"

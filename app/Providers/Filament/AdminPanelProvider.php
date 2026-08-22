@@ -31,6 +31,7 @@ use Illuminate\Foundation\Vite;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use N3XT0R\FilamentPassportUi\FilamentPassportUiPlugin;
 use N3XT0R\LaravelWebdavServerFilament\LaravelWebdavServerFilamentPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -129,6 +130,7 @@ class AdminPanelProvider extends PanelProvider
             FilamentLogViewerPlugin::make()
                 ->navigationGroup('System')
                 ->navigationLabel('Log Viewer'),
+            FilamentPassportUiPlugin::make(),
             LaravelWebdavServerFilamentPlugin::make(),
         ]);
     }

@@ -272,4 +272,30 @@ final class UserTest extends DatabaseTestCase
 
         $this->assertSame('en', $user->locale);
     }
+
+    public function testImplementsOAuthenticatableContract(): void
+    {
+        $this->assertInstanceOf(
+            \Laravel\Passport\Contracts\OAuthenticatable::class,
+            new User()
+        );
+    }
+
+    public function testImplementsHasPassportScopeGrantsInterface(): void
+    {
+        $this->assertInstanceOf(
+            \N3XT0R\LaravelPassportAuthorizationCore\Models\Concerns\HasPassportScopeGrantsInterface::class,
+            new User()
+        );
+    }
+
+    public function testPassportScopeGrantsReturnsMorphManyRelation(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertInstanceOf(
+            \Illuminate\Database\Eloquent\Relations\MorphMany::class,
+            $user->passportScopeGrants()
+        );
+    }
 }
