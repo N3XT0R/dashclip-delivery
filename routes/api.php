@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\ChannelController;
 use App\Http\Controllers\Api\V1\OfferController;
+use App\Http\Controllers\Api\V1\TeamController;
 use App\Http\Controllers\Api\V1\VideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,4 +52,18 @@ Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function ():
             ->name('offers.comment')
             ->whereNumber('offer');
     });
+
+    Route::middleware('scope:teams:read')->group(function (): void {
+        Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+        Route::get('/teams/{team}', [TeamController::class, 'show'])->name('teams.show')->whereNumber('team');
+    });
+
+    Route::middleware('scope:teams:write')->group(function (): void {
+        Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
+    });
+
+    Route::delete('/teams/{team}', [TeamController::class, 'destroy'])
+        ->middleware('scope:teams:delete')
+        ->name('teams.destroy')
+        ->whereNumber('team');
 });
