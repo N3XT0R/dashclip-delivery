@@ -15,4 +15,15 @@ Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function ():
         Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
         Route::get('/videos/{video}', [VideoController::class, 'show'])->name('videos.show')->whereNumber('video');
     });
+
+    Route::middleware('scope:videos:write')->group(function (): void {
+        Route::post('/videos', [VideoController::class, 'store'])->name('videos.store');
+        Route::patch('/videos/{video}', [VideoController::class, 'update'])
+            ->name('videos.update')
+            ->whereNumber('video');
+    });
+    Route::delete('/videos/{video}', [VideoController::class, 'destroy'])
+        ->middleware('scope:videos:delete')
+        ->name('videos.destroy')
+        ->whereNumber('video');
 });

@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Http\Api\V1;
+
+use App\Events\Video\VideoQueuedForIngest;
+use App\Models\User;
+use App\Models\Video;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Passport\Passport;
+use Tests\DatabaseTestCase;
+
+final class VideoWriteEndpointsTest extends DatabaseTestCase
+{
+    private function actingUser(array $scopes): User
+    {
+        $user = User::factory()->withOwnTeam()->standard()->create();
+        Passport::actingAs($user, $scopes);
+
+        return $user;
+    }
+
+    public function testStoreUploadsFileCreatesClipAndDispatchesIngestEvent(): void
+    {
+        Storage::fake('videos');
+        Event::fake([VideoQueuedForIngest::class]);
+        $user = $this->actingUser(['videos:write']);
+
+        $response = $this->post('/api/v1/videos', [
+            'file' => UploadedFile::fake()->create('dashcam.mp4', 2048, 'video/mp4'),
+            'clip' => ['start_sec' => 5, 'end_sec' => 30],
+        ], ['Accept' => 'application/json']);
+
+        $response->assertCreated()->assertHeader('Location');
+        $video = Video::query()->findOrFail($response->json('data.id'));
+        Storage::disk('videos')->assertExists($video->path);
+        $this->assertSame('pending', $response->json('data.processing_status'));
+        $this->assertSame($user->getKey(), $video->clips()->firstOrFail()->user_id);
+        $this->assertSame(5, $video->clips()->firstOrFail()->start_sec);
+        Event::assertDispatched(VideoQueuedForIngest::class);
+    }
+
+    public function testStoreValidatesFileAndClipTimes(): void
+    {
+        Storage::fake('videos');
+        $this->actingUser(['videos:write']);
+
+        $this->postJson('/api/v1/videos', ['clip' => ['start_sec' => 10, 'end_sec' => 5]])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['file', 'clip.end_sec']);
+    }
+
+    public function testUpdateRenamesOwnVideo(): void
+    {
+        $user = $this->actingUser(['videos:write']);
+        $video = Video::factory()->withClips(1, $user)->create(['original_name' => 'old.mp4']);
+
+        $this->patchJson('/api/v1/videos/' . $video->getKey(), ['original_name' => 'new.mp4'])
+            ->assertOk()->assertJsonPath('data.original_name', 'new.mp4');
+    }
+
+    public function testUpdateForeignVideoReturns404(): void
+    {
+        $this->actingUser(['videos:write']);
+        $foreign = Video::factory()->create();
+
+        $this->patchJson('/api/v1/videos/' . $foreign->getKey(), ['original_name' => 'x.mp4'])
+            ->assertNotFound();
+    }
+
+    public function testDestroyDeletesOwnVideo(): void
+    {
+        Storage::fake('videos');
+        $user = $this->actingUser(['videos:delete']);
+        $video = Video::factory()->withClips(1, $user)->create();
+
+        $this->deleteJson('/api/v1/videos/' . $video->getKey())->assertNoContent();
+    }
+
+    public function testWriteWithReadOnlyScopeReturns403(): void
+    {
+        $user = $this->actingUser(['videos:read']);
+        $video = Video::factory()->withClips(1, $user)->create();
+
+        $this->patchJson('/api/v1/videos/' . $video->getKey(), ['original_name' => 'x.mp4'])
+            ->assertForbidden();
+    }
+}
