@@ -43,6 +43,18 @@ final class VideoWriteEndpointsTest extends DatabaseTestCase
         Event::assertDispatched(VideoQueuedForIngest::class);
     }
 
+    public function testStoreRejectsFileExceedingConfiguredSizeLimit(): void
+    {
+        Storage::fake('videos');
+        config()->set('livewire.temporary_file_upload.rules', ['max:100']);
+        $this->actingUser(['videos:write']);
+
+        $this->postJson('/api/v1/videos', [
+            'file' => UploadedFile::fake()->create('big.mp4', 200, 'video/mp4'),
+            'clip' => ['start_sec' => 5, 'end_sec' => 30],
+        ])->assertUnprocessable()->assertJsonValidationErrors(['file']);
+    }
+
     public function testStoreValidatesFileAndClipTimes(): void
     {
         Storage::fake('videos');

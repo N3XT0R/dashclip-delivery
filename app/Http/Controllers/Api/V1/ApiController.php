@@ -18,12 +18,12 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 abstract class ApiController extends Controller
 {
+    /**
+     * @return User
+     */
     protected function apiUser(Request $request): User
     {
-        /** @var User $user */
-        $user = $request->user('api');
-
-        return $user;
+        return $request->user('api');
     }
 
     /**
