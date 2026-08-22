@@ -89,16 +89,7 @@ class VideoController extends ApiController
                             items: new OA\Items(ref: self::SCHEMA_VIDEO),
                         ),
                         new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
-                        new OA\Property(
-                            property: 'links',
-                            properties: [
-                                new OA\Property(property: 'first', type: 'string', nullable: true),
-                                new OA\Property(property: 'last', type: 'string', nullable: true),
-                                new OA\Property(property: 'prev', type: 'string', nullable: true),
-                                new OA\Property(property: 'next', type: 'string', nullable: true),
-                            ],
-                            type: 'object',
-                        ),
+                        new OA\Property(property: 'links', ref: '#/components/schemas/PaginationLinks'),
                     ],
                     type: 'object',
                 ),

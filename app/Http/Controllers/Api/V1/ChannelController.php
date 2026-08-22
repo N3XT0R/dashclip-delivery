@@ -40,13 +40,7 @@ class ChannelController extends ApiController
                 description: 'Exact match',
                 schema: new OA\Schema(type: 'boolean'),
             ),
-            new OA\Parameter(
-                name: 'sort',
-                in: 'query',
-                description: 'Comma-separated sort fields; prefix with "-" for descending. '
-                    . 'Allowed: name, created_at. Default: -created_at',
-                schema: new OA\Schema(type: 'string'),
-            ),
+            new OA\Parameter(ref: '#/components/parameters/SortNameCreatedAt'),
             new OA\Parameter(ref: '#/components/parameters/PageNumber'),
             new OA\Parameter(ref: '#/components/parameters/PageSize'),
         ],
@@ -62,16 +56,7 @@ class ChannelController extends ApiController
                             items: new OA\Items(ref: self::SCHEMA_CHANNEL),
                         ),
                         new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
-                        new OA\Property(
-                            property: 'links',
-                            properties: [
-                                new OA\Property(property: 'first', type: 'string', nullable: true),
-                                new OA\Property(property: 'last', type: 'string', nullable: true),
-                                new OA\Property(property: 'prev', type: 'string', nullable: true),
-                                new OA\Property(property: 'next', type: 'string', nullable: true),
-                            ],
-                            type: 'object',
-                        ),
+                        new OA\Property(property: 'links', ref: '#/components/schemas/PaginationLinks'),
                     ],
                     type: 'object',
                 ),

@@ -68,7 +68,10 @@ final class OfferEndpointsTest extends DatabaseTestCase
             'id' => $response->json('data.id'),
             'expires_at' => null,
         ]);
-        $this->assertDatabaseHas('batches', ['type' => 'api']);
+        // Necessary test setup: batch_id is server-generated and not exposed in the response
+        // payload, so it must be fetched to link the assignment to its actual batch below.
+        $batchId = Assignment::query()->findOrFail($response->json('data.id'))->batch_id;
+        $this->assertDatabaseHas('batches', ['id' => $batchId, 'type' => 'api']);
     }
 
     public function testStoreRejectsInvisibleVideoOrChannel(): void
