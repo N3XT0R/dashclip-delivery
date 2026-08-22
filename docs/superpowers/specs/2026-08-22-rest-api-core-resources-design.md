@@ -62,8 +62,12 @@ das `Assignment`-Model, `{offer}` bindet auf `Assignment`.
 1. **Token-Scope** (darf dieses Token das überhaupt?): Passport-`scope:`-Middleware pro Route —
    `videos:read` auf GET, `videos:write` auf POST/PATCH, `videos:delete` auf DELETE; analog
    `channels:read|write`, `offers:read|write`, `teams:read|write|delete`. Die Taxonomie wird per
-   Seeder in `PassportScopeResource`/`PassportScopeAction` angelegt (nur Aktionen, zu denen es
-   Routen gibt) und erscheint damit automatisch in der Self-Service-Client-UI aus Sub-Projekt 1.
+   Seeder angelegt: 4 `PassportScopeResource`-Einträge plus 3 **globale**
+   `PassportScopeAction`-Einträge (`read`/`write`/`delete` mit `resource_id = null` —
+   `passport_scope_actions.name` ist global unique, das Paket kombiniert globale Actions mit
+   jeder Resource). Das ergibt 12 Scopes; `channels:delete`/`offers:delete` haben keine Routen
+   und bleiben wirkungslos (kein Endpoint prüft sie). Alle Scopes erscheinen automatisch in der
+   Self-Service-Client-UI aus Sub-Projekt 1.
 2. **Sichtbarkeit** (welche Datensätze sieht der User?): vorhandene Model-Scopes —
    `Video::hasUsersClips($user)`, `Channel::userHasAccess($user)`, `Team::isOwnTeam($user)`;
    Offers über die Kombination aus eigenen Channels und eigenen Videos.
@@ -106,8 +110,8 @@ keine internen Pfade (`path`, `disk`), kein `hash`. Fehler einheitlich
   `team_id` = Default-Team via `TeamRepository`), Clip via `ClipRepository`, dann
   `VideoQueuedForIngest`-Event → bestehende Ingest-Pipeline (Hash, Preview, Duplikat-Check).
   Antwort `201` inkl. `processing_status` (Client pollt Fortschritt via `GET /videos/{id}`).
-  `PATCH` = nur Metadaten (`original_name`, Clip-Zeiten). `DELETE` via
-  `VideoService::delete()` → `204`.
+  `PATCH` = nur Metadaten (`original_name`; Clip-Zeiten bewusst nicht — bei mehreren Clips wäre
+  das Ziel mehrdeutig). `DELETE` via `VideoService::delete()` → `204`.
 - **Channels:** `PATCH` beschränkt auf Betreiber-Felder (z.B. `is_video_reception_paused`);
   `weight`, `weekly_quota`, `approved_at` sind Admin-Felder und per API nicht schreibbar.
 - **Offers:** `POST /offers` legt ein Assignment an (Video und Channel müssen dem User sichtbar
