@@ -20,6 +20,9 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class OfferController extends ApiController
 {
+    private const string RESPONSE_MISSING_SCOPE_OR_PERMISSION = 'Missing scope or permission';
+    private const string SCHEMA_OFFER = '#/components/schemas/Offer';
+
     public function __construct(
         private readonly VideoRepository $videoRepository,
         private readonly ChannelRepository $channelRepository,
@@ -77,7 +80,7 @@ class OfferController extends ApiController
                         new OA\Property(
                             property: 'data',
                             type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/Offer'),
+                            items: new OA\Items(ref: self::SCHEMA_OFFER),
                         ),
                         new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
                         new OA\Property(
@@ -95,7 +98,7 @@ class OfferController extends ApiController
                 ),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -131,10 +134,10 @@ class OfferController extends ApiController
             new OA\Response(
                 response: 200,
                 description: 'The offer',
-                content: new OA\JsonContent(ref: '#/components/schemas/Offer'),
+                content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
             new OA\Response(response: 404, description: 'Offer not found or not visible to the user'),
         ],
     )]
@@ -170,10 +173,10 @@ class OfferController extends ApiController
                         schema: new OA\Schema(type: 'string'),
                     ),
                 ],
-                content: new OA\JsonContent(ref: '#/components/schemas/Offer'),
+                content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
             new OA\Response(
                 response: 422,
                 description: 'Validation failed, or video/channel not accessible',
@@ -222,10 +225,10 @@ class OfferController extends ApiController
             new OA\Response(
                 response: 200,
                 description: 'The updated offer',
-                content: new OA\JsonContent(ref: '#/components/schemas/Offer'),
+                content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
             new OA\Response(response: 404, description: 'Offer not found or not visible to the user'),
             new OA\Response(
                 response: 422,

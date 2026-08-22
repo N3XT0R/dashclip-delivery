@@ -17,6 +17,9 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 final class TeamController extends ApiController
 {
+    private const string RESPONSE_MISSING_SCOPE = 'Missing scope';
+    private const string SCHEMA_TEAM = '#/components/schemas/Team';
+
     public function __construct(private readonly TeamRepository $teamRepository)
     {
     }
@@ -65,7 +68,7 @@ final class TeamController extends ApiController
                         new OA\Property(
                             property: 'data',
                             type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/Team'),
+                            items: new OA\Items(ref: self::SCHEMA_TEAM),
                         ),
                         new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
                         new OA\Property(
@@ -83,7 +86,7 @@ final class TeamController extends ApiController
                 ),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -116,10 +119,10 @@ final class TeamController extends ApiController
             new OA\Response(
                 response: 200,
                 description: 'The team',
-                content: new OA\JsonContent(ref: '#/components/schemas/Team'),
+                content: new OA\JsonContent(ref: self::SCHEMA_TEAM),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
             new OA\Response(response: 404, description: 'Team not found or not visible to the user'),
         ],
     )]
@@ -154,10 +157,10 @@ final class TeamController extends ApiController
                         schema: new OA\Schema(type: 'string'),
                     ),
                 ],
-                content: new OA\JsonContent(ref: '#/components/schemas/Team'),
+                content: new OA\JsonContent(ref: self::SCHEMA_TEAM),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
             new OA\Response(
                 response: 422,
                 description: 'Validation failed',
@@ -194,7 +197,7 @@ final class TeamController extends ApiController
         responses: [
             new OA\Response(response: 204, description: 'Team deleted'),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
             new OA\Response(response: 404, description: 'Team not found, not visible, or not owned by the user'),
         ],
     )]

@@ -20,6 +20,11 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class VideoController extends ApiController
 {
+    private const string RESPONSE_MISSING_SCOPE_OR_PERMISSION = 'Missing scope or permission';
+    private const string RESPONSE_VIDEO_NOT_FOUND = 'Video not found or not visible to the user';
+    private const string SCHEMA_VIDEO = '#/components/schemas/Video';
+    private const string PATH_VIDEO_SHOW = '/api/v1/videos/{video}';
+
     public function __construct(private readonly VideoRepository $videoRepository)
     {
     }
@@ -89,7 +94,7 @@ class VideoController extends ApiController
                         new OA\Property(
                             property: 'data',
                             type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/Video'),
+                            items: new OA\Items(ref: self::SCHEMA_VIDEO),
                         ),
                         new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
                         new OA\Property(
@@ -107,7 +112,7 @@ class VideoController extends ApiController
                 ),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -140,7 +145,7 @@ class VideoController extends ApiController
     }
 
     #[OA\Get(
-        path: '/api/v1/videos/{video}',
+        path: self::PATH_VIDEO_SHOW,
         summary: 'Show a single video',
         security: [['passport' => ['videos:read']]],
         tags: ['Videos'],
@@ -156,11 +161,11 @@ class VideoController extends ApiController
             new OA\Response(
                 response: 200,
                 description: 'The video',
-                content: new OA\JsonContent(ref: '#/components/schemas/Video'),
+                content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
-            new OA\Response(response: 404, description: 'Video not found or not visible to the user'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
         ],
     )]
     public function show(Request $request, int $video): VideoResource
@@ -210,10 +215,10 @@ class VideoController extends ApiController
                         schema: new OA\Schema(type: 'string'),
                     ),
                 ],
-                content: new OA\JsonContent(ref: '#/components/schemas/Video'),
+                content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
             new OA\Response(
                 response: 422,
                 description: 'Validation failed',
@@ -237,7 +242,7 @@ class VideoController extends ApiController
     }
 
     #[OA\Patch(
-        path: '/api/v1/videos/{video}',
+        path: self::PATH_VIDEO_SHOW,
         summary: 'Rename a video',
         security: [['passport' => ['videos:write']]],
         tags: ['Videos'],
@@ -263,11 +268,11 @@ class VideoController extends ApiController
             new OA\Response(
                 response: 200,
                 description: 'The updated video',
-                content: new OA\JsonContent(ref: '#/components/schemas/Video'),
+                content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
-            new OA\Response(response: 404, description: 'Video not found or not visible to the user'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
             new OA\Response(
                 response: 422,
                 description: 'Validation failed',
@@ -284,7 +289,7 @@ class VideoController extends ApiController
     }
 
     #[OA\Delete(
-        path: '/api/v1/videos/{video}',
+        path: self::PATH_VIDEO_SHOW,
         summary: 'Delete a video',
         security: [['passport' => ['videos:delete']]],
         tags: ['Videos'],
@@ -299,8 +304,8 @@ class VideoController extends ApiController
         responses: [
             new OA\Response(response: 204, description: 'Video deleted'),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
-            new OA\Response(response: 404, description: 'Video not found or not visible to the user'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
         ],
     )]
     public function destroy(Request $request, int $video): Response

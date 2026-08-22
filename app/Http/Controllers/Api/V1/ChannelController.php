@@ -16,6 +16,9 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class ChannelController extends ApiController
 {
+    private const string RESPONSE_MISSING_SCOPE_OR_PERMISSION = 'Missing scope or permission';
+    private const string SCHEMA_CHANNEL = '#/components/schemas/Channel';
+
     public function __construct(private readonly ChannelRepository $channelRepository)
     {
     }
@@ -64,7 +67,7 @@ class ChannelController extends ApiController
                         new OA\Property(
                             property: 'data',
                             type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/Channel'),
+                            items: new OA\Items(ref: self::SCHEMA_CHANNEL),
                         ),
                         new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
                         new OA\Property(
@@ -82,7 +85,7 @@ class ChannelController extends ApiController
                 ),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -115,10 +118,10 @@ class ChannelController extends ApiController
             new OA\Response(
                 response: 200,
                 description: 'The channel',
-                content: new OA\JsonContent(ref: '#/components/schemas/Channel'),
+                content: new OA\JsonContent(ref: self::SCHEMA_CHANNEL),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
             new OA\Response(response: 404, description: 'Channel not found or not visible to the user'),
         ],
     )]
@@ -154,10 +157,10 @@ class ChannelController extends ApiController
             new OA\Response(
                 response: 200,
                 description: 'The updated channel',
-                content: new OA\JsonContent(ref: '#/components/schemas/Channel'),
+                content: new OA\JsonContent(ref: self::SCHEMA_CHANNEL),
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: 'Missing scope or permission'),
+            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
             new OA\Response(response: 404, description: 'Channel not found or not visible to the user'),
             new OA\Response(
                 response: 422,
