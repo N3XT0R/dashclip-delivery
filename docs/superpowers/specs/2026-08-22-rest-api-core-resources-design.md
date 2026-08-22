@@ -67,8 +67,15 @@ das `Assignment`-Model, `{offer}` bindet auf `Assignment`.
 2. **Sichtbarkeit** (welche Datensätze sieht der User?): vorhandene Model-Scopes —
    `Video::hasUsersClips($user)`, `Channel::userHasAccess($user)`, `Team::isOwnTeam($user)`;
    Offers über die Kombination aus eigenen Channels und eigenen Videos.
-3. **Aktions-Autorisierung** (darf der User das mit diesem Datensatz tun?): vorhandene Policies
-   (`VideoPolicy`, `ChannelPolicy`, `AssignmentPolicy`, `TeamPolicy`) via `authorize()`.
+3. **Aktions-Autorisierung** (darf der User das mit diesem Datensatz tun?): die vorhandenen
+   Policies greifen unter dem `api`-Guard nicht — sie prüfen `$user->can(...)`, und Spatie löst
+   Permissions über den Default-Guard der Anfrage auf (`api`, dafür existieren keine
+   Permissions; empirisch verifiziert). Stattdessen prüft die API das Standard-Panel-Permission-
+   Set explizit: Helper im `ApiController` auf Basis von
+   `hasPermissionTo('<Permission>', GuardEnum::STANDARD->value)` plus explizite
+   Ownership-Checks, wo Policies Ownership-Logik enthalten (z.B. `teams.owner_id` für
+   `DELETE /teams/{team}`). Die API nutzt damit exakt dieselben Berechtigungen wie das
+   Standard-Panel, ohne Policies oder Seeder anzufassen.
 
 **404 statt 403 für fremde Datensätze** (kein Existenz-Leak): Route-Model-Binding läuft durch die
 Sichtbarkeits-Scopes; was nicht sichtbar ist, existiert für die API nicht.
