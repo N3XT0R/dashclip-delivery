@@ -8,7 +8,7 @@ use App\Application\Video\UploadVideoUseCase;
 use App\Http\Requests\Api\V1\StoreVideoRequest;
 use App\Http\Requests\Api\V1\UpdateVideoRequest;
 use App\Http\Resources\Api\V1\VideoResource;
-use App\Models\Video;
+use App\Repository\VideoRepository;
 use App\Services\VideoService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -19,9 +19,13 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class VideoController extends ApiController
 {
+    public function __construct(private readonly VideoRepository $videoRepository)
+    {
+    }
+
     private function visibleVideos(Request $request): Builder
     {
-        return Video::query()->hasUsersClips($this->apiUser($request));
+        return $this->videoRepository->visibleForUser($this->apiUser($request));
     }
 
     public function index(Request $request): JsonResponse

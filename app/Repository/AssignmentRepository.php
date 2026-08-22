@@ -20,6 +20,24 @@ use Illuminate\Support\Collection;
 class AssignmentRepository
 {
     /**
+     * Query the offers visible to the given user: assignments on a channel
+     * they have access to, or assignments for videos backed by their own
+     * clips.
+     * @param User $user
+     * @return Builder
+     */
+    public function visibleForUser(User $user): Builder
+    {
+        return Assignment::query()->where(function (Builder $query) use ($user): void {
+            $query->whereHas('channel', static function (Builder $channel) use ($user): void {
+                $channel->userHasAccess($user);
+            })->orWhere(static function (Builder $inner) use ($user): void {
+                $inner->hasUsersClips($user);
+            });
+        });
+    }
+
+    /**
      * Create a new assignment linking a video to a channel within a batch.
      * @param Video $video
      * @param Channel $channel

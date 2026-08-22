@@ -8,7 +8,7 @@ use App\Application\Offer\CreateOfferUseCase;
 use App\Http\Requests\Api\V1\StoreOfferCommentRequest;
 use App\Http\Requests\Api\V1\StoreOfferRequest;
 use App\Http\Resources\Api\V1\OfferResource;
-use App\Models\Assignment;
+use App\Repository\AssignmentRepository;
 use App\Repository\ChannelRepository;
 use App\Repository\VideoRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,20 +22,13 @@ class OfferController extends ApiController
     public function __construct(
         private readonly VideoRepository $videoRepository,
         private readonly ChannelRepository $channelRepository,
+        private readonly AssignmentRepository $assignmentRepository,
     ) {
     }
 
     private function visibleOffers(Request $request): Builder
     {
-        $user = $this->apiUser($request);
-
-        return Assignment::query()->where(function (Builder $query) use ($user): void {
-            $query->whereHas('channel', static function (Builder $channel) use ($user): void {
-                $channel->userHasAccess($user);
-            })->orWhere(static function (Builder $inner) use ($user): void {
-                $inner->hasUsersClips($user);
-            });
-        });
+        return $this->assignmentRepository->visibleForUser($this->apiUser($request));
     }
 
     public function index(Request $request): JsonResponse

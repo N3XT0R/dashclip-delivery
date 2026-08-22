@@ -6,27 +6,23 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\Api\V1\StoreTeamRequest;
 use App\Http\Resources\Api\V1\TeamResource;
-use App\Models\Team;
+use App\Repository\TeamRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Str;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 final class TeamController extends ApiController
 {
+    public function __construct(private readonly TeamRepository $teamRepository)
+    {
+    }
+
     private function visibleTeams(Request $request): Builder
     {
-        $user = $this->apiUser($request);
-
-        return Team::query()->where(function (Builder $query) use ($user): void {
-            $query->where('owner_id', $user->getKey())
-                ->orWhereHas('users', static function (Builder $member) use ($user): void {
-                    $member->whereKey($user->getKey());
-                });
-        });
+        return $this->teamRepository->visibleForUser($this->apiUser($request));
     }
 
     public function index(Request $request): JsonResponse
@@ -49,13 +45,10 @@ final class TeamController extends ApiController
 
     public function store(StoreTeamRequest $request): JsonResponse
     {
-        $user = $this->apiUser($request);
-        $team = Team::query()->create([
-            'name' => $request->validated('name'),
-            'slug' => Str::slug($request->validated('name')) . '-' . Str::lower(Str::random(6)),
-            'owner_id' => $user->getKey(),
-        ]);
-        $team->users()->attach($user->getKey());
+        $team = $this->teamRepository->createTeamForOwner(
+            $this->apiUser($request),
+            $request->validated('name'),
+        );
 
         return (new TeamResource($team))
             ->response($request)

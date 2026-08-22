@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\Api\V1\UpdateChannelRequest;
 use App\Http\Resources\Api\V1\ChannelResource;
-use App\Models\Channel;
+use App\Repository\ChannelRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,9 +15,13 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class ChannelController extends ApiController
 {
+    public function __construct(private readonly ChannelRepository $channelRepository)
+    {
+    }
+
     private function visibleChannels(Request $request): Builder
     {
-        return Channel::query()->userHasAccess($this->apiUser($request));
+        return $this->channelRepository->visibleForUser($this->apiUser($request));
     }
 
     public function index(Request $request): JsonResponse

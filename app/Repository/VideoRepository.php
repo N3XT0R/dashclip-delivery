@@ -128,11 +128,11 @@ class VideoRepository
     public function getVideosByIdsFromPool(Collection $pool, iterable $ids): Collection
     {
         $idLookup = collect($ids)
-            ->map(fn($id) => (int)$id)  // cast
+            ->map(fn ($id) => (int)$id)  // cast
             ->flip();                   // lookup map: id => index
 
         return $pool
-            ->filter(fn(Video $video) => $idLookup->has($video->getKey()))
+            ->filter(fn (Video $video) => $idLookup->has($video->getKey()))
             ->values();
     }
 
@@ -146,7 +146,7 @@ class VideoRepository
     public function partitionByUploader(Collection $videos): array
     {
         return $videos
-            ->groupBy(fn(Video $video) => $video->clips()->first()?->user_id ?? 0) // 0 = "unknown uploader"
+            ->groupBy(fn (Video $video) => $video->clips()->first()?->user_id ?? 0) // 0 = "unknown uploader"
             ->all();
     }
 
