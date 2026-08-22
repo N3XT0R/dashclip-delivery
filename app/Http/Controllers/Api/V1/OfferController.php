@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Application\Api\CreateOfferUseCase;
+use App\Application\Offer\CreateOfferUseCase;
 use App\Http\Requests\Api\V1\StoreOfferCommentRequest;
 use App\Http\Requests\Api\V1\StoreOfferRequest;
 use App\Http\Resources\Api\V1\OfferResource;
 use App\Models\Assignment;
+use App\Repository\ChannelRepository;
+use App\Repository\VideoRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,6 +19,12 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class OfferController extends ApiController
 {
+    public function __construct(
+        private readonly VideoRepository $videoRepository,
+        private readonly ChannelRepository $channelRepository,
+    ) {
+    }
+
     private function visibleOffers(Request $request): Builder
     {
         $user = $this->apiUser($request);
@@ -53,10 +61,11 @@ class OfferController extends ApiController
 
     public function store(StoreOfferRequest $request, CreateOfferUseCase $createOffer): JsonResponse
     {
-        $offer = $createOffer->execute(
-            videoId: (int)$request->validated('video_id'),
-            channelId: (int)$request->validated('channel_id'),
-        );
+        $user = $this->apiUser($request);
+        $video = $this->videoRepository->visibleForUser($user)->findOrFail($request->validated('video_id'));
+        $channel = $this->channelRepository->visibleForUser($user)->findOrFail($request->validated('channel_id'));
+
+        $offer = $createOffer->handle($video, $channel);
 
         return (new OfferResource($offer))
             ->response($request)

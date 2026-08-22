@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Application\Api\UploadVideoUseCase;
+use App\Application\Video\UploadVideoUseCase;
 use App\Http\Requests\Api\V1\StoreVideoRequest;
 use App\Http\Requests\Api\V1\UpdateVideoRequest;
 use App\Http\Resources\Api\V1\VideoResource;
@@ -55,7 +55,7 @@ class VideoController extends ApiController
 
     public function store(StoreVideoRequest $request, UploadVideoUseCase $uploadVideo): JsonResponse
     {
-        $video = $uploadVideo->execute(
+        $video = $uploadVideo->handle(
             file: $request->file('file'),
             startSec: (int)$request->validated('clip.start_sec'),
             endSec: (int)$request->validated('clip.end_sec'),

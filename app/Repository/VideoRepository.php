@@ -13,6 +13,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
@@ -22,6 +23,17 @@ class VideoRepository
     public function findById(int $id): ?Video
     {
         return Video::query()->find($id);
+    }
+
+    /**
+     * Query the videos visible to the given user, i.e. videos backed by at
+     * least one of their own clips.
+     * @param User $user
+     * @return Builder
+     */
+    public function visibleForUser(User $user): Builder
+    {
+        return Video::query()->hasUsersClips($user);
     }
 
     /**
@@ -78,6 +90,16 @@ class VideoRepository
     public function firstOrCreate(array $data): Video
     {
         return Video::query()->firstOrCreate($data);
+    }
+
+    /**
+     * Create a new video record with the given attributes.
+     * @param array $attributes
+     * @return Video
+     */
+    public function create(array $attributes): Video
+    {
+        return Video::query()->create($attributes);
     }
 
 
