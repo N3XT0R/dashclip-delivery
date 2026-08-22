@@ -14,39 +14,42 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function (): void {
-    Route::middleware('scope:channels:read')->group(function (): void {
+    Route::middleware(['scope:channels:read', 'standard.permission:ManageChannels:Team'])->group(function (): void {
         Route::get('/channels', [ChannelController::class, 'index'])->name('channels.index');
         Route::get('/channels/{channel}', [ChannelController::class, 'show'])->name('channels.show')->whereNumber('channel');
     });
 
-    Route::middleware('scope:channels:write')->group(function (): void {
+    Route::middleware(['scope:channels:write', 'standard.permission:ManageChannels:Team'])->group(function (): void {
         Route::patch('/channels/{channel}', [ChannelController::class, 'update'])
             ->name('channels.update')
             ->whereNumber('channel');
     });
 
-    Route::middleware('scope:videos:read')->group(function (): void {
+    Route::middleware(['scope:videos:read', 'standard.permission:ViewAny:Video'])->group(function (): void {
         Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
         Route::get('/videos/{video}', [VideoController::class, 'show'])->name('videos.show')->whereNumber('video');
     });
 
-    Route::middleware('scope:videos:write')->group(function (): void {
-        Route::post('/videos', [VideoController::class, 'store'])->name('videos.store');
-        Route::patch('/videos/{video}', [VideoController::class, 'update'])
-            ->name('videos.update')
-            ->whereNumber('video');
-    });
+    Route::post('/videos', [VideoController::class, 'store'])
+        ->middleware(['scope:videos:write', 'standard.permission:Create:Video'])
+        ->name('videos.store');
+
+    Route::patch('/videos/{video}', [VideoController::class, 'update'])
+        ->middleware(['scope:videos:write', 'standard.permission:Update:Video'])
+        ->name('videos.update')
+        ->whereNumber('video');
+
     Route::delete('/videos/{video}', [VideoController::class, 'destroy'])
-        ->middleware('scope:videos:delete')
+        ->middleware(['scope:videos:delete', 'standard.permission:Delete:Video'])
         ->name('videos.destroy')
         ->whereNumber('video');
 
-    Route::middleware('scope:offers:read')->group(function (): void {
+    Route::middleware(['scope:offers:read', 'standard.permission:View:MyOffers'])->group(function (): void {
         Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
         Route::get('/offers/{offer}', [OfferController::class, 'show'])->name('offers.show')->whereNumber('offer');
     });
 
-    Route::middleware('scope:offers:write')->group(function (): void {
+    Route::middleware(['scope:offers:write', 'standard.permission:View:MyOffers'])->group(function (): void {
         Route::post('/offers', [OfferController::class, 'store'])->name('offers.store');
         Route::post('/offers/{offer}/comment', [OfferController::class, 'comment'])
             ->name('offers.comment')

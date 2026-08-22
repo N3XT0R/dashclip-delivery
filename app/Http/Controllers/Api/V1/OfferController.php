@@ -32,8 +32,6 @@ class OfferController extends ApiController
 
     public function index(Request $request): JsonResponse
     {
-        $this->authorizeApi($request, 'View:MyOffers');
-
         $offers = $this->paginate(
             QueryBuilder::for($this->visibleOffers($request))
                 ->allowedFilters(
@@ -50,15 +48,11 @@ class OfferController extends ApiController
 
     public function show(Request $request, int $offer): OfferResource
     {
-        $this->authorizeApi($request, 'View:MyOffers');
-
         return new OfferResource($this->visibleOffers($request)->findOrFail($offer));
     }
 
     public function store(StoreOfferRequest $request, CreateOfferUseCase $createOffer): JsonResponse
     {
-        $this->authorizeApi($request, 'View:MyOffers');
-
         $offer = $createOffer->execute(
             videoId: (int)$request->validated('video_id'),
             channelId: (int)$request->validated('channel_id'),
@@ -72,7 +66,6 @@ class OfferController extends ApiController
 
     public function comment(StoreOfferCommentRequest $request, int $offer): OfferResource
     {
-        $this->authorizeApi($request, 'View:MyOffers');
         $model = $this->visibleOffers($request)->findOrFail($offer);
         $model->update(['note' => $request->validated('note')]);
 

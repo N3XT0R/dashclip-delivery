@@ -22,8 +22,6 @@ class ChannelController extends ApiController
 
     public function index(Request $request): JsonResponse
     {
-        $this->authorizeApi($request, 'ManageChannels:Team');
-
         $channels = $this->paginate(
             QueryBuilder::for($this->visibleChannels($request))
                 ->allowedFilters(AllowedFilter::exact('is_video_reception_paused'))
@@ -37,14 +35,11 @@ class ChannelController extends ApiController
 
     public function show(Request $request, int $channel): ChannelResource
     {
-        $this->authorizeApi($request, 'ManageChannels:Team');
-
         return new ChannelResource($this->visibleChannels($request)->findOrFail($channel));
     }
 
     public function update(UpdateChannelRequest $request, int $channel): ChannelResource
     {
-        $this->authorizeApi($request, 'ManageChannels:Team');
         $model = $this->visibleChannels($request)->findOrFail($channel);
         $model->update($request->validated());
 

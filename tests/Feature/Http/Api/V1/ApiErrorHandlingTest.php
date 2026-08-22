@@ -32,4 +32,24 @@ final class ApiErrorHandlingTest extends DatabaseTestCase
         $this->assertSame(25, config('api.pagination.default_size'));
         $this->assertSame(100, config('api.pagination.max_size'));
     }
+
+    public function testMissingStandardPermissionReturnsJson403(): void
+    {
+        Route::middleware(['auth:api', 'standard.permission:View:MyOffers'])
+            ->get('/api/v1/_permission-probe', static fn () => response()->json(['ok' => true]));
+        $user = User::factory()->standard()->create();
+        Passport::actingAs($user, ['offers:read']);
+
+        $this->getJson('/api/v1/_permission-probe')->assertForbidden();
+    }
+
+    public function testHavingStandardPermissionAllowsRequest(): void
+    {
+        Route::middleware(['auth:api', 'standard.permission:ViewAny:Video'])
+            ->get('/api/v1/_permission-probe', static fn () => response()->json(['ok' => true]));
+        $user = User::factory()->standard()->create();
+        Passport::actingAs($user, ['videos:read']);
+
+        $this->getJson('/api/v1/_permission-probe')->assertOk()->assertJson(['ok' => true]);
+    }
 }

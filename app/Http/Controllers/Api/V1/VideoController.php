@@ -26,8 +26,6 @@ class VideoController extends ApiController
 
     public function index(Request $request): JsonResponse
     {
-        $this->authorizeApi($request, 'ViewAny:Video');
-
         $videos = $this->paginate(
             QueryBuilder::for($this->visibleVideos($request))
                 ->allowedFilters(
@@ -52,15 +50,11 @@ class VideoController extends ApiController
 
     public function show(Request $request, int $video): VideoResource
     {
-        $this->authorizeApi($request, 'ViewAny:Video');
-
         return new VideoResource($this->visibleVideos($request)->findOrFail($video));
     }
 
     public function store(StoreVideoRequest $request, UploadVideoUseCase $uploadVideo): JsonResponse
     {
-        $this->authorizeApi($request, 'Create:Video');
-
         $video = $uploadVideo->execute(
             file: $request->file('file'),
             startSec: (int)$request->validated('clip.start_sec'),
@@ -76,7 +70,6 @@ class VideoController extends ApiController
 
     public function update(UpdateVideoRequest $request, int $video): VideoResource
     {
-        $this->authorizeApi($request, 'Update:Video');
         $model = $this->visibleVideos($request)->findOrFail($video);
         $model->update($request->validated());
 
@@ -85,7 +78,6 @@ class VideoController extends ApiController
 
     public function destroy(Request $request, int $video): Response
     {
-        $this->authorizeApi($request, 'Delete:Video');
         $model = $this->visibleVideos($request)->findOrFail($video);
         app(VideoService::class)->delete($model);
 

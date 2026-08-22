@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Enum\Guard\GuardEnum;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,16 +22,6 @@ abstract class ApiController extends Controller
     protected function apiUser(Request $request): User
     {
         return $request->user('api');
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    protected function authorizeApi(Request $request, string $permission): void
-    {
-        if (!$this->apiUser($request)->checkPermissionTo($permission, GuardEnum::STANDARD->value)) {
-            throw new AuthorizationException();
-        }
     }
 
     protected function pageSize(Request $request): int
