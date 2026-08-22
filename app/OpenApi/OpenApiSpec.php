@@ -7,7 +7,7 @@ namespace App\OpenApi;
 use OpenApi\Attributes as OA;
 
 #[OA\Info(version: '1.0.0', title: 'Dashclip Delivery API')]
-#[OA\Server(url: '/api/v1', description: 'REST API v1')]
+#[OA\Server(url: '/', description: 'Application root')]
 #[OA\SecurityScheme(
     securityScheme: 'passport',
     type: 'http',

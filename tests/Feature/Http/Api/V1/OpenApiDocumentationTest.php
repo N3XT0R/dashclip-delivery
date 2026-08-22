@@ -20,6 +20,7 @@ final class OpenApiDocumentationTest extends DatabaseTestCase
             JSON_THROW_ON_ERROR,
         );
         $this->assertSame('3.0.0', $spec['openapi']);
+        $this->assertSame('/', $spec['servers'][0]['url']);
         foreach (['/api/v1/videos', '/api/v1/channels', '/api/v1/offers', '/api/v1/teams'] as $path) {
             $this->assertArrayHasKey($path, $spec['paths'], "missing path {$path}");
         }
