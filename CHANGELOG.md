@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **REST API core resources (v1)**
+    - new authenticated REST endpoints under `/api/v1` for videos (list, detail, multipart
+      upload through the existing ingest pipeline, rename, delete), channels (list, detail,
+      pause/resume video reception), offers (list, detail, create, comment) and teams
+      (list, detail, create, delete), all scoped to the data the authenticated user already
+      sees in the Standard panel.
+    - filtering (`filter[...]`), sorting (`sort=`) and pagination (`page[number]`,
+      `page[size]`, `meta.pagination` response block) on all list endpoints.
+    - OAuth2 scope taxonomy (`videos:*`, `channels:*`, `offers:*`, `teams:*`) seeded for the
+      self-service client UI; per-route scope enforcement via Passport middleware.
+    - interactive OpenAPI 3.0 documentation (l5-swagger) available at `/api/documentation`.
 - **REST API OAuth2 foundation**
     - Passport is wired up end-to-end: bearer-token authentication via a new `api` guard,
       verified through a `GET /api/user` sanity-check endpoint.
