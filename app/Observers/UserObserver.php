@@ -30,10 +30,7 @@ class UserObserver extends BaseObserver
 
     private function createOwnTeamForUser(User $user): void
     {
-        // Only create a team if the user doesn't already have one
-        if (!$user->teams()->exists()) {
-            $teamRepository = app(TeamRepository::class);
-            $teamRepository->createOwnTeamForUser($user);
-        }
+        $teamRepository = app(TeamRepository::class);
+        $teamRepository->createOwnTeamForUser($user);
     }
 }
