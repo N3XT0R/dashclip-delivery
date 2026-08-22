@@ -8,10 +8,13 @@ use App\Enum\Guard\GuardEnum;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
+use Spatie\QueryBuilder\QueryBuilder;
 
 abstract class ApiController extends Controller
 {
@@ -71,5 +74,23 @@ abstract class ApiController extends Controller
     protected function noContent(): Response
     {
         return response()->noContent();
+    }
+
+    /**
+     * Paginate an API query so generated pagination links keep the
+     * page[number]/page[size] format together with active filters and sorts.
+     */
+    protected function paginate(QueryBuilder $query, Request $request): LengthAwarePaginator
+    {
+        return $query
+            ->paginate(
+                perPage: $this->pageSize($request),
+                pageName: 'page[number]',
+                page: $this->pageNumber($request),
+            )
+            ->appends(array_merge(
+                Arr::except($request->query(), ['page']),
+                ['page' => ['size' => $this->pageSize($request)]],
+            ));
     }
 }

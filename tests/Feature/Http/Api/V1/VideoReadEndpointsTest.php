@@ -48,10 +48,15 @@ final class VideoReadEndpointsTest extends DatabaseTestCase
 
         $this->getJson('/api/v1/videos?filter[original_name]=alpha')
             ->assertOk()->assertJsonCount(1, 'data');
-        $this->getJson('/api/v1/videos?sort=original_name&page[size]=1&page[number]=2')
-            ->assertOk()
-            ->assertJsonPath('data.0.original_name', 'beta.mp4')
+        $response = $this->getJson('/api/v1/videos?sort=original_name&page[size]=1&page[number]=1');
+        $response->assertOk()
+            ->assertJsonPath('data.0.original_name', 'alpha.mp4')
             ->assertJsonPath('meta.pagination.per_page', 1);
+        // Verify pagination links preserve page[size] and page[number] format
+        $nextUrl = $response->json('links.next');
+        $this->assertNotNull($nextUrl);
+        $this->assertStringContainsString('page%5Bnumber%5D=2', $nextUrl);
+        $this->assertStringContainsString('page%5Bsize%5D=1', $nextUrl);
     }
 
     public function testPageSizeIsCappedAtMax(): void
@@ -67,6 +72,13 @@ final class VideoReadEndpointsTest extends DatabaseTestCase
         $foreign = Video::factory()->create();
 
         $this->getJson('/api/v1/videos/' . $foreign->getKey())->assertNotFound();
+    }
+
+    public function testShowWithNonNumericIdReturns404(): void
+    {
+        $this->actingUser();
+
+        $this->getJson('/api/v1/videos/abc')->assertNotFound();
     }
 
     public function testMissingScopeReturns403(): void

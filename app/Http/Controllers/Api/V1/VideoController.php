@@ -23,26 +23,24 @@ class VideoController extends ApiController
     {
         $this->authorizeApi($request, 'ViewAny:Video');
 
-        $videos = QueryBuilder::for($this->visibleVideos($request))
-            ->allowedFilters(
-                AllowedFilter::partial('original_name'),
-                AllowedFilter::exact('processing_status'),
-                AllowedFilter::callback(
-                    'created_after',
-                    static fn (Builder $query, mixed $value) => $query->where('created_at', '>=', $value),
-                ),
-                AllowedFilter::callback(
-                    'created_before',
-                    static fn (Builder $query, mixed $value) => $query->where('created_at', '<=', $value),
-                ),
-            )
-            ->allowedSorts('original_name', 'created_at', 'bytes')
-            ->defaultSort('-created_at')
-            ->paginate(
-                perPage: $this->pageSize($request),
-                page: $this->pageNumber($request),
-            )
-            ->appends($request->query());
+        $videos = $this->paginate(
+            QueryBuilder::for($this->visibleVideos($request))
+                ->allowedFilters(
+                    AllowedFilter::partial('original_name'),
+                    AllowedFilter::exact('processing_status'),
+                    AllowedFilter::callback(
+                        'created_after',
+                        static fn (Builder $query, mixed $value) => $query->where('created_at', '>=', $value),
+                    ),
+                    AllowedFilter::callback(
+                        'created_before',
+                        static fn (Builder $query, mixed $value) => $query->where('created_at', '<=', $value),
+                    ),
+                )
+                ->allowedSorts('original_name', 'created_at', 'bytes')
+                ->defaultSort('-created_at'),
+            $request,
+        );
 
         return $this->paginated(VideoResource::collection($videos));
     }

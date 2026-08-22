@@ -13,6 +13,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function (): void {
     Route::middleware('scope:videos:read')->group(function (): void {
         Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
-        Route::get('/videos/{video}', [VideoController::class, 'show'])->name('videos.show');
+        Route::get('/videos/{video}', [VideoController::class, 'show'])->name('videos.show')->whereNumber('video');
     });
 });
