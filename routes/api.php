@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\ChannelController;
+use App\Http\Controllers\Api\V1\OfferController;
 use App\Http\Controllers\Api\V1\VideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,4 +39,16 @@ Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function ():
         ->middleware('scope:videos:delete')
         ->name('videos.destroy')
         ->whereNumber('video');
+
+    Route::middleware('scope:offers:read')->group(function (): void {
+        Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
+        Route::get('/offers/{offer}', [OfferController::class, 'show'])->name('offers.show')->whereNumber('offer');
+    });
+
+    Route::middleware('scope:offers:write')->group(function (): void {
+        Route::post('/offers', [OfferController::class, 'store'])->name('offers.store');
+        Route::post('/offers/{offer}/comment', [OfferController::class, 'comment'])
+            ->name('offers.comment')
+            ->whereNumber('offer');
+    });
 });
