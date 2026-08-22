@@ -47,16 +47,8 @@ class ChannelController extends ApiController
                     . 'Allowed: name, created_at. Default: -created_at',
                 schema: new OA\Schema(type: 'string'),
             ),
-            new OA\Parameter(
-                name: 'page[number]',
-                in: 'query',
-                schema: new OA\Schema(type: 'integer', minimum: 1),
-            ),
-            new OA\Parameter(
-                name: 'page[size]',
-                in: 'query',
-                schema: new OA\Schema(type: 'integer', minimum: 1),
-            ),
+            new OA\Parameter(ref: '#/components/parameters/PageNumber'),
+            new OA\Parameter(ref: '#/components/parameters/PageSize'),
         ],
         responses: [
             new OA\Response(
