@@ -20,9 +20,9 @@ class StoreVideoRequest extends FormRequest
                 'required',
                 'file',
                 'mimetypes:video/mp4,video/quicktime,video/x-matroska',
-                // NOSONAR (S5693): the ~2GB limit is intentional for video delivery; it is
-                // enforced via the shared Livewire upload rule and covered by a 422 test.
-                $this->resolveMaxFileSizeRule(),
+                // The ~2GB limit is intentional for video delivery; sourced from the shared
+                // Livewire upload rule (single source of truth) and covered by a 422 test.
+                $this->resolveMaxFileSizeRule(), // NOSONAR (S5693): reviewed, limit is intentional
             ],
             'clip' => ['required', 'array'],
             'clip.start_sec' => ['required', 'integer', 'min:0'],
