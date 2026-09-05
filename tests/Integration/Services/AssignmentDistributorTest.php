@@ -60,7 +60,7 @@ class AssignmentDistributorTest extends DatabaseTestCase
 
         $result = $this->assignmentDistributor->distribute();
 
-        $this->assertSame(['assigned' => 1, 'skipped' => 0], $result);
+        $this->assertSame(['assigned' => 1, 'skipped' => 0, 'deferred' => 0], $result);
         $this->assertDatabaseHas('assignments', ['video_id' => $video->getKey()]);
     }
 
@@ -76,7 +76,7 @@ class AssignmentDistributorTest extends DatabaseTestCase
         // Act
         $result = $distributor->distribute();
 
-        $this->assertSame(['assigned' => 0, 'skipped' => 0], $result);
+        $this->assertSame(['assigned' => 0, 'skipped' => 0, 'deferred' => 0], $result);
         $this->assertDatabaseCount('assignments', 0);
     }
 
@@ -105,7 +105,7 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->assertSame('team', $run->uploaderType);
         $this->assertSame($stubs->team->slug, $run->uploaderId);
 
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
     }
 
     public function testDistributorFallsBackToUploaderWhenUserIdIsPresent(): void
@@ -133,7 +133,7 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->assertSame('user', $run->uploaderType);
         $this->assertSame($stubs->user->getKey(), $run->uploaderId);
 
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
     }
 
     public function testDistributorUsesFallbackPoolWhenTeamAndUserAreMissing(): void
@@ -161,6 +161,6 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->assertSame('user', $run->uploaderType);
         $this->assertSame(0, $run->uploaderId);
 
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
     }
 }
