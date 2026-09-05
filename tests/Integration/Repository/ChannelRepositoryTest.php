@@ -331,4 +331,19 @@ class ChannelRepositoryTest extends DatabaseTestCase
         $this->assertTrue($result->isEmpty());
     }
 
+    public function testFindByNameInsensitiveMatchesRegardlessOfCaseAndWhitespace(): void
+    {
+        $channel = Channel::factory()->create(['name' => 'Highway West']);
+
+        $this->assertSame($channel->getKey(), $this->channelRepository->findByNameInsensitive('  highway west ')?->getKey());
+        $this->assertSame($channel->getKey(), $this->channelRepository->findByNameInsensitive('HIGHWAY WEST')?->getKey());
+    }
+
+    public function testFindByNameInsensitiveReturnsNullWhenNoMatch(): void
+    {
+        Channel::factory()->create(['name' => 'Highway West']);
+
+        $this->assertNull($this->channelRepository->findByNameInsensitive('Nonexistent'));
+    }
+
 }

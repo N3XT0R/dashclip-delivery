@@ -250,6 +250,18 @@ class ChannelRepository
             ->first();
     }
 
+    /**
+     * Find a channel by name, ignoring case and surrounding whitespace.
+     * @param string $name
+     * @return Channel|null
+     */
+    public function findByNameInsensitive(string $name): ?Channel
+    {
+        return Channel::query()
+            ->whereRaw('LOWER(name) = ?', [mb_strtolower(trim($name))])
+            ->first();
+    }
+
     public function createChannel(array $attributes): Channel
     {
         return Channel::create($attributes);
