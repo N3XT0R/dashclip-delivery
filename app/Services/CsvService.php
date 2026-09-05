@@ -23,7 +23,7 @@ class CsvService
     public function buildInfoCsv(Collection $items): string
     {
         $rows = [];
-        $rows[] = ['filename', 'hash', 'size_mb', 'start', 'end', 'note', 'bundle', 'role', 'submitted_by'];
+        $rows[] = ['filename', 'hash', 'size_mb', 'start', 'end', 'note', 'bundle', 'role', 'submitted_by', 'preferred_channel'];
 
         foreach ($items as $assignment) {
             $video = $assignment->video;
@@ -34,6 +34,7 @@ class CsvService
                     $video->original_name ?: basename($video->path),
                     $video->hash,
                     Number::fileSize($video->bytes),
+                    null,
                     null,
                     null,
                     null,
@@ -53,6 +54,7 @@ class CsvService
                         $clip->bundle_key,
                         $clip->role,
                         $clip->submitted_by,
+                        $clip->preferredChannel?->name ?? $clip->preferred_channel,
                     ];
                 }
             }
