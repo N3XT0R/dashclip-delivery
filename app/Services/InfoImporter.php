@@ -13,7 +13,11 @@ use RuntimeException;
 class InfoImporter
 {
     private const string CSV_DELIMITER = ';';
-    private const int ROW_COLUMNS = 7;
+    private const int ROW_COLUMNS = 8;
+
+    public function __construct(private readonly PreferredChannelService $preferredChannelService)
+    {
+    }
 
 
     /**
@@ -159,7 +163,7 @@ class InfoImporter
         ?callable $onWarning,
         ClipImportResult $result
     ): void {
-        [$filename, $start, $end, $note, $bundle, $role, $submittedBy] = $this->sanitizeRow($row);
+        [$filename, $start, $end, $note, $bundle, $role, $submittedBy, $preferredChannel] = $this->sanitizeRow($row);
 
         // Skip empty lines (no filename)
         if ($filename === '') {
@@ -173,6 +177,9 @@ class InfoImporter
         [$bundle, $submittedBy] = $this->applyDefaults($bundle, $submittedBy, $defaultBundle, $defaultSubmitter);
 
         $baseName = basename($filename);
+
+        $preferredChannelId = $this->resolvePreferredChannel($preferredChannel, $baseName, $onWarning, $result);
+
         $video = $this->findVideoOrWarn($baseName, $onWarning, $result);
         if (!$video) {
             // Without a video, nothing more to do for this row
@@ -187,26 +194,68 @@ class InfoImporter
         );
 
         if ($clip) {
-            $this->updateClipIfDirty($clip, $note, $bundle, $submittedBy, $result);
+            $this->updateClipIfDirty($clip, $note, $bundle, $submittedBy, $preferredChannel, $preferredChannelId, $result);
         } else {
-            $this->createClip($video, $startSec, $endSec, $note, $bundle, $role, $submittedBy, $result);
+            $this->createClip(
+                $video,
+                $startSec,
+                $endSec,
+                $note,
+                $bundle,
+                $role,
+                $submittedBy,
+                $preferredChannel,
+                $preferredChannelId,
+                $result
+            );
         }
+    }
+
+    /**
+     * Resolve the raw preferred_channel value; warn + count a warning when a
+     * non-empty value cannot be resolved (unknown channel or paused channel).
+     *
+     * @param  string  $rawValue
+     * @param  string  $baseName
+     * @param  callable(string):void|null  $onWarning
+     * @param  ClipImportResult  $result
+     * @return int|null resolved channel id or null
+     */
+    private function resolvePreferredChannel(
+        string $rawValue,
+        string $baseName,
+        ?callable $onWarning,
+        ClipImportResult $result
+    ): ?int {
+        if ($rawValue === '') {
+            return null;
+        }
+
+        $channelId = $this->preferredChannelService->resolveRawValue($rawValue);
+        if ($channelId === null) {
+            $result->incrementWarnings();
+            if ($onWarning) {
+                $onWarning("preferred_channel '{$rawValue}' nicht gefunden oder pausiert für filename='{$baseName}'");
+            }
+        }
+
+        return $channelId;
     }
 
     /**
      * Ensure row has the expected number of columns and trim values (incl. BOM).
      * @param  list<string|null>  $row
-     * @return array{0:string,1:string,2:string,3:string,4:string,5:string,6:string}
+     * @return array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string}
      */
     private function sanitizeRow(array $row): array
     {
         $row = array_pad($row, self::ROW_COLUMNS, '');
-        /** @var array{0:string,1:string,2:string,3:string,4:string,5:string,6:string} $mapped */
+        /** @var array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string} $mapped */
         $mapped = array_map(fn($v) => $this->trimUtf8Bom((string)$v), $row);
 
-        [$filename, $start, $end, $note, $bundle, $role, $submittedBy] = $mapped;
+        [$filename, $start, $end, $note, $bundle, $role, $submittedBy, $preferredChannel] = $mapped;
 
-        return [$filename, $start, $end, $note, $bundle, $role, $submittedBy];
+        return [$filename, $start, $end, $note, $bundle, $role, $submittedBy, $preferredChannel];
     }
 
     /**
@@ -311,6 +360,8 @@ class InfoImporter
      * @param  string  $note
      * @param  string  $bundle
      * @param  string  $submittedBy
+     * @param  string  $preferredChannel
+     * @param  int|null  $preferredChannelId
      * @param  ClipImportResult  $result
      * @return void
      */
@@ -319,6 +370,8 @@ class InfoImporter
         string $note,
         string $bundle,
         string $submittedBy,
+        string $preferredChannel,
+        ?int $preferredChannelId,
         ClipImportResult $result
     ): void {
         $dirty = false;
@@ -333,6 +386,11 @@ class InfoImporter
         }
         if ($submittedBy !== '' && $clip->submitted_by !== $submittedBy) {
             $clip->submitted_by = $submittedBy;
+            $dirty = true;
+        }
+        if ($preferredChannel !== '' && $clip->preferred_channel !== $preferredChannel) {
+            $clip->preferred_channel = $preferredChannel;
+            $clip->preferred_channel_id = $preferredChannelId;
             $dirty = true;
         }
 
@@ -351,6 +409,8 @@ class InfoImporter
      * @param  string  $bundle
      * @param  string  $role
      * @param  string  $submittedBy
+     * @param  string  $preferredChannel
+     * @param  int|null  $preferredChannelId
      * @param  ClipImportResult  $result
      * @return void
      */
@@ -362,6 +422,8 @@ class InfoImporter
         string $bundle,
         string $role,
         string $submittedBy,
+        string $preferredChannel,
+        ?int $preferredChannelId,
         ClipImportResult $result
     ): void {
         $clip = Clip::query()->create([
@@ -372,6 +434,8 @@ class InfoImporter
             'bundle_key' => $bundle !== '' ? $bundle : null,
             'role' => $role !== '' ? $role : null,
             'submitted_by' => $submittedBy !== '' ? $submittedBy : null,
+            'preferred_channel' => $preferredChannel !== '' ? $preferredChannel : null,
+            'preferred_channel_id' => $preferredChannelId,
         ]);
 
         $result->addCreated($clip);
