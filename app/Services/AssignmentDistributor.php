@@ -94,6 +94,7 @@ readonly class AssignmentDistributor
                     channelPool: $channelPoolDto,
                     blockedByVideo: $blockedByVideo,
                     assignedChannelsByVideo: $assignedChannelsByVideo,
+                    preferredChannelIdByVideo: [],
                     batch: $batch,
                     uploaderType: $uploaderType,
                     uploaderId: $uploaderId
