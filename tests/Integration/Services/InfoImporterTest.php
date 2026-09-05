@@ -303,12 +303,47 @@ class InfoImporterTest extends DatabaseTestCase
         @unlink($first);
 
         $second = $this->writeCsv([['reimport.mp4', '00:00', '00:10', 'n', '', '', 'alice', 'Second Lane']]);
-        $this->infoImporter->import($second);
+        $result = $this->infoImporter->import($second);
         @unlink($second);
 
+        $this->assertSame(1, $result->stats->updated);
         $this->assertDatabaseHas('clips', [
             'video_id' => $video->id,
+            'preferred_channel' => 'Second Lane',
             'preferred_channel_id' => $channel->getKey(),
         ]);
+    }
+
+    public function testReimportNullsPreferredChannelIdWhenChannelBecomesPaused(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'pref_paused.mp4']);
+        $channel = \App\Models\Channel::factory()->create(['name' => 'Pause Lane']);
+
+        $csv = $this->writeCsv([
+            ['pref_paused.mp4', '00:00', '00:10', 'n', '', '', 'alice', 'Pause Lane'],
+        ]);
+
+        $first = $this->infoImporter->import($csv);
+        $this->assertSame(0, $first->stats->warnings);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => 'Pause Lane',
+            'preferred_channel_id' => $channel->getKey(),
+        ]);
+
+        // Channel is paused between imports; the same raw value now resolves to null.
+        $channel->update(['is_video_reception_paused' => true]);
+
+        $second = $this->infoImporter->import($csv);
+
+        $this->assertSame(1, $second->stats->warnings);
+        $this->assertSame(1, $second->stats->updated);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => 'Pause Lane',
+            'preferred_channel_id' => null,
+        ]);
+
+        @unlink($csv);
     }
 }

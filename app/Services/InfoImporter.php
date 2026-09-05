@@ -388,7 +388,10 @@ class InfoImporter
             $clip->submitted_by = $submittedBy;
             $dirty = true;
         }
-        if ($preferredChannel !== '' && $clip->preferred_channel !== $preferredChannel) {
+        if (
+            $preferredChannel !== ''
+            && ($clip->preferred_channel !== $preferredChannel || $clip->preferred_channel_id !== $preferredChannelId)
+        ) {
             $clip->preferred_channel = $preferredChannel;
             $clip->preferred_channel_id = $preferredChannelId;
             $dirty = true;
