@@ -61,4 +61,62 @@ class PreferredChannelServiceTest extends DatabaseTestCase
     {
         $this->assertNull($this->service->resolveRawValue('No Such Channel'));
     }
+
+    public function testPreloadForVideosReturnsUniquePreferencePerVideo(): void
+    {
+        $channel = \App\Models\Channel::factory()->create();
+        $video = \App\Models\Video::factory()->create();
+        \App\Models\Clip::factory()->count(2)->for($video)->create(['preferred_channel_id' => $channel->getKey()]);
+
+        $map = $this->service->preloadForVideos(collect([$video]));
+
+        $this->assertSame([$video->getKey() => $channel->getKey()], $map);
+    }
+
+    public function testPreloadForVideosOmitsVideosWithConflictingPreferences(): void
+    {
+        $a = \App\Models\Channel::factory()->create();
+        $b = \App\Models\Channel::factory()->create();
+        $video = \App\Models\Video::factory()->create();
+        \App\Models\Clip::factory()->for($video)->create(['preferred_channel_id' => $a->getKey()]);
+        \App\Models\Clip::factory()->for($video)->create(['preferred_channel_id' => $b->getKey()]);
+
+        $map = $this->service->preloadForVideos(collect([$video]));
+
+        $this->assertArrayNotHasKey($video->getKey(), $map);
+    }
+
+    public function testResolveForGroupReturnsSharedPreference(): void
+    {
+        $v1 = \App\Models\Video::factory()->create();
+        $v2 = \App\Models\Video::factory()->create();
+        $map = [$v1->getKey() => 7, $v2->getKey() => 7];
+
+        $this->assertSame(7, $this->service->resolveForGroup(collect([$v1, $v2]), $map));
+    }
+
+    public function testResolveForGroupReturnsNullOnDisagreement(): void
+    {
+        $v1 = \App\Models\Video::factory()->create();
+        $v2 = \App\Models\Video::factory()->create();
+        $map = [$v1->getKey() => 7, $v2->getKey() => 9];
+
+        $this->assertNull($this->service->resolveForGroup(collect([$v1, $v2]), $map));
+    }
+
+    public function testResolveForGroupReturnsNullWhenNoPreference(): void
+    {
+        $v1 = \App\Models\Video::factory()->create();
+
+        $this->assertNull($this->service->resolveForGroup(collect([$v1]), []));
+    }
+
+    public function testResolveForGroupIgnoresVideosWithoutPreference(): void
+    {
+        $v1 = \App\Models\Video::factory()->create();
+        $v2 = \App\Models\Video::factory()->create();
+        $map = [$v1->getKey() => 7];
+
+        $this->assertSame(7, $this->service->resolveForGroup(collect([$v1, $v2]), $map));
+    }
 }
