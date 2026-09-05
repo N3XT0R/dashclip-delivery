@@ -214,6 +214,9 @@ readonly class AssignmentDistributor
                 $run->assignedChannelsByVideo
             );
 
+            // Defensive fallback: pickTargetChannel returns null only in rare
+            // races (e.g. a channel removed between pool build and pickup).
+            // Not deterministically testable; covered by integration behaviour.
             if (!$channel) {
                 $skipped += $group->count();
                 continue;
@@ -253,14 +256,15 @@ readonly class AssignmentDistributor
             return 'fallthrough';
         }
 
-        // Wish already fulfilled for every video in the group → let the
-        // algorithm handle any remaining distribution instead of deferring
-        // forever.
-        $allAlreadyOnPreferred = $group->every(function ($video) use ($preferredChannelId, $run) {
+        // Any video in the group already sits on the wished channel → the wish
+        // is fulfilled or unfulfillable as an atomic group; fall through to the
+        // round-robin rather than deferring forever (channelAcceptsGroup would
+        // reject the group on the "already assigned" rule every run).
+        $anyAlreadyOnPreferred = $group->some(function ($video) use ($preferredChannelId, $run) {
             $assigned = $run->assignedChannelsByVideo[$video->getKey()] ?? collect();
             return $assigned->contains($preferredChannelId);
         });
-        if ($allAlreadyOnPreferred) {
+        if ($anyAlreadyOnPreferred) {
             return 'fallthrough';
         }
 
@@ -273,6 +277,14 @@ readonly class AssignmentDistributor
         );
 
         if (!$accepts) {
+            Log::warning(
+                'Group {videos} deferred: preferred channel {channel} cannot take it this run (quota/block)',
+                [
+                    'videos' => $group->map(fn (Video $v) => (int) $v->getKey())->all(),
+                    'channel' => $preferredChannelId,
+                ]
+            );
+
             return 'deferred';
         }
 
