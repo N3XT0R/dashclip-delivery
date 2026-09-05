@@ -193,29 +193,57 @@ class ChannelService
             $rotationPool->push($rotationPool->shift());
             $rotations++;
 
-            // Genügend Quota verfügbar?
-            if (($quota[$candidate->getKey()] ?? 0) < $group->count()) {
-                continue;
+            if ($this->channelAcceptsGroup($candidate, $group, $quota, $blockedChannelIds, $assignedChannelsByVideo)) {
+                return $candidate;
             }
-
-            // Kandidat blockiert?
-            if (in_array($candidate->getKey(), $blockedChannelIds, true)) {
-                continue;
-            }
-
-            // Bereits (irgendwann) an diesen Kanal vergeben?
-            $alreadyAssignedToCandidate = $group->some(function (Video $v) use ($candidate, $assignedChannelsByVideo) {
-                $assigned = $assignedChannelsByVideo[$v->getKey()] ?? collect();
-                return $assigned->contains($candidate->getKey());
-            });
-            if ($alreadyAssignedToCandidate) {
-                continue;
-            }
-
-            return $candidate;
         }
 
         return null;
+    }
+
+    /**
+     * Whether a specific channel can take the whole group: enough remaining
+     * quota, not blocked, and never previously assigned to any video in the
+     * group.
+     *
+     * @param  Collection<int,Video>  $group
+     * @param  array<int,int>  $quota
+     * @param  array<int,int>  $blockedChannelIds
+     * @param  array<int,Collection<int,int>>  $assignedChannelsByVideo
+     */
+    public function channelAcceptsGroup(
+        Channel $channel,
+        Collection $group,
+        array $quota,
+        array $blockedChannelIds,
+        array $assignedChannelsByVideo
+    ): bool {
+        if (($quota[$channel->getKey()] ?? 0) < $group->count()) {
+            return false;
+        }
+
+        if (in_array($channel->getKey(), $blockedChannelIds, true)) {
+            return false;
+        }
+
+        $alreadyAssigned = $group->some(function (Video $v) use ($channel, $assignedChannelsByVideo) {
+            $assigned = $assignedChannelsByVideo[$v->getKey()] ?? collect();
+            return $assigned->contains($channel->getKey());
+        });
+
+        return !$alreadyAssigned;
+    }
+
+    /**
+     * Return the channel instance from the rotation pool matching $channelId,
+     * or null when that channel is not part of the (uploader-/team-specific)
+     * pool (paused, out of team scope, deleted).
+     *
+     * @param  Collection<int,Channel>  $rotationPool
+     */
+    public function findPooledChannel(Collection $rotationPool, int $channelId): ?Channel
+    {
+        return $rotationPool->first(fn (Channel $channel) => (int) $channel->getKey() === $channelId);
     }
 
     /**
