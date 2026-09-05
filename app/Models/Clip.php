@@ -27,7 +27,9 @@ class Clip extends Model
         'bundle_key',
         'role',
         'submitted_by',
-        'user_id'
+        'user_id',
+        'preferred_channel',
+        'preferred_channel_id',
     ];
 
     protected $appends = [
@@ -45,6 +47,15 @@ class Clip extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * The channel the submitter asked this clip's video to be assigned to.
+     * Null when no preference was given or the raw value could not be resolved.
+     */
+    public function preferredChannel(): BelongsTo
+    {
+        return $this->belongsTo(Channel::class, 'preferred_channel_id');
     }
 
     public function setUser(User $user): self
