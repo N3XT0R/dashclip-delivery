@@ -10,7 +10,6 @@ use Tests\Integration\Services\Stubs\FakeDistributorDependencies;
 
 class AssignmentDistributorTest extends DatabaseTestCase
 {
-
     protected AssignmentDistributor $assignmentDistributor;
 
     protected function setUp(): void

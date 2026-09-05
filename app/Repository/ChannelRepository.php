@@ -120,7 +120,7 @@ class ChannelRepository
             ->where('user_id', $user->getKey())
             ->when(
                 filled($byStatus),
-                fn($query) => $query->whereIn('status', array_column($byStatus, 'value'))
+                fn ($query) => $query->whereIn('status', array_column($byStatus, 'value'))
             )->get();
     }
 

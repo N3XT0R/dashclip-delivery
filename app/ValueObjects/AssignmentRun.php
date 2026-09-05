@@ -38,6 +38,6 @@ class AssignmentRun
     public function quotasUsedUp(): bool
     {
         return collect($this->channelPool->quota)
-            ->every(fn(int $q) => $q <= 0);
+            ->every(fn (int $q) => $q <= 0);
     }
 }

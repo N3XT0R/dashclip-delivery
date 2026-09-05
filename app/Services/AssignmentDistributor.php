@@ -24,7 +24,6 @@ use RuntimeException;
  */
 readonly class AssignmentDistributor
 {
-
     public function __construct(
         private AssignmentRepository $assignmentRepository,
         private AssignmentService $assignmentService,
@@ -129,7 +128,7 @@ readonly class AssignmentDistributor
     public function calculateBlockedChannels(Collection $group, $blockedByVideo): array
     {
         return $group
-            ->flatMap(fn(Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
+            ->flatMap(fn (Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
             ->unique()
             ->all();
     }
@@ -301,7 +300,7 @@ readonly class AssignmentDistributor
                 continue;
             }
 
-            $bundleIds = $bundleMap->first(fn(Collection $ids) => $ids->contains($video->getKey()));
+            $bundleIds = $bundleMap->first(fn (Collection $ids) => $ids->contains($video->getKey()));
 
             if ($bundleIds) {
                 $group = $videoRepository->getVideosByIdsFromPool($poolVideos, $bundleIds);

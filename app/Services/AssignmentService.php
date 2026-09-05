@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
 
 readonly class AssignmentService
 {
-
     public function __construct(private AssignmentRepository $assignmentRepository)
     {
     }
@@ -213,4 +212,3 @@ readonly class AssignmentService
         return $result;
     }
 }
-

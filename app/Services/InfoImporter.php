@@ -251,7 +251,7 @@ class InfoImporter
     {
         $row = array_pad($row, self::ROW_COLUMNS, '');
         /** @var array{0:string,1:string,2:string,3:string,4:string,5:string,6:string,7:string} $mapped */
-        $mapped = array_map(fn($v) => $this->trimUtf8Bom((string)$v), $row);
+        $mapped = array_map(fn ($v) => $this->trimUtf8Bom((string)$v), $row);
 
         [$filename, $start, $end, $note, $bundle, $role, $submittedBy, $preferredChannel] = $mapped;
 
@@ -338,18 +338,18 @@ class InfoImporter
             ->where('video_id', $videoId)
             ->when(
                 $startSec !== null,
-                fn($q) => $q->where('start_sec', $startSec),
-                fn($q) => $q->whereNull('start_sec')
+                fn ($q) => $q->where('start_sec', $startSec),
+                fn ($q) => $q->whereNull('start_sec')
             )
             ->when(
                 $endSec !== null,
-                fn($q) => $q->where('end_sec', $endSec),
-                fn($q) => $q->whereNull('end_sec')
+                fn ($q) => $q->where('end_sec', $endSec),
+                fn ($q) => $q->whereNull('end_sec')
             )
             ->when(
                 $role !== '',
-                fn($q) => $q->where('role', $role),
-                fn($q) => $q->whereNull('role')
+                fn ($q) => $q->where('role', $role),
+                fn ($q) => $q->whereNull('role')
             )
             ->first();
     }

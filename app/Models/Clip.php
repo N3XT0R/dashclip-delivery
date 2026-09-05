@@ -68,7 +68,7 @@ class Clip extends Model
     protected function startTime(): Attribute
     {
         return Attribute::get(
-            fn() => $this->start_sec !== null
+            fn () => $this->start_sec !== null
                 ? gmdate('i:s', (int)$this->start_sec)
                 : null,
         );
@@ -77,7 +77,7 @@ class Clip extends Model
     protected function duration(): Attribute
     {
         return Attribute::get(
-            fn() => ($this->start_sec !== null && $this->end_sec !== null)
+            fn () => ($this->start_sec !== null && $this->end_sec !== null)
                 ? $this->end_sec - $this->start_sec
                 : null,
         );
@@ -86,7 +86,7 @@ class Clip extends Model
     protected function humanReadableDuration(): Attribute
     {
         return Attribute::get(
-            fn() => ($this->start_sec !== null && $this->end_sec !== null)
+            fn () => ($this->start_sec !== null && $this->end_sec !== null)
                 ? gmdate('i:s', (int)($this->end_sec - $this->start_sec))
                 : null,
         );
@@ -95,7 +95,7 @@ class Clip extends Model
     protected function endTime(): Attribute
     {
         return Attribute::get(
-            fn() => $this->end_sec !== null
+            fn () => $this->end_sec !== null
                 ? gmdate('i:s', (int)$this->end_sec)
                 : null,
         );
@@ -106,4 +106,3 @@ class Clip extends Model
         return Storage::disk($this->getAttribute('preview_disk'));
     }
 }
-

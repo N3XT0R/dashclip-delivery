@@ -31,7 +31,7 @@ class AssignmentServiceTest extends DatabaseTestCase
         parent::setUp();
 
         // Register a fake route so URL::temporarySignedRoute() can generate a URL.
-        Route::get('/assignments/{assignment}/download', fn() => 'ok')
+        Route::get('/assignments/{assignment}/download', fn () => 'ok')
             ->name('assignments.download');
         $this->service = $this->app->make(AssignmentService::class);
     }

@@ -79,8 +79,8 @@ class CsvService
     public function listCsvFiles(Filesystem $disk, string $basePath = ''): Collection
     {
         return collect($disk->files($basePath))
-            ->filter(fn(string $path) => preg_match(self::CSV_REGEX, basename($path)))
-            ->map(fn(string $path) => FileInfoDto::fromPath($path))
+            ->filter(fn (string $path) => preg_match(self::CSV_REGEX, basename($path)))
+            ->map(fn (string $path) => FileInfoDto::fromPath($path))
             ->values();
     }
 

@@ -80,14 +80,16 @@ class CsvServiceTest extends DatabaseTestCase
 
         // Strip BOM for parsing and split into lines
         $clean = ltrim($csv, "\xEF\xBB\xBF");
-        $lines = array_values(array_filter(array_map(static fn($l) => rtrim($l, "\r\n"), explode("\n", $clean)),
-            fn($l) => $l !== ''));
+        $lines = array_values(array_filter(
+            array_map(static fn ($l) => rtrim($l, "\r\n"), explode("\n", $clean)),
+            fn ($l) => $l !== ''
+        ));
 
         // Expect: header + 1 row for Video A + 2 rows for Video B = 4 lines total
         $this->assertCount(4, $lines);
 
         // Helper to parse a CSV line using semicolon delimiter
-        $parse = static fn(string $line): array => str_getcsv($line, ';');
+        $parse = static fn (string $line): array => str_getcsv($line, ';');
 
         // Header row
         $header = $parse($lines[0]);
