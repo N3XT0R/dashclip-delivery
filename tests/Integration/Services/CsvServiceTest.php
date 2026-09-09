@@ -199,15 +199,10 @@ class CsvServiceTest extends DatabaseTestCase
             'preferred_channel_id' => $channel->getKey(),
         ]);
 
-        $assignment = Assignment::query()->create([
-            'video_id' => $video->getKey(),
-            'channel_id' => $channel->getKey(),
-            'batch_id' => Batch::factory()->create()->getKey(),
-            'status' => 'queued',
-        ]);
+        $assignment = Assignment::factory()->forVideo($video)->forChannel($channel)->create();
 
         $csv = $this->csvService->buildInfoCsv(
-            Assignment::query()->whereKey($assignment->getKey())->with('video.clips')->get()
+            Assignment::query()->whereKey($assignment->getKey())->with('video.clips.preferredChannel')->get()
         );
 
         $lines = array_values(array_filter(explode("\n", trim($csv))));

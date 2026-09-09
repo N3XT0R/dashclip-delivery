@@ -30,14 +30,7 @@ class PreferredChannelSchemaTest extends DatabaseTestCase
 
     public function testAssignmentFlagsPreferredChannelAndCastsBoolean(): void
     {
-        $channel = Channel::factory()->create();
-        $video = Video::factory()->create();
-
-        $assignment = Assignment::query()->create([
-            'video_id' => $video->getKey(),
-            'channel_id' => $channel->getKey(),
-            'batch_id' => \App\Models\Batch::factory()->create()->getKey(),
-            'status' => 'queued',
+        $assignment = Assignment::factory()->create([
             'via_preferred_channel' => true,
         ]);
 
@@ -48,15 +41,7 @@ class PreferredChannelSchemaTest extends DatabaseTestCase
 
     public function testAssignmentDefaultsViaPreferredChannelToFalse(): void
     {
-        $channel = Channel::factory()->create();
-        $video = Video::factory()->create();
-
-        $assignment = Assignment::query()->create([
-            'video_id' => $video->getKey(),
-            'channel_id' => $channel->getKey(),
-            'batch_id' => \App\Models\Batch::factory()->create()->getKey(),
-            'status' => 'queued',
-        ]);
+        $assignment = Assignment::factory()->create();
 
         $assignment->refresh();
 

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Admin;
 
+use App\Enum\PanelEnum;
 use App\Filament\Admin\Resources\Assignments\Pages\ListAssignments;
 use App\Models\Assignment;
-use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\User;
-use App\Models\Video;
+use Filament\Facades\Filament;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
@@ -17,23 +17,15 @@ class AssignmentPreferredChannelColumnTest extends DatabaseTestCase
 {
     public function testListShowsPreferredChannelColumnAndFilters(): void
     {
+        Filament::setCurrentPanel(PanelEnum::ADMIN->value);
         $this->actingAs(User::factory()->admin()->create());
 
         $channel = Channel::factory()->create();
-        $batch = Batch::factory()->create();
 
-        $viaPreferred = Assignment::query()->create([
-            'video_id' => Video::factory()->create()->getKey(),
-            'channel_id' => $channel->getKey(),
-            'batch_id' => $batch->getKey(),
-            'status' => 'queued',
+        $viaPreferred = Assignment::factory()->forChannel($channel)->create([
             'via_preferred_channel' => true,
         ]);
-        $viaAlgorithm = Assignment::query()->create([
-            'video_id' => Video::factory()->create()->getKey(),
-            'channel_id' => $channel->getKey(),
-            'batch_id' => $batch->getKey(),
-            'status' => 'queued',
+        $viaAlgorithm = Assignment::factory()->forChannel($channel)->create([
             'via_preferred_channel' => false,
         ]);
 

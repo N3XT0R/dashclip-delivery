@@ -142,7 +142,7 @@ class AssignmentRepository
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
     {
-        return Assignment::with('video.clips')
+        return Assignment::with('video.clips.preferredChannel')
             ->where('batch_id', $batch->getKey())
             ->where('channel_id', $channel->getKey())
             ->whereIn('id', $ids)
@@ -158,7 +158,7 @@ class AssignmentRepository
      */
     public function fetchForZipForChannel(Channel $channel, Collection $ids): EloquentCollection
     {
-        return Assignment::with('video.clips')
+        return Assignment::with('video.clips.preferredChannel')
             ->where('channel_id', $channel->getKey())
             ->whereIn('id', $ids)
             ->whereIn('status', StatusEnum::getReadyStatus())

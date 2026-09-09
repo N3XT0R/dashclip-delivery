@@ -28,11 +28,19 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
 
     private function video(string $hash): Video
     {
-        return Video::create([
+        return Video::factory()->create([
             'hash' => $hash,
             'path' => $hash,
             'processing_status' => ProcessingStatusEnum::Completed,
         ]);
+    }
+
+    /**
+     * @param array<string,mixed> $attributes
+     */
+    private function clip(Video $video, array $attributes = []): Clip
+    {
+        return Clip::factory()->for($video, 'video')->create($attributes);
     }
 
     public function testValidPreferredChannelWinsOverAlgorithm(): void
@@ -41,7 +49,7 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
         $other = Channel::factory()->create(['name' => 'Other', 'weight' => 50, 'weekly_quota' => 10]);
 
         $video = $this->video('h1');
-        Clip::create(['video_id' => $video->id, 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($video, ['preferred_channel_id' => $wanted->getKey()]);
 
         $result = $this->distributor->distribute();
 
@@ -61,7 +69,7 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
     {
         Channel::factory()->create(['weekly_quota' => 10]);
         $video = $this->video('h2');
-        Clip::create(['video_id' => $video->id]);
+        $this->clip($video);
 
         $result = $this->distributor->distribute();
 
@@ -80,7 +88,7 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
         $video = $this->video('h3');
         // preferred_channel_id can still point at the paused channel from an earlier import;
         // the distributor must not use it because it is not in the pool.
-        Clip::create(['video_id' => $video->id, 'preferred_channel_id' => $paused->getKey()]);
+        $this->clip($video, ['preferred_channel_id' => $paused->getKey()]);
 
         $result = $this->distributor->distribute();
 
@@ -98,7 +106,7 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
         $other = Channel::factory()->create(['name' => 'Other', 'weight' => 1, 'weekly_quota' => 10]);
 
         $video = $this->video('h4');
-        Clip::create(['video_id' => $video->id, 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($video, ['preferred_channel_id' => $wanted->getKey()]);
 
         $result = $this->distributor->distribute();
 
@@ -125,8 +133,8 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
 
         $v1 = $this->video('h5a');
         $v2 = $this->video('h5b');
-        Clip::create(['video_id' => $v1->id, 'bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
-        Clip::create(['video_id' => $v2->id, 'bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($v1, ['bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($v2, ['bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
 
         $result = $this->distributor->distribute();
 
@@ -144,8 +152,8 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
 
         $v1 = $this->video('h6a');
         $v2 = $this->video('h6b');
-        Clip::create(['video_id' => $v1->id, 'bundle_key' => 'B', 'preferred_channel_id' => $a->getKey()]);
-        Clip::create(['video_id' => $v2->id, 'bundle_key' => 'B', 'preferred_channel_id' => $b->getKey()]);
+        $this->clip($v1, ['bundle_key' => 'B', 'preferred_channel_id' => $a->getKey()]);
+        $this->clip($v2, ['bundle_key' => 'B', 'preferred_channel_id' => $b->getKey()]);
 
         $result = $this->distributor->distribute();
 
@@ -161,13 +169,9 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
         Channel::factory()->create(['name' => 'Other', 'weekly_quota' => 10]);
 
         $video = $this->video('h7');
-        Clip::create(['video_id' => $video->id, 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($video, ['preferred_channel_id' => $wanted->getKey()]);
 
-        ChannelVideoBlock::create([
-            'channel_id' => $wanted->getKey(),
-            'video_id' => $video->getKey(),
-            'until' => now()->addWeek(),
-        ]);
+        ChannelVideoBlock::factory()->forChannel($wanted)->forVideo($video)->until(now()->addWeek())->create();
 
         $result = $this->distributor->distribute();
 
@@ -187,7 +191,7 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
 
         $video = $this->video('h8');
         $video->update(['team_id' => $team->getKey()]);
-        Clip::create(['video_id' => $video->id, 'preferred_channel_id' => $nonTeamChannel->getKey()]);
+        $this->clip($video, ['preferred_channel_id' => $nonTeamChannel->getKey()]);
 
         $result = $this->distributor->distribute();
 
@@ -206,8 +210,8 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
 
         $v1 = $this->video('h9a');
         $v2 = $this->video('h9b');
-        Clip::create(['video_id' => $v1->id, 'bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
-        Clip::create(['video_id' => $v2->id, 'bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($v1, ['bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($v2, ['bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
 
         $first = $this->distributor->distribute();
 
@@ -225,7 +229,7 @@ class PreferredChannelDistributionTest extends DatabaseTestCase
         // A third bundle-'B' video appears; expandBundles pulls v1+v2 back so the
         // group is [v1, v2, v3] with v1 & v2 already sitting on the wished channel.
         $v3 = $this->video('h9c');
-        Clip::create(['video_id' => $v3->id, 'bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
+        $this->clip($v3, ['bundle_key' => 'B', 'preferred_channel_id' => $wanted->getKey()]);
 
         $second = $this->distributor->distribute();
 
