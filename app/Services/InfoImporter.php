@@ -188,11 +188,8 @@ class InfoImporter
         }
 
         $data = new ClipImportData(
-            startSec: $startSec,
-            endSec: $endSec,
             note: $note,
             bundle: $bundle,
-            role: $role,
             submittedBy: $submittedBy,
             preferredChannel: $preferredChannel,
             preferredChannelId: $preferredChannelId,
@@ -206,9 +203,11 @@ class InfoImporter
         );
 
         if ($clip) {
-            $this->updateClipIfDirty($clip, $data, $result);
+            if ($this->updateClipIfDirty($clip, $data)) {
+                $result->addUpdated($clip);
+            }
         } else {
-            $this->createClip($video, $data, $result);
+            $result->addCreated($this->createClip($video, $startSec, $endSec, $role, $data));
         }
     }
 
@@ -356,10 +355,10 @@ class InfoImporter
     }
 
     /**
-     * Update the clip when any non-empty imported field differs from the stored value.
-     * @return void
+     * Overwrite the clip with any non-empty imported field that differs from the stored value.
+     * @return bool whether the clip was changed and saved
      */
-    private function updateClipIfDirty(Clip $clip, ClipImportData $data, ClipImportResult $result): void
+    private function updateClipIfDirty(Clip $clip, ClipImportData $data): bool
     {
         $dirty = false;
 
@@ -387,22 +386,29 @@ class InfoImporter
 
         if ($dirty) {
             $clip->save();
-            $result->addUpdated($clip);
         }
+
+        return $dirty;
     }
 
     /**
      * Create a new clip from an imported row.
-     * @return void
+     * @return Clip
      */
-    private function createClip(Video $video, ClipImportData $data, ClipImportResult $result): void
-    {
-        $clip = Clip::query()->create([
+    private function createClip(
+        Video $video,
+        ?int $startSec,
+        ?int $endSec,
+        string $role,
+        ClipImportData $data
+    ): Clip {
+        return Clip::query()->create([
             'video_id' => $video->getKey(),
+            'start_sec' => $startSec,
+            'end_sec' => $endSec,
+            'role' => $role !== '' ? $role : null,
             ...$data->toClipAttributes(),
         ]);
-
-        $result->addCreated($clip);
     }
 
     // === Existing helpers (behavior preserved) ================================
