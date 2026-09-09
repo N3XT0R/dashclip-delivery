@@ -99,8 +99,6 @@ readonly class AssignmentDistributor
                     channelPool: $channelPoolDto,
                     videoContext: $videoContext,
                     batch: $batch,
-                    uploaderType: $uploaderType,
-                    uploaderId: $uploaderId
                 );
 
                 // 7) Verteilung

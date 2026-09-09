@@ -493,8 +493,6 @@ class AssignmentServiceTest extends DatabaseTestCase
                 preferredChannelIdByVideo: [$video->getKey() => $channel->getKey()],
             ),
             batch: $batch,
-            uploaderType: 'user',
-            uploaderId: 0,
         );
 
         $count = $this->service->assignGroupToChannel(collect([$video]), $channel, $run, viaPreferred: true);

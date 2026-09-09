@@ -28,3 +28,6 @@ report/
 coverage/
 # superpowers subagent-driven-development scratch workspace
 /.superpowers/
+
+# generated OpenAPI docs (l5-swagger)
+/storage/api-docs

@@ -100,10 +100,6 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->assertSame($stubs->team->slug, $prepareCall['uploaderId']);
 
         $this->assertCount(1, $distributor->assignGroupRuns);
-        $run = $distributor->assignGroupRuns->first();
-        $this->assertSame('team', $run->uploaderType);
-        $this->assertSame($stubs->team->slug, $run->uploaderId);
-
         $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
     }
 
@@ -127,11 +123,6 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $prepareCall = $distributor->prepareChannelCalls->first();
         $this->assertSame('user', $prepareCall['uploaderType']);
         $this->assertSame($stubs->user->getKey(), $prepareCall['uploaderId']);
-
-        $run = $distributor->assignGroupRuns->first();
-        $this->assertSame('user', $run->uploaderType);
-        $this->assertSame($stubs->user->getKey(), $run->uploaderId);
-
         $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
     }
 
@@ -155,11 +146,6 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $prepareCall = $distributor->prepareChannelCalls->first();
         $this->assertSame('user', $prepareCall['uploaderType']);
         $this->assertSame(0, $prepareCall['uploaderId']);
-
-        $run = $distributor->assignGroupRuns->first();
-        $this->assertSame('user', $run->uploaderType);
-        $this->assertSame(0, $run->uploaderId);
-
         $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
     }
 }

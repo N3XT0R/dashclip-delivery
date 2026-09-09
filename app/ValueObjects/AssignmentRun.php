@@ -15,8 +15,6 @@ class AssignmentRun
         public readonly ChannelPoolDto $channelPool,
         public readonly VideoAssignmentContext $videoContext,
         public readonly Batch $batch,
-        public readonly string $uploaderType,
-        public readonly string|int $uploaderId,
     ) {
     }
 
