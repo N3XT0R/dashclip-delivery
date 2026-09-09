@@ -14,6 +14,7 @@ use App\Repository\ChannelVideoBlockRepository;
 use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
 use App\ValueObjects\AssignmentRun;
+use App\ValueObjects\VideoAssignmentContext;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -85,18 +86,18 @@ readonly class AssignmentDistributor
                 $groups = $this->buildGroups($videosOfUploader);
 
                 // 5) Preloads zur Minimierung von N+1
-                $blockedByVideo = $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader);
-                $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($videosOfUploader);
-                $preferredChannelIdByVideo = app(PreferredChannelService::class)
-                    ->preloadForVideos($videosOfUploader);
+                $videoContext = new VideoAssignmentContext(
+                    blockedByVideo: $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader),
+                    assignedChannelsByVideo: $assignmentRepo->preloadAssignedChannels($videosOfUploader),
+                    preferredChannelIdByVideo: app(PreferredChannelService::class)
+                        ->preloadForVideos($videosOfUploader),
+                );
 
                 // 6) ValueObject
                 $run = new AssignmentRun(
                     groups: $groups,
                     channelPool: $channelPoolDto,
-                    blockedByVideo: $blockedByVideo,
-                    assignedChannelsByVideo: $assignedChannelsByVideo,
-                    preferredChannelIdByVideo: $preferredChannelIdByVideo,
+                    videoContext: $videoContext,
                     batch: $batch,
                     uploaderType: $uploaderType,
                     uploaderId: $uploaderId
@@ -178,7 +179,7 @@ readonly class AssignmentDistributor
         $deferred = 0;
 
         foreach ($run->groups as $group) {
-            $blockedChannelIds = $this->calculateBlockedChannels($group, $run->blockedByVideo);
+            $blockedChannelIds = $this->calculateBlockedChannels($group, $run->videoContext->blockedByVideo);
 
             $outcome = $this->placeGroup($group, $blockedChannelIds, $run);
 
@@ -207,7 +208,7 @@ readonly class AssignmentDistributor
     private function placeGroup(Collection $group, array $blockedChannelIds, AssignmentRun $run): string
     {
         $preferredChannelId = app(PreferredChannelService::class)
-            ->resolveForGroup($group, $run->preferredChannelIdByVideo);
+            ->resolveForGroup($group, $run->videoContext->preferredChannelIdByVideo);
 
         if ($preferredChannelId !== null) {
             $preferredOutcome = $this->assignToPreferredChannel($group, $preferredChannelId, $blockedChannelIds, $run);
@@ -234,7 +235,7 @@ readonly class AssignmentDistributor
             $run->channelPool->rotationPool,
             $run->channelPool->quota,
             $blockedChannelIds,
-            $run->assignedChannelsByVideo
+            $run->videoContext->assignedChannelsByVideo
         );
 
         // Defensive fallback: pickTargetChannel returns null only in rare
@@ -279,7 +280,7 @@ readonly class AssignmentDistributor
         // round-robin rather than deferring forever (channelAcceptsGroup would
         // reject the group on the "already assigned" rule every run).
         $anyAlreadyOnPreferred = $group->some(function ($video) use ($preferredChannelId, $run) {
-            $assigned = $run->assignedChannelsByVideo[$video->getKey()] ?? collect();
+            $assigned = $run->videoContext->assignedChannelsByVideo[$video->getKey()] ?? collect();
             return $assigned->contains($preferredChannelId);
         });
         if ($anyAlreadyOnPreferred) {
@@ -291,7 +292,7 @@ readonly class AssignmentDistributor
             $group,
             $run->channelPool->quota,
             $blockedChannelIds,
-            $run->assignedChannelsByVideo
+            $run->videoContext->assignedChannelsByVideo
         );
 
         if (!$accepts) {

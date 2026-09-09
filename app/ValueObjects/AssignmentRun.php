@@ -13,9 +13,7 @@ class AssignmentRun
     public function __construct(
         public readonly Collection $groups,
         public readonly ChannelPoolDto $channelPool,
-        public readonly array $blockedByVideo,
-        public array $assignedChannelsByVideo,
-        public readonly array $preferredChannelIdByVideo,
+        public readonly VideoAssignmentContext $videoContext,
         public readonly Batch $batch,
         public readonly string $uploaderType,
         public readonly string|int $uploaderId,
@@ -24,10 +22,7 @@ class AssignmentRun
 
     public function recordAssignment(int $videoId, int $channelId): void
     {
-        $this->assignedChannelsByVideo[$videoId] =
-            ($this->assignedChannelsByVideo[$videoId] ?? collect())
-                ->push($channelId)
-                ->unique();
+        $this->videoContext->recordAssignment($videoId, $channelId);
     }
 
     public function decrementQuota(int $channelId): void

@@ -16,6 +16,7 @@ use App\Models\Video;
 use App\DTO\ChannelPoolDto;
 use App\Services\AssignmentService;
 use App\ValueObjects\AssignmentRun;
+use App\ValueObjects\VideoAssignmentContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
@@ -486,9 +487,11 @@ class AssignmentServiceTest extends DatabaseTestCase
                 rotationPool: collect([$channel]),
                 quota: [$channel->getKey() => 5],
             ),
-            blockedByVideo: [],
-            assignedChannelsByVideo: [],
-            preferredChannelIdByVideo: [$video->getKey() => $channel->getKey()],
+            videoContext: new VideoAssignmentContext(
+                blockedByVideo: [],
+                assignedChannelsByVideo: [],
+                preferredChannelIdByVideo: [$video->getKey() => $channel->getKey()],
+            ),
             batch: $batch,
             uploaderType: 'user',
             uploaderId: 0,
