@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Clip;
 use App\Models\Video;
+use App\ValueObjects\ClipImportData;
 use App\ValueObjects\ClipImportResult;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use RuntimeException;
@@ -186,6 +187,17 @@ class InfoImporter
             return;
         }
 
+        $data = new ClipImportData(
+            startSec: $startSec,
+            endSec: $endSec,
+            note: $note,
+            bundle: $bundle,
+            role: $role,
+            submittedBy: $submittedBy,
+            preferredChannel: $preferredChannel,
+            preferredChannelId: $preferredChannelId,
+        );
+
         $clip = $this->findExistingClip(
             videoId: (int)$video->getKey(),
             startSec: $startSec,
@@ -194,20 +206,9 @@ class InfoImporter
         );
 
         if ($clip) {
-            $this->updateClipIfDirty($clip, $note, $bundle, $submittedBy, $preferredChannel, $preferredChannelId, $result);
+            $this->updateClipIfDirty($clip, $data, $result);
         } else {
-            $this->createClip(
-                $video,
-                $startSec,
-                $endSec,
-                $note,
-                $bundle,
-                $role,
-                $submittedBy,
-                $preferredChannel,
-                $preferredChannelId,
-                $result
-            );
+            $this->createClip($video, $data, $result);
         }
     }
 
@@ -355,45 +356,32 @@ class InfoImporter
     }
 
     /**
-     * Update clip if any of the given fields differ.
-     * @param  Clip  $clip
-     * @param  string  $note
-     * @param  string  $bundle
-     * @param  string  $submittedBy
-     * @param  string  $preferredChannel
-     * @param  int|null  $preferredChannelId
-     * @param  ClipImportResult  $result
+     * Update the clip when any non-empty imported field differs from the stored value.
      * @return void
      */
-    private function updateClipIfDirty(
-        Clip $clip,
-        string $note,
-        string $bundle,
-        string $submittedBy,
-        string $preferredChannel,
-        ?int $preferredChannelId,
-        ClipImportResult $result
-    ): void {
+    private function updateClipIfDirty(Clip $clip, ClipImportData $data, ClipImportResult $result): void
+    {
         $dirty = false;
 
-        if ($note !== '' && $clip->note !== $note) {
-            $clip->note = $note;
+        if ($data->note !== '' && $clip->note !== $data->note) {
+            $clip->note = $data->note;
             $dirty = true;
         }
-        if ($bundle !== '' && $clip->bundle_key !== $bundle) {
-            $clip->bundle_key = $bundle;
+        if ($data->bundle !== '' && $clip->bundle_key !== $data->bundle) {
+            $clip->bundle_key = $data->bundle;
             $dirty = true;
         }
-        if ($submittedBy !== '' && $clip->submitted_by !== $submittedBy) {
-            $clip->submitted_by = $submittedBy;
+        if ($data->submittedBy !== '' && $clip->submitted_by !== $data->submittedBy) {
+            $clip->submitted_by = $data->submittedBy;
             $dirty = true;
         }
         if (
-            $preferredChannel !== ''
-            && ($clip->preferred_channel !== $preferredChannel || $clip->preferred_channel_id !== $preferredChannelId)
+            $data->preferredChannel !== ''
+            && ($clip->preferred_channel !== $data->preferredChannel
+                || $clip->preferred_channel_id !== $data->preferredChannelId)
         ) {
-            $clip->preferred_channel = $preferredChannel;
-            $clip->preferred_channel_id = $preferredChannelId;
+            $clip->preferred_channel = $data->preferredChannel;
+            $clip->preferred_channel_id = $data->preferredChannelId;
             $dirty = true;
         }
 
@@ -404,41 +392,14 @@ class InfoImporter
     }
 
     /**
-     * Create a new clip.
-     * @param  Video  $video
-     * @param  int|null  $startSec
-     * @param  int|null  $endSec
-     * @param  string  $note
-     * @param  string  $bundle
-     * @param  string  $role
-     * @param  string  $submittedBy
-     * @param  string  $preferredChannel
-     * @param  int|null  $preferredChannelId
-     * @param  ClipImportResult  $result
+     * Create a new clip from an imported row.
      * @return void
      */
-    private function createClip(
-        Video $video,
-        ?int $startSec,
-        ?int $endSec,
-        string $note,
-        string $bundle,
-        string $role,
-        string $submittedBy,
-        string $preferredChannel,
-        ?int $preferredChannelId,
-        ClipImportResult $result
-    ): void {
+    private function createClip(Video $video, ClipImportData $data, ClipImportResult $result): void
+    {
         $clip = Clip::query()->create([
             'video_id' => $video->getKey(),
-            'start_sec' => $startSec,
-            'end_sec' => $endSec,
-            'note' => $note !== '' ? $note : null,
-            'bundle_key' => $bundle !== '' ? $bundle : null,
-            'role' => $role !== '' ? $role : null,
-            'submitted_by' => $submittedBy !== '' ? $submittedBy : null,
-            'preferred_channel' => $preferredChannel !== '' ? $preferredChannel : null,
-            'preferred_channel_id' => $preferredChannelId,
+            ...$data->toClipAttributes(),
         ]);
 
         $result->addCreated($clip);
