@@ -37,7 +37,11 @@ class OfferController extends ApiController
     #[OA\Get(
         path: '/api/v1/offers',
         summary: 'List offers visible to the authenticated user',
-        security: [['passport' => ['offers:read']]],
+        description: 'Returns a paginated list of offers (video-to-channel assignments) the user '
+            . 'can see: offers for one of their channels, or for a video they submitted a clip '
+            . 'for. Supports filtering by status and channel, plus sorting and pagination. The '
+            . 'download token is never exposed.',
+        security: [['passport' => ['offers:read']], ['bearerAuth' => []]],
         tags: ['Offers'],
         parameters: [
             new OA\Parameter(
@@ -101,7 +105,9 @@ class OfferController extends ApiController
     #[OA\Get(
         path: '/api/v1/offers/{offer}',
         summary: 'Show a single offer',
-        security: [['passport' => ['offers:read']]],
+        description: 'Returns one offer by id. Responds with 404 if the offer does not exist or '
+            . 'is not visible to the authenticated user.',
+        security: [['passport' => ['offers:read']], ['bearerAuth' => []]],
         tags: ['Offers'],
         parameters: [
             new OA\Parameter(
@@ -130,7 +136,12 @@ class OfferController extends ApiController
     #[OA\Post(
         path: '/api/v1/offers',
         summary: 'Create an offer for a video/channel pair',
-        security: [['passport' => ['offers:write']]],
+        description: 'Manually offers a video to a channel. Both the video and the channel must '
+            . 'be visible to the user. The offer is placed in a fresh distribution batch of type '
+            . '"api" and gets the default expiry TTL. A pair that already has an offer is '
+            . 'rejected with 422; the offer status is managed by the distribution pipeline and '
+            . 'cannot be set here. Returns 201 with a Location header.',
+        security: [['passport' => ['offers:write']], ['bearerAuth' => []]],
         tags: ['Offers'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -178,7 +189,9 @@ class OfferController extends ApiController
     #[OA\Post(
         path: '/api/v1/offers/{offer}/comment',
         summary: 'Set the comment note on an offer',
-        security: [['passport' => ['offers:write']]],
+        description: 'Replaces the free-text note on an offer visible to the user. Responds with '
+            . '404 for offers not visible to the user and returns the updated offer on success.',
+        security: [['passport' => ['offers:write']], ['bearerAuth' => []]],
         tags: ['Offers'],
         parameters: [
             new OA\Parameter(

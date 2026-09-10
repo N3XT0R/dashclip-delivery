@@ -30,7 +30,11 @@ class ChannelController extends ApiController
     #[OA\Get(
         path: '/api/v1/channels',
         summary: 'List channels visible to the authenticated user',
-        security: [['passport' => ['channels:read']]],
+        description: 'Returns a paginated list of channels the authenticated user operates '
+            . '(channels they are a verified member of). Supports filtering by video-reception '
+            . 'state, plus sorting and pagination. Admin-only fields such as weight and weekly '
+            . 'quota are never exposed.',
+        security: [['passport' => ['channels:read']], ['bearerAuth' => []]],
         tags: ['Channels'],
         parameters: [
             new OA\Parameter(
@@ -79,7 +83,9 @@ class ChannelController extends ApiController
     #[OA\Get(
         path: '/api/v1/channels/{channel}',
         summary: 'Show a single channel',
-        security: [['passport' => ['channels:read']]],
+        description: 'Returns one channel the user operates, by id. Responds with 404 if the '
+            . 'channel does not exist or the user has no access to it.',
+        security: [['passport' => ['channels:read']], ['bearerAuth' => []]],
         tags: ['Channels'],
         parameters: [
             new OA\Parameter(
@@ -108,7 +114,11 @@ class ChannelController extends ApiController
     #[OA\Patch(
         path: '/api/v1/channels/{channel}',
         summary: 'Pause or resume video reception for a channel',
-        security: [['passport' => ['channels:write']]],
+        description: 'Toggles whether the channel currently accepts new video offers by setting '
+            . 'is_video_reception_paused. This is the only channel field writable through the '
+            . 'API; any other field in the body is rejected with 422. Responds with 404 for '
+            . 'channels not visible to the user.',
+        security: [['passport' => ['channels:write']], ['bearerAuth' => []]],
         tags: ['Channels'],
         parameters: [
             new OA\Parameter(

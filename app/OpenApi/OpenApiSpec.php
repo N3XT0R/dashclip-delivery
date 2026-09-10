@@ -10,11 +10,61 @@ use OpenApi\Attributes as OA;
 #[OA\Server(url: '/', description: 'Application root')]
 #[OA\SecurityScheme(
     securityScheme: 'passport',
+    type: 'oauth2',
+    description: <<<'TXT'
+        OAuth2 via Laravel Passport. Enabled grant types and how to obtain a token for testing:
+
+        - **authorization_code** — use the flow below (redirects to `/oauth/authorize`,
+          exchanges at `/oauth/token`). Produces a user-scoped token; this is the flow to use
+          for trying out the endpoints interactively.
+        - **personal_access** — create a Personal Access Token in the Standard panel
+          ("OAuth" → "Personal Access Tokens") and paste it into the **bearerAuth** scheme.
+          Fastest path, no client setup required.
+        - **device** — request a device code at `/oauth/device/code`, confirm it at
+          `/oauth/device`, poll `/oauth/token`, then paste the resulting token into
+          **bearerAuth**.
+        - **client_credentials** — also enabled at the Passport level, but such tokens carry
+          no user context, so every (user-scoped) endpoint here returns 403 or an empty list.
+          Not offered as an interactive flow for that reason.
+
+        Scopes map to `<resource>:<action>` and must be granted to the acting user via the
+        client's scope-grant configuration.
+        TXT,
+    flows: [
+        new OA\Flow(
+            authorizationUrl: '/oauth/authorize',
+            tokenUrl: '/oauth/token',
+            refreshUrl: '/oauth/token/refresh',
+            flow: 'authorizationCode',
+            scopes: self::SCOPES,
+        ),
+    ],
+)]
+#[OA\SecurityScheme(
+    securityScheme: 'bearerAuth',
     type: 'http',
     scheme: 'bearer',
     bearerFormat: 'JWT',
-    description: 'OAuth2 access token issued by Laravel Passport',
+    description: 'Paste a raw access token: a Personal Access Token created in the Standard '
+        . 'panel, or a token obtained through the device grant.',
 )]
 final class OpenApiSpec
 {
+    /**
+     * OAuth2 scopes that gate the REST API endpoints.
+     *
+     * @var array<string, string>
+     */
+    public const array SCOPES = [
+        'videos:read' => 'List and read videos',
+        'videos:write' => 'Upload and rename videos',
+        'videos:delete' => 'Delete videos',
+        'channels:read' => 'List and read channels',
+        'channels:write' => 'Update channel settings',
+        'offers:read' => 'List and read offers',
+        'offers:write' => 'Create offers and set comments',
+        'teams:read' => 'List and read teams',
+        'teams:write' => 'Create teams',
+        'teams:delete' => 'Delete owned teams',
+    ];
 }

@@ -31,7 +31,9 @@ final class TeamController extends ApiController
     #[OA\Get(
         path: '/api/v1/teams',
         summary: 'List teams visible to the authenticated user',
-        security: [['passport' => ['teams:read']]],
+        description: 'Returns a paginated list of teams the user owns or is a member of. Supports '
+            . 'partial name filtering, sorting and pagination.',
+        security: [['passport' => ['teams:read']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
             new OA\Parameter(
@@ -80,7 +82,9 @@ final class TeamController extends ApiController
     #[OA\Get(
         path: '/api/v1/teams/{team}',
         summary: 'Show a single team',
-        security: [['passport' => ['teams:read']]],
+        description: 'Returns one team the user owns or belongs to, by id. Responds with 404 '
+            . 'otherwise.',
+        security: [['passport' => ['teams:read']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
             new OA\Parameter(
@@ -109,7 +113,10 @@ final class TeamController extends ApiController
     #[OA\Post(
         path: '/api/v1/teams',
         summary: 'Create a team owned by the authenticated user',
-        security: [['passport' => ['teams:write']]],
+        description: 'Creates a new team with the given name, owned by the authenticated user, '
+            . 'who is also added as a member. A unique slug is generated automatically. Returns '
+            . '201 with a Location header.',
+        security: [['passport' => ['teams:write']], ['bearerAuth' => []]],
         tags: ['Teams'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -155,7 +162,9 @@ final class TeamController extends ApiController
     #[OA\Delete(
         path: '/api/v1/teams/{team}',
         summary: 'Delete a team owned by the authenticated user',
-        security: [['passport' => ['teams:delete']]],
+        description: 'Deletes a team. Only the team owner may do this; members and non-members '
+            . 'get 404. Returns 204 on success.',
+        security: [['passport' => ['teams:delete']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
             new OA\Parameter(

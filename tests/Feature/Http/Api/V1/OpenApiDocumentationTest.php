@@ -26,6 +26,40 @@ final class OpenApiDocumentationTest extends DatabaseTestCase
         }
         $this->assertArrayHasKey('Video', $spec['components']['schemas']);
         $this->assertArrayHasKey('PaginationMeta', $spec['components']['schemas']);
+
+        $schemes = $spec['components']['securitySchemes'];
+        $this->assertSame('oauth2', $schemes['passport']['type']);
+        $this->assertSame(['authorizationCode'], array_keys($schemes['passport']['flows']));
+        $this->assertArrayHasKey(
+            'videos:read',
+            $schemes['passport']['flows']['authorizationCode']['scopes'],
+        );
+        $this->assertSame('http', $schemes['bearerAuth']['type']);
+        $this->assertSame('bearer', $schemes['bearerAuth']['scheme']);
+    }
+
+    public function testEveryDocumentedOperationHasADescription(): void
+    {
+        Artisan::call('l5-swagger:generate');
+
+        $spec = json_decode(
+            (string)file_get_contents(storage_path('api-docs/api-docs.json')),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
+
+        $missing = [];
+        foreach ($spec['paths'] as $path => $operations) {
+            foreach ($operations as $method => $operation) {
+                if (trim((string)($operation['description'] ?? '')) === '') {
+                    $missing[] = strtoupper($method) . ' ' . $path;
+                }
+            }
+        }
+
+        $this->assertSame([], $missing, 'Operations without a description (ADR 0008): '
+            . implode(', ', $missing));
     }
 
     public function testSwaggerUiIsReachable(): void
