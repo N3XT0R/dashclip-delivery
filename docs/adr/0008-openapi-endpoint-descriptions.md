@@ -14,9 +14,9 @@ access to the source code.
 
 OpenAPI operations support two prose fields:
 
-- `summary` — a short label, shown as the collapsed operation title in Swagger UI. It answers
+- `summary`: a short label, shown as the collapsed operation title in Swagger UI. It answers
   "which endpoint is this".
-- `description` — a longer, CommonMark-capable text, shown when the operation is expanded. It
+- `description`: a longer, CommonMark-capable text, shown when the operation is expanded. It
   answers "what does calling this actually do".
 
 A `summary` alone (for example "Delete a video") tells a reader the name of the operation but not
@@ -45,7 +45,7 @@ The `description` is written for an external API consumer and must, where applic
 endpoint:
 
 - state what the operation does and what resource or state it affects, in plain language;
-- state the visibility / ownership scope — which records the caller can act on and why (for
+- state the visibility / ownership scope, meaning which records the caller can act on and why (for
   example "the same set the user sees in the Standard panel");
 - name any non-obvious side effects (queued jobs, batch creation, file storage, cascading
   deletes);
@@ -122,6 +122,6 @@ Rejected alternatives:
 - **Descriptions in a separate hand-written guide**: rejected because a second source of truth
   drifts from the code and from the generated spec, and is not delivered with the machine-readable
   document that tooling consumes.
-- **Generating descriptions from controller PHPDoc**: rejected because the audiences differ — ADR
+- **Generating descriptions from controller PHPDoc**: rejected because the audiences differ: ADR
   0005 PHPDoc targets contributors and describes the PHP contract, while an OpenAPI `description`
   targets API consumers and describes HTTP behaviour.

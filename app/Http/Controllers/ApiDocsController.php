@@ -11,6 +11,11 @@ class ApiDocsController extends Controller
 {
     public function index(ApiDocumentationService $documentation): View
     {
-        return view('api-docs', ['documentations' => $documentation->all()]);
+        $all = $documentation->all();
+
+        return view('api-docs', [
+            'authentication' => $all->firstWhere('key', 'authentication'),
+            'resourceApis' => $all->reject(static fn ($doc) => $doc->key === 'authentication')->values(),
+        ]);
     }
 }

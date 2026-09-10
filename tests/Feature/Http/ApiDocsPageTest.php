@@ -9,17 +9,30 @@ use Tests\TestCase;
 
 final class ApiDocsPageTest extends TestCase
 {
-    public function testPageRendersEveryDocumentationSetAndIsLinkedInTheFooter(): void
+    public function testPageListsAuthenticationSeparatelyAndTheResourceApis(): void
     {
         $response = $this->get(route('api-docs'));
 
         $response->assertOk()
-            ->assertSee('Dashclip Delivery — Submitter API')
-            ->assertSee('Dashclip Delivery — Channel Operator API')
+            ->assertSeeInOrder([
+                'Zuerst: Authentifizierung',
+                'Authentication (OAuth2)',
+                'Ressourcen-APIs',
+                'Submitter API',
+                'Channel Operator API',
+            ])
+            ->assertSee(route('l5-swagger.authentication.api'), false)
             ->assertSee(route('l5-swagger.submitter.api'), false)
-            ->assertSee(route('l5-swagger.submitter.docs'), false)
             ->assertSee(route('l5-swagger.channel-operator.api'), false)
             ->assertSee(route('api-docs'), false);
+    }
+
+    public function testPageDoesNotNameInternalFrameworks(): void
+    {
+        $this->get(route('api-docs'))
+            ->assertOk()
+            ->assertDontSee('Passport')
+            ->assertDontSee('Laravel');
     }
 
     public function testServicePicksUpNewDocumentationSetsFromConfig(): void

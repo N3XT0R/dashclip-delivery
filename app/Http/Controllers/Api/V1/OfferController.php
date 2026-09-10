@@ -41,7 +41,7 @@ class OfferController extends ApiController
             . 'for. Supports filtering by status and channel, plus sorting and pagination. The '
             . 'download token is never exposed.',
         summary: 'List offers visible to the authenticated user',
-        security: [['passport' => ['offers:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['offers:read']], ['bearerAuth' => []]],
         tags: ['Offers'],
         parameters: [
             new OA\Parameter(
@@ -107,7 +107,7 @@ class OfferController extends ApiController
         description: 'Returns one offer by id. Responds with 404 if the offer does not exist or '
             . 'is not visible to the authenticated user.',
         summary: 'Show a single offer',
-        security: [['passport' => ['offers:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['offers:read']], ['bearerAuth' => []]],
         tags: ['Offers'],
         parameters: [
             new OA\Parameter(
@@ -141,7 +141,7 @@ class OfferController extends ApiController
             . 'rejected with 422; the offer status is managed by the distribution pipeline and '
             . 'cannot be set here. Returns 201 with a Location header.',
         summary: 'Create an offer for a video/channel pair',
-        security: [['passport' => ['offers:write']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['offers:write']], ['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -191,7 +191,7 @@ class OfferController extends ApiController
         description: 'Replaces the free-text note on an offer visible to the user. Responds with '
             . '404 for offers not visible to the user and returns the updated offer on success.',
         summary: 'Set the comment note on an offer',
-        security: [['passport' => ['offers:write']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['offers:write']], ['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(

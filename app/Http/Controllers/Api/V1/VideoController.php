@@ -35,13 +35,13 @@ class VideoController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/videos',
-        description: 'Returns a paginated list of videos the authenticated user can see — the '
+        description: 'Returns a paginated list of videos the authenticated user can see, the '
             . 'same set as in the Standard panel (videos the user submitted a clip for, or that '
             . 'belong to their team). Supports filtering by name and creation date range, plus '
             . 'sorting and pagination. The processing status is read-only (an internal ingest '
             . 'flag) and is not a filter.',
         summary: 'List videos visible to the authenticated user',
-        security: [['passport' => ['videos:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['videos:read']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(
@@ -125,7 +125,7 @@ class VideoController extends ApiController
         description: 'Returns one video by id, including its current processing status. Responds '
             . 'with 404 if the video does not exist or is not visible to the authenticated user.',
         summary: 'Show a single video',
-        security: [['passport' => ['videos:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['videos:read']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(
@@ -160,7 +160,7 @@ class VideoController extends ApiController
             . 'generation, duplicate detection). Returns 201 with a Location header; poll the '
             . 'show endpoint to follow the processing status.',
         summary: 'Upload a video through the existing ingest pipeline',
-        security: [['passport' => ['videos:write']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['videos:write']], ['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
@@ -228,7 +228,7 @@ class VideoController extends ApiController
             . 'touch the stored file or the ingest state. Responds with 404 for videos not '
             . 'visible to the user.',
         summary: 'Rename a video',
-        security: [['passport' => ['videos:write']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['videos:write']], ['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -272,11 +272,11 @@ class VideoController extends ApiController
         path: self::PATH_VIDEO_SHOW,
         description: 'Permanently deletes a video the user owns, including its stored file. '
             . 'Only allowed while the video has no active (ready, non-expired) offers and no '
-            . 'offer that was already picked up — the same rule the Standard-panel delete '
+            . 'offer that was already picked up. This is the same rule the Standard-panel delete '
             . 'action enforces. Responds with 404 for videos not visible to the user, 409 when '
             . 'the video still has active or picked-up offers, and 204 on success.',
         summary: 'Delete a video',
-        security: [['passport' => ['videos:delete']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['videos:delete']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(

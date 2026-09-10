@@ -34,7 +34,7 @@ class ChannelController extends ApiController
             . 'state, plus sorting and pagination. Admin-only fields such as weight and weekly '
             . 'quota are never exposed.',
         summary: 'List channels visible to the authenticated user',
-        security: [['passport' => ['channels:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['channels:read']], ['bearerAuth' => []]],
         tags: ['Channels'],
         parameters: [
             new OA\Parameter(
@@ -85,7 +85,7 @@ class ChannelController extends ApiController
         description: 'Returns one channel the user operates, by id. Responds with 404 if the '
             . 'channel does not exist or the user has no access to it.',
         summary: 'Show a single channel',
-        security: [['passport' => ['channels:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['channels:read']], ['bearerAuth' => []]],
         tags: ['Channels'],
         parameters: [
             new OA\Parameter(
@@ -118,7 +118,7 @@ class ChannelController extends ApiController
             . 'API; any other field in the body is rejected with 422. Responds with 404 for '
             . 'channels not visible to the user.',
         summary: 'Pause or resume video reception for a channel',
-        security: [['passport' => ['channels:write']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['channels:write']], ['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(

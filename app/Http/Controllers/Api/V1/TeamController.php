@@ -33,7 +33,7 @@ final class TeamController extends ApiController
         description: 'Returns a paginated list of teams the user owns or is a member of. Supports '
             . 'partial name filtering, sorting and pagination.',
         summary: 'List teams visible to the authenticated user',
-        security: [['passport' => ['teams:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['teams:read']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
             new OA\Parameter(
@@ -84,7 +84,7 @@ final class TeamController extends ApiController
         description: 'Returns one team the user owns or belongs to, by id. Responds with 404 '
             . 'otherwise.',
         summary: 'Show a single team',
-        security: [['passport' => ['teams:read']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['teams:read']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
             new OA\Parameter(
@@ -116,7 +116,7 @@ final class TeamController extends ApiController
             . 'who is also added as a member. A unique slug is generated automatically. Returns '
             . '201 with a Location header.',
         summary: 'Create a team owned by the authenticated user',
-        security: [['passport' => ['teams:write']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['teams:write']], ['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -164,7 +164,7 @@ final class TeamController extends ApiController
         description: 'Deletes a team. Only the team owner may do this; members and non-members '
             . 'get 404. Returns 204 on success.',
         summary: 'Delete a team owned by the authenticated user',
-        security: [['passport' => ['teams:delete']], ['bearerAuth' => []]],
+        security: [['oauth2' => ['teams:delete']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
             new OA\Parameter(

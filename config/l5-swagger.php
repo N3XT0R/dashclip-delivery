@@ -7,11 +7,35 @@ return [
     'documentations' => [
 
         /*
-         * Submitter API — everything a clip submitter does: their videos and teams.
+         * Authentication: the OAuth2 endpoints (token, authorize,
+         * device) that issue the tokens the other APIs expect. The entry point for
+         * everything; documentation only.
+         */
+        'authentication' => [
+            'api' => [
+                'title' => 'Authentication (OAuth2)',
+            ],
+            'routes' => [
+                'api' => 'api/documentation/authentication',
+                'docs' => 'docs/authentication',
+                'oauth2_callback' => 'api/documentation/authentication/oauth2-callback',
+            ],
+            'paths' => [
+                'docs_json' => 'authentication-api-docs.json',
+                'docs_yaml' => 'authentication-api-docs.yaml',
+                'annotations' => [
+                    base_path('app/OpenApi/AuthenticationApiSpec.php'),
+                    base_path('app/OpenApi/Authentication'),
+                ],
+            ],
+        ],
+
+        /*
+         * Submitter API: everything a clip submitter does (their videos and teams).
          */
         'submitter' => [
             'api' => [
-                'title' => 'Dashclip Delivery — Submitter API',
+                'title' => 'Submitter API',
             ],
             'routes' => [
                 'api' => 'api/documentation/submitter',
@@ -34,12 +58,12 @@ return [
         ],
 
         /*
-         * Channel Operator API — everything a channel operator does: their channels
+         * Channel Operator API: everything a channel operator does (their channels
          * and the offers made to them.
          */
         'channel-operator' => [
             'api' => [
-                'title' => 'Dashclip Delivery — Channel Operator API',
+                'title' => 'Channel Operator API',
             ],
             'routes' => [
                 'api' => 'api/documentation/channel-operator',

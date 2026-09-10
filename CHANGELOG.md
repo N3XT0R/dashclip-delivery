@@ -20,22 +20,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - filtering (`filter[...]`), sorting (`sort=`) and pagination (`page[number]`,
       `page[size]`, `meta.pagination` response block) on all list endpoints.
     - OAuth2 scope taxonomy (`videos:*`, `channels:*`, `offers:*`, `teams:*`) seeded for the
-      self-service client UI; per-route scope enforcement via Passport middleware.
-    - interactive OpenAPI 3.0 documentation (l5-swagger), split into a Submitter API
-      (`/api/documentation/submitter`: videos, teams) and a Channel Operator API
-      (`/api/documentation/channel-operator`: channels, offers), each with only the scopes it
-      needs. An `authorizationCode` OAuth2 flow and a bearer-token scheme are wired up so
-      endpoints can be tried out directly; the other enabled grant types (personal access,
-      device, client credentials) are described in the security scheme. Every operation carries
-      a behavioural description, not just a title (ADR 0008).
+      self-service client UI; per-route scope enforcement via middleware.
+    - interactive OpenAPI 3.0 documentation, split into three: Authentication
+      (`/api/documentation/authentication`: the OAuth2 token/authorize/device endpoints),
+      Submitter API (`/api/documentation/submitter`: videos, teams) and Channel Operator API
+      (`/api/documentation/channel-operator`: channels, offers). Each resource API declares
+      only the scopes it needs. An `authorizationCode` OAuth2 flow and a bearer-token scheme
+      are wired up so endpoints can be tried out directly; the other grant types (personal
+      access token, device, client credentials) are described in the security scheme. Every
+      operation carries a behavioural description, not just a title (ADR 0008).
     - new `/api-docs` overview page (linked in the site footer) that lists every documentation
-      set from the l5-swagger config with its Swagger UI and raw-spec URLs.
+      set (Authentication first as the entry point, then the resource APIs) with its Swagger
+      UI and raw-spec URLs.
 - **REST API OAuth2 foundation**
     - Passport is wired up end-to-end: bearer-token authentication via a new `api` guard,
       verified through a `GET /api/user` sanity-check endpoint.
     - Standard-panel users can now self-manage their own OAuth clients and personal access
       tokens with their assigned scopes; the admin panel retains full client/token management.
-    - This is the foundation sub-project for the broader REST API (Ticket #250) — actual
+    - This is the foundation sub-project for the broader REST API (Ticket #250); the actual
       domain endpoints follow in a later sub-project.
 - **Deploy: Passport key provisioning**
     - deploys now run `passport:keys` (without `--force`) after installing vendors, so the
