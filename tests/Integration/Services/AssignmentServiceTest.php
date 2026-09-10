@@ -13,7 +13,10 @@ use App\Models\Channel;
 use App\Models\Clip;
 use App\Models\Download;
 use App\Models\Video;
+use App\DTO\ChannelPoolDto;
 use App\Services\AssignmentService;
+use App\ValueObjects\AssignmentRun;
+use App\ValueObjects\VideoAssignmentContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +32,7 @@ class AssignmentServiceTest extends DatabaseTestCase
         parent::setUp();
 
         // Register a fake route so URL::temporarySignedRoute() can generate a URL.
-        Route::get('/assignments/{assignment}/download', fn() => 'ok')
+        Route::get('/assignments/{assignment}/download', fn () => 'ok')
             ->name('assignments.download');
         $this->service = $this->app->make(AssignmentService::class);
     }
@@ -468,6 +471,37 @@ class AssignmentServiceTest extends DatabaseTestCase
             'subject_type' => Assignment::class,
             'causer_id' => $user->getKey(),
             'description' => 'Assignment rejected by channel',
+        ]);
+    }
+
+    public function testAssignGroupToChannelFlagsViaPreferredChannel(): void
+    {
+        $channel = Channel::factory()->create();
+        $video = Video::factory()->create();
+        $batch = Batch::factory()->create();
+
+        $run = new AssignmentRun(
+            groups: collect([collect([$video])]),
+            channelPool: new ChannelPoolDto(
+                channels: collect([$channel]),
+                rotationPool: collect([$channel]),
+                quota: [$channel->getKey() => 5],
+            ),
+            videoContext: new VideoAssignmentContext(
+                blockedByVideo: [],
+                assignedChannelsByVideo: [],
+                preferredChannelIdByVideo: [$video->getKey() => $channel->getKey()],
+            ),
+            batch: $batch,
+        );
+
+        $count = $this->service->assignGroupToChannel(collect([$video]), $channel, $run, viaPreferred: true);
+
+        $this->assertSame(1, $count);
+        $this->assertDatabaseHas('assignments', [
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel->getKey(),
+            'via_preferred_channel' => true,
         ]);
     }
 

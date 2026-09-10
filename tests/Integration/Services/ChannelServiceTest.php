@@ -10,6 +10,7 @@ use App\Enum\Channel\ApplicationEnum;
 use App\Mail\ChannelWelcomeMail;
 use App\Models\Channel;
 use App\Models\User;
+use App\Models\Video;
 use App\Services\ChannelService;
 use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
@@ -292,6 +293,40 @@ class ChannelServiceTest extends DatabaseTestCase
         $exists = $this->channelService->existsChannelByName('NonExistingChannel');
 
         $this->assertFalse($exists);
+    }
+
+    public function testChannelAcceptsGroupChecksQuotaBlocksAndPriorAssignment(): void
+    {
+        $channel = Channel::factory()->create();
+        $v1 = Video::factory()->create();
+        $group = collect([$v1]);
+
+        $quota = [$channel->getKey() => 1];
+
+        $this->assertTrue($this->channelService->channelAcceptsGroup($channel, $group, $quota, [], []));
+        $this->assertFalse(
+            $this->channelService->channelAcceptsGroup($channel, $group, [$channel->getKey() => 0], [], [])
+        );
+        $this->assertFalse(
+            $this->channelService->channelAcceptsGroup($channel, $group, $quota, [$channel->getKey()], [])
+        );
+        $this->assertFalse($this->channelService->channelAcceptsGroup(
+            $channel,
+            $group,
+            $quota,
+            [],
+            [$v1->getKey() => collect([$channel->getKey()])]
+        ));
+    }
+
+    public function testFindPooledChannelReturnsMatchOrNull(): void
+    {
+        $a = Channel::factory()->create();
+        $b = Channel::factory()->create();
+        $pool = collect([$a, $a, $b]);
+
+        $this->assertSame($a->getKey(), $this->channelService->findPooledChannel($pool, $a->getKey())?->getKey());
+        $this->assertNull($this->channelService->findPooledChannel($pool, 999999));
     }
 
 }

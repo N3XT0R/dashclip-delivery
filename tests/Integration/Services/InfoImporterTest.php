@@ -25,10 +25,10 @@ class InfoImporterTest extends DatabaseTestCase
         $path = sys_get_temp_dir().'/info_import_'.bin2hex(random_bytes(4)).'.csv';
         $fh = fopen($path, 'wb');
         // Header line (ignored by importer except to advance the file pointer)
-        fwrite($fh, "filename;start;end;note;bundle;role;submitted_by\n");
+        fwrite($fh, "filename;start;end;note;bundle;role;submitted_by;preferred_channel\n");
         foreach ($rows as $row) {
-            // Ensure 7 columns as expected by the importer
-            $line = implode(';', array_pad($row, 7, ''))."\n";
+            // Ensure 8 columns as expected by the importer
+            $line = implode(';', array_pad($row, 8, ''))."\n";
             fwrite($fh, $line);
         }
         fclose($fh);
@@ -172,8 +172,8 @@ class InfoImporterTest extends DatabaseTestCase
         $this->assertContains(['created' => 0, 'updated' => 0, 'warnings' => 3], $result->toArray());
         $this->assertCount(3, $warnings);
 
-        $invalidTimeCount = count(array_filter($warnings, fn($m) => str_contains($m, 'Ungültige Zeitangabe')));
-        $notFoundCount = count(array_filter($warnings, fn($m) => str_contains($m, 'Kein Video gefunden')));
+        $invalidTimeCount = count(array_filter($warnings, fn ($m) => str_contains($m, 'Ungültige Zeitangabe')));
+        $notFoundCount = count(array_filter($warnings, fn ($m) => str_contains($m, 'Kein Video gefunden')));
 
         $this->assertSame(2, $invalidTimeCount, 'Expected two invalid time warnings (start and end).');
         $this->assertSame(1, $notFoundCount, 'Expected one "video not found" warning.');
@@ -202,6 +202,146 @@ class InfoImporterTest extends DatabaseTestCase
             'note' => 'timed',
             'bundle_key' => 'B',
             'submitted_by' => 'tester',
+        ]);
+
+        @unlink($csv);
+    }
+
+    public function testImportResolvesPreferredChannelByName(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'pref_by_name.mp4']);
+        $channel = \App\Models\Channel::factory()->create(['name' => 'Highway West']);
+
+        $csv = $this->writeCsv([
+            ['pref_by_name.mp4', '00:00', '00:10', 'n', '', '', 'alice', 'highway west'],
+        ]);
+
+        $result = $this->infoImporter->import($csv);
+
+        $this->assertSame(0, $result->stats->warnings);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => 'highway west',
+            'preferred_channel_id' => $channel->getKey(),
+        ]);
+
+        @unlink($csv);
+    }
+
+    public function testImportResolvesPreferredChannelById(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'pref_by_id.mp4']);
+        $channel = \App\Models\Channel::factory()->create();
+
+        $csv = $this->writeCsv([
+            ['pref_by_id.mp4', '00:00', '00:10', 'n', '', '', 'alice', (string) $channel->getKey()],
+        ]);
+
+        $result = $this->infoImporter->import($csv);
+
+        $this->assertSame(0, $result->stats->warnings);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel_id' => $channel->getKey(),
+        ]);
+
+        @unlink($csv);
+    }
+
+    public function testImportWarnsAndStoresRawValueForUnknownPreferredChannel(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'pref_unknown.mp4']);
+
+        $warnings = [];
+        $csv = $this->writeCsv([
+            ['pref_unknown.mp4', '00:00', '00:10', 'n', '', '', 'alice', 'No Such Channel'],
+        ]);
+
+        $result = $this->infoImporter->import($csv, [], function (string $m) use (&$warnings): void {
+            $warnings[] = $m;
+        });
+
+        $this->assertSame(1, $result->stats->warnings);
+        $this->assertNotEmpty($warnings);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => 'No Such Channel',
+            'preferred_channel_id' => null,
+        ]);
+
+        @unlink($csv);
+    }
+
+    public function testImportWithoutPreferredChannelColumnKeepsExistingBehaviour(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'legacy.mp4']);
+
+        // 7-column row (no preferred_channel) — array_pad fills the 8th slot with ''.
+        $csv = $this->writeCsv([
+            ['legacy.mp4', '00:00', '00:10', 'n', '', '', 'alice'],
+        ]);
+
+        $result = $this->infoImporter->import($csv);
+
+        $this->assertSame(0, $result->stats->warnings);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => null,
+            'preferred_channel_id' => null,
+        ]);
+
+        @unlink($csv);
+    }
+
+    public function testReimportUpdatesPreferredChannelOnExistingClip(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'reimport.mp4']);
+        $channel = \App\Models\Channel::factory()->create(['name' => 'Second Lane']);
+
+        $first = $this->writeCsv([['reimport.mp4', '00:00', '00:10', 'n', '', '', 'alice']]);
+        $this->infoImporter->import($first);
+        @unlink($first);
+
+        $second = $this->writeCsv([['reimport.mp4', '00:00', '00:10', 'n', '', '', 'alice', 'Second Lane']]);
+        $result = $this->infoImporter->import($second);
+        @unlink($second);
+
+        $this->assertSame(1, $result->stats->updated);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => 'Second Lane',
+            'preferred_channel_id' => $channel->getKey(),
+        ]);
+    }
+
+    public function testReimportNullsPreferredChannelIdWhenChannelBecomesPaused(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'pref_paused.mp4']);
+        $channel = \App\Models\Channel::factory()->create(['name' => 'Pause Lane']);
+
+        $csv = $this->writeCsv([
+            ['pref_paused.mp4', '00:00', '00:10', 'n', '', '', 'alice', 'Pause Lane'],
+        ]);
+
+        $first = $this->infoImporter->import($csv);
+        $this->assertSame(0, $first->stats->warnings);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => 'Pause Lane',
+            'preferred_channel_id' => $channel->getKey(),
+        ]);
+
+        // Channel is paused between imports; the same raw value now resolves to null.
+        $channel->update(['is_video_reception_paused' => true]);
+
+        $second = $this->infoImporter->import($csv);
+
+        $this->assertSame(1, $second->stats->warnings);
+        $this->assertSame(1, $second->stats->updated);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $video->id,
+            'preferred_channel' => 'Pause Lane',
+            'preferred_channel_id' => null,
         ]);
 
         @unlink($csv);

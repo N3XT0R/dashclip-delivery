@@ -259,6 +259,7 @@ return [
             'user_agent' => 'User Agent',
             'value' => 'Wert',
             'verified' => 'Verifiziert',
+            'via_preferred_channel' => 'Wunschkanal',
             'video' => 'Video',
             'video_name' => 'Videoname',
             'videos' => 'Videos',

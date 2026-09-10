@@ -120,7 +120,7 @@ class ChannelRepository
             ->where('user_id', $user->getKey())
             ->when(
                 filled($byStatus),
-                fn($query) => $query->whereIn('status', array_column($byStatus, 'value'))
+                fn ($query) => $query->whereIn('status', array_column($byStatus, 'value'))
             )->get();
     }
 
@@ -247,6 +247,18 @@ class ChannelRepository
     {
         return Channel::query()
             ->where('name', trim($name))
+            ->first();
+    }
+
+    /**
+     * Find a channel by name, ignoring case and surrounding whitespace.
+     * @param string $name
+     * @return Channel|null
+     */
+    public function findByNameInsensitive(string $name): ?Channel
+    {
+        return Channel::query()
+            ->whereRaw('LOWER(name) = ?', [mb_strtolower(trim($name))])
             ->first();
     }
 
