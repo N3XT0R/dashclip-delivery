@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **OAuth client creation in the Standard and admin panel** was impossible: every attempt
+  aborted with a database error and no client secret was ever shown. The
+  `passport_scope_grants.context_client_id` column was created as a bigint by an older
+  version of the scope-grant migration, while client ids are UUIDs. MySQL/MariaDB rejects
+  the UUID with "Data truncated for column 'context_client_id'", which killed the request
+  before the page that reveals the generated secret could load. A repair migration recreates
+  the column with the correct type and restores its foreign key and indexes. Databases that
+  already have the correct column are left untouched. A schema test now asserts that the
+  column keeps the same type as the client primary key it references, which SQLite alone
+  cannot catch because it does not enforce column types.
+
 ### Added
 - **REST API core resources (v1)**
     - new authenticated REST endpoints under `/api/v1` for videos (list, detail, multipart
