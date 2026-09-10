@@ -37,11 +37,21 @@ final class VideoWriteEndpointsTest extends DatabaseTestCase
         ], ['Accept' => 'application/json']);
 
         $response->assertCreated()->assertHeader('Location');
-        $video = Video::query()->findOrFail($response->json('data.id'));
-        Storage::disk('videos')->assertExists($video->path);
+        $videoId = $response->json('data.id');
         $this->assertSame('pending', $response->json('data.processing_status'));
-        $this->assertSame($user->getKey(), $video->clips()->firstOrFail()->user_id);
-        $this->assertSame(5, $video->clips()->firstOrFail()->start_sec);
+        $this->assertDatabaseHas('videos', [
+            'id' => $videoId,
+            'disk' => 'videos',
+            'processing_status' => 'pending',
+        ]);
+        $this->assertDatabaseHas('clips', [
+            'video_id' => $videoId,
+            'user_id' => $user->getKey(),
+            'start_sec' => 5,
+            'end_sec' => 30,
+        ]);
+        // Path is only known from the persisted row; needed for the filesystem assertion.
+        Storage::disk('videos')->assertExists(Video::query()->findOrFail($videoId)->path);
         Event::assertDispatched(VideoQueuedForIngest::class);
     }
 
