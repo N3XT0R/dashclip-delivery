@@ -16,12 +16,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class OfferController extends ApiController
 {
-    private const string RESPONSE_MISSING_SCOPE_OR_PERMISSION = 'Missing scope or permission';
     private const string SCHEMA_OFFER = '#/components/schemas/Offer';
+    private const string RESPONSE_OFFER_NOT_FOUND = 'Offer not found or not visible to the user';
 
     public function __construct(
         private readonly VideoRepository $videoRepository,
@@ -80,24 +79,23 @@ class OfferController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
         ],
     )]
     public function index(Request $request): JsonResponse
     {
-        $offers = $this->paginate(
-            QueryBuilder::for($this->visibleOffers($request))
-                ->allowedFilters(
-                    AllowedFilter::exact('status'),
-                    AllowedFilter::exact('channel_id'),
-                )
-                ->allowedSorts('created_at', 'expires_at')
-                ->defaultSort('-created_at'),
+        return $this->paginatedList(
+            $this->visibleOffers($request),
+            OfferResource::class,
+            [
+                AllowedFilter::exact('status'),
+                AllowedFilter::exact('channel_id'),
+            ],
+            ['created_at', 'expires_at'],
+            '-created_at',
             $request,
         );
-
-        return $this->paginated(OfferResource::collection($offers));
     }
 
     #[OA\Get(
@@ -119,9 +117,9 @@ class OfferController extends ApiController
                 description: 'The offer',
                 content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
-            new OA\Response(response: 404, description: 'Offer not found or not visible to the user'),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(response: 404, description: self::RESPONSE_OFFER_NOT_FOUND),
         ],
     )]
     public function show(Request $request, int $offer): OfferResource
@@ -158,13 +156,9 @@ class OfferController extends ApiController
                 ],
                 content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
-            new OA\Response(
-                response: 422,
-                description: 'Validation failed, or video/channel not accessible',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
-            ),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
         ],
     )]
     public function store(StoreOfferRequest $request, CreateOfferUseCase $createOffer): JsonResponse
@@ -210,14 +204,10 @@ class OfferController extends ApiController
                 description: 'The updated offer',
                 content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
-            new OA\Response(response: 404, description: 'Offer not found or not visible to the user'),
-            new OA\Response(
-                response: 422,
-                description: 'Validation failed',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
-            ),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(response: 404, description: self::RESPONSE_OFFER_NOT_FOUND),
+            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
         ],
     )]
     public function comment(StoreOfferCommentRequest $request, int $offer): OfferResource

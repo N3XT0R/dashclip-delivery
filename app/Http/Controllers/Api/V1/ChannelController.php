@@ -12,12 +12,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class ChannelController extends ApiController
 {
-    private const string RESPONSE_MISSING_SCOPE_OR_PERMISSION = 'Missing scope or permission';
     private const string SCHEMA_CHANNEL = '#/components/schemas/Channel';
+    private const string RESPONSE_CHANNEL_NOT_FOUND = 'Channel not found or not visible to the user';
 
     public function __construct(private readonly ChannelRepository $channelRepository)
     {
@@ -61,21 +60,20 @@ class ChannelController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
         ],
     )]
     public function index(Request $request): JsonResponse
     {
-        $channels = $this->paginate(
-            QueryBuilder::for($this->visibleChannels($request))
-                ->allowedFilters(AllowedFilter::exact('is_video_reception_paused'))
-                ->allowedSorts('name', 'created_at')
-                ->defaultSort('-created_at'),
+        return $this->paginatedList(
+            $this->visibleChannels($request),
+            ChannelResource::class,
+            [AllowedFilter::exact('is_video_reception_paused')],
+            ['name', 'created_at'],
+            '-created_at',
             $request,
         );
-
-        return $this->paginated(ChannelResource::collection($channels));
     }
 
     #[OA\Get(
@@ -97,9 +95,9 @@ class ChannelController extends ApiController
                 description: 'The channel',
                 content: new OA\JsonContent(ref: self::SCHEMA_CHANNEL),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
-            new OA\Response(response: 404, description: 'Channel not found or not visible to the user'),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(response: 404, description: self::RESPONSE_CHANNEL_NOT_FOUND),
         ],
     )]
     public function show(Request $request, int $channel): ChannelResource
@@ -136,14 +134,10 @@ class ChannelController extends ApiController
                 description: 'The updated channel',
                 content: new OA\JsonContent(ref: self::SCHEMA_CHANNEL),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
-            new OA\Response(response: 404, description: 'Channel not found or not visible to the user'),
-            new OA\Response(
-                response: 422,
-                description: 'Validation failed',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
-            ),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(response: 404, description: self::RESPONSE_CHANNEL_NOT_FOUND),
+            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
         ],
     )]
     public function update(UpdateChannelRequest $request, int $channel): ChannelResource

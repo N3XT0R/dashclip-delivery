@@ -13,12 +13,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
 
 final class TeamController extends ApiController
 {
-    private const string RESPONSE_MISSING_SCOPE = 'Missing scope';
     private const string SCHEMA_TEAM = '#/components/schemas/Team';
+    private const string RESPONSE_TEAM_NOT_FOUND = 'Team not found or not visible to the user';
 
     public function __construct(private readonly TeamRepository $teamRepository)
     {
@@ -62,21 +61,20 @@ final class TeamController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
         ],
     )]
     public function index(Request $request): JsonResponse
     {
-        $teams = $this->paginate(
-            QueryBuilder::for($this->visibleTeams($request))
-                ->allowedFilters(AllowedFilter::partial('name'))
-                ->allowedSorts('name', 'created_at')
-                ->defaultSort('-created_at'),
+        return $this->paginatedList(
+            $this->visibleTeams($request),
+            TeamResource::class,
+            [AllowedFilter::partial('name')],
+            ['name', 'created_at'],
+            '-created_at',
             $request,
         );
-
-        return $this->paginated(TeamResource::collection($teams));
     }
 
     #[OA\Get(
@@ -98,9 +96,9 @@ final class TeamController extends ApiController
                 description: 'The team',
                 content: new OA\JsonContent(ref: self::SCHEMA_TEAM),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
-            new OA\Response(response: 404, description: 'Team not found or not visible to the user'),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
+            new OA\Response(response: 404, description: self::RESPONSE_TEAM_NOT_FOUND),
         ],
     )]
     public function show(Request $request, int $team): TeamResource
@@ -136,13 +134,9 @@ final class TeamController extends ApiController
                 ],
                 content: new OA\JsonContent(ref: self::SCHEMA_TEAM),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
-            new OA\Response(
-                response: 422,
-                description: 'Validation failed',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
-            ),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
+            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
         ],
     )]
     public function store(StoreTeamRequest $request): JsonResponse
@@ -173,8 +167,8 @@ final class TeamController extends ApiController
         ],
         responses: [
             new OA\Response(response: 204, description: 'Team deleted'),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
             new OA\Response(response: 404, description: 'Team not found, not visible, or not owned by the user'),
         ],
     )]

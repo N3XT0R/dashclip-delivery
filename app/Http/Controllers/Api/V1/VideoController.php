@@ -16,11 +16,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class VideoController extends ApiController
 {
-    private const string RESPONSE_MISSING_SCOPE_OR_PERMISSION = 'Missing scope or permission';
     private const string RESPONSE_VIDEO_NOT_FOUND = 'Video not found or not visible to the user';
     private const string SCHEMA_VIDEO = '#/components/schemas/Video';
     private const string PATH_VIDEO_SHOW = '/api/v1/videos/{video}';
@@ -94,8 +92,8 @@ class VideoController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -105,26 +103,25 @@ class VideoController extends ApiController
             'filter.created_before' => ['sometimes', 'date'],
         ]);
 
-        $videos = $this->paginate(
-            QueryBuilder::for($this->visibleVideos($request))
-                ->allowedFilters(
-                    AllowedFilter::partial('original_name'),
-                    AllowedFilter::exact('processing_status'),
-                    AllowedFilter::callback(
-                        'created_after',
-                        static fn (Builder $query, mixed $value) => $query->where('created_at', '>=', $value),
-                    ),
-                    AllowedFilter::callback(
-                        'created_before',
-                        static fn (Builder $query, mixed $value) => $query->where('created_at', '<=', $value),
-                    ),
-                )
-                ->allowedSorts('original_name', 'created_at', 'bytes')
-                ->defaultSort('-created_at'),
+        return $this->paginatedList(
+            $this->visibleVideos($request),
+            VideoResource::class,
+            [
+                AllowedFilter::partial('original_name'),
+                AllowedFilter::exact('processing_status'),
+                AllowedFilter::callback(
+                    'created_after',
+                    static fn (Builder $query, mixed $value) => $query->where('created_at', '>=', $value),
+                ),
+                AllowedFilter::callback(
+                    'created_before',
+                    static fn (Builder $query, mixed $value) => $query->where('created_at', '<=', $value),
+                ),
+            ],
+            ['original_name', 'created_at', 'bytes'],
+            '-created_at',
             $request,
         );
-
-        return $this->paginated(VideoResource::collection($videos));
     }
 
     #[OA\Get(
@@ -146,8 +143,8 @@ class VideoController extends ApiController
                 description: 'The video',
                 content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
             new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
         ],
     )]
@@ -176,6 +173,7 @@ class VideoController extends ApiController
                         ),
                         new OA\Property(
                             property: 'clip',
+                            required: ['start_sec', 'end_sec'],
                             properties: [
                                 new OA\Property(property: 'start_sec', type: 'integer', minimum: 0),
                                 new OA\Property(property: 'end_sec', type: 'integer'),
@@ -200,13 +198,9 @@ class VideoController extends ApiController
                 ],
                 content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
-            new OA\Response(
-                response: 422,
-                description: 'Validation failed',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
-            ),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
         ],
     )]
     public function store(StoreVideoRequest $request, UploadVideoUseCase $uploadVideo): JsonResponse
@@ -253,14 +247,10 @@ class VideoController extends ApiController
                 description: 'The updated video',
                 content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
             new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
-            new OA\Response(
-                response: 422,
-                description: 'Validation failed',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
-            ),
+            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
         ],
     )]
     public function update(UpdateVideoRequest $request, int $video): VideoResource
@@ -286,8 +276,8 @@ class VideoController extends ApiController
         ],
         responses: [
             new OA\Response(response: 204, description: 'Video deleted'),
-            new OA\Response(response: 401, description: 'Unauthenticated'),
-            new OA\Response(response: 403, description: self::RESPONSE_MISSING_SCOPE_OR_PERMISSION),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
+            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
             new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
         ],
     )]

@@ -7,11 +7,14 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 abstract class ApiController extends Controller
@@ -80,5 +83,31 @@ abstract class ApiController extends Controller
                 Arr::except($request->query(), ['page']),
                 ['page' => ['size' => $this->pageSize($request)]],
             ));
+    }
+
+    /**
+     * Build a paginated JSON collection response for an index endpoint.
+     *
+     * @param  class-string<JsonResource>  $resource
+     * @param  list<AllowedFilter|string>  $filters
+     * @param  list<string>  $sorts
+     */
+    protected function paginatedList(
+        Builder $query,
+        string $resource,
+        array $filters,
+        array $sorts,
+        string $defaultSort,
+        Request $request,
+    ): JsonResponse {
+        $records = $this->paginate(
+            QueryBuilder::for($query)
+                ->allowedFilters(...$filters)
+                ->allowedSorts(...$sorts)
+                ->defaultSort($defaultSort),
+            $request,
+        );
+
+        return $this->paginated($resource::collection($records));
     }
 }
