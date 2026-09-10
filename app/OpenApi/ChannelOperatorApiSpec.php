@@ -6,7 +6,11 @@ namespace App\OpenApi;
 
 use OpenApi\Attributes as OA;
 
-#[OA\Info(version: '1.0.0', title: 'Dashclip Delivery API')]
+/**
+ * Root document for the Channel Operator API — the endpoints a channel operator
+ * uses to manage their channels and the offers made to them.
+ */
+#[OA\Info(version: '1.0.0', title: 'Dashclip Delivery — Channel Operator API')]
 #[OA\Server(url: '/', description: 'Application root')]
 #[OA\SecurityScheme(
     securityScheme: 'passport',
@@ -40,31 +44,17 @@ use OpenApi\Attributes as OA;
         ),
     ],
 )]
-#[OA\SecurityScheme(
-    securityScheme: 'bearerAuth',
-    type: 'http',
-    scheme: 'bearer',
-    bearerFormat: 'JWT',
-    description: 'Paste a raw access token: a Personal Access Token created in the Standard '
-        . 'panel, or a token obtained through the device grant.',
-)]
-final class OpenApiSpec
+final class ChannelOperatorApiSpec
 {
     /**
-     * OAuth2 scopes that gate the REST API endpoints.
+     * OAuth2 scopes that gate the Channel Operator API endpoints.
      *
      * @var array<string, string>
      */
     public const array SCOPES = [
-        'videos:read' => 'List and read videos',
-        'videos:write' => 'Upload and rename videos',
-        'videos:delete' => 'Delete videos',
         'channels:read' => 'List and read channels',
         'channels:write' => 'Update channel settings',
         'offers:read' => 'List and read offers',
         'offers:write' => 'Create offers and set comments',
-        'teams:read' => 'List and read teams',
-        'teams:write' => 'Create teams',
-        'teams:delete' => 'Delete owned teams',
     ];
 }

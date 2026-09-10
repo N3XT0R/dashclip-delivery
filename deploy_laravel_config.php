@@ -103,7 +103,7 @@ desc('Creates the encryption keys for API authentication');
 task('artisan:passport:keys', artisan('passport:keys'));
 
 desc('Generates the OpenAPI spec served at /api/documentation');
-task('artisan:l5-swagger:generate', artisan('l5-swagger:generate'));
+task('artisan:l5-swagger:generate', artisan('l5-swagger:generate --all'));
 
 /*
  * Database and migrations.

@@ -9,21 +9,23 @@ use Tests\TestCase;
 
 final class ApiDocsPageTest extends TestCase
 {
-    public function testPageRendersEveryConfiguredDocumentationSetAndIsLinkedInTheFooter(): void
+    public function testPageRendersEveryDocumentationSetAndIsLinkedInTheFooter(): void
     {
         $response = $this->get(route('api-docs'));
 
         $response->assertOk()
-            ->assertSee('Dashclip Delivery API')
-            ->assertSee(route('l5-swagger.default.api'), false)
-            ->assertSee(route('l5-swagger.default.docs'), false)
+            ->assertSee('Dashclip Delivery — Submitter API')
+            ->assertSee('Dashclip Delivery — Channel Operator API')
+            ->assertSee(route('l5-swagger.submitter.api'), false)
+            ->assertSee(route('l5-swagger.submitter.docs'), false)
+            ->assertSee(route('l5-swagger.channel-operator.api'), false)
             ->assertSee(route('api-docs'), false);
     }
 
     public function testServicePicksUpNewDocumentationSetsFromConfig(): void
     {
         config()->set('l5-swagger.documentations', [
-            'default' => ['api' => ['title' => 'Dashclip Delivery API']],
+            'submitter' => ['api' => ['title' => 'Submitter API']],
             'partner' => [
                 'api' => ['title' => 'Partner API'],
                 'routes' => ['api' => 'partner/documentation', 'docs' => 'partner/docs'],

@@ -3,50 +3,60 @@
 declare(strict_types=1);
 
 return [
-    'default' => 'default',
+    'default' => 'submitter',
     'documentations' => [
-        'default' => [
-            'api' => [
-                'title' => 'Dashclip Delivery API',
-            ],
 
+        /*
+         * Submitter API — everything a clip submitter does: their videos and teams.
+         */
+        'submitter' => [
+            'api' => [
+                'title' => 'Dashclip Delivery — Submitter API',
+            ],
             'routes' => [
-                /*
-                 * Route for accessing api documentation interface
-                 */
-                'api' => 'api/documentation',
+                'api' => 'api/documentation/submitter',
+                'docs' => 'docs/submitter',
+                'oauth2_callback' => 'api/documentation/submitter/oauth2-callback',
             ],
             'paths' => [
-                /*
-                 * Edit to include full URL in ui for assets
-                 */
-                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
-
-                /*
-                * Edit to set path where swagger ui assets should be stored
-                */
-                'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
-
-                /*
-                 * File name of the generated json documentation file
-                 */
-                'docs_json' => 'api-docs.json',
-
-                /*
-                 * File name of the generated YAML documentation file
-                 */
-                'docs_yaml' => 'api-docs.yaml',
-
-                /*
-                 * Set this to `json` or `yaml` to determine which documentation file to use in UI
-                 */
-                'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
-
-                /*
-                 * Absolute paths to directory containing the swagger annotations are stored.
-                 */
+                'docs_json' => 'submitter-api-docs.json',
+                'docs_yaml' => 'submitter-api-docs.yaml',
                 'annotations' => [
-                    base_path('app'),
+                    base_path('app/OpenApi/SubmitterApiSpec.php'),
+                    base_path('app/OpenApi/BearerAuthScheme.php'),
+                    base_path('app/OpenApi/Schemas'),
+                    base_path('app/OpenApi/Parameters'),
+                    base_path('app/OpenApi/Responses'),
+                    base_path('app/Http/Controllers/Api/V1/VideoController.php'),
+                    base_path('app/Http/Controllers/Api/V1/TeamController.php'),
+                ],
+            ],
+        ],
+
+        /*
+         * Channel Operator API — everything a channel operator does: their channels
+         * and the offers made to them.
+         */
+        'channel-operator' => [
+            'api' => [
+                'title' => 'Dashclip Delivery — Channel Operator API',
+            ],
+            'routes' => [
+                'api' => 'api/documentation/channel-operator',
+                'docs' => 'docs/channel-operator',
+                'oauth2_callback' => 'api/documentation/channel-operator/oauth2-callback',
+            ],
+            'paths' => [
+                'docs_json' => 'channel-operator-api-docs.json',
+                'docs_yaml' => 'channel-operator-api-docs.yaml',
+                'annotations' => [
+                    base_path('app/OpenApi/ChannelOperatorApiSpec.php'),
+                    base_path('app/OpenApi/BearerAuthScheme.php'),
+                    base_path('app/OpenApi/Schemas'),
+                    base_path('app/OpenApi/Parameters'),
+                    base_path('app/OpenApi/Responses'),
+                    base_path('app/Http/Controllers/Api/V1/ChannelController.php'),
+                    base_path('app/Http/Controllers/Api/V1/OfferController.php'),
                 ],
             ],
         ],
@@ -84,6 +94,21 @@ return [
              * Absolute path to location where parsed annotations will be stored
              */
             'docs' => storage_path('api-docs'),
+
+            /*
+             * Edit to include full URL in ui for assets
+             */
+            'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
+
+            /*
+             * Edit to set path where swagger ui assets should be stored
+             */
+            'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
+
+            /*
+             * Set this to `json` or `yaml` to determine which documentation file to use in UI
+             */
+            'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
 
             /*
              * Absolute path to directory where to export views
