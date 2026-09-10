@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ApiDocsController;
 use App\Http\Controllers\AssignmentDownloadController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
@@ -30,6 +31,8 @@ Route::get('/license', function () {
     return nl2br(file_get_contents(base_path('LICENSE')));
 })->name('license');
 
+Route::get('/api-docs', [ApiDocsController::class, 'index'])->name('api-docs');
+
 Route::get('/offer/{batch}/{channel}', [OfferController::class, 'show'])->name('offer.show');
 // ZIP-Download via asynchronen Job
 Route::get('/offer/{batch}/{channel}/unused', [OfferController::class, 'showUnused'])->name('offer.unused.show');
@@ -56,5 +59,3 @@ Route::get('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController:
 
 Route::post('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'store'])
     ->name('tokens.store');
-
-

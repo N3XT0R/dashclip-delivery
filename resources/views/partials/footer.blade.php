@@ -6,6 +6,7 @@
     - <a href="{{ route('datenschutz') }}" target="_blank">Datenschutz</a>
     - <a href="{{ route('tos') }}" target="_blank">Nutzungsbedingungen</a>
     - <a href="{{ route('license') }}" target="_blank">Lizenz</a>
+    - <a href="{{ route('api-docs') }}" target="_blank">API-Docs</a>
     - <a href="{{ url(config('app.footer.roadmap')) }}" target="_blank">Roadmap</a>
     - <a href="{{ url(config('app.footer.issues')) }}" target="_blank">Bug gefunden?</a>
     <br/>

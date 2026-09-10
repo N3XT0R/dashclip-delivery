@@ -14,11 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       pause/resume video reception), offers (list, detail, create, comment) and teams
       (list, detail, create, delete), all scoped to the data the authenticated user already
       sees in the Standard panel.
+    - video deletion enforces the same rule as the Standard panel: a video with active or
+      already picked-up offers cannot be deleted (409). The video processing status is
+      exposed read-only for progress polling but is not a filter.
     - filtering (`filter[...]`), sorting (`sort=`) and pagination (`page[number]`,
       `page[size]`, `meta.pagination` response block) on all list endpoints.
     - OAuth2 scope taxonomy (`videos:*`, `channels:*`, `offers:*`, `teams:*`) seeded for the
       self-service client UI; per-route scope enforcement via Passport middleware.
-    - interactive OpenAPI 3.0 documentation (l5-swagger) available at `/api/documentation`.
+    - interactive OpenAPI 3.0 documentation (l5-swagger) at `/api/documentation`, with an
+      `authorizationCode` OAuth2 flow and a bearer-token scheme wired up so endpoints can be
+      tried out directly; the other enabled grant types (personal access, device, client
+      credentials) are described in the security scheme. Every operation carries a behavioural
+      description, not just a title (ADR 0008).
+    - new `/api-docs` overview page (linked in the site footer) that lists every documentation
+      set from the l5-swagger config with its Swagger UI and raw-spec URLs.
 - **REST API OAuth2 foundation**
     - Passport is wired up end-to-end: bearer-token authentication via a new `api` guard,
       verified through a `GET /api/user` sanity-check endpoint.
