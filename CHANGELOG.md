@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Scope selection in the Standard panel came back and now follows the user's role.** The
+  self-service client wizard offered no permissions at all, because the underlying package
+  restricted the choice to scopes the user already held as their own grants, and nothing ever
+  created those. Which scopes a user may put on their own client is now answered by the
+  application: `RoleBoundScopeResolver` reads the scope and the Standard-guard permission that
+  each `/api/v1` route already declares, so a channel operator can pick channel and offer
+  scopes, a regular user video scopes, and the list can never drift from what the endpoints
+  actually enforce.
 - **OAuth client creation in the Standard and admin panel** was impossible: every attempt
   aborted with a database error and no client secret was ever shown. The
   `passport_scope_grants.context_client_id` column was created as a bigint by an older
