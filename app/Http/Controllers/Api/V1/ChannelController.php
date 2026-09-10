@@ -29,18 +29,18 @@ class ChannelController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/channels',
-        summary: 'List channels visible to the authenticated user',
         description: 'Returns a paginated list of channels the authenticated user operates '
             . '(channels they are a verified member of). Supports filtering by video-reception '
             . 'state, plus sorting and pagination. Admin-only fields such as weight and weekly '
             . 'quota are never exposed.',
+        summary: 'List channels visible to the authenticated user',
         security: [['passport' => ['channels:read']], ['bearerAuth' => []]],
         tags: ['Channels'],
         parameters: [
             new OA\Parameter(
                 name: 'filter[is_video_reception_paused]',
-                in: 'query',
                 description: 'Exact match',
+                in: 'query',
                 schema: new OA\Schema(type: 'boolean'),
             ),
             new OA\Parameter(ref: '#/components/parameters/SortNameCreatedAt'),
@@ -64,8 +64,8 @@ class ChannelController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -82,9 +82,9 @@ class ChannelController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/channels/{channel}',
-        summary: 'Show a single channel',
         description: 'Returns one channel the user operates, by id. Responds with 404 if the '
             . 'channel does not exist or the user has no access to it.',
+        summary: 'Show a single channel',
         security: [['passport' => ['channels:read']], ['bearerAuth' => []]],
         tags: ['Channels'],
         parameters: [
@@ -101,8 +101,8 @@ class ChannelController extends ApiController
                 description: 'The channel',
                 content: new OA\JsonContent(ref: self::SCHEMA_CHANNEL),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_CHANNEL_NOT_FOUND),
         ],
     )]
@@ -113,21 +113,12 @@ class ChannelController extends ApiController
 
     #[OA\Patch(
         path: '/api/v1/channels/{channel}',
-        summary: 'Pause or resume video reception for a channel',
         description: 'Toggles whether the channel currently accepts new video offers by setting '
             . 'is_video_reception_paused. This is the only channel field writable through the '
             . 'API; any other field in the body is rejected with 422. Responds with 404 for '
             . 'channels not visible to the user.',
+        summary: 'Pause or resume video reception for a channel',
         security: [['passport' => ['channels:write']], ['bearerAuth' => []]],
-        tags: ['Channels'],
-        parameters: [
-            new OA\Parameter(
-                name: 'channel',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer'),
-            ),
-        ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -138,16 +129,25 @@ class ChannelController extends ApiController
                 type: 'object',
             ),
         ),
+        tags: ['Channels'],
+        parameters: [
+            new OA\Parameter(
+                name: 'channel',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'The updated channel',
                 content: new OA\JsonContent(ref: self::SCHEMA_CHANNEL),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_CHANNEL_NOT_FOUND),
-            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
+            new OA\Response(ref: '#/components/responses/ValidationFailed', response: 422),
         ],
     )]
     public function update(UpdateChannelRequest $request, int $channel): ChannelResource

@@ -35,38 +35,38 @@ class VideoController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/videos',
-        summary: 'List videos visible to the authenticated user',
         description: 'Returns a paginated list of videos the authenticated user can see — the '
             . 'same set as in the Standard panel (videos the user submitted a clip for, or that '
             . 'belong to their team). Supports filtering by name and creation date range, plus '
             . 'sorting and pagination. The processing status is read-only (an internal ingest '
             . 'flag) and is not a filter.',
+        summary: 'List videos visible to the authenticated user',
         security: [['passport' => ['videos:read']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(
                 name: 'filter[original_name]',
-                in: 'query',
                 description: 'Partial, case-insensitive match on the original file name',
+                in: 'query',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'filter[created_after]',
-                in: 'query',
                 description: 'ISO-8601 date-time lower bound (inclusive) on created_at',
+                in: 'query',
                 schema: new OA\Schema(type: 'string', format: 'date-time'),
             ),
             new OA\Parameter(
                 name: 'filter[created_before]',
-                in: 'query',
                 description: 'ISO-8601 date-time upper bound (inclusive) on created_at',
+                in: 'query',
                 schema: new OA\Schema(type: 'string', format: 'date-time'),
             ),
             new OA\Parameter(
                 name: 'sort',
-                in: 'query',
                 description: 'Comma-separated sort fields; prefix with "-" for descending. '
                     . 'Allowed: original_name, created_at, bytes. Default: -created_at',
+                in: 'query',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(ref: '#/components/parameters/PageNumber'),
@@ -89,8 +89,8 @@ class VideoController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -122,9 +122,9 @@ class VideoController extends ApiController
 
     #[OA\Get(
         path: self::PATH_VIDEO_SHOW,
-        summary: 'Show a single video',
         description: 'Returns one video by id, including its current processing status. Responds '
             . 'with 404 if the video does not exist or is not visible to the authenticated user.',
+        summary: 'Show a single video',
         security: [['passport' => ['videos:read']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
@@ -141,8 +141,8 @@ class VideoController extends ApiController
                 description: 'The video',
                 content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
         ],
     )]
@@ -153,15 +153,14 @@ class VideoController extends ApiController
 
     #[OA\Post(
         path: '/api/v1/videos',
-        summary: 'Upload a video through the existing ingest pipeline',
         description: 'Uploads a video file together with the initial clip boundaries '
             . '(start_sec/end_sec). The file is stored on the videos disk, a video record and '
             . 'its first clip are created for the user\'s default team, and the video is queued '
             . 'for the same ingest pipeline the Standard-panel upload uses (hashing, preview '
             . 'generation, duplicate detection). Returns 201 with a Location header; poll the '
             . 'show endpoint to follow the processing status.',
+        summary: 'Upload a video through the existing ingest pipeline',
         security: [['passport' => ['videos:write']], ['bearerAuth' => []]],
-        tags: ['Videos'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
@@ -189,6 +188,7 @@ class VideoController extends ApiController
                 ),
             ),
         ),
+        tags: ['Videos'],
         responses: [
             new OA\Response(
                 response: 201,
@@ -202,9 +202,9 @@ class VideoController extends ApiController
                 ],
                 content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
-            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
+            new OA\Response(ref: '#/components/responses/ValidationFailed', response: 422),
         ],
     )]
     public function store(StoreVideoRequest $request, UploadVideoUseCase $uploadVideo): JsonResponse
@@ -224,20 +224,11 @@ class VideoController extends ApiController
 
     #[OA\Patch(
         path: self::PATH_VIDEO_SHOW,
-        summary: 'Rename a video',
         description: 'Updates the display name (original_name) of a video the user owns. Does not '
             . 'touch the stored file or the ingest state. Responds with 404 for videos not '
             . 'visible to the user.',
+        summary: 'Rename a video',
         security: [['passport' => ['videos:write']], ['bearerAuth' => []]],
-        tags: ['Videos'],
-        parameters: [
-            new OA\Parameter(
-                name: 'video',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer'),
-            ),
-        ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -248,16 +239,25 @@ class VideoController extends ApiController
                 type: 'object',
             ),
         ),
+        tags: ['Videos'],
+        parameters: [
+            new OA\Parameter(
+                name: 'video',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'The updated video',
                 content: new OA\JsonContent(ref: self::SCHEMA_VIDEO),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
-            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
+            new OA\Response(ref: '#/components/responses/ValidationFailed', response: 422),
         ],
     )]
     public function update(UpdateVideoRequest $request, int $video): VideoResource
@@ -270,12 +270,12 @@ class VideoController extends ApiController
 
     #[OA\Delete(
         path: self::PATH_VIDEO_SHOW,
-        summary: 'Delete a video',
         description: 'Permanently deletes a video the user owns, including its stored file. '
             . 'Only allowed while the video has no active (ready, non-expired) offers and no '
             . 'offer that was already picked up — the same rule the Standard-panel delete '
             . 'action enforces. Responds with 404 for videos not visible to the user, 409 when '
             . 'the video still has active or picked-up offers, and 204 on success.',
+        summary: 'Delete a video',
         security: [['passport' => ['videos:delete']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
@@ -288,8 +288,8 @@ class VideoController extends ApiController
         ],
         responses: [
             new OA\Response(response: 204, description: 'Video deleted'),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
             new OA\Response(
                 response: 409,

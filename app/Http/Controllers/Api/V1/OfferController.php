@@ -36,31 +36,31 @@ class OfferController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/offers',
-        summary: 'List offers visible to the authenticated user',
         description: 'Returns a paginated list of offers (video-to-channel assignments) the user '
             . 'can see: offers for one of their channels, or for a video they submitted a clip '
             . 'for. Supports filtering by status and channel, plus sorting and pagination. The '
             . 'download token is never exposed.',
+        summary: 'List offers visible to the authenticated user',
         security: [['passport' => ['offers:read']], ['bearerAuth' => []]],
         tags: ['Offers'],
         parameters: [
             new OA\Parameter(
                 name: 'filter[status]',
-                in: 'query',
                 description: 'Exact match',
+                in: 'query',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(
                 name: 'filter[channel_id]',
-                in: 'query',
                 description: 'Exact match',
+                in: 'query',
                 schema: new OA\Schema(type: 'integer'),
             ),
             new OA\Parameter(
                 name: 'sort',
-                in: 'query',
                 description: 'Comma-separated sort fields; prefix with "-" for descending. '
                     . 'Allowed: created_at, expires_at. Default: -created_at',
+                in: 'query',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(ref: '#/components/parameters/PageNumber'),
@@ -83,8 +83,8 @@ class OfferController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -104,9 +104,9 @@ class OfferController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/offers/{offer}',
-        summary: 'Show a single offer',
         description: 'Returns one offer by id. Responds with 404 if the offer does not exist or '
             . 'is not visible to the authenticated user.',
+        summary: 'Show a single offer',
         security: [['passport' => ['offers:read']], ['bearerAuth' => []]],
         tags: ['Offers'],
         parameters: [
@@ -123,8 +123,8 @@ class OfferController extends ApiController
                 description: 'The offer',
                 content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_OFFER_NOT_FOUND),
         ],
     )]
@@ -135,14 +135,13 @@ class OfferController extends ApiController
 
     #[OA\Post(
         path: '/api/v1/offers',
-        summary: 'Create an offer for a video/channel pair',
         description: 'Manually offers a video to a channel. Both the video and the channel must '
             . 'be visible to the user. The offer is placed in a fresh distribution batch of type '
             . '"api" and gets the default expiry TTL. A pair that already has an offer is '
             . 'rejected with 422; the offer status is managed by the distribution pipeline and '
             . 'cannot be set here. Returns 201 with a Location header.',
+        summary: 'Create an offer for a video/channel pair',
         security: [['passport' => ['offers:write']], ['bearerAuth' => []]],
-        tags: ['Offers'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -154,6 +153,7 @@ class OfferController extends ApiController
                 type: 'object',
             ),
         ),
+        tags: ['Offers'],
         responses: [
             new OA\Response(
                 response: 201,
@@ -167,9 +167,9 @@ class OfferController extends ApiController
                 ],
                 content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
-            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
+            new OA\Response(ref: '#/components/responses/ValidationFailed', response: 422),
         ],
     )]
     public function store(StoreOfferRequest $request, CreateOfferUseCase $createOffer): JsonResponse
@@ -188,19 +188,10 @@ class OfferController extends ApiController
 
     #[OA\Post(
         path: '/api/v1/offers/{offer}/comment',
-        summary: 'Set the comment note on an offer',
         description: 'Replaces the free-text note on an offer visible to the user. Responds with '
             . '404 for offers not visible to the user and returns the updated offer on success.',
+        summary: 'Set the comment note on an offer',
         security: [['passport' => ['offers:write']], ['bearerAuth' => []]],
-        tags: ['Offers'],
-        parameters: [
-            new OA\Parameter(
-                name: 'offer',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer'),
-            ),
-        ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -211,16 +202,25 @@ class OfferController extends ApiController
                 type: 'object',
             ),
         ),
+        tags: ['Offers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'offer',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer'),
+            ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
                 description: 'The updated offer',
                 content: new OA\JsonContent(ref: self::SCHEMA_OFFER),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/Forbidden', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_OFFER_NOT_FOUND),
-            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
+            new OA\Response(ref: '#/components/responses/ValidationFailed', response: 422),
         ],
     )]
     public function comment(StoreOfferCommentRequest $request, int $offer): OfferResource

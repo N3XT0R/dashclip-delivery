@@ -30,16 +30,16 @@ final class TeamController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/teams',
-        summary: 'List teams visible to the authenticated user',
         description: 'Returns a paginated list of teams the user owns or is a member of. Supports '
             . 'partial name filtering, sorting and pagination.',
+        summary: 'List teams visible to the authenticated user',
         security: [['passport' => ['teams:read']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
             new OA\Parameter(
                 name: 'filter[name]',
-                in: 'query',
                 description: 'Partial, case-insensitive match on the team name',
+                in: 'query',
                 schema: new OA\Schema(type: 'string'),
             ),
             new OA\Parameter(ref: '#/components/parameters/SortNameCreatedAt'),
@@ -63,8 +63,8 @@ final class TeamController extends ApiController
                     type: 'object',
                 ),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/ForbiddenScope', response: 403),
         ],
     )]
     public function index(Request $request): JsonResponse
@@ -81,9 +81,9 @@ final class TeamController extends ApiController
 
     #[OA\Get(
         path: '/api/v1/teams/{team}',
-        summary: 'Show a single team',
         description: 'Returns one team the user owns or belongs to, by id. Responds with 404 '
             . 'otherwise.',
+        summary: 'Show a single team',
         security: [['passport' => ['teams:read']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
@@ -100,8 +100,8 @@ final class TeamController extends ApiController
                 description: 'The team',
                 content: new OA\JsonContent(ref: self::SCHEMA_TEAM),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/ForbiddenScope', response: 403),
             new OA\Response(response: 404, description: self::RESPONSE_TEAM_NOT_FOUND),
         ],
     )]
@@ -112,12 +112,11 @@ final class TeamController extends ApiController
 
     #[OA\Post(
         path: '/api/v1/teams',
-        summary: 'Create a team owned by the authenticated user',
         description: 'Creates a new team with the given name, owned by the authenticated user, '
             . 'who is also added as a member. A unique slug is generated automatically. Returns '
             . '201 with a Location header.',
+        summary: 'Create a team owned by the authenticated user',
         security: [['passport' => ['teams:write']], ['bearerAuth' => []]],
-        tags: ['Teams'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -128,6 +127,7 @@ final class TeamController extends ApiController
                 type: 'object',
             ),
         ),
+        tags: ['Teams'],
         responses: [
             new OA\Response(
                 response: 201,
@@ -141,9 +141,9 @@ final class TeamController extends ApiController
                 ],
                 content: new OA\JsonContent(ref: self::SCHEMA_TEAM),
             ),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
-            new OA\Response(response: 422, ref: '#/components/responses/ValidationFailed'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/ForbiddenScope', response: 403),
+            new OA\Response(ref: '#/components/responses/ValidationFailed', response: 422),
         ],
     )]
     public function store(StoreTeamRequest $request): JsonResponse
@@ -161,9 +161,9 @@ final class TeamController extends ApiController
 
     #[OA\Delete(
         path: '/api/v1/teams/{team}',
-        summary: 'Delete a team owned by the authenticated user',
         description: 'Deletes a team. Only the team owner may do this; members and non-members '
             . 'get 404. Returns 204 on success.',
+        summary: 'Delete a team owned by the authenticated user',
         security: [['passport' => ['teams:delete']], ['bearerAuth' => []]],
         tags: ['Teams'],
         parameters: [
@@ -176,8 +176,8 @@ final class TeamController extends ApiController
         ],
         responses: [
             new OA\Response(response: 204, description: 'Team deleted'),
-            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
-            new OA\Response(response: 403, ref: '#/components/responses/ForbiddenScope'),
+            new OA\Response(ref: '#/components/responses/Unauthorized', response: 401),
+            new OA\Response(ref: '#/components/responses/ForbiddenScope', response: 403),
             new OA\Response(response: 404, description: 'Team not found, not visible, or not owned by the user'),
         ],
     )]

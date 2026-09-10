@@ -21,9 +21,9 @@ use OpenApi\Attributes as OA;
 #[OA\Parameter(
     parameter: 'SortNameCreatedAt',
     name: 'sort',
-    in: 'query',
     description: 'Comma-separated sort fields; prefix with "-" for descending. '
         . 'Allowed: name, created_at. Default: -created_at',
+    in: 'query',
     schema: new OA\Schema(type: 'string'),
 )]
 final class PaginationParameters
