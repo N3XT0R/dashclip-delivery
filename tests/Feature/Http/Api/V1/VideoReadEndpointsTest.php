@@ -21,6 +21,14 @@ final class VideoReadEndpointsTest extends DatabaseTestCase
         return $user;
     }
 
+    public function testProcessingStatusIsNotAFilter(): void
+    {
+        $this->actingUser();
+
+        $this->getJson('/api/v1/videos?filter[processing_status]=pending')
+            ->assertStatus(400);
+    }
+
     public function testIndexListsOnlyOwnVideosWithPaginationMeta(): void
     {
         $user = $this->actingUser();

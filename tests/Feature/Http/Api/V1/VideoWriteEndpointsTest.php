@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Http\Api\V1;
 
 use App\Application\Video\UploadVideoUseCase;
+use App\Enum\StatusEnum;
 use App\Events\Video\VideoQueuedForIngest;
+use App\Models\Assignment;
 use App\Models\User;
 use App\Models\Video;
 use Illuminate\Database\QueryException;
@@ -117,13 +119,39 @@ final class VideoWriteEndpointsTest extends DatabaseTestCase
             ->assertNotFound();
     }
 
-    public function testDestroyDeletesOwnVideo(): void
+    public function testDestroyDeletesOwnVideoWithoutActiveOffers(): void
     {
         Storage::fake('videos');
         $user = $this->actingUser(['videos:delete']);
         $video = Video::factory()->withClips(1, $user)->create();
 
         $this->deleteJson('/api/v1/videos/' . $video->getKey())->assertNoContent();
+        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
+    }
+
+    public function testDestroyRejectsVideoWithAnActiveOffer(): void
+    {
+        Storage::fake('videos');
+        $user = $this->actingUser(['videos:delete']);
+        $video = Video::factory()->withClips(1, $user)->create();
+        Assignment::factory()->forVideo($video)->create([
+            'status' => StatusEnum::QUEUED->value,
+            'expires_at' => now()->addWeek(),
+        ]);
+
+        $this->deleteJson('/api/v1/videos/' . $video->getKey())->assertStatus(409);
+        $this->assertDatabaseHas('videos', ['id' => $video->getKey(), 'deleted_at' => null]);
+    }
+
+    public function testDestroyRejectsVideoWithAPickedUpOffer(): void
+    {
+        Storage::fake('videos');
+        $user = $this->actingUser(['videos:delete']);
+        $video = Video::factory()->withClips(1, $user)->create();
+        Assignment::factory()->forVideo($video)->create(['status' => StatusEnum::PICKEDUP->value]);
+
+        $this->deleteJson('/api/v1/videos/' . $video->getKey())->assertStatus(409);
+        $this->assertDatabaseHas('videos', ['id' => $video->getKey(), 'deleted_at' => null]);
     }
 
     public function testWriteWithReadOnlyScopeReturns403(): void

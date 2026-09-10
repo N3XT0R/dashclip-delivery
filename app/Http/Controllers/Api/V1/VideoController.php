@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Application\Video\IsDeletableUseCase;
 use App\Application\Video\UploadVideoUseCase;
 use App\Http\Requests\Api\V1\StoreVideoRequest;
 use App\Http\Requests\Api\V1\UpdateVideoRequest;
@@ -35,7 +36,12 @@ class VideoController extends ApiController
     #[OA\Get(
         path: '/api/v1/videos',
         summary: 'List videos visible to the authenticated user',
-        security: [['passport' => ['videos:read']]],
+        description: 'Returns a paginated list of videos the authenticated user can see — the '
+            . 'same set as in the Standard panel (videos the user submitted a clip for, or that '
+            . 'belong to their team). Supports filtering by name and creation date range, plus '
+            . 'sorting and pagination. The processing status is read-only (an internal ingest '
+            . 'flag) and is not a filter.',
+        security: [['passport' => ['videos:read']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(
@@ -43,15 +49,6 @@ class VideoController extends ApiController
                 in: 'query',
                 description: 'Partial, case-insensitive match on the original file name',
                 schema: new OA\Schema(type: 'string'),
-            ),
-            new OA\Parameter(
-                name: 'filter[processing_status]',
-                in: 'query',
-                description: 'Exact match',
-                schema: new OA\Schema(
-                    type: 'string',
-                    enum: ['pending', 'running', 'completed', 'failed', 'deleted'],
-                ),
             ),
             new OA\Parameter(
                 name: 'filter[created_after]',
@@ -108,7 +105,6 @@ class VideoController extends ApiController
             VideoResource::class,
             [
                 AllowedFilter::partial('original_name'),
-                AllowedFilter::exact('processing_status'),
                 AllowedFilter::callback(
                     'created_after',
                     static fn (Builder $query, mixed $value) => $query->where('created_at', '>=', $value),
@@ -127,7 +123,9 @@ class VideoController extends ApiController
     #[OA\Get(
         path: self::PATH_VIDEO_SHOW,
         summary: 'Show a single video',
-        security: [['passport' => ['videos:read']]],
+        description: 'Returns one video by id, including its current processing status. Responds '
+            . 'with 404 if the video does not exist or is not visible to the authenticated user.',
+        security: [['passport' => ['videos:read']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(
@@ -156,7 +154,13 @@ class VideoController extends ApiController
     #[OA\Post(
         path: '/api/v1/videos',
         summary: 'Upload a video through the existing ingest pipeline',
-        security: [['passport' => ['videos:write']]],
+        description: 'Uploads a video file together with the initial clip boundaries '
+            . '(start_sec/end_sec). The file is stored on the videos disk, a video record and '
+            . 'its first clip are created for the user\'s default team, and the video is queued '
+            . 'for the same ingest pipeline the Standard-panel upload uses (hashing, preview '
+            . 'generation, duplicate detection). Returns 201 with a Location header; poll the '
+            . 'show endpoint to follow the processing status.',
+        security: [['passport' => ['videos:write']], ['bearerAuth' => []]],
         tags: ['Videos'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -221,7 +225,10 @@ class VideoController extends ApiController
     #[OA\Patch(
         path: self::PATH_VIDEO_SHOW,
         summary: 'Rename a video',
-        security: [['passport' => ['videos:write']]],
+        description: 'Updates the display name (original_name) of a video the user owns. Does not '
+            . 'touch the stored file or the ingest state. Responds with 404 for videos not '
+            . 'visible to the user.',
+        security: [['passport' => ['videos:write']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(
@@ -264,7 +271,12 @@ class VideoController extends ApiController
     #[OA\Delete(
         path: self::PATH_VIDEO_SHOW,
         summary: 'Delete a video',
-        security: [['passport' => ['videos:delete']]],
+        description: 'Permanently deletes a video the user owns, including its stored file. '
+            . 'Only allowed while the video has no active (ready, non-expired) offers and no '
+            . 'offer that was already picked up — the same rule the Standard-panel delete '
+            . 'action enforces. Responds with 404 for videos not visible to the user, 409 when '
+            . 'the video still has active or picked-up offers, and 204 on success.',
+        security: [['passport' => ['videos:delete']], ['bearerAuth' => []]],
         tags: ['Videos'],
         parameters: [
             new OA\Parameter(
@@ -279,11 +291,22 @@ class VideoController extends ApiController
             new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 403, ref: '#/components/responses/Forbidden'),
             new OA\Response(response: 404, description: self::RESPONSE_VIDEO_NOT_FOUND),
+            new OA\Response(
+                response: 409,
+                description: 'The video still has active or picked-up offers and cannot be deleted',
+            ),
         ],
     )]
-    public function destroy(Request $request, int $video): Response
+    public function destroy(Request $request, int $video, IsDeletableUseCase $isDeletable): Response
     {
         $model = $this->visibleVideos($request)->findOrFail($video);
+
+        abort_unless(
+            $isDeletable->handle($model),
+            Response::HTTP_CONFLICT,
+            'The video still has active or picked-up offers and cannot be deleted.',
+        );
+
         app(VideoService::class)->delete($model);
 
         return $this->noContent();
