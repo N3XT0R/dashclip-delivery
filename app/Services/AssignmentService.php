@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
 
 readonly class AssignmentService
 {
-
     public function __construct(private AssignmentRepository $assignmentRepository)
     {
     }
@@ -89,13 +88,18 @@ readonly class AssignmentService
      * @param Collection<Video> $group
      * @param Channel $channel
      * @param AssignmentRun $run
+     * @param bool $viaPreferred
      * @return int
      */
-    public function assignGroupToChannel(Collection $group, Channel $channel, AssignmentRun $run): int
-    {
+    public function assignGroupToChannel(
+        Collection $group,
+        Channel $channel,
+        AssignmentRun $run,
+        bool $viaPreferred = false
+    ): int {
         $count = 0;
         foreach ($group as $video) {
-            $this->assignmentRepository->createAssignment($video, $channel, $run->batch);
+            $this->assignmentRepository->createAssignment($video, $channel, $run->batch, $viaPreferred);
 
             $run->recordAssignment($video->getKey(), $channel->getKey());
             $run->decrementQuota($channel->getKey());
@@ -208,4 +212,3 @@ readonly class AssignmentService
         return $result;
     }
 }
-

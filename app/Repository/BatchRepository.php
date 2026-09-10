@@ -14,15 +14,21 @@ class BatchRepository
      * @param Batch $batch
      * @param int $assigned
      * @param int $skipped
+     * @param int $deferred
      * @return bool
      */
-    public function markAssignedBatchAsFinished(Batch $batch, int $assigned, int $skipped): bool
-    {
+    public function markAssignedBatchAsFinished(
+        Batch $batch,
+        int $assigned,
+        int $skipped,
+        int $deferred = 0
+    ): bool {
         return $batch->update([
             'finished_at' => now(),
             'stats' => [
                 'assigned' => $assigned,
                 'skipped' => $skipped,
+                'deferred' => $deferred,
             ],
         ]);
     }

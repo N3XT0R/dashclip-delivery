@@ -218,7 +218,7 @@ class ChannelRepositoryTest extends DatabaseTestCase
             'user_id' => $user->id,
             'status' => ApplicationEnum::APPROVED->value,
         ]);
-        
+
         // Should NOT match
         ChannelApplication::factory()->create([
             'user_id' => $otherUser->id,
@@ -329,6 +329,21 @@ class ChannelRepositoryTest extends DatabaseTestCase
         $result = $this->channelRepository->getChannelApplicationsByUser($user);
 
         $this->assertTrue($result->isEmpty());
+    }
+
+    public function testFindByNameInsensitiveMatchesRegardlessOfCaseAndWhitespace(): void
+    {
+        $channel = Channel::factory()->create(['name' => 'Highway West']);
+
+        $this->assertSame($channel->getKey(), $this->channelRepository->findByNameInsensitive('  highway west ')?->getKey());
+        $this->assertSame($channel->getKey(), $this->channelRepository->findByNameInsensitive('HIGHWAY WEST')?->getKey());
+    }
+
+    public function testFindByNameInsensitiveReturnsNullWhenNoMatch(): void
+    {
+        Channel::factory()->create(['name' => 'Highway West']);
+
+        $this->assertNull($this->channelRepository->findByNameInsensitive('Nonexistent'));
     }
 
 }

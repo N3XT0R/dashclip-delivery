@@ -31,6 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       OAuth encryption keys exist in the shared `storage` directory from the first deploy
       onward; the command is idempotent and never overwrites keys that already exist, so
       previously issued tokens/sessions stay valid.
+- **`preferred_channel` column in `info.csv`**
+    - submitters can add an optional `preferred_channel` column (channel name or numeric id) to
+      route a video to a specific channel. On import an unknown or paused channel logs a warning
+      and the video falls back to the normal distribution algorithm.
+    - the distributor honours a valid preference without overriding weekly quotas, channel blocks
+      or team-channel scope; a wished channel that is temporarily out of quota defers the video to
+      the next run instead of reassigning it elsewhere.
+    - the admin assignment overview gains a "Preferred channel" column and filter showing whether
+      an assignment was made via `preferred_channel` (Ticket #139).
 
 ## [4.4.0] - 2026-08-20
 

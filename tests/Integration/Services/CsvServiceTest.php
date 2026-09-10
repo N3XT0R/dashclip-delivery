@@ -80,19 +80,21 @@ class CsvServiceTest extends DatabaseTestCase
 
         // Strip BOM for parsing and split into lines
         $clean = ltrim($csv, "\xEF\xBB\xBF");
-        $lines = array_values(array_filter(array_map(static fn($l) => rtrim($l, "\r\n"), explode("\n", $clean)),
-            fn($l) => $l !== ''));
+        $lines = array_values(array_filter(
+            array_map(static fn ($l) => rtrim($l, "\r\n"), explode("\n", $clean)),
+            fn ($l) => $l !== ''
+        ));
 
         // Expect: header + 1 row for Video A + 2 rows for Video B = 4 lines total
         $this->assertCount(4, $lines);
 
         // Helper to parse a CSV line using semicolon delimiter
-        $parse = static fn(string $line): array => str_getcsv($line, ';');
+        $parse = static fn (string $line): array => str_getcsv($line, ';');
 
         // Header row
         $header = $parse($lines[0]);
         $this->assertSame(
-            ['filename', 'hash', 'size_mb', 'start', 'end', 'note', 'bundle', 'role', 'submitted_by'],
+            ['filename', 'hash', 'size_mb', 'start', 'end', 'note', 'bundle', 'role', 'submitted_by', 'preferred_channel'],
             $header
         );
 
@@ -108,6 +110,7 @@ class CsvServiceTest extends DatabaseTestCase
             '',              // bundle
             '',              // role
             '',              // submitted_by
+            '',              // preferred_channel
         ], $rowA);
 
         // Rows for Video B (two clips)
@@ -125,6 +128,7 @@ class CsvServiceTest extends DatabaseTestCase
             'bundle-123',
             'editor',
             'user@example.test',
+            '',              // preferred_channel
         ], $rowB1);
 
         // Second clip: 75..130s -> "01:15" .. "02:10"
@@ -138,6 +142,7 @@ class CsvServiceTest extends DatabaseTestCase
             'bundle-456',
             'review',
             'user2@example.test',
+            '',              // preferred_channel
         ], $rowB2);
     }
 
@@ -182,5 +187,26 @@ class CsvServiceTest extends DatabaseTestCase
         $resultArray = $importResult->toArray();
         $this->assertSame(3, $resultArray['stats']['created']);
         $this->assertCount(3, $resultArray['created_ids']);
+    }
+
+
+    public function testBuildInfoCsvIncludesPreferredChannelColumn(): void
+    {
+        $channel = Channel::factory()->create(['name' => 'Highway West']);
+        $video = Video::factory()->create(['original_name' => 'v.mp4']);
+        Clip::factory()->for($video)->create([
+            'preferred_channel' => 'highway west',
+            'preferred_channel_id' => $channel->getKey(),
+        ]);
+
+        $assignment = Assignment::factory()->forVideo($video)->forChannel($channel)->create();
+
+        $csv = $this->csvService->buildInfoCsv(
+            Assignment::query()->whereKey($assignment->getKey())->with('video.clips.preferredChannel')->get()
+        );
+
+        $lines = array_values(array_filter(explode("\n", trim($csv))));
+        $this->assertStringContainsString('preferred_channel', $lines[0]);
+        $this->assertStringContainsString('Highway West', $lines[1]);
     }
 }

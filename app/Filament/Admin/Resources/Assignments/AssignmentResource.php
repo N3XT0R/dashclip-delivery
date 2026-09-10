@@ -13,9 +13,11 @@ use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class AssignmentResource extends Resource
@@ -86,6 +88,12 @@ class AssignmentResource extends Resource
                     ->sortable()
                     ->searchable(),
 
+                IconColumn::make('via_preferred_channel')
+                    ->label(__('filament.admin.labels.via_preferred_channel'))
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
+
                 TextColumn::make('attempts')
                     ->label(__('filament.admin.labels.attempts'))
                     ->numeric()
@@ -111,6 +119,9 @@ class AssignmentResource extends Resource
                         ->distinct()
                         ->pluck('status', 'status')
                         ->toArray()),
+
+                TernaryFilter::make('via_preferred_channel')
+                    ->label(__('filament.admin.labels.via_preferred_channel')),
 
                 // Date range by created_at
                 Filter::make('created_range')

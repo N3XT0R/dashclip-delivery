@@ -42,15 +42,21 @@ class AssignmentRepository
      * @param Video $video
      * @param Channel $channel
      * @param Batch $batch
+     * @param bool $viaPreferred
      * @return Assignment
      */
-    public function createAssignment(Video $video, Channel $channel, Batch $batch): Assignment
-    {
+    public function createAssignment(
+        Video $video,
+        Channel $channel,
+        Batch $batch,
+        bool $viaPreferred = false
+    ): Assignment {
         return Assignment::query()->create([
             'video_id' => $video->getKey(),
             'channel_id' => $channel->getKey(),
             'batch_id' => $batch->getKey(),
             'status' => StatusEnum::QUEUED->value,
+            'via_preferred_channel' => $viaPreferred,
         ]);
     }
 
@@ -168,7 +174,7 @@ class AssignmentRepository
      */
     public function fetchForZip(Batch $batch, Channel $channel, Collection $ids): EloquentCollection
     {
-        return Assignment::with('video.clips')
+        return Assignment::with('video.clips.preferredChannel')
             ->where('batch_id', $batch->getKey())
             ->where('channel_id', $channel->getKey())
             ->whereIn('id', $ids)
@@ -184,7 +190,7 @@ class AssignmentRepository
      */
     public function fetchForZipForChannel(Channel $channel, Collection $ids): EloquentCollection
     {
-        return Assignment::with('video.clips')
+        return Assignment::with('video.clips.preferredChannel')
             ->where('channel_id', $channel->getKey())
             ->whereIn('id', $ids)
             ->whereIn('status', StatusEnum::getReadyStatus())

@@ -27,7 +27,9 @@ class Clip extends Model
         'bundle_key',
         'role',
         'submitted_by',
-        'user_id'
+        'user_id',
+        'preferred_channel',
+        'preferred_channel_id',
     ];
 
     protected $appends = [
@@ -47,6 +49,15 @@ class Clip extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * The channel the submitter asked this clip's video to be assigned to.
+     * Null when no preference was given or the raw value could not be resolved.
+     */
+    public function preferredChannel(): BelongsTo
+    {
+        return $this->belongsTo(Channel::class, 'preferred_channel_id');
+    }
+
     public function setUser(User $user): self
     {
         $this->setAttribute('user_id', $user->getKey());
@@ -57,7 +68,7 @@ class Clip extends Model
     protected function startTime(): Attribute
     {
         return Attribute::get(
-            fn() => $this->start_sec !== null
+            fn () => $this->start_sec !== null
                 ? gmdate('i:s', (int)$this->start_sec)
                 : null,
         );
@@ -66,7 +77,7 @@ class Clip extends Model
     protected function duration(): Attribute
     {
         return Attribute::get(
-            fn() => ($this->start_sec !== null && $this->end_sec !== null)
+            fn () => ($this->start_sec !== null && $this->end_sec !== null)
                 ? $this->end_sec - $this->start_sec
                 : null,
         );
@@ -75,7 +86,7 @@ class Clip extends Model
     protected function humanReadableDuration(): Attribute
     {
         return Attribute::get(
-            fn() => ($this->start_sec !== null && $this->end_sec !== null)
+            fn () => ($this->start_sec !== null && $this->end_sec !== null)
                 ? gmdate('i:s', (int)($this->end_sec - $this->start_sec))
                 : null,
         );
@@ -84,7 +95,7 @@ class Clip extends Model
     protected function endTime(): Attribute
     {
         return Attribute::get(
-            fn() => $this->end_sec !== null
+            fn () => $this->end_sec !== null
                 ? gmdate('i:s', (int)$this->end_sec)
                 : null,
         );
@@ -95,4 +106,3 @@ class Clip extends Model
         return Storage::disk($this->getAttribute('preview_disk'));
     }
 }
-

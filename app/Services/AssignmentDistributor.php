@@ -14,6 +14,7 @@ use App\Repository\ChannelVideoBlockRepository;
 use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
 use App\ValueObjects\AssignmentRun;
+use App\ValueObjects\VideoAssignmentContext;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -24,7 +25,6 @@ use RuntimeException;
  */
 readonly class AssignmentDistributor
 {
-
     public function __construct(
         private AssignmentRepository $assignmentRepository,
         private AssignmentService $assignmentService,
@@ -37,7 +37,7 @@ readonly class AssignmentDistributor
      * Distribute new and requeueable videos across channels.
      *
      * @param int|null $quotaOverride optional quota per channel
-     * @return array{assigned:int, skipped:int}
+     * @return array{assigned:int, skipped:int, deferred:int}
      */
     public function distribute(?int $quotaOverride = null): array
     {
@@ -56,6 +56,7 @@ readonly class AssignmentDistributor
 
         $totalAssigned = 0;
         $totalSkipped = 0;
+        $totalDeferred = 0;
 
         /** @var UploaderPoolInfo $uploaderPool */
         foreach ($uploaderPools as $uploaderPool) {
@@ -85,24 +86,26 @@ readonly class AssignmentDistributor
                 $groups = $this->buildGroups($videosOfUploader);
 
                 // 5) Preloads zur Minimierung von N+1
-                $blockedByVideo = $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader);
-                $assignedChannelsByVideo = $assignmentRepo->preloadAssignedChannels($videosOfUploader);
+                $videoContext = new VideoAssignmentContext(
+                    blockedByVideo: $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader),
+                    assignedChannelsByVideo: $assignmentRepo->preloadAssignedChannels($videosOfUploader),
+                    preferredChannelIdByVideo: app(PreferredChannelService::class)
+                        ->preloadForVideos($videosOfUploader),
+                );
 
                 // 6) ValueObject
                 $run = new AssignmentRun(
                     groups: $groups,
                     channelPool: $channelPoolDto,
-                    blockedByVideo: $blockedByVideo,
-                    assignedChannelsByVideo: $assignedChannelsByVideo,
+                    videoContext: $videoContext,
                     batch: $batch,
-                    uploaderType: $uploaderType,
-                    uploaderId: $uploaderId
                 );
 
                 // 7) Verteilung
-                [$assigned, $skipped] = $this->assignGroups($run);
+                [$assigned, $skipped, $deferred] = $this->assignGroups($run);
                 $totalAssigned += $assigned;
                 $totalSkipped += $skipped;
+                $totalDeferred += $deferred;
             } catch (\Throwable $e) {
                 Log::warning(
                     'Error during distribution for uploader {type}#{id}: {message}',
@@ -115,16 +118,16 @@ readonly class AssignmentDistributor
             }
         }
 
-        $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped);
+        $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped, $totalDeferred);
 
-        return ['assigned' => $totalAssigned, 'skipped' => $totalSkipped];
+        return ['assigned' => $totalAssigned, 'skipped' => $totalSkipped, 'deferred' => $totalDeferred];
     }
 
 
     public function calculateBlockedChannels(Collection $group, $blockedByVideo): array
     {
         return $group
-            ->flatMap(fn(Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
+            ->flatMap(fn (Video $video) => $blockedByVideo[$video->getKey()] ?? collect())
             ->unique()
             ->all();
     }
@@ -162,45 +165,149 @@ readonly class AssignmentDistributor
         return $channelPoolDto;
     }
 
+    /**
+     * Distribute every group of a run, tallying assigned/skipped/deferred videos.
+     *
+     * @return array{0:int,1:int,2:int} [assigned, skipped, deferred]
+     */
     public function assignGroups(AssignmentRun $run): array
     {
         $assigned = 0;
         $skipped = 0;
-
-        $channelService = app(ChannelService::class);
-        $assignmentService = app(AssignmentService::class);
+        $deferred = 0;
 
         foreach ($run->groups as $group) {
-            $blockedChannelIds = $this->calculateBlockedChannels($group, $run->blockedByVideo);
+            $blockedChannelIds = $this->calculateBlockedChannels($group, $run->videoContext->blockedByVideo);
 
-            $channel = $channelService->pickTargetChannel(
-                $group,
-                $run->channelPool->rotationPool,
-                $run->channelPool->quota,
-                $blockedChannelIds,
-                $run->assignedChannelsByVideo
-            );
+            $outcome = $this->placeGroup($group, $blockedChannelIds, $run);
 
-            // Defensive fallback: occurs only during rare race conditions
-            // (e.g. channel removed between pool calculation and pickup).
-            // Not deterministically testable; covered by integration behavior.
-            if (!$channel) {
-                $skipped += $group->count();
-                continue;
-            }
+            match ($outcome) {
+                'assigned' => $assigned += $group->count(),
+                'deferred' => $deferred += $group->count(),
+                default => $skipped += $group->count(),
+            };
 
-            $assigned += $assignmentService->assignGroupToChannel(
-                $group,
-                $channel,
-                $run
-            );
-
-            if ($run->quotasUsedUp()) {
+            if ($outcome === 'assigned' && $run->quotasUsedUp()) {
                 break;
             }
         }
 
-        return [$assigned, $skipped];
+        return [$assigned, $skipped, $deferred];
+    }
+
+    /**
+     * Decide where a single group goes: its preferred channel when that channel
+     * is usable, otherwise the weighted round-robin.
+     *
+     * @param Collection<int,Video> $group
+     * @param array<int,int> $blockedChannelIds
+     * @return 'assigned'|'deferred'|'skipped'
+     */
+    private function placeGroup(Collection $group, array $blockedChannelIds, AssignmentRun $run): string
+    {
+        $preferredChannelId = app(PreferredChannelService::class)
+            ->resolveForGroup($group, $run->videoContext->preferredChannelIdByVideo);
+
+        if ($preferredChannelId !== null) {
+            $preferredOutcome = $this->assignToPreferredChannel($group, $preferredChannelId, $blockedChannelIds, $run);
+
+            if ($preferredOutcome !== 'fallthrough') {
+                return $preferredOutcome;
+            }
+        }
+
+        return $this->assignViaAlgorithm($group, $blockedChannelIds, $run);
+    }
+
+    /**
+     * Place a group through the weighted round-robin channel pool.
+     *
+     * @param Collection<int,Video> $group
+     * @param array<int,int> $blockedChannelIds
+     * @return 'assigned'|'skipped'
+     */
+    private function assignViaAlgorithm(Collection $group, array $blockedChannelIds, AssignmentRun $run): string
+    {
+        $channel = app(ChannelService::class)->pickTargetChannel(
+            $group,
+            $run->channelPool->rotationPool,
+            $run->channelPool->quota,
+            $blockedChannelIds,
+            $run->videoContext->assignedChannelsByVideo
+        );
+
+        // Defensive fallback: pickTargetChannel returns null only in rare
+        // races (e.g. a channel removed between pool build and pickup).
+        // Not deterministically testable; covered by integration behaviour.
+        if (!$channel) {
+            return 'skipped';
+        }
+
+        $this->assignmentService->assignGroupToChannel($group, $channel, $run);
+
+        return 'assigned';
+    }
+
+    /**
+     * Try to place a group on its wished channel.
+     *
+     * @param Collection<int,Video> $group
+     * @param array<int,int> $blockedChannelIds
+     * @return 'assigned'|'deferred'|'fallthrough'
+     *   - 'assigned'    the group was assigned to the wished channel
+     *   - 'deferred'    the wished channel is valid but cannot take the group
+     *                   right now (quota/block) — retry next run
+     *   - 'fallthrough' the wished channel is not usable at all (not in pool)
+     *                   or the wish is already (partially) fulfilled — use the algorithm
+     */
+    private function assignToPreferredChannel(
+        Collection $group,
+        int $preferredChannelId,
+        array $blockedChannelIds,
+        AssignmentRun $run
+    ): string {
+        $channelService = app(ChannelService::class);
+        $channel = $channelService->findPooledChannel($run->channelPool->rotationPool, $preferredChannelId);
+
+        if ($channel === null) {
+            return 'fallthrough';
+        }
+
+        // Any video in the group already sits on the wished channel → the wish
+        // is fulfilled or unfulfillable as an atomic group; fall through to the
+        // round-robin rather than deferring forever (channelAcceptsGroup would
+        // reject the group on the "already assigned" rule every run).
+        $anyAlreadyOnPreferred = $group->some(function ($video) use ($preferredChannelId, $run) {
+            $assigned = $run->videoContext->assignedChannelsByVideo[$video->getKey()] ?? collect();
+            return $assigned->contains($preferredChannelId);
+        });
+        if ($anyAlreadyOnPreferred) {
+            return 'fallthrough';
+        }
+
+        $accepts = $channelService->channelAcceptsGroup(
+            $channel,
+            $group,
+            $run->channelPool->quota,
+            $blockedChannelIds,
+            $run->videoContext->assignedChannelsByVideo
+        );
+
+        if (!$accepts) {
+            Log::warning(
+                'Group {videos} deferred: preferred channel {channel} cannot take it this run (quota/block)',
+                [
+                    'videos' => $group->map(fn (Video $v) => (int) $v->getKey())->all(),
+                    'channel' => $preferredChannelId,
+                ]
+            );
+
+            return 'deferred';
+        }
+
+        $this->assignmentService->assignGroupToChannel($group, $channel, $run, viaPreferred: true);
+
+        return 'assigned';
     }
 
 
@@ -222,7 +329,7 @@ readonly class AssignmentDistributor
                 continue;
             }
 
-            $bundleIds = $bundleMap->first(fn(Collection $ids) => $ids->contains($video->getKey()));
+            $bundleIds = $bundleMap->first(fn (Collection $ids) => $ids->contains($video->getKey()));
 
             if ($bundleIds) {
                 $group = $videoRepository->getVideosByIdsFromPool($poolVideos, $bundleIds);

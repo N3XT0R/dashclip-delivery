@@ -30,10 +30,12 @@ class Assignment extends Model
         'last_notified_at',
         'download_token',
         'note',
+        'via_preferred_channel',
     ];
     protected $casts = [
         'expires_at' => 'datetime',
-        'last_notified_at' => 'datetime'
+        'last_notified_at' => 'datetime',
+        'via_preferred_channel' => 'boolean',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -47,6 +49,7 @@ class Assignment extends Model
                 'status',
                 'expires_at',
                 'attempts',
+                'via_preferred_channel',
             ]);
     }
 
