@@ -138,6 +138,28 @@ final class OfferEndpointsTest extends DatabaseTestCase
         $this->assertSame(1, Assignment::query()->count());
     }
 
+    public function testConcurrentDuplicateHittingTheUniqueIndexBecomesAValidationError(): void
+    {
+        [$user, $channel] = $this->actingOperator(['offers:write']);
+        $video = Video::factory()->withClips(1, $user)->create();
+        Assignment::factory()->create([
+            'video_id' => $video->getKey(),
+            'channel_id' => $channel->getKey(),
+        ]);
+
+        $batchCountBefore = Batch::query()->count();
+
+        try {
+            app(\App\Application\Offer\CreateOfferUseCase::class)->handle($video, $channel);
+            $this->fail('Expected a ValidationException for the duplicate pair.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->assertArrayHasKey('video_id', $e->errors());
+        }
+
+        $this->assertSame($batchCountBefore, Batch::query()->count());
+        $this->assertSame(1, Assignment::query()->count());
+    }
+
     public function testIndexWithoutChannelOperatorRoleReturns403(): void
     {
         $user = User::factory()->withOwnTeam()->standard()->create();

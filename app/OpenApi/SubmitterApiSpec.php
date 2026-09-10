@@ -20,7 +20,7 @@ use OpenApi\Attributes as OA;
         new OA\Flow(
             authorizationUrl: '/oauth/authorize',
             tokenUrl: '/oauth/token',
-            refreshUrl: '/oauth/token/refresh',
+            refreshUrl: '/oauth/token',
             flow: 'authorizationCode',
             scopes: self::SCOPES,
         ),

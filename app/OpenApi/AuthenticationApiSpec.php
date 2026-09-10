@@ -17,8 +17,9 @@ use OpenApi\Attributes as OA;
         before, [oauth.net/2](https://oauth.net/2/) is a good introduction.
 
         These endpoints obtain and refresh access tokens. Supported grant types: authorization
-        code, client credentials, personal access token (created in the Standard panel) and
-        device. The resulting token is sent as `Authorization: Bearer <token>` to the Submitter
+        code, client credentials, refresh token and device. A personal access token (created in
+        the Standard panel) is issued outside these endpoints but works the same way once you
+        have it. The resulting token is sent as `Authorization: Bearer <token>` to the Submitter
         or Channel Operator API.
         TXT,
     title: 'Authentication (OAuth2)',

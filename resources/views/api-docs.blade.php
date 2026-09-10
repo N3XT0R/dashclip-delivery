@@ -8,9 +8,9 @@
 
         <p class="mb-4">
             Interaktive OpenAPI-Dokumentation der REST-API. Zum Ausprobieren im Swagger-UI
-            authentifizierst du dich über den „Authorize"-Button – entweder per OAuth2
-            (<code>authorization_code</code>) oder mit einem Personal Access Token, den du im
-            Standard-Panel unter „OAuth" erstellst.
+            authentifizierst du dich über den „Authorize"-Button. Dafür stehen OAuth2
+            (<code>authorization_code</code>) und ein Personal Access Token zur Auswahl, den du
+            im Standard-Panel unter „OAuth" erstellst.
         </p>
 
         @if ($authentication)
@@ -21,7 +21,7 @@
             </p>
             <ul class="mb-6" style="margin-left: 18px; list-style: disc;">
                 <li>
-                    <strong>{{ $authentication->title }}</strong> –
+                    <strong>{{ $authentication->title }}</strong>:
                     <a href="{{ $authentication->uiUrl }}" target="_blank" rel="noopener">Swagger-UI</a>
                     ·
                     <a href="{{ $authentication->specUrl }}" target="_blank" rel="noopener">OpenAPI-Spec</a>
