@@ -7,14 +7,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
-use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 abstract class ApiController extends Controller
@@ -88,26 +86,13 @@ abstract class ApiController extends Controller
     /**
      * Build a paginated JSON collection response for an index endpoint.
      *
+     * The caller passes a query builder that already declares its allowed
+     * filters, allowed sorts and default sort.
+     *
      * @param  class-string<JsonResource>  $resource
-     * @param  list<AllowedFilter|string>  $filters
-     * @param  list<string>  $sorts
      */
-    protected function paginatedList(
-        Builder $query,
-        string $resource,
-        array $filters,
-        array $sorts,
-        string $defaultSort,
-        Request $request,
-    ): JsonResponse {
-        $records = $this->paginate(
-            QueryBuilder::for($query)
-                ->allowedFilters(...$filters)
-                ->allowedSorts(...$sorts)
-                ->defaultSort($defaultSort),
-            $request,
-        );
-
-        return $this->paginated($resource::collection($records));
+    protected function paginatedList(QueryBuilder $query, string $resource, Request $request): JsonResponse
+    {
+        return $this->paginated($resource::collection($this->paginate($query, $request)));
     }
 }

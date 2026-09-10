@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ChannelController extends ApiController
 {
@@ -71,11 +72,11 @@ class ChannelController extends ApiController
     public function index(Request $request): JsonResponse
     {
         return $this->paginatedList(
-            $this->visibleChannels($request),
+            QueryBuilder::for($this->visibleChannels($request))
+                ->allowedFilters(AllowedFilter::exact('is_video_reception_paused'))
+                ->allowedSorts('name', 'created_at')
+                ->defaultSort('-created_at'),
             ChannelResource::class,
-            [AllowedFilter::exact('is_video_reception_paused')],
-            ['name', 'created_at'],
-            '-created_at',
             $request,
         );
     }

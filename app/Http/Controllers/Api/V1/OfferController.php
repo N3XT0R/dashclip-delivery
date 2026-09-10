@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class OfferController extends ApiController
 {
@@ -90,14 +91,14 @@ class OfferController extends ApiController
     public function index(Request $request): JsonResponse
     {
         return $this->paginatedList(
-            $this->visibleOffers($request),
+            QueryBuilder::for($this->visibleOffers($request))
+                ->allowedFilters(
+                    AllowedFilter::exact('status'),
+                    AllowedFilter::exact('channel_id'),
+                )
+                ->allowedSorts('created_at', 'expires_at')
+                ->defaultSort('-created_at'),
             OfferResource::class,
-            [
-                AllowedFilter::exact('status'),
-                AllowedFilter::exact('channel_id'),
-            ],
-            ['created_at', 'expires_at'],
-            '-created_at',
             $request,
         );
     }

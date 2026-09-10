@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class VideoController extends ApiController
 {
@@ -101,21 +102,21 @@ class VideoController extends ApiController
         ]);
 
         return $this->paginatedList(
-            $this->visibleVideos($request),
+            QueryBuilder::for($this->visibleVideos($request))
+                ->allowedFilters(
+                    AllowedFilter::partial('original_name'),
+                    AllowedFilter::callback(
+                        'created_after',
+                        static fn (Builder $query, mixed $value) => $query->where('created_at', '>=', $value),
+                    ),
+                    AllowedFilter::callback(
+                        'created_before',
+                        static fn (Builder $query, mixed $value) => $query->where('created_at', '<=', $value),
+                    ),
+                )
+                ->allowedSorts('original_name', 'created_at', 'bytes')
+                ->defaultSort('-created_at'),
             VideoResource::class,
-            [
-                AllowedFilter::partial('original_name'),
-                AllowedFilter::callback(
-                    'created_after',
-                    static fn (Builder $query, mixed $value) => $query->where('created_at', '>=', $value),
-                ),
-                AllowedFilter::callback(
-                    'created_before',
-                    static fn (Builder $query, mixed $value) => $query->where('created_at', '<=', $value),
-                ),
-            ],
-            ['original_name', 'created_at', 'bytes'],
-            '-created_at',
             $request,
         );
     }

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OpenApi\Attributes as OA;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 final class TeamController extends ApiController
 {
@@ -70,11 +71,11 @@ final class TeamController extends ApiController
     public function index(Request $request): JsonResponse
     {
         return $this->paginatedList(
-            $this->visibleTeams($request),
+            QueryBuilder::for($this->visibleTeams($request))
+                ->allowedFilters(AllowedFilter::partial('name'))
+                ->allowedSorts('name', 'created_at')
+                ->defaultSort('-created_at'),
             TeamResource::class,
-            [AllowedFilter::partial('name')],
-            ['name', 'created_at'],
-            '-created_at',
             $request,
         );
     }
