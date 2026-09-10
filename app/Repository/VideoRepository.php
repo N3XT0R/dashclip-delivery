@@ -13,6 +13,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use DateTimeInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
@@ -22,6 +23,17 @@ class VideoRepository
     public function findById(int $id): ?Video
     {
         return Video::query()->find($id);
+    }
+
+    /**
+     * Query the videos visible to the given user, i.e. videos backed by at
+     * least one of their own clips.
+     * @param User $user
+     * @return Builder
+     */
+    public function visibleForUser(User $user): Builder
+    {
+        return Video::query()->hasUsersClips($user);
     }
 
     /**
@@ -80,6 +92,16 @@ class VideoRepository
         return Video::query()->firstOrCreate($data);
     }
 
+    /**
+     * Create a new video record with the given attributes.
+     * @param array $attributes
+     * @return Video
+     */
+    public function create(array $attributes): Video
+    {
+        return Video::query()->create($attributes);
+    }
+
 
     public function getVideosByIds(iterable $ids): Collection
     {
@@ -106,11 +128,11 @@ class VideoRepository
     public function getVideosByIdsFromPool(Collection $pool, iterable $ids): Collection
     {
         $idLookup = collect($ids)
-            ->map(fn($id) => (int)$id)  // cast
+            ->map(fn ($id) => (int)$id)  // cast
             ->flip();                   // lookup map: id => index
 
         return $pool
-            ->filter(fn(Video $video) => $idLookup->has($video->getKey()))
+            ->filter(fn (Video $video) => $idLookup->has($video->getKey()))
             ->values();
     }
 
@@ -124,7 +146,7 @@ class VideoRepository
     public function partitionByUploader(Collection $videos): array
     {
         return $videos
-            ->groupBy(fn(Video $video) => $video->clips()->first()?->user_id ?? 0) // 0 = "unknown uploader"
+            ->groupBy(fn (Video $video) => $video->clips()->first()?->user_id ?? 0) // 0 = "unknown uploader"
             ->all();
     }
 

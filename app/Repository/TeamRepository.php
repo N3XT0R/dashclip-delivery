@@ -6,6 +6,9 @@ namespace App\Repository;
 
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class TeamRepository
 {
@@ -24,6 +27,44 @@ class TeamRepository
         $user->teams()->attach($team);
 
         return $team;
+    }
+
+    /**
+     * Query the teams visible to the given user: teams they own or teams
+     * they are a member of.
+     * @param User $user
+     * @return Builder
+     */
+    public function visibleForUser(User $user): Builder
+    {
+        return Team::query()->where(function (Builder $query) use ($user): void {
+            $query->where('owner_id', $user->getKey())
+                ->orWhereHas('users', static function (Builder $member) use ($user): void {
+                    $member->whereKey($user->getKey());
+                });
+        });
+    }
+
+    /**
+     * Create a team owned by the given user, generating a unique slug from
+     * the team name, and attach the owner as a member.
+     * @param User $owner
+     * @param string $name
+     * @return Team
+     */
+    public function createTeamForOwner(User $owner, string $name): Team
+    {
+        return DB::transaction(function () use ($owner, $name): Team {
+            $team = Team::query()->create([
+                'name' => $name,
+                'slug' => Str::slug($name) . '-' . Str::lower(Str::random(6)),
+                'owner_id' => $owner->getKey(),
+            ]);
+
+            $team->users()->attach($owner->getKey());
+
+            return $team;
+        });
     }
 
     /**

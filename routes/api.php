@@ -2,9 +2,71 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\ChannelController;
+use App\Http\Controllers\Api\V1\OfferController;
+use App\Http\Controllers\Api\V1\TeamController;
+use App\Http\Controllers\Api\V1\VideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function (): void {
+    Route::middleware(['scope:channels:read', 'standard.permission:ManageChannels:Team'])->group(function (): void {
+        Route::get('/channels', [ChannelController::class, 'index'])->name('channels.index');
+        Route::get('/channels/{channel}', [ChannelController::class, 'show'])->name('channels.show')->whereNumber('channel');
+    });
+
+    Route::middleware(['scope:channels:write', 'standard.permission:ManageChannels:Team'])->group(function (): void {
+        Route::patch('/channels/{channel}', [ChannelController::class, 'update'])
+            ->name('channels.update')
+            ->whereNumber('channel');
+    });
+
+    Route::middleware(['scope:videos:read', 'standard.permission:ViewAny:Video'])->group(function (): void {
+        Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
+        Route::get('/videos/{video}', [VideoController::class, 'show'])->name('videos.show')->whereNumber('video');
+    });
+
+    Route::post('/videos', [VideoController::class, 'store'])
+        ->middleware(['scope:videos:write', 'standard.permission:Create:Video'])
+        ->name('videos.store');
+
+    Route::patch('/videos/{video}', [VideoController::class, 'update'])
+        ->middleware(['scope:videos:write', 'standard.permission:Update:Video'])
+        ->name('videos.update')
+        ->whereNumber('video');
+
+    Route::delete('/videos/{video}', [VideoController::class, 'destroy'])
+        ->middleware(['scope:videos:delete', 'standard.permission:Delete:Video'])
+        ->name('videos.destroy')
+        ->whereNumber('video');
+
+    Route::middleware(['scope:offers:read', 'standard.permission:View:MyOffers'])->group(function (): void {
+        Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
+        Route::get('/offers/{offer}', [OfferController::class, 'show'])->name('offers.show')->whereNumber('offer');
+    });
+
+    Route::middleware(['scope:offers:write', 'standard.permission:View:MyOffers'])->group(function (): void {
+        Route::post('/offers', [OfferController::class, 'store'])->name('offers.store');
+        Route::post('/offers/{offer}/comment', [OfferController::class, 'comment'])
+            ->name('offers.comment')
+            ->whereNumber('offer');
+    });
+
+    Route::middleware('scope:teams:read')->group(function (): void {
+        Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+        Route::get('/teams/{team}', [TeamController::class, 'show'])->name('teams.show')->whereNumber('team');
+    });
+
+    Route::middleware('scope:teams:write')->group(function (): void {
+        Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
+    });
+
+    Route::delete('/teams/{team}', [TeamController::class, 'destroy'])
+        ->middleware('scope:teams:delete')
+        ->name('teams.destroy')
+        ->whereNumber('team');
 });

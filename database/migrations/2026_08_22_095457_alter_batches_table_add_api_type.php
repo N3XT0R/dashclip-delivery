@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class () extends Migration {
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('batches', function (Blueprint $table) {
+            $table->enum('type', ['ingest', 'assign', 'notify', 'remove', 'api'])->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        if (DB::table('batches')->where('type', 'api')->exists()) {
+            throw new \RuntimeException('Cannot roll back: batches with type "api" exist.');
+        }
+
+        Schema::table('batches', function (Blueprint $table) {
+            $table->enum('type', ['ingest', 'assign', 'notify', 'remove'])->change();
+        });
+    }
+};

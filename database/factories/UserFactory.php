@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\Users\RoleEnum;
 use App\Models\Channel;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -79,11 +80,14 @@ class UserFactory extends Factory
     public function withOwnTeam(): static
     {
         return $this->afterCreating(function (User $user) {
-            $user->teams()->create([
-                'name' => $user->name . "'s Team",
-                'slug' => Str::uuid()->toString(),
-                'owner_id' => $user->getKey(),
-            ]);
+            // Only create a team if the user doesn't already own one (e.g., from UserObserver)
+            if (!Team::query()->where('owner_id', $user->getKey())->exists()) {
+                $user->teams()->create([
+                    'name' => $user->name . "'s Team",
+                    'slug' => Str::uuid()->toString(),
+                    'owner_id' => $user->getKey(),
+                ]);
+            }
         });
     }
 

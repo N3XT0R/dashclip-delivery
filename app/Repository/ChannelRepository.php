@@ -9,6 +9,7 @@ use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 
@@ -23,6 +24,16 @@ class ChannelRepository
         return Channel::query()
             ->where('channels.is_video_reception_paused', false)
             ->orderBy('id')->get();
+    }
+
+    /**
+     * Query the channels the given user has access to.
+     * @param User $user
+     * @return Builder
+     */
+    public function visibleForUser(User $user): Builder
+    {
+        return Channel::query()->userHasAccess($user);
     }
 
     /**
