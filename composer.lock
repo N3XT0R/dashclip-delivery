@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e8bf7b96df618ef9c21f9525eb4a3700",
+    "content-hash": "352ff0adf6ded96c26a8ac48f9723246",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -5590,16 +5590,16 @@
         },
         {
             "name": "n3xt0r/filament-passport-ui",
-            "version": "2.4.1",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/N3XT0R/filament-passport-ui.git",
-                "reference": "67c2a93cdd7975c65812b9a62dd6daa18743255c"
+                "reference": "87943151dfbd7a445493159847af777903f0cd24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/N3XT0R/filament-passport-ui/zipball/67c2a93cdd7975c65812b9a62dd6daa18743255c",
-                "reference": "67c2a93cdd7975c65812b9a62dd6daa18743255c",
+                "url": "https://api.github.com/repos/N3XT0R/filament-passport-ui/zipball/87943151dfbd7a445493159847af777903f0cd24",
+                "reference": "87943151dfbd7a445493159847af777903f0cd24",
                 "shasum": ""
             },
             "require": {
@@ -5680,20 +5680,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-21T07:02:37+00:00"
+            "time": "2026-09-12T18:20:44+00:00"
         },
         {
             "name": "n3xt0r/laravel-passport-authorization-core",
-            "version": "1.3.2",
+            "version": "1.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/N3XT0R/laravel-passport-authorization-core.git",
-                "reference": "25af4171ce58a7568d8dba18fdc9328fedc42a97"
+                "reference": "8e43586f47f44e42741114a403f45ed4a9625b9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/N3XT0R/laravel-passport-authorization-core/zipball/25af4171ce58a7568d8dba18fdc9328fedc42a97",
-                "reference": "25af4171ce58a7568d8dba18fdc9328fedc42a97",
+                "url": "https://api.github.com/repos/N3XT0R/laravel-passport-authorization-core/zipball/8e43586f47f44e42741114a403f45ed4a9625b9b",
+                "reference": "8e43586f47f44e42741114a403f45ed4a9625b9b",
                 "shasum": ""
             },
             "require": {
@@ -5753,7 +5753,7 @@
             ],
             "support": {
                 "issues": "https://github.com/N3XT0R/laravel-passport-authorization-core/issues",
-                "source": "https://github.com/N3XT0R/laravel-passport-authorization-core/tree/1.3.2"
+                "source": "https://github.com/N3XT0R/laravel-passport-authorization-core/tree/1.3.3"
             },
             "funding": [
                 {
@@ -5761,7 +5761,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-20T19:51:29+00:00"
+            "time": "2026-09-12T10:39:13+00:00"
         },
         {
             "name": "n3xt0r/laravel-passport-modern-scopes",
