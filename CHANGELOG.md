@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Public website design specification**
+    - documented the responsive redesign scope, preservation of existing public
+      functions, and requirements for accessibility, metadata, and asset delivery.
+    - reserved the blog for a separate project and excluded a public clip gallery.
 - **REST API core resources (v1)**
     - new authenticated REST endpoints under `/api/v1` for videos (list, detail, multipart
       upload through the existing ingest pipeline, rename, delete), channels (list, detail,
