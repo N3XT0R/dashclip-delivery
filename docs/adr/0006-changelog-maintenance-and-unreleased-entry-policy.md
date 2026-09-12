@@ -50,8 +50,12 @@ The changelog policy is:
 - entries must be written in English, matching every existing entry in `CHANGELOG.md`, regardless of
   the language used in the surrounding spec, plan, PR description, or conversation that produced the
   change
-- entries belong under existing Keep a Changelog categories such as `Added`, `Changed`, `Fixed`,
-  `Removed`, `Deprecated`, and `Security` when appropriate
+- entries belong under the Keep a Changelog categories, and those six are the complete set:
+  `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`. No other section heading may
+  be introduced, and a qualification that does not fit one of them belongs inside the entry it
+  qualifies, not in a section of its own
+- within a version block the categories appear in that same canonical order, so a reader finds
+  the same structure in every release
 - within a category, changes should be grouped under a short topical label in the current house
   style, for example `- **Video Ingest Pipeline**`, `- **documentation**`, or `- **adr**`
 - each grouped entry should summarize the externally, operationally, or maintainability-relevant
@@ -99,6 +103,11 @@ omitted, but that should be the exception, not the default.
 
    Entries must use Keep a Changelog categories. Add a missing category only when the change belongs
    there.
+
+   The six categories are closed: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
+   Inventing a heading such as `Unchanged` or `Notes` is a defect, as is ordering the categories
+   differently from that list. An entry is inserted into the category it belongs to, it is never
+   appended as a new section at the top of a version block.
 
 4. **Group related entries**
 
