@@ -1,166 +1,23 @@
 @extends('layouts.app')
-
-@section('title', $title ?? 'Ups!')
-
-@push('styles')
-    <style>
-        .error-stage {
-            position: relative;
-            min-height: calc(100vh - 120px);
-            display: grid;
-            place-items: center;
-            text-align: center;
-        }
-
-        .error-card {
-            display: inline-grid;
-            gap: 12px;
-            padding: 28px 24px;
-            border-radius: 16px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            box-shadow: 0 6px 30px rgba(0, 0, 0, .25);
-        }
-
-        .robot-wrap {
-            position: relative;
-            height: 140px;
-            width: 140px;
-            margin: 0 auto 6px;
-        }
-
-        .robot {
-            font-size: 96px;
-            line-height: 1;
-            display: inline-block;
-            animation: dance 1.6s ease-in-out infinite;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .25));
-        }
-
-        .q {
-            position: absolute;
-            font-weight: 800;
-            opacity: .85;
-            animation: float 2.2s ease-in-out infinite;
-            color: var(--brand);
-            text-shadow: 0 2px 10px rgba(0, 0, 0, .25);
-        }
-
-        .q1 {
-            top: -8px;
-            right: 8px;
-            font-size: 28px;
-            animation-delay: 0s;
-        }
-
-        .q2 {
-            top: -22px;
-            right: 34px;
-            font-size: 22px;
-            animation-delay: .3s;
-        }
-
-        .q3 {
-            top: -12px;
-            right: 54px;
-            font-size: 18px;
-            animation-delay: .6s;
-        }
-
-        body:not(.light) .brand img.logo {
-            background: #fff;
-            padding: 4px;
-            border-radius: 6px;
-        }
-
-        @keyframes dance {
-            0%, 100% {
-                transform: translateX(0) rotate(0deg);
-            }
-            25% {
-                transform: translateX(-6px) rotate(-6deg);
-            }
-            50% {
-                transform: translateX(0) rotate(0deg);
-            }
-            75% {
-                transform: translateX(6px) rotate(6deg);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-                opacity: .85;
-            }
-            50% {
-                transform: translateY(-8px);
-                opacity: 1;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .robot, .q {
-                animation: none;
-            }
-        }
-
-        .error-title {
-            font-size: 2.6rem;
-            margin: 0;
-        }
-
-        .error-sub {
-            margin: 0 0 8px;
-            color: var(--muted);
-        }
-
-        .debug-info {
-            text-align: left;
-            margin-top: 20px;
-            font-size: .85rem;
-            overflow-x: auto;
-            background: #2a2f37;
-            border-radius: 8px;
-            padding: 12px;
-        }
-
-        body.light .debug-info {
-            background: #f3f4f7;
-        }
-    </style>
-@endpush
-
+@section('title', ($title ?? 'Fehler').' | DashClip Delivery')
+@section('description', 'Diese Seite ist gerade nicht verfügbar. Kehre zur Startseite zurück oder melde dich in deinem Konto an.')
+@section('robots', 'noindex, nofollow')
 @section('content')
-    <div class="error-stage">
-        <div class="error-card panel">
-            <div class="robot-wrap">
-                <span class="robot" aria-hidden="true">🤖</span>
-                <span class="q q1">?</span>
-                <span class="q q2">?</span>
-                <span class="q q3">?</span>
-            </div>
-
-            <h1 class="error-title">{{ $code ?? 'Fehler' }}</h1>
-            @isset($message)
-                <p class="error-sub">{{ $message }}</p>
-            @endisset
-
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <a href="{{ url('/') }}" class="btn">Zur Startseite</a>
-                @if(url()->previous())
-                    <a href="{{ url()->previous() }}" class="btn">Zurück</a>
-                @endif
-            </div>
-
-            @if(config('app.debug') && isset($exception))
-                <div class="debug-info">
-                    <strong>Debug-Info:</strong><br>
-                    <em>{{ get_class($exception) }}</em><br>
-                    {{ $exception->getMessage() }}<br><br>
-                    <pre>{{ $exception->getTraceAsString() }}</pre>
-                </div>
-            @endif
+    <section class="mx-auto max-w-2xl rounded-2xl border border-border bg-panel p-8 sm:p-12">
+        <p class="mb-4 text-sm font-bold tracking-widest text-orange-700 dark:text-orange-400">{{ $code ?? 'Fehler' }}</p>
+        <h1 class="text-3xl font-bold">{{ $title ?? 'Diese Seite ist nicht verfügbar' }}</h1>
+        @isset($message)<p class="mt-5 text-muted">{{ $message }}</p>@endisset
+        <div class="mt-8 flex flex-wrap gap-3">
+            <x-public.button :href="url('/')">Zur Startseite</x-public.button>
+            <x-public.button :href="route('filament.standard.auth.login')" variant="secondary">Anmelden</x-public.button>
         </div>
-    </div>
+        @if (config('app.debug') && isset($exception))
+            <details class="mt-8">
+                <summary>Debug-Info</summary>
+                <pre class="mt-4 overflow-x-auto rounded-lg bg-bg p-4 text-xs">{{ get_class($exception) }}
+{{ $exception->getMessage() }}
+{{ $exception->getTraceAsString() }}</pre>
+            </details>
+        @endif
+    </section>
 @endsection

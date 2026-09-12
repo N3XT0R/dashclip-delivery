@@ -12,9 +12,19 @@ class Page extends Component
 {
     public string $html;
 
-    public function __construct(PageService $service, public string $slug)
+    /**
+     * Embed maintained page content beneath an existing heading when requested.
+     */
+    public function __construct(PageService $service, public string $slug, bool $embedded = false)
     {
         $this->html = $service->getHtml($slug) ?? '';
+        if ($embedded) {
+            $this->html = preg_replace_callback(
+                '/<(\/?)(h)([1-6])(\b[^>]*)>/i',
+                static fn (array $heading): string => '<'.$heading[1].'h'.min(6, (int) $heading[3] + 2).$heading[4].'>',
+                $this->html,
+            ) ?? $this->html;
+        }
     }
 
     public function render(): View

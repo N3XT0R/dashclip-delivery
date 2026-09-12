@@ -1,21 +1,59 @@
 {
+  "_ZipDownloader-CiA7gBIY.js": {
+    "file": "assets/ZipDownloader-CiA7gBIY.js",
+    "name": "ZipDownloader"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-DbSv3ewk.css",
+    "file": "assets/app-C8p7fb80.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-DrQFUFI6.css",
+    "file": "assets/theme-BLU2A_cH.css",
     "src": "resources/css/filament/admin/theme.css",
     "isEntry": true
   },
+  "resources/css/game.css": {
+    "file": "assets/game-D77Gcipn.css",
+    "src": "resources/css/game.css",
+    "isEntry": true
+  },
+  "resources/css/public.css": {
+    "file": "assets/public-BWz__1Y1.css",
+    "src": "resources/css/public.css",
+    "isEntry": true
+  },
   "resources/js/app.js": {
-    "file": "assets/app-BwnEXnYo.js",
+    "file": "assets/app-CzjZC-wW.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
+    "imports": [
+      "_ZipDownloader-CiA7gBIY.js"
+    ],
     "css": [
       "assets/app-Bv9XE-cB.css"
     ]
+  },
+  "resources/js/game.js": {
+    "file": "assets/game-D1v5krZX.js",
+    "name": "game",
+    "src": "resources/js/game.js",
+    "isEntry": true
+  },
+  "resources/js/offers.js": {
+    "file": "assets/offers-BABLmTpT.js",
+    "name": "offers",
+    "src": "resources/js/offers.js",
+    "isEntry": true,
+    "imports": [
+      "_ZipDownloader-CiA7gBIY.js"
+    ]
+  },
+  "resources/js/public.js": {
+    "file": "assets/public-HmAqD_v_.js",
+    "name": "public",
+    "src": "resources/js/public.js",
+    "isEntry": true
   }
 }

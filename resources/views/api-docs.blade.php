@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('title', 'API-Dokumentation')
+@section('description', 'Zugang zur API-Dokumentation für Authentifizierung, Einsender und Kanalbetreiber.')
 
 @section('content')
-    <div class="panel">
+    <div class="panel editorial">
         <h1 class="text-2xl font-bold mb-4">API-Dokumentation</h1>
 
         <p class="mb-4">

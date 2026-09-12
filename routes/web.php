@@ -6,10 +6,10 @@ use App\Http\Controllers\ApiDocsController;
 use App\Http\Controllers\AssignmentDownloadController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\PublicDocumentController;
 use App\Http\Controllers\TokenApprovalController;
 use App\Http\Controllers\ZipController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,17 +19,13 @@ Route::get('/game', function () {
     return view('game');
 })->name('game');
 
-Route::get('/changelog', function () {
-    return Str::markdown(file_get_contents(base_path('CHANGELOG.md')));
-})->name('changelog');
+Route::get('/changelog', [PublicDocumentController::class, 'changelog'])->name('changelog');
 
 Route::view('/impressum', 'impressum')->name('impressum');
 Route::view('/tos', 'tos')->name('tos');
 
 Route::view('/datenschutz', 'datenschutz')->name('datenschutz');
-Route::get('/license', function () {
-    return nl2br(file_get_contents(base_path('LICENSE')));
-})->name('license');
+Route::get('/license', [PublicDocumentController::class, 'license'])->name('license');
 
 Route::get('/api-docs', [ApiDocsController::class, 'index'])->name('api-docs');
 

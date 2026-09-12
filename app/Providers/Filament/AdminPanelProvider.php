@@ -5,7 +5,6 @@ namespace App\Providers\Filament;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Admin\Pages\Auth\EditProfile;
-use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\SetUserLocale;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
@@ -61,7 +60,7 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('images/icons/favicon.ico'))
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
-                Js::make('app', app(Vite::class)->asset('resources/js/app.js')),
+                Js::make('app', app(Vite::class)->asset('resources/js/app.js'))->module(),
                 Css::make('app', app(Vite::class)->asset('resources/css/app.css')),
             ])
             ->brandLogo(asset('images/logo.png'))

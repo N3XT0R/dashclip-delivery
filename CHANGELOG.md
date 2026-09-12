@@ -95,6 +95,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       when left unset.
 
 ### Changed
+- **Public website**
+    - redesigned the homepage with upload entry points, responsive navigation,
+      a dashcam hero, process guidance, help, and six curated channel names.
+    - unified public information, error, offer, and confirmation pages with
+      accessible controls, theme preferences, and stable page metadata.
+    - isolated public assets from panel assets, optimized delivery images,
+      and limited game and download scripts to the pages that use them.
+    - signed offers and token pages omit canonical and social URLs and request
+      no indexing; download selection excludes already downloaded clips.
 - **Developer workflow**
     - `php artisan test` is now documented consistently with `--parallel` in AGENTS.md/CONTRIBUTING.md,
       matching the CI configuration.

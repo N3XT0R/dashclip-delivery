@@ -3,8 +3,9 @@
 
 @section('title', 'Nutzungsbedingungen')
 
+@section('description', 'Nutzungsbedingungen für Uploads, Angebote und Downloads bei DashClip Delivery.')
 @section('content')
-    <div class="panel">
+    <div class="panel editorial">
         <h1 class="text-2xl font-bold mb-4">Nutzungsbedingungen</h1>
 
         <section class="mb-6">

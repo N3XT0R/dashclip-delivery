@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @section('title', 'Impressum')
+@section('description', 'Anbieterinformationen und Kontakt zu DashClip Delivery.')
 
 @section('content')
-    <div class="panel">
+    <div class="panel editorial">
         <h1 class="text-2xl font-bold mb-4">Impressum</h1>
 
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Diensteanbieter</h2>
-            <x-page slug="imprint"/>
+            <x-page slug="imprint" :embedded="true" />
         </section>
 
         <section class="mb-6">
@@ -35,4 +36,3 @@
         </section>
     </div>
 @endsection
-

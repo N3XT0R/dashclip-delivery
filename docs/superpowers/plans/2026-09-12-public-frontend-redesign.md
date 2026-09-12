@@ -240,3 +240,73 @@ Task 2/3 preserve Task 1 entries when extending Vite. The public stylesheet's
 legacy compatibility prevents intermediate page regressions without touching panels.
 The user's instruction to implement the approved design authorizes execution of
 this plan. Work stays on their existing feature branch and mounted Docker checkout.
+
+## Execution record (2026-09-12)
+
+Tasks 1-3 are implemented. Verification for task 4 is recorded below; the original
+checkboxes describe the planned workflow, while this record describes execution.
+Implementation continued locally without Superpowers or delegated agents, in
+accordance with the current user instructions. The changes are delivered together
+because the shared frame and page-specific bundles must stay consistent.
+
+Implemented interfaces:
+
+- The public layout preserves title, subtitle, actions, head, content and asset
+  stacks, and adds description, robots, full_width and page_assets sections.
+- Public button props are href and variant (primary/secondary); type and other
+  native attributes pass through. Section headings accept eyebrow and title.
+  Feature cards accept title and the installed decorative icon component name.
+- Public metadata centralizes one description, canonical and social image. Only
+  known information pages can emit canonical/social URLs; sensitive and error
+  pages use noindex. Query parameters never enter those URLs.
+- The embedded Page option shifts content headings beneath the imprint section;
+  other Page consumers keep their original output.
+
+Verified integration adjustments:
+
+- Vite now extracts shared download dependencies. Browser checks demonstrated
+  module syntax errors in both panels because their app asset was registered as
+  a classic script. Both asset registrations now declare module(), with an HTTP
+  regression test. Panel CSS sources, layout and authentication are unchanged.
+- A browser download check exposed two progress elements from one downloader:
+  its constructor created a second modal unconditionally. The duplicate creation
+  is removed. Select-all ignores disabled items, and progress has live status and
+  accessible progress values.
+- Text enlargement to 200% exposed intrinsic text overflow. Public text now permits
+  wrapping long words, and buttons respect their available width.
+
+Executed checks:
+
+- Initial homepage tests failed for missing upload content and unstable social
+  image URLs. Initial document tests failed for incomplete document responses and
+  duplicate imprint headings. Initial offer tests failed for the missing h1.
+- Focused information/offer/token/download suite: 27 tests, 159 assertions passed.
+- Full suite: 1088 tests, 3278 assertions passed in 5m 04s. The subsequent asset
+  registration regression test and final edits are covered by focused reruns.
+- Production Vite builds passed. Public JavaScript is 0.88 kB (0.45 kB gzip);
+  public CSS is approximately 42 kB (8.3 kB gzip). Marketing pages do not load the
+  127 kB download dependency bundle. WebP hero sizes are approximately 24/60/96 kB,
+  JPEG fallback 120 kB, and the original-logo delivery asset is under 8 kB.
+- Pint passed using the repository PSR-12 rules and a temporary configuration
+  excluding docker/ and tmp/. The normal --dirty command traverses the unreadable
+  MariaDB data directory and fails before formatting; database permissions were
+  not changed.
+- Existing Chromium/Playwright and previously downloaded system libraries were
+  used in the sharing container. No project dependency was installed.
+- Browser checks: 360, 390, 768, 900, 1024, 1440 and 1920 pixel widths; dark/light
+  themes; loaded images; heading counts; no horizontal overflow; persistent theme
+  and cookie notice dismissal; storage-denied fallback; native navigation without
+  JavaScript; mobile Escape handling; game keyboard focus and Tab exit; public
+  document routes; and both panel login pages plus Standard registration.
+- After the module fix, these browser checks reported no page errors and no
+  failed HTTP responses. Local, unthrottled homepage measurements recorded CLS 0
+  and LCP below one second; these are not field performance measurements.
+- Download browser integration verified one initialization, exclusion of disabled
+  clips, the selected assignment payload, and visible progress. Its POST response
+  was intercepted; real signed requests and ZIP endpoints are covered by HTTP
+  tests, not a live end-to-end browser archive download.
+
+Review limits: self-review was performed without an independent reviewer. No
+screen-reader assessment, production traffic measurement, or live browser ZIP
+archive transfer was performed. Screenshots and browser logs are local review
+artifacts rather than application assets. No development branch was merged.

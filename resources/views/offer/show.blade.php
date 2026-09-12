@@ -1,202 +1,50 @@
-@php
-    use App\Enum\Users\RoleEnum;use Illuminate\Support\Facades\Storage;use Illuminate\Support\Number;
-@endphp
-
+@php use App\Enum\Users\RoleEnum; @endphp
 @extends('layouts.app')
-
-@section('title', 'Angebot – '.$channel->name)
+@section('title', 'Angebot | '.$channel->name)
+@section('description', 'Deine angebotenen Clips ansehen, auswählen und herunterladen.')
+@section('robots', 'noindex, nofollow')
 @section('subtitle', 'Batch #'.$batch->id)
-
-@section('actions')
-    {{-- optional --}}
+@section('page_assets')
+    @vite('resources/js/offers.js')
 @endsection
-@push('styles')
-    <style>
-        /* === Register Callout ===================================== */
-        .register-callout {
-            width: 75%;
-            max-width: 900px;
-            margin: 32px auto;
-
-            background: #ffffff;
-            border: 1px solid #e6e8ee;
-            border-radius: 10px;
-
-            padding: 16px 18px;
-
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-        }
-
-        .register-callout h3 {
-            margin: 0 0 6px 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .register-callout p {
-            margin: 0 0 14px 0;
-            font-size: 14px;
-            line-height: 1.4;
-            color: #4b5563;
-        }
-
-        .register-callout-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .register-callout .btn.primary {
-            padding: 8px 14px;
-        }
-
-        .register-callout .btn.subtle {
-            padding: 8px 14px;
-        }
-
-        .register-callout:hover {
-            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
-        }
-
-        .register-tab {
-            position: fixed;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-
-            padding: 10px 8px;
-
-            background: #bec1c8;
-            border: 1px solid #e6e8ee;
-            border-left: none;
-            border-radius: 0 8px 8px 0;
-
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: .08em;
-            color: #374151;
-
-            cursor: pointer;
-            z-index: 40;
-        }
-
-        .register-tab:hover {
-            background: #e9edf5;
-        }
-
-        .register-benefits {
-            margin: 10px 0 14px 0;
-            padding-left: 0;
-            list-style: none;
-            font-size: 13px;
-            color: #374151;
-        }
-
-        .register-benefits li {
-            margin-bottom: 6px;
-        }
-
-    </style>
-@endpush
 @section('content')
-    @if(null === auth()->user() || !auth()->user()?->hasRole(RoleEnum::CHANNEL_OPERATOR->value))
-        <div class="register-callout">
-            <h3>Hinweis: Portalzugang wird künftig vorausgesetzt</h3>
-            <p>
-                Der Zugriff auf Angebote per Direktlink (z. B. per E-Mail) wird
-                perspektivisch eingestellt.
-                Künftig erfolgt der Zugriff zentral über ein Benutzerkonto im Portal.
-            </p>
-            <ul class="register-benefits">
-                <li>✔ Zentrale Übersicht über alle Angebote, Downloads und Status</li>
-                <li>✔ Dauerhafter Zugriff auf frühere, aktuelle und zukünftige Inhalte</li>
-                <li>✔ Mehr Sicherheit durch persönliches Benutzerkonto</li>
-                <li>✔ Perspektivisch: Automatisierte Anbindung an eigene Workflows und Systeme</li>
-                <li>✔ Bestehende Zugriffe per E-Mail bleiben weiterhin möglich</li>
-            </ul>
-            <p class="muted" style="font-size:13px;">
-                Bestehende Direktzugriffe funktionieren während der Übergangsphase weiterhin.
-            </p>
-            <div class="register-callout-actions">
-                <a href="{{ route('filament.standard.auth.register') }}" class="btn primary">
-                    Jetzt registrieren
-                </a>
-                <a href="{{ route('filament.standard.auth.login') }}" class="btn subtle">
-                    Login
-                </a>
+    <h1 class="mb-8 text-3xl font-bold">Angebot für {{ $channel->name }}</h1>
+    @if (null === auth()->user() || ! auth()->user()?->hasRole(RoleEnum::CHANNEL_OPERATOR->value))
+        <aside class="mb-10 rounded-xl border border-border bg-panel p-6">
+            <h2 class="text-lg font-semibold">Hinweis: Portalzugang wird künftig vorausgesetzt</h2>
+            <p class="mt-3 max-w-3xl text-muted">Künftig erfolgt der Zugriff zentral über ein Benutzerkonto im Portal. Dort findest du deine Angebote, Downloads und ihren Status. Bestehende Direktzugriffe funktionieren während der Übergangsphase weiterhin.</p>
+            <div class="mt-5 flex flex-wrap gap-3">
+                <x-public.button :href="route('filament.standard.auth.register')">Jetzt registrieren</x-public.button>
+                <x-public.button :href="route('filament.standard.auth.login')" variant="secondary">Login</x-public.button>
             </div>
-        </div>
+        </aside>
     @endif
-    @php
-        // nach bundle_key gruppieren (Fallback "Einzeln")
-        $byBundle = $items->groupBy(function($a){
-          $firstClip = optional($a->video->clips->first());
-          return ($firstClip && $firstClip->bundle_key) ? $firstClip->bundle_key : 'Einzeln';
-        });
-    @endphp
-
-    @if ($errors->any())
-        <div class="panel flash--err" style="margin-bottom:16px;">
-            <strong>Es gab ein Problem:</strong>
-            <ul style="margin:6px 0 0 18px;">
-                @foreach ($errors->all() as $e)
-                    <li>{{ $e }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    @if($items->isEmpty())
-        <div class="panel">Für diesen Batch sind keine Videos verfügbar.</div>
+    @if ($items->isEmpty())
+        <p class="panel">Für diesen Batch sind keine Videos verfügbar.</p>
     @else
+        <noscript><p class="flash">Die Auswahl als ZIP benötigt JavaScript. Einzelne Clips kannst du über ihren direkten Download-Link herunterladen.</p></noscript>
         <form method="POST" action="{{ $zipPostUrl }}" id="zipForm" data-zip-post-url="{{ $zipPostUrl }}">
             @csrf
-
-            @foreach($byBundle as $bundle => $group)
-                <h3 style="margin:18px 2px;">Gruppe: {{ $bundle }}</h3>
-                <div class="grid">
-                    @foreach($group as $assignment)
-                        <x-video-card :assignment="$assignment"/>
-                    @endforeach
+            @foreach ($items->groupBy(fn ($assignment) => $assignment->video->clips->first()?->bundle_key ?: 'Einzeln') as $bundle => $group)
+                <h2 class="mt-8 mb-5 text-xl font-semibold">Gruppe: {{ $bundle }}</h2>
+                <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach ($group as $assignment)<x-video-card :assignment="$assignment" />@endforeach
                 </div>
             @endforeach
-
-            <div style="display:flex; gap:10px; margin-top:16px;">
-                <button type="button" class="btn" id="selectAll">Alle auswählen</button>
-                <button type="button" class="btn" id="selectNone">Alle abwählen</button>
-                <button type="button" class="btn" id="zipSubmit">Auswahl als ZIP herunterladen</button>
-                <span class="muted" id="selCount" style="align-self:center;">0 ausgewählt</span>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+                <x-public.button variant="secondary" id="selectAll">Alle auswählen</x-public.button>
+                <x-public.button variant="secondary" id="selectNone">Alle abwählen</x-public.button>
+                <x-public.button id="zipSubmit">Auswahl als ZIP herunterladen</x-public.button>
+                <span class="text-sm text-muted" id="selCount" role="status" aria-live="polite">0 ausgewählt</span>
             </div>
         </form>
     @endif
-    <hr class="muted-separator">
-    @guest
-        <button
-                class="register-tab"
-                onclick="document.querySelector('.register-callout')?.scrollIntoView({behavior:'smooth'})"
-        >
-            Registrieren
-        </button>
-    @endguest
-    @if($pickedUp->isNotEmpty())
-        <h2 style="margin-bottom:12px;">Bereits heruntergeladen</h2>
-
-        @php
-            $byBundlePicked = $pickedUp->groupBy(function($a){
-              $firstClip = optional($a->video->clips->first());
-              return ($firstClip && $firstClip->bundle_key) ? $firstClip->bundle_key : 'Einzeln';
-            });
-        @endphp
-
-        @foreach($byBundlePicked as $bundle => $group)
-            <h3 style="margin:18px 2px;">Gruppe: {{ $bundle }}</h3>
-            <div class="grid">
-                @foreach($group as $assignment)
-                    <x-video-card :assignment="$assignment" :disabled="true"/>
-                @endforeach
+    @if ($pickedUp->isNotEmpty())
+        <h2 class="mt-12 mb-6 border-t border-border pt-10 text-2xl font-bold">Bereits heruntergeladen</h2>
+        @foreach ($pickedUp->groupBy(fn ($assignment) => $assignment->video->clips->first()?->bundle_key ?: 'Einzeln') as $bundle => $group)
+            <h3 class="mt-8 mb-5 text-xl font-semibold">Gruppe: {{ $bundle }}</h3>
+            <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                @foreach ($group as $assignment)<x-video-card :assignment="$assignment" :disabled="true" />@endforeach
             </div>
         @endforeach
     @endif

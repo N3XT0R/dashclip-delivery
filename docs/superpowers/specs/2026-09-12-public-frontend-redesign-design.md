@@ -281,3 +281,12 @@ After the user reviews this written specification, use
 `superpowers:writing-plans` to produce a concrete implementation plan. Implementation
 starts only after that plan is agreed. Use the applicable Superpowers development,
 testing, debugging, review, and completion workflows during execution.
+
+## Implementation asset provenance
+
+The approved synthetic source is retained at
+`public/images/marketing/hero-source.png` (1672 × 941). Responsive WebP files
+at widths 640, 1280 and 1920 and a 1280-pixel JPEG fallback were produced with
+installed FFmpeg, using `scale=<width>:-1`, WebP quality 82 and JPEG `-q:v 3`.
+The unchanged original logo supplies the 160 × 160 WebP delivery asset at
+quality 90. The source is decorative and is never presented as submitted footage.
