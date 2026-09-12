@@ -54,7 +54,12 @@ final class RoleBoundScopeResolver implements SelfServiceScopeResolver
     {
         $map = [];
 
-        foreach (RouteFacade::getRoutes() as $route) {
+        // getRoutes() on the collection, not the collection itself: the
+        // RouteCollectionInterface contract is not declared iterable, only the
+        // concrete collection happens to be.
+        $routes = RouteFacade::getRoutes()->getRoutes();
+
+        foreach ($routes as $route) {
             $middleware = $this->middlewareOf($route);
             $scopes = $this->valuesWithPrefix($middleware, self::SCOPE_PREFIX);
 
