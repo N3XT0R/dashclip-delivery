@@ -54,6 +54,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - the admin assignment overview gains a "Preferred channel" column and filter showing whether
       an assignment was made via `preferred_channel` (Ticket #139).
 
+### Fixed
+- **Scope selection in the Standard panel came back and now follows the user's role.** The
+  self-service client wizard offered no permissions at all, because the underlying package
+  restricted the choice to scopes the user already held as their own grants, and nothing ever
+  created those. Which scopes a user may put on their own client is now answered by the
+  application: `RoleBoundScopeResolver` reads the scope and the Standard-guard permission that
+  each `/api/v1` route already declares, so a channel operator can pick channel and offer
+  scopes, a regular user video scopes, and the list can never drift from what the endpoints
+  actually enforce.
+- **OAuth client creation in the Standard and admin panel** was impossible: every attempt
+  aborted with a database error and no client secret was ever shown. The
+  `passport_scope_grants.context_client_id` column was created as a bigint by an older
+  version of the scope-grant migration, while client ids are UUIDs. MySQL/MariaDB rejects
+  the UUID with "Data truncated for column 'context_client_id'", which killed the request
+  before the page that reveals the generated secret could load. A repair migration recreates
+  the column with the correct type and restores its foreign key and indexes. Databases that
+  already have the correct column are left untouched. A schema test now asserts that the
+  column keeps the same type as the client primary key it references, which SQLite alone
+  cannot catch because it does not enforce column types.
+
 ## [4.4.0] - 2026-08-20
 
 ### Added
