@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
     <title>@yield('title', 'DashClip Delivery')</title>
     <x-public.metadata
         :title="trim($__env->yieldContent('title', 'DashClip Delivery'))"
-        :description="trim($__env->yieldContent('description', 'Dashcam-Clips einmal hochladen und nachvollziehbar an passende Kanäle verteilen.'))"
+        :description="trim($__env->yieldContent('description', __('public.default_description')))"
         :robots="trim($__env->yieldContent('robots', 'index, follow'))" />
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/apple-touch-icon.png') }}">
@@ -22,7 +22,7 @@
     @stack('styles')
 </head>
 <body class="flex min-h-screen flex-col">
-<a href="#main-content" class="sr-only z-50 rounded-lg bg-panel p-4 text-text focus:not-sr-only focus:absolute focus:top-3 focus:left-3">Zum Inhalt springen</a>
+<a href="#main-content" class="sr-only z-50 rounded-lg bg-panel p-4 text-text focus:not-sr-only focus:absolute focus:top-3 focus:left-3">{{ __('public.skip') }}</a>
 <x-public.navigation />
 <main id="main-content" tabindex="-1" class="flex-1 {{ $__env->hasSection('full_width') ? '' : 'public-width py-12 sm:py-16' }}">
     @if (session('status') || $errors->any() || $__env->hasSection('actions') || $__env->hasSection('subtitle'))
@@ -34,7 +34,7 @@
             @endif
             @if ($errors->any())
                 <div class="flash flash--err" role="alert">
-                    <strong>Bitte prüfe deine Eingaben:</strong>
+                    <strong>{{ __('public.validation') }}</strong>
                     <ul class="mt-2 list-disc pl-5">
                         @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
                     </ul>

@@ -10,6 +10,12 @@ use Tests\TestCase;
 
 final class PublicWebsiteTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withHeader('Accept-Language', 'de');
+    }
+
     public function testPublicAssetsStayIsolatedAndPanelScriptsSupportBundledImports(): void
     {
         $document = new DOMDocument();

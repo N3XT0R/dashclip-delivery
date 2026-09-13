@@ -34,8 +34,8 @@ final class PublicTransactionalPagesTest extends DatabaseTestCase
             $xpath = new DOMXPath($document);
             $this->assertSame(1, $xpath->query('//h1')->length);
             $this->assertSame(0, $xpath->query('//link[@rel="canonical"] | //meta[@property="og:url"]')->length);
-            $this->assertSame($response->viewData($actionKey), $xpath->query('//form[@method="POST"]')->item(0)->getAttribute('action'));
-            $this->assertSame(1, $xpath->query('//form/input[@name="_token"]')->length);
+            $this->assertSame($response->viewData($actionKey), $xpath->query('//main//form[@method="POST"]')->item(0)->getAttribute('action'));
+            $this->assertSame(1, $xpath->query('//main//form/input[@name="_token"]')->length);
             $this->assertGreaterThan(0, $xpath->query('//input[@name="assignment_ids[]"]')->length);
             $this->assertSame(0, $xpath->query('//label//video | //label//button | //label//a')->length);
         }
@@ -55,7 +55,7 @@ final class PublicTransactionalPagesTest extends DatabaseTestCase
         $xpath = new DOMXPath($document);
         $this->assertSame(1, $xpath->query('//h1')->length);
         $this->assertSame(0, $xpath->query('//link[@rel="canonical"] | //meta[@property="og:url"]')->length);
-        $this->assertSame(route('tokens.store', $parameters), $xpath->query('//form[@method="POST"]')->item(0)->getAttribute('action'));
+        $this->assertSame(route('tokens.store', $parameters), $xpath->query('//main//form[@method="POST"]')->item(0)->getAttribute('action'));
         $this->assertNotNull($service->findValid($purpose, $plainToken));
         $this->assertTrue($channel->fresh()->is_video_reception_paused);
         $this->post(route('tokens.store', $parameters))->assertOk();

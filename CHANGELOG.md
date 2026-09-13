@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Public language selection and platform guide**
+    - added German and English language buttons with a persistent explicit choice
+      and automatic browser-language detection on public routes.
+    - translated the homepage and shared public navigation, footer, and cookie
+      notice; panel account language preferences retain their existing behavior.
+    - added a plain-language walkthrough from upload to channel selection,
+      downloads, returns, and publication decisions in both languages.
 - **Public website design specification**
     - documented the responsive redesign scope, preservation of existing public
       functions, and requirements for accessibility, metadata, and asset delivery.
