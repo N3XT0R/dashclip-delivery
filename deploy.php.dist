@@ -53,7 +53,8 @@ after('deploy:cleanup', 'artisan:up');
 // releases. 'artisan:passport:keys' skips itself when a key is already present, so a
 // later deploy never regenerates them and previously issued tokens stay valid.
 after('deploy:vendors', 'artisan:passport:keys');
-// storage/api-docs is gitignored and l5-swagger's generate_always is false, so both
-// documentation specs must be (re)generated on every deploy (--all covers every
-// documentation in config/l5-swagger.php).
+// The specs are versioned, but a deploy replaces the whole storage directory with a
+// symlink to shared storage, so the committed copies never reach the running app.
+// They must be regenerated on every deploy. --all covers every documentation in
+// config/l5-swagger.php, currently authentication, submitter and channel-operator.
 after('deploy:vendors', 'artisan:l5-swagger:generate');

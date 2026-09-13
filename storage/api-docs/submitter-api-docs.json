@@ -1,0 +1,859 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Submitter API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/",
+            "description": "Application root"
+        }
+    ],
+    "paths": {
+        "/api/v1/teams": {
+            "get": {
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "List teams visible to the authenticated user",
+                "description": "Returns a paginated list of teams the user owns or is a member of. Supports partial name filtering, sorting and pagination.",
+                "operationId": "f4c6fb002db8850c2c1a742012fb7fa5",
+                "parameters": [
+                    {
+                        "name": "filter[name]",
+                        "in": "query",
+                        "description": "Partial, case-insensitive match on the team name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/SortNameCreatedAt"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageNumber"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of teams",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Team"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/ForbiddenScope"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "teams:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "Create a team owned by the authenticated user",
+                "description": "Creates a new team with the given name, owned by the authenticated user, who is also added as a member. A unique slug is generated automatically. Returns 201 with a Location header.",
+                "operationId": "c8670c5229acb08c5a0551b8bd118189",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Team created",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the created team",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Team"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/ForbiddenScope"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "teams:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/teams/{team}": {
+            "get": {
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "Show a single team",
+                "description": "Returns one team the user owns or belongs to, by id. Responds with 404 otherwise.",
+                "operationId": "c2476f9cd7a53c08ff20ee4df5fc75f4",
+                "parameters": [
+                    {
+                        "name": "team",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The team",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Team"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/ForbiddenScope"
+                    },
+                    "404": {
+                        "description": "Team not found or not visible to the user"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "teams:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Teams"
+                ],
+                "summary": "Delete a team owned by the authenticated user",
+                "description": "Deletes a team. Only the team owner may do this; members and non-members get 404. Returns 204 on success.",
+                "operationId": "982a83a6690d042a8bf949c9f70c3e37",
+                "parameters": [
+                    {
+                        "name": "team",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Team deleted"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/ForbiddenScope"
+                    },
+                    "404": {
+                        "description": "Team not found, not visible, or not owned by the user"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "teams:delete"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/videos": {
+            "get": {
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "List videos visible to the authenticated user",
+                "description": "Returns a paginated list of videos the authenticated user can see, the same set as in the Standard panel (videos the user submitted a clip for, or that belong to their team). Supports filtering by name and creation date range, plus sorting and pagination. The processing status is read-only (an internal ingest flag) and is not a filter.",
+                "operationId": "707a3e7d65146d89878dd991fed226e0",
+                "parameters": [
+                    {
+                        "name": "filter[original_name]",
+                        "in": "query",
+                        "description": "Partial, case-insensitive match on the original file name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[created_after]",
+                        "in": "query",
+                        "description": "ISO-8601 date-time lower bound (inclusive) on created_at",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "filter[created_before]",
+                        "in": "query",
+                        "description": "ISO-8601 date-time upper bound (inclusive) on created_at",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Comma-separated sort fields; prefix with \"-\" for descending. Allowed: original_name, created_at, bytes. Default: -created_at",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageNumber"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of videos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Video"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "videos:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Upload a video through the existing ingest pipeline",
+                "description": "Uploads a video file together with the initial clip boundaries (start_sec/end_sec). The file is stored on the videos disk, a video record and its first clip are created for the user's default team, and the video is queued for the same ingest pipeline the Standard-panel upload uses (hashing, preview generation, duplicate detection). Returns 201 with a Location header; poll the show endpoint to follow the processing status.",
+                "operationId": "dbe573ee9ec236903b6ff7852fab5b88",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file",
+                                    "clip"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "Video file (mp4, mov, mkv); max size from the panel upload config",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "clip": {
+                                        "required": [
+                                            "start_sec",
+                                            "end_sec"
+                                        ],
+                                        "properties": {
+                                            "start_sec": {
+                                                "type": "integer",
+                                                "minimum": 0
+                                            },
+                                            "end_sec": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Video uploaded and queued for processing",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the created video",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Video"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "videos:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/videos/{video}": {
+            "get": {
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Show a single video",
+                "description": "Returns one video by id, including its current processing status. Responds with 404 if the video does not exist or is not visible to the authenticated user.",
+                "operationId": "5009c1aeff26305a1b25d8bab38afff4",
+                "parameters": [
+                    {
+                        "name": "video",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The video",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Video"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Video not found or not visible to the user"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "videos:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Delete a video",
+                "description": "Permanently deletes a video the user owns, including its stored file. Only allowed while the video has no active (ready, non-expired) offers and no offer that was already picked up. This is the same rule the Standard-panel delete action enforces. Responds with 404 for videos not visible to the user, 409 when the video still has active or picked-up offers, and 204 on success.",
+                "operationId": "9ac415cd0c57d1c4cd6cd8207ad45599",
+                "parameters": [
+                    {
+                        "name": "video",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Video deleted"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Video not found or not visible to the user"
+                    },
+                    "409": {
+                        "description": "The video still has active or picked-up offers and cannot be deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "videos:delete"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Rename a video",
+                "description": "Updates the display name (original_name) of a video the user owns. Does not touch the stored file or the ingest state. Responds with 404 for videos not visible to the user.",
+                "operationId": "88e060a2f172b19dc499a79aa682b6b1",
+                "parameters": [
+                    {
+                        "name": "video",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "original_name"
+                                ],
+                                "properties": {
+                                    "original_name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The updated video",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Video"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Video not found or not visible to the user"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "videos:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Channel": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "creator_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "youtube_name": {
+                        "type": "string"
+                    },
+                    "is_video_reception_paused": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Offer": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "video_id": {
+                        "type": "integer"
+                    },
+                    "channel_id": {
+                        "type": "integer"
+                    },
+                    "note": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationLinks": {
+                "properties": {
+                    "first": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "last": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "prev": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "pagination": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer"
+                            },
+                            "per_page": {
+                                "type": "integer"
+                            },
+                            "total": {
+                                "type": "integer"
+                            },
+                            "total_pages": {
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "Team": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "owner_id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "errors": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Video": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "original_name": {
+                        "type": "string"
+                    },
+                    "ext": {
+                        "type": "string"
+                    },
+                    "bytes": {
+                        "type": "integer"
+                    },
+                    "human_readable_size": {
+                        "type": "string"
+                    },
+                    "processing_status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "running",
+                            "completed",
+                            "failed",
+                            "deleted"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "Forbidden": {
+                "description": "Missing scope or permission"
+            },
+            "ForbiddenScope": {
+                "description": "Missing scope"
+            },
+            "Unauthorized": {
+                "description": "Unauthenticated"
+            },
+            "ValidationFailed": {
+                "description": "Validation failed",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "PageNumber": {
+                "name": "page[number]",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "PageSize": {
+                "name": "page[size]",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "SortNameCreatedAt": {
+                "name": "sort",
+                "in": "query",
+                "description": "Comma-separated sort fields; prefix with \"-\" for descending. Allowed: name, created_at. Default: -created_at",
+                "schema": {
+                    "type": "string"
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Paste a raw access token: a Personal Access Token created in the Standard panel, or a token obtained through the device grant.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
+            "oauth2": {
+                "type": "oauth2",
+                "description": "OAuth2 access tokens. How to obtain one for interactive testing:\n\n- **authorization code**: run the flow below (the browser is redirected to\n  `/oauth/authorize`, the code is exchanged at `/oauth/token`). This produces a\n  user-scoped token and is the one to use for trying the endpoints out.\n- **personal access token**: create one in the Standard panel\n  (\"OAuth\" → \"Personal Access Tokens\") and paste it into the `bearerAuth` scheme.\n  This is the fastest path and needs no client setup.\n- **device**: request a code at `/oauth/device/code`, confirm it at `/oauth/device`,\n  poll `/oauth/token`, then paste the token into `bearerAuth`.\n- **client credentials**: also supported, but these tokens have no user context, so\n  every endpoint here returns 403 or an empty list. It is therefore not offered as an\n  interactive flow.\n\nScopes are `<resource>:<action>` and must be granted to the acting user.",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "/oauth/authorize",
+                        "tokenUrl": "/oauth/token",
+                        "refreshUrl": "/oauth/token",
+                        "scopes": {
+                            "videos:read": "List and read videos",
+                            "videos:write": "Upload and rename videos",
+                            "videos:delete": "Delete videos",
+                            "teams:read": "List and read teams",
+                            "teams:write": "Create teams",
+                            "teams:delete": "Delete owned teams"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Teams",
+            "description": "Teams"
+        },
+        {
+            "name": "Videos",
+            "description": "Videos"
+        }
+    ]
+}
