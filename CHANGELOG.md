@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       search-engine metadata, previews, duplication, and scheduled publication.
     - added safe Markdown rendering with note and warning callouts, cached public
       aggregates, responsive article cards, and plain sharing links without trackers.
+    - added an initial content seeder with three bilingual categories, five tags
+      and a complete German/English introduction; repeated runs preserve editorial
+      changes and deletions through a transactional, persistent execution marker.
 
 ### Fixed
 - **Blog administration labels**
