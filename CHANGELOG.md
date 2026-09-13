@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Channel operators maintain their own public presentation**
+    - the channel area now carries the homepage visibility switch, which previously
+      only an administrator could set.
+    - channel operators can upload a logo for the public channel list. It is shown at
+      the same size as the previous neutral symbol, which remains the fallback.
+    - both changes are recorded in the channel history, so it stays traceable who
+      changed the public presentation and when.
+
 ### Fixed
 - **Unreadable mail content in the mail log**
     - incoming mail was stored exactly as it arrived, so the log showed transport
@@ -20,17 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - a maintenance command repairs entries that were stored before this fix.
     - reading a mail without a usable header no longer aborts the scan, and a
       stray debug output was removed from that path.
-
-### Added
-- **Channel operators maintain their own public presentation**
-    - the channel area now carries the homepage visibility switch, which previously
-      only an administrator could set.
-    - channel operators can upload a logo for the public channel list. It is shown at
-      the same size as the previous neutral symbol, which remains the fallback.
-    - both changes are recorded in the channel history, so it stays traceable who
-      changed the public presentation and when.
-
-### Fixed
 - **Missing API documentation after a deployment**
     - the deployment now regenerates the interface specifications, which previously
       existed only as a defined step that nothing ever invoked.
