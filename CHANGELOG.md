@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Public channel visibility**
     - linked listed channel names to their YouTube channel using the stored handle.
+    - displayed readable channel names without underscores or permanent link underlines.
     - added an admin checkbox controlling inclusion in the public channel list,
       enabled by default for existing and new channels.
     - replaced hardcoded channel names with an alphabetical database-backed list;

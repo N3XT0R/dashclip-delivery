@@ -10,9 +10,9 @@
                 <li class="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm">
                     <x-heroicon-o-video-camera class="size-6 shrink-0 text-muted" aria-hidden="true" />
                     @if (filled($channel->youtube_name))
-                        <a href="{{ 'https://www.youtube.com/@'.rawurlencode($channel->youtube_name) }}" class="underline underline-offset-4">{{ $channel->name }}</a>
+                        <a href="{{ 'https://www.youtube.com/@'.rawurlencode($channel->youtube_name) }}" class="font-semibold underline-offset-4 hover:underline">{{ str_replace('_', ' ', $channel->name) }}</a>
                     @else
-                        <span>{{ $channel->name }}</span>
+                        <span>{{ str_replace('_', ' ', $channel->name) }}</span>
                     @endif
                 </li>
             @endforeach
