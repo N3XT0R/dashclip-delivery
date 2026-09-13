@@ -48,7 +48,7 @@ return [
     'submitter_body' => 'Whether an unusual encounter or an everyday traffic situation: submit your clips through your account and keep track of their distribution.',
     'submitter_register' => 'Register as a submitter',
     'for_channels' => 'For channels',
-    'channel_body' => 'Channels receive suitable offers with previews and time-limited download links. Clips they do not need can be returned.',
+    'channel_body' => 'Do you run a channel? Start by registering a regular account, then apply to become a channel operator from within your account. Once approved, you receive suitable offers with previews and time-limited download links. You can return clips you do not need.',
     'publication' => 'An offer does not mean publication. Each channel decides what to select and publish.',
     'about_offers' => 'More about offers',
     'offers_eyebrow' => 'Offers & downloads',

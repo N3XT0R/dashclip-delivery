@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       explicit language markup for assistive technology.
     - added a plain-language walkthrough from upload to the submitter’s choice of channels,
       downloads, returns, and publication decisions in both languages.
+    - clarified that channel operators first register a regular account and then
+      apply for channel operator access from within their account.
 - **Public website design specification**
     - documented the responsive redesign scope, preservation of existing public
       functions, and requirements for accessibility, metadata, and asset delivery.

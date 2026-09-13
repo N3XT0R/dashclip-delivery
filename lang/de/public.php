@@ -48,7 +48,7 @@ return [
     'submitter_body' => 'Ob besondere Begegnung oder alltägliche Verkehrssituation: Reiche deine Clips über deinen persönlichen Bereich ein und behalte ihre Verteilung im Blick.',
     'submitter_register' => 'Als Einsender registrieren',
     'for_channels' => 'Für Kanäle',
-    'channel_body' => 'Kanäle empfangen passende Angebote mit Vorschauen und zeitlich begrenzten Download-Links. Nicht benötigte Clips lassen sich zurückgeben.',
+    'channel_body' => 'Du betreibst einen Kanal? Registriere dich zuerst ganz normal und beantrage anschließend in deinem Konto, Kanalbetreiber zu werden. Nach der Freigabe erhältst du passende Angebote mit Vorschauen und zeitlich begrenzten Download-Links. Nicht benötigte Clips kannst du zurückgeben.',
     'publication' => 'Ein Angebot ist noch keine Veröffentlichung. Die Auswahl und Veröffentlichung liegen beim jeweiligen Kanal.',
     'about_offers' => 'Mehr über Angebote',
     'offers_eyebrow' => 'Angebote & Downloads',
