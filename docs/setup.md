@@ -31,11 +31,14 @@ XSendFilePath /var/www/<domain>/htdocs/current/public/storage/previews
    composer install
    npm install
    ```
-- Beispieldatei kopieren und Anwendungsschlüssel generieren:
+- Beispieldatei kopieren und Schlüssel generieren:
    ```bash
    cp .env.example .env
    php artisan key:generate
+   php artisan passport:keys
    ```
+   Die Signaturschlüssel der Schnittstelle liegen nicht im Repository. `passport:keys` legt sie
+   einmalig je Checkout an und überschreibt vorhandene Schlüssel nicht.
 
 - Datenbank/Redis und etc konfigurieren:
    ```bash

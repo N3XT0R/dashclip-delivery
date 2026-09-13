@@ -79,8 +79,12 @@ cp .env.example .env
 composer install
 npm install
 php artisan key:generate
+php artisan passport:keys
 php artisan migrate
 ```
+
+The API signing keys are not part of the repository. `passport:keys` creates them once per
+checkout; it refuses to overwrite existing keys, so it is safe to rerun.
 
 ## Useful Commands
 
