@@ -18,6 +18,37 @@ class PostRepository
     private const EAGER = ['post.author', 'post.category.translations', 'post.tags.translations', 'post.translations'];
 
     /**
+     * Return indexable public translations without loading unrelated presentation data.
+     * @return Builder<PostTranslation>
+     */
+    public function sitemapArticles(): Builder
+    {
+        return PostTranslation::query()->published()->where('is_indexable', true)
+            ->whereIn('locale', ['de', 'en'])->with('post:id,updated_at');
+    }
+
+    /**
+     * Return categories with published content using fresh visibility data.
+     * @return Collection<int, PostCategoryTranslation>
+     */
+    public function sitemapCategories(string $locale): Collection
+    {
+        return PostCategoryTranslation::query()->where('locale', $locale)
+            ->whereIn('category_id', $this->categoryCounts($locale)->keys())->orderBy('id')->get();
+    }
+
+    /**
+     * Return all translated tags with published content, without the sidebar cache or limit.
+     * @return Collection<int, PostTagTranslation>
+     */
+    public function sitemapTags(string $locale): Collection
+    {
+        return PostTagTranslation::query()->where('locale', $locale)
+            ->whereHas('tag.posts.translations', fn (Builder $query) => $query->published()->where('locale', $locale))
+            ->orderBy('id')->get();
+    }
+
+    /**
      * Query the translations a reader may see in one language, newest first.
      * @param string $locale
      * @return Builder<PostTranslation>

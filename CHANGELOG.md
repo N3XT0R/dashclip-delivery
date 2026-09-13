@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Dynamic XML sitemap**
+    - added `/sitemap.xml` for public pages and current German/English blog content,
+      advertised through a dynamically generated `robots.txt`.
+    - exclude unpublished, non-indexable and non-canonical articles; article modification
+      dates reflect stored content changes, and the existing blog sitemap shares the same source.
 - **Editorial blog**
     - added German and English article pages, search, categories, tags, RSS feeds,
       a sitemap, and the latest published articles on the homepage.

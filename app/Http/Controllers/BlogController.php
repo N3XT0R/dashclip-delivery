@@ -11,6 +11,7 @@ use App\Exceptions\Blog\PostNotPublishedException;
 use App\Models\PostTranslation;
 use App\Repository\PostRepository;
 use App\Services\Blog\BlogPresentationService;
+use App\Services\PublicSitemapService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -78,22 +79,10 @@ final class BlogController extends Controller
     }
 
     /** Publish blog URLs without drafts or explicitly non-indexable articles. */
-    public function sitemap(): Response
+    public function sitemap(PublicSitemapService $sitemap): Response
     {
-        $entries = [];
-        foreach (['de', 'en'] as $locale) {
-            $entries[] = $this->presentation->url('index', $locale);
-            foreach ($this->posts->publishedForLocale($locale)->where('is_indexable', true)->get() as $article) {
-                $entries[] = $this->presentation->url('show', $locale, ['slug' => $article->slug]);
-            }
-            foreach ($this->posts->categories($locale)->where('article_count', '>', 0) as $category) {
-                $entries[] = $this->presentation->url('category', $locale, ['slug' => $category->slug]);
-            }
-            foreach ($this->posts->topics($locale, null) as $tag) {
-                $entries[] = $this->presentation->url('tag', $locale, ['slug' => $tag->slug]);
-            }
-        }
-        return response()->view('blog.sitemap', compact('entries'))->header('Content-Type', 'application/xml; charset=UTF-8');
+        return response()->view('sitemap', ['entries' => $sitemap->blogEntries()])
+            ->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 
     /** Assemble reusable public article data without depending on the administration panel. */

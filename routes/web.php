@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\ApiDocsController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\PublicSitemapController;
 use App\Http\Controllers\AssignmentDownloadController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
@@ -15,6 +16,8 @@ use App\Http\Controllers\ZipController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(SetPublicLocale::class)->group(function (): void {
+    Route::get('/sitemap.xml', PublicSitemapController::class)->name('sitemap');
+    Route::get('/robots.txt', [PublicSitemapController::class, 'robots'])->name('robots');
     Route::post('/language', PublicLocaleController::class)->name('public.locale');
 
     foreach (['de' => 'blog', 'en' => 'en/blog'] as $locale => $prefix) {
@@ -32,7 +35,7 @@ Route::middleware(SetPublicLocale::class)->group(function (): void {
 
     Route::get('/', function () {
         return view('welcome');
-    });
+    })->name('home');
 
     Route::get('/game', function () {
         return view('game');
