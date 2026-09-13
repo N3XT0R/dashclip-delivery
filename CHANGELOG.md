@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Editorial blog design specification**
+    - documented the data model for articles with a category, tags, media, and
+      search-engine metadata, translated into German and English per article.
+    - fixed the separation between the administration panel as the editorial
+      surface and the public website that renders the published content.
+    - reserved a language segment for blog addresses only, leaving every existing
+      public address and its indexing untouched.
+    - deferred the newsletter subscription and the social profile links to
+      separate projects.
+
 ## [4.5.0] - 2026-09-13
 
 ### Added
