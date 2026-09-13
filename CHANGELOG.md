@@ -106,6 +106,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       standard dirty-file formatter works without database-directory access.
 
 ### Fixed
+- **Public page tests**
+    - initialized the database for locale and API overview tests now that the
+      shared footer reads channel visibility from the database.
 - **Scope selection in the Standard panel came back and now follows the user's role.** The
   self-service client wizard offered no permissions at all, because the underlying package
   restricted the choice to scopes the user already held as their own grants, and nothing ever
