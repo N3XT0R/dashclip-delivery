@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Missing API documentation after a deployment**
+    - the deployment now regenerates the interface specifications, which previously
+      existed only as a defined step that nothing ever invoked.
+    - the specifications are versioned instead of ignored, and are regenerated on
+      request by default so an environment can never serve an empty documentation page.
+
 ## [4.5.0] - 2026-09-13
 
 ### Added
