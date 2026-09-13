@@ -57,7 +57,7 @@ final class PublicWebsiteTest extends DatabaseTestCase
 
     public function testHomepageProvidesUploadNavigationAndCuratedChannels(): void
     {
-        Channel::factory()->create(['name' => 'Visible channel']);
+        Channel::factory()->create(['name' => 'Visible channel', 'youtube_name' => 'visible-channel']);
         Channel::factory()->create(['name' => 'Hidden channel', 'show_on_homepage' => false]);
         $this->withoutVite();
         $response = $this->get('/')->assertOk()
@@ -66,6 +66,7 @@ final class PublicWebsiteTest extends DatabaseTestCase
             ->assertSee(route('filament.standard.auth.login'), false);
 
         $response->assertSee('Visible channel')->assertDontSee('Hidden channel');
+        $response->assertSee('href="https://www.youtube.com/@visible-channel"', false);
 
         $document = new DOMDocument();
         @$document->loadHTML('<?xml encoding="UTF-8">'.$response->getContent());

@@ -23,7 +23,7 @@ class PublicFooter extends Component
     public function render(): View
     {
         return view('components.public.footer', [
-            'channels' => $this->channelRepository->getHomepageChannelNames(),
+            'channels' => $this->channelRepository->getHomepageChannels(),
         ]);
     }
 }

@@ -16,14 +16,14 @@ use Illuminate\Support\Collection as SupportCollection;
 class ChannelRepository
 {
     /**
-     * Return public channel names in a stable alphabetical order.
+     * Return public channel names and YouTube handles in alphabetical order.
      *
-     * @return SupportCollection<int, string>
+     * @return Collection<int, Channel>
      */
-    public function getHomepageChannelNames(): SupportCollection
+    public function getHomepageChannels(): Collection
     {
         return Channel::query()->where('show_on_homepage', true)
-            ->orderBy('name')->orderBy('id')->pluck('name');
+            ->orderBy('name')->orderBy('id')->get(['name', 'youtube_name']);
     }
 
     /**
