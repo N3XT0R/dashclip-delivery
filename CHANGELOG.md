@@ -106,6 +106,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       standard dirty-file formatter works without database-directory access.
 
 ### Fixed
+- **Passport migration order**
+    - deferred the scope grant client foreign key until after OAuth clients exist,
+      allowing Passport installation on existing MySQL/MariaDB databases.
+    - made the interrupted client-column migration retryable without dropping
+      existing scope grants; already installed foreign keys remain intact.
 - **Public page tests**
     - initialized the database for locale and API overview tests now that the
       shared footer reads channel visibility from the database.
