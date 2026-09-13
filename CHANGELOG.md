@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - clarified that channel operators first register a regular account and then
       apply for channel operator access from within their account.
     - labelled the footer channel list as a selection of participating channels.
+    - kept the cookie notice visible at the bottom of the viewport until dismissed,
+      with responsive spacing so the footer remains reachable.
 - **Public website design specification**
     - documented the responsive redesign scope, preservation of existing public
       functions, and requirements for accessibility, metadata, and asset delivery.

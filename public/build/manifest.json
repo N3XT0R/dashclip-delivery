@@ -4,7 +4,7 @@
     "name": "ZipDownloader"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BF6MT3Gm.css",
+    "file": "assets/app-DrSjlR3l.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -19,7 +19,7 @@
     "isEntry": true
   },
   "resources/css/public.css": {
-    "file": "assets/public-CVCRZxdB.css",
+    "file": "assets/public-mY_Wjk9B.css",
     "src": "resources/css/public.css",
     "isEntry": true
   },
@@ -51,7 +51,7 @@
     ]
   },
   "resources/js/public.js": {
-    "file": "assets/public-HmAqD_v_.js",
+    "file": "assets/public-DEOUrWPg.js",
     "name": "public",
     "src": "resources/js/public.js",
     "isEntry": true

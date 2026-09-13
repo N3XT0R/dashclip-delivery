@@ -11,11 +11,24 @@ themeToggle?.addEventListener('click', () => {
     } catch {}
 });
 
+const cookieBanner = document.getElementById('cookie-banner');
+const cookieSpacer = document.createElement('div');
+cookieSpacer.setAttribute('aria-hidden', 'true');
+const cookieResizeObserver = new ResizeObserver(() => {
+    cookieSpacer.style.height = `${cookieBanner.getBoundingClientRect().height}px`;
+});
+if (cookieBanner) {
+    cookieBanner.before(cookieSpacer);
+    cookieResizeObserver.observe(cookieBanner);
+}
+
 document.getElementById('cookie-accept')?.addEventListener('click', () => {
     const expires = new Date();
     expires.setFullYear(expires.getFullYear() + 1);
     document.cookie = `cookie_consent=true; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
-    document.getElementById('cookie-banner')?.remove();
+    cookieResizeObserver.disconnect();
+    cookieBanner?.remove();
+    cookieSpacer.remove();
 });
 
 const mobileNavigation = document.getElementById('mobile-navigation');
