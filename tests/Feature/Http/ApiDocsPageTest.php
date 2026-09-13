@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Http;
 
 use App\Services\ApiDocumentationService;
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 
-final class ApiDocsPageTest extends TestCase
+final class ApiDocsPageTest extends DatabaseTestCase
 {
     public function testPageListsAuthenticationSeparatelyAndTheResourceApis(): void
     {

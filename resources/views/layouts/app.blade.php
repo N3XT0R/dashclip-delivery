@@ -51,7 +51,7 @@
         @yield('content')
     @endif
 </main>
-<x-public.footer />
+<x-public-footer />
 @include('components.cookie-banner')
 @stack('scripts')
 </body>

@@ -16,6 +16,17 @@ use Illuminate\Support\Collection as SupportCollection;
 class ChannelRepository
 {
     /**
+     * Return public channel names and YouTube handles in alphabetical order.
+     *
+     * @return Collection<int, Channel>
+     */
+    public function getHomepageChannels(): Collection
+    {
+        return Channel::query()->where('show_on_homepage', true)
+            ->orderBy('name')->orderBy('id')->get(['name', 'youtube_name']);
+    }
+
+    /**
      * Get all active channels where video reception is not paused.
      * @return Collection<Channel>
      */

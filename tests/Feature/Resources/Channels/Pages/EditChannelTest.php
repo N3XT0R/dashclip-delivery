@@ -44,6 +44,7 @@ final class EditChannelTest extends DatabaseTestCase
                 'weight' => 1,
                 'weekly_quota' => 2,
                 'is_video_reception_paused' => false,
+                'show_on_homepage' => true,
             ])
             ->fillForm([
                 'name' => 'Updated Channel',
@@ -53,6 +54,7 @@ final class EditChannelTest extends DatabaseTestCase
                 'weight' => 3,
                 'weekly_quota' => 5,
                 'is_video_reception_paused' => true,
+                'show_on_homepage' => false,
             ])
             ->call('save')
             ->assertHasNoFormErrors();
@@ -66,5 +68,6 @@ final class EditChannelTest extends DatabaseTestCase
         $this->assertSame(3, $channel->weight);
         $this->assertSame(5, $channel->weekly_quota);
         $this->assertTrue($channel->is_video_reception_paused);
+        $this->assertFalse($channel->show_on_homepage);
     }
 }

@@ -1,44 +1,17 @@
 @php
-    $publicLogo = public_path('images/logo.png');
-
-    /** @var \Illuminate\Mail\Message|null $message */
+    $publicLogo = public_path('images/marketing/logo-mail.png');
     $logoSrc = isset($message) && file_exists($publicLogo)
         ? $message->embed($publicLogo)
-        : asset('images/logo.png');
-
-    $appName = config('app.name', 'App');
-    $appUrl  = config('app.url');
+        : asset('images/marketing/logo-mail.png');
 @endphp
-
-        <!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $appName }}</title>
-</head>
-<body style="margin:0; padding:0; background-color:#f8fafc; font-family:Arial, sans-serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0c1924; border-radius:16px 16px 0 0; border-bottom:4px solid #f97316;">
     <tr>
-        <td align="center" style="padding: 20px 0 30px 0;">
-            @if ($appUrl)
-                <a href="{{ $appUrl }}" target="_blank" style="text-decoration:none; border:0; outline:none;">
-                    @endif
-
-                    <img
-                            src="{{ $logoSrc }}"
-                            alt="{{ $appName }} Logo"
-                            title="{{ $appName }}"
-                            width="100"
-                            height="100"
-                            style="display:block; width:100px; height:100px; border:0; outline:none; text-decoration:none;"
-                    >
-
-                    @if ($appUrl)
-                </a>
-            @endif
+        <td style="padding:28px 24px;">
+            <a href="{{ config('app.url') }}" style="color:#ffffff; text-decoration:none;">
+                <img src="{{ $logoSrc }}" alt="{{ config('app.name') }}" width="64" height="64" style="display:block; width:64px; height:64px; padding:8px; background-color:#ffffff; border-radius:12px; border:0; margin-bottom:16px;">
+                <span style="font-family:Arial, Helvetica, sans-serif; font-size:24px; font-weight:700; line-height:1.3; color:#ffffff;">{{ config('app.name') }}</span>
+            </a>
+            <p style="margin:10px 0 0; color:#b5c2ce; font-size:14px; line-height:1.6;">{{ __('public.footer_tagline') }}</p>
         </td>
     </tr>
 </table>
-</body>
-</html>

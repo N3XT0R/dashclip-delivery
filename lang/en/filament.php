@@ -235,6 +235,7 @@ return [
             'pages' => 'Pages',
             'password' => 'Password',
             'pause_video_reception' => 'Pause video reception',
+            'show_on_homepage' => 'Show on homepage',
             'paused_video_reception' => 'Paused video reception',
             'preview' => 'Preview',
             'recipient' => 'Recipient',

@@ -6,9 +6,9 @@ namespace Tests\Feature\Http;
 
 use DOMDocument;
 use DOMXPath;
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 
-final class PublicLocaleTest extends TestCase
+final class PublicLocaleTest extends DatabaseTestCase
 {
     public function testBrowserLanguageAndRegionalPreferencesAreApplied(): void
     {

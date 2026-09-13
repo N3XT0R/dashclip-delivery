@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Public channel visibility**
+    - linked listed channel names to their YouTube channel using the stored handle.
+    - displayed readable channel names without underscores or permanent link underlines.
+    - added an admin checkbox controlling inclusion in the public channel list,
+      enabled by default for existing and new channels.
+    - replaced hardcoded channel names with an alphabetical database-backed list;
+      the channel section is hidden when no channels are enabled.
+- **Shared email design**
+    - aligned transactional emails and Markdown notifications with the public
+      website through a reusable layout, branded header, footer, and action button.
+    - removed duplicated document wrappers while preserving message content and links.
 - **Public language selection and platform guide**
     - added German and English language buttons with a persistent explicit choice
       and automatic browser-language detection on public routes.
@@ -72,7 +83,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - the admin assignment overview gains a "Preferred channel" column and filter showing whether
       an assignment was made via `preferred_channel` (Ticket #139).
 
+### Changed
+- **Public website redesign**
+    - replaced the previous public website design with a complete responsive
+      redesign of the homepage and shared public page layout.
+    - introduced a consistent visual identity with a dark navy brand header,
+      orange accents, light content surfaces, and reusable public UI components.
+    - redesigned the homepage with upload entry points, responsive navigation,
+      a dashcam hero, process guidance, help, and six curated channel names.
+    - unified public information, error, offer, and confirmation pages with
+      accessible controls, theme preferences, and stable page metadata.
+    - isolated public assets from panel assets, optimized delivery images,
+      and limited game and download scripts to the pages that use them.
+    - signed offers and token pages omit canonical and social URLs and request
+      no indexing; download selection excludes already downloaded clips.
+- **Frontend review tooling**
+    - separated game updates into movement, timing, and collection steps while
+      preserving gameplay behavior.
+    - removed temporary browser reports and screenshots from version control;
+      retained the approved design references and production assets.
+    - excluded Docker data and temporary files from formatting discovery so the
+      standard dirty-file formatter works without database-directory access.
+
 ### Fixed
+- **Public page tests**
+    - initialized the database for locale and API overview tests now that the
+      shared footer reads channel visibility from the database.
 - **Scope selection in the Standard panel came back and now follows the user's role.** The
   self-service client wizard offered no permissions at all, because the underlying package
   restricted the choice to scopes the user already held as their own grants, and nothing ever
@@ -109,22 +145,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       when left unset.
 
 ### Changed
-- **Frontend review tooling**
-    - separated game updates into movement, timing, and collection steps while
-      preserving gameplay behavior.
-    - removed temporary browser reports and screenshots from version control;
-      retained the approved design references and production assets.
-    - excluded Docker data and temporary files from formatting discovery so the
-      standard dirty-file formatter works without database-directory access.
-- **Public website**
-    - redesigned the homepage with upload entry points, responsive navigation,
-      a dashcam hero, process guidance, help, and six curated channel names.
-    - unified public information, error, offer, and confirmation pages with
-      accessible controls, theme preferences, and stable page metadata.
-    - isolated public assets from panel assets, optimized delivery images,
-      and limited game and download scripts to the pages that use them.
-    - signed offers and token pages omit canonical and social URLs and request
-      no indexing; download selection excludes already downloaded clips.
 - **Developer workflow**
     - `php artisan test` is now documented consistently with `--parallel` in AGENTS.md/CONTRIBUTING.md,
       matching the CI configuration.

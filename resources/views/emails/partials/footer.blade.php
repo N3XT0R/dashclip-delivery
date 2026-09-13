@@ -1,23 +1,10 @@
-@php
-    $appName = config('app.name', 'App');
-    $year = date('Y');
-@endphp
-
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     <tr>
-        <td align="center" style="padding: 20px; font-size: 12px; color: #64748b; font-family: Arial, sans-serif;">
-            © {{ $year }} {{ $appName }}. Alle Rechte vorbehalten.<br>
-            <a href="{{ route('impressum') }}" style="color:#64748b; text-decoration:none;">Impressum</a> ·
-            <a href="{{ route('datenschutz') }}" style="color:#64748b; text-decoration:none;">Datenschutz</a> ·
-            <a href="{{ route('tos') }}" style="color:#64748b; text-decoration:none;">Nutzungsbedingungen</a>
-        </td>
-    </tr>
-    <tr>
-        <td align="center"
-            style="padding: 0 20px 20px; font-size: 12px; color: #64748b; font-family: Arial, sans-serif;">
-            <a href="https://github.com/N3XT0R/dashclip-delivery" style="color: #64748b; text-decoration: none;">
-                Developed with ❤️ by {{ $appName }}
-            </a>
+        <td align="center" style="padding:24px 12px; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:1.8; color:#526171;">
+            © {{ date('Y') }} {{ config('app.name') }}<br>
+            <a href="{{ route('impressum') }}" style="color:#526171; text-decoration:underline;">{{ __('public.imprint') }}</a> ·
+            <a href="{{ route('datenschutz') }}" style="color:#526171; text-decoration:underline;">{{ __('public.privacy') }}</a> ·
+            <a href="{{ route('tos') }}" style="color:#526171; text-decoration:underline;">{{ __('public.terms') }}</a>
         </td>
     </tr>
 </table>

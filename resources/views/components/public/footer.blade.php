@@ -1,18 +1,23 @@
 @php
     use App\Facades\Version;
-    $channels = ['RLP Dashcam', 'Lets Dashcam', 'Augen auf!', 'Road Rave Germany', 'NEDK - NOCH EIN DASHCAM KANAL', 'Dashcam Stories'];
 @endphp
 <footer class="border-t border-border bg-panel">
     <div class="public-width py-14">
+        @if ($channels->isNotEmpty())
         <h2 class="mb-6 text-sm font-semibold tracking-widest uppercase">{{ __('public.featured_channels') }}</h2>
         <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($channels as $channel)
                 <li class="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm">
                     <x-heroicon-o-video-camera class="size-6 shrink-0 text-muted" aria-hidden="true" />
-                    <span>{{ $channel }}</span>
+                    @if (filled($channel->youtube_name))
+                        <a href="{{ 'https://www.youtube.com/@'.rawurlencode($channel->youtube_name) }}" class="font-semibold underline-offset-4 hover:underline">{{ str_replace('_', ' ', $channel->name) }}</a>
+                    @else
+                        <span>{{ str_replace('_', ' ', $channel->name) }}</span>
+                    @endif
                 </li>
             @endforeach
         </ul>
+        @endif
         <div class="mt-12 flex flex-col justify-between gap-8 border-t border-border pt-8 lg:flex-row">
             <div>
                 <p class="font-semibold">DashClip Delivery</p>
