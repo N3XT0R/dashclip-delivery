@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Filament\Admin\Resources\Blog;
 
 use App\Filament\Admin\Resources\Blog\PostResource;
+use App\Filament\Admin\Resources\Blog\PostCategoryResource;
+use App\Filament\Admin\Resources\Blog\PostTagResource;
 use App\Filament\Admin\Resources\Blog\PostResource\Pages\EditPost;
 use App\Filament\Admin\Resources\Blog\PostResource\Pages\CreatePost;
 use App\Models\PostCategory;
@@ -24,6 +26,9 @@ final class PostResourceTest extends DatabaseTestCase
     public function testEditorCanManageTaxonomiesAndCannotDeleteAnAssignedCategory(): void
     {
         $this->actingAs(User::factory()->admin()->create());
+        foreach ([PostResource::class, PostCategoryResource::class, PostTagResource::class] as $resource) {
+            $this->get($resource::getUrl('index'))->assertOk()->assertSee($resource::getUrl('create'), false);
+        }
         $translation = ['locale' => 'de', 'slug' => 'technology', 'name' => 'Technik'];
         Livewire::test(CreatePostCategory::class)->fillForm(['slug' => 'technology', 'icon' => 'camera', 'translations' => [$translation]])
             ->call('create')->assertHasNoFormErrors();

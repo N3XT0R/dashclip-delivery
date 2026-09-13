@@ -20,13 +20,15 @@ class PostRepository
     /**
      * Query the translations a reader may see in one language, newest first.
      * @param string $locale
-     * @return Builder
+     * @return Builder<PostTranslation>
      */
-    public function publishedForLocale(string $locale): Builder
+    public function publishedForLocale(string $locale, ?int $categoryId = null, ?int $tagId = null): Builder
     {
         return PostTranslation::query()
             ->published()
             ->where('locale', $locale)
+            ->when($categoryId !== null, fn (Builder $query) => $query->whereHas('post', fn (Builder $query) => $query->where('category_id', $categoryId)))
+            ->when($tagId !== null, fn (Builder $query) => $query->whereHas('post.tags', fn (Builder $query) => $query->whereKey($tagId)))
             ->with(self::EAGER)
             ->orderByDesc('published_at');
     }
@@ -48,13 +50,13 @@ class PostRepository
      * so a driver-dependent fulltext path would sit outside test coverage.
      * @param string $locale
      * @param string $term
-     * @return Builder
+     * @return Builder<PostTranslation>
      */
-    public function search(string $locale, string $term): Builder
+    public function search(string $locale, string $term, ?int $categoryId = null, ?int $tagId = null): Builder
     {
         $pattern = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $term).'%';
 
-        return $this->publishedForLocale($locale)
+        return $this->publishedForLocale($locale, $categoryId, $tagId)
             ->where(static function (Builder $query) use ($pattern): void {
                 $query->whereRaw("title LIKE ? ESCAPE '!'", [$pattern])
                     ->orWhereRaw("excerpt LIKE ? ESCAPE '!'", [$pattern])
@@ -68,7 +70,7 @@ class PostRepository
     /**
      * Count the published articles per category for the sidebar.
      * @param string $locale
-     * @return Collection
+     * @return Collection<int, int>
      */
     public function categoryCounts(string $locale): Collection
     {

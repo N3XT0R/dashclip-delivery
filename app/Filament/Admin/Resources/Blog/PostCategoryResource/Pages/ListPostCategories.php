@@ -3,17 +3,13 @@
 namespace App\Filament\Admin\Resources\Blog\PostCategoryResource\Pages;
 
 use App\Filament\Admin\Resources\Blog\PostCategoryResource;
-use Filament\Actions;
+use App\Filament\Traits\HasBlogCreateActionTrait;
 use Filament\Resources\Pages\ListRecords;
 
 class ListPostCategories extends ListRecords
 {
+    use HasBlogCreateActionTrait;
+
     protected static string $resource = PostCategoryResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
 }

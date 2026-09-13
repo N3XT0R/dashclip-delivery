@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Application\Blog\ShowPostUseCase;
+use App\Application\Blog\ListPublishedPostsUseCase;
+use App\Application\Blog\SearchPostsUseCase;
 use App\Exceptions\Blog\PostNotPublishedException;
 use App\Models\PostTranslation;
 use App\Repository\PostRepository;
@@ -21,25 +23,29 @@ final class BlogController extends Controller
     }
 
     /** List published articles, optionally narrowing by search, category or tag. */
-    public function index(Request $request, ?string $slug = null): View
+    public function index(Request $request, ListPublishedPostsUseCase $list, SearchPostsUseCase $search, ?string $slug = null): View
     {
         $request->validate(['q' => ['nullable', 'string', 'max:200']]);
         $locale = app()->getLocale();
         $term = trim((string)$request->query('q', ''));
-        $query = $term !== '' ? $this->posts->search($locale, $term) : $this->posts->publishedForLocale($locale);
+        $categoryId = null;
+        $tagId = null;
         $heading = __('blog.title');
         if ($request->routeIs('*.category')) {
             $category = $this->posts->category($locale, $slug);
             $heading = $category->name;
-            $query->whereHas('post', fn ($query) => $query->where('category_id', $category->category_id));
+            $categoryId = $category->category_id;
         }
         if ($request->routeIs('*.tag')) {
             $tag = $this->posts->tag($locale, $slug);
             $heading = $tag->name;
-            $query->whereHas('post.tags', fn ($query) => $query->whereKey($tag->tag_id));
+            $tagId = $tag->tag_id;
         }
+        $articles = $term !== ''
+            ? $search->execute($locale, $term, 9, $categoryId, $tagId)
+            : $list->execute($locale, 9, $categoryId, $tagId);
         return view('blog.index', [
-            'articles' => $query->paginate(9)->withQueryString(), 'heading' => $heading, 'term' => $term,
+            'articles' => $articles->withQueryString(), 'heading' => $heading, 'term' => $term,
             ...$this->sidebar($locale),
         ]);
     }
