@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+@source '../views/**/*.blade.php';
+@source '../js/public.js';
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, sans-serif;
+    --color-brand: #f97316;
+    --color-ink: #0c1924;
+    --color-bg: #f5f6f8;
+    --color-panel: #ffffff;
+    --color-text: #182633;
+    --color-muted: #526171;
+    --color-border: #dce2e8;
+}
+
+@layer base {
+    html { color-scheme: light; scroll-padding-top: 2rem; }
+    html.dark {
+        color-scheme: dark;
+        --color-bg: #0c1924;
+        --color-panel: #132431;
+        --color-text: #edf2f6;
+        --color-muted: #b5c2ce;
+        --color-border: #344654;
+    }
+    body { @apply bg-bg text-text font-sans leading-relaxed antialiased; overflow-wrap: anywhere; }
+    :focus-visible { outline: 3px solid #ea580c; outline-offset: 4px; }
+    button, summary { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+    [id] { scroll-margin-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms; transition-duration: .01ms; scroll-behavior: auto; }
+    }
+}
+
+@layer components {
+    .public-width { @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10; }
+    .public-section { @apply py-16 sm:py-20 lg:py-24; }
+    .public-button { @apply inline-flex min-h-11 max-w-full items-center justify-center gap-3 rounded-lg px-5 py-3 text-sm font-semibold transition-colors; }
+    .public-button-primary { @apply bg-brand text-ink hover:bg-orange-400; }
+    .public-button-secondary { @apply border border-current/30 hover:bg-current/10; }
+    .panel, .card { @apply rounded-xl border border-border bg-panel p-6; }
+    .btn { @apply inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-panel px-4 py-2 text-text hover:bg-bg; }
+    .btn-sm { @apply px-3 text-sm; }
+    .muted { @apply text-muted; }
+    .chip { @apply inline-block rounded-md border border-border bg-bg px-2 py-1 text-sm; }
+    .flash { @apply my-4 rounded-lg border p-4; }
+    .flash--ok { @apply border-green-700 bg-green-50 text-green-950; }
+    .flash--err { @apply border-red-700 bg-red-50 text-red-950; }
+    .editorial { @apply mx-auto max-w-3xl break-words; }
+    .editorial h1 { @apply mb-8 text-3xl font-bold tracking-tight sm:text-4xl; }
+    .editorial h2 { @apply mt-10 mb-4 text-2xl font-semibold; }
+    .editorial h3 { @apply mt-7 mb-3 text-xl font-semibold; }
+    .editorial p, .editorial ul, .editorial ol { @apply my-4; }
+    .editorial ul { @apply list-disc pl-6; }
+    .editorial ol { @apply list-decimal pl-6; }
+    .editorial li { @apply my-2; }
+    .editorial a { @apply underline underline-offset-4; }
+    .editorial pre { @apply overflow-x-auto rounded-lg bg-bg p-4; }
+    .editorial table { @apply block max-w-full overflow-x-auto; }
+    .editorial th, .editorial td { @apply border border-border p-3 text-left; }
+}

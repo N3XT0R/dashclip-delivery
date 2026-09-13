@@ -1,96 +1,28 @@
 @php use Illuminate\Support\Number; @endphp
-@php($v = $assignment->video)
-
-<div class="card" @if($disabled) style="opacity:0.6; pointer-events:none;" @endif>
-    <label class="flex items-start gap-3 cursor-pointer w-full">
-        @if($disabled === false)
-            <input type="checkbox"
-                   name="assignment_ids[]"
-                   value="{{ $assignment->id }}"
-                   class="pickbox mt-2 shrink-0">
-        @endif
-
-        <div class="flex-1 min-w-0">
-            {{-- Dateiname --}}
-            <div class="file-name font-semibold mb-2 break-words line-clamp-2">
-                {{ $v->original_name ?: basename($v->path) }}
-            </div>
-
-            {{-- Video --}}
-            <video class="thumb w-full rounded-lg bg-[#0e1116]"
-                   src="{{ $v->preview_url ?: $assignment->temp_url }}"
-                   preload="metadata"
-                   controls playsinline></video>
-
-            {{-- Dateigröße --}}
-            <div class="muted mt-2">
-                {{ Number::fileSize($v->bytes) }}
-            </div>
-
-            {{-- Clips --}}
-            @foreach($v->clips as $clip)
-                <div class="mt-3 space-y-1 text-sm muted">
-                    {{-- Erste Zeile: Role + Time + Einsender nebeneinander --}}
-                    <div class="flex flex-wrap gap-x-3 gap-y-1 items-center">
-                        <div>
-                            @if($clip->role)
-                                <span><strong>{{ $clip->role }}:</strong></span>
-                            @endif
-                        </div>
-                        <div>
-                            @if(!is_null($clip->start_sec) || !is_null($clip->end_sec))
-                                <span>
-                                {{ $clip->start_sec !== null ? gmdate('i:s',$clip->start_sec) : '' }}
-                                –
-                                {{ $clip->end_sec !== null ? gmdate('i:s',$clip->end_sec) : '' }}
-                            </span>
-                            @endif
-                        </div>
-                    </div>
-                    @if($clip->submitted_by)
-                        <div class="mt-1">
-                            <span class="chip">Einsender: {{ $clip->submitted_by }}</span>
-                        </div>
-                    @endif
-
-                    {{-- Zweite Zeile: Note immer drunter --}}
-                    @if($clip->note)
-                        <div class="mt-1 text-sm muted">{{ $clip->note }}</div>
-                    @endif
-                </div>
-            @endforeach
-
-            {{-- Buttons --}}
-            <div class="mt-3 flex gap-2 flex-wrap">
-                @if($disabled)
-                    <span class="btn btn-sm disabled">Bereits geladen</span>
-                @else
-                    <button type="button"
-                            class="btn btn-sm single-download"
-                            data-assignment-id="{{ $assignment->id }}">
-                        Einzeln laden
-                    </button>
-                    <a class="btn btn-sm" href="{{ $assignment->temp_url }}">Einzeln laden (legacy)</a>
-                @endif
-
-                <button type="button" class="btn btn-sm"
-                        onclick="this.closest('.card').querySelector('.inline-preview').style.display='block'">
-                    Vorschau öffnen
-                </button>
-            </div>
-
-            {{-- Inline Preview --}}
-            <div class="inline-preview hidden mt-2">
-                <video
-                        class="w-full h-auto max-w-full rounded-base"
-                        controls
-                        preload="metadata"
-                        playsinline
-                        muted
-                >
-                    <source src="{{ $v->preview_url ?: $assignment->temp_url }}" type="video/mp4">
-                </video>
-            </div>
+@php($video = $assignment->video)
+<article class="card min-w-0">
+    <div class="mb-4 flex items-start gap-3">
+        <input id="assignment-{{ $assignment->id }}" type="checkbox" name="assignment_ids[]" value="{{ $assignment->id }}" class="pickbox mt-1 size-5 shrink-0 accent-orange-700" @disabled($disabled)>
+        <label for="assignment-{{ $assignment->id }}" class="file-name min-w-0 cursor-pointer font-semibold break-words">{{ $video->original_name ?: basename($video->path) }}</label>
+    </div>
+    <video class="aspect-video w-full rounded-lg bg-ink" src="{{ $video->preview_url ?: $assignment->temp_url }}" width="640" height="360" preload="metadata" controls playsinline aria-label="Vorschau: {{ $video->original_name ?: basename($video->path) }}"></video>
+    <p class="mt-3 text-sm text-muted">{{ Number::fileSize($video->bytes) }}</p>
+    @foreach ($video->clips as $clip)
+        <div class="mt-4 space-y-2 text-sm text-muted">
+            @if ($clip->role)<p class="font-semibold">{{ $clip->role }}</p>@endif
+            @if ($clip->start_sec !== null || $clip->end_sec !== null)
+                <p>{{ $clip->start_sec !== null ? gmdate('i:s', $clip->start_sec) : '' }} bis {{ $clip->end_sec !== null ? gmdate('i:s', $clip->end_sec) : '' }}</p>
+            @endif
+            @if ($clip->submitted_by)<p class="chip">Einsender: {{ $clip->submitted_by }}</p>@endif
+            @if ($clip->note)<p class="break-words">{{ $clip->note }}</p>@endif
         </div>
-    </label>
-</div>
+    @endforeach
+    <div class="mt-5 flex flex-wrap gap-3">
+        @if ($disabled)
+            <button type="button" class="btn" disabled>Bereits geladen</button>
+        @else
+            <button type="button" class="btn single-download" data-assignment-id="{{ $assignment->id }}">Einzeln laden</button>
+            <a class="btn" href="{{ $assignment->temp_url }}">Direkter Download</a>
+        @endif
+    </div>
+</article>

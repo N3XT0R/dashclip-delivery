@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Public language selection and platform guide**
+    - added German and English language buttons with a persistent explicit choice
+      and automatic browser-language detection on public routes.
+    - translated the homepage and shared public navigation, footer, and cookie
+      notice; panel account language preferences retain their existing behavior.
+    - identified remaining German-only page content with a language notice and
+      explicit language markup for assistive technology.
+    - added a plain-language walkthrough from upload to the submitter’s choice of channels,
+      downloads, returns, and publication decisions in both languages.
+    - clarified that channel operators first register a regular account and then
+      apply for channel operator access from within their account.
+    - labelled the footer channel list as a selection of participating channels.
+    - kept the cookie notice visible at the bottom of the viewport until dismissed,
+      with responsive spacing so the footer remains reachable.
+- **Public website design specification**
+    - documented the responsive redesign scope, preservation of existing public
+      functions, and requirements for accessibility, metadata, and asset delivery.
+    - reserved the blog for a separate project and excluded a public clip gallery.
 - **REST API core resources (v1)**
     - new authenticated REST endpoints under `/api/v1` for videos (list, detail, multipart
       upload through the existing ingest pipeline, rename, delete), channels (list, detail,
@@ -91,6 +109,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       when left unset.
 
 ### Changed
+- **Frontend review tooling**
+    - separated game updates into movement, timing, and collection steps while
+      preserving gameplay behavior.
+    - removed temporary browser reports and screenshots from version control;
+      retained the approved design references and production assets.
+    - excluded Docker data and temporary files from formatting discovery so the
+      standard dirty-file formatter works without database-directory access.
+- **Public website**
+    - redesigned the homepage with upload entry points, responsive navigation,
+      a dashcam hero, process guidance, help, and six curated channel names.
+    - unified public information, error, offer, and confirmation pages with
+      accessible controls, theme preferences, and stable page metadata.
+    - isolated public assets from panel assets, optimized delivery images,
+      and limited game and download scripts to the pages that use them.
+    - signed offers and token pages omit canonical and social URLs and request
+      no indexing; download selection excludes already downloaded clips.
 - **Developer workflow**
     - `php artisan test` is now documented consistently with `--parallel` in AGENTS.md/CONTRIBUTING.md,
       matching the CI configuration.

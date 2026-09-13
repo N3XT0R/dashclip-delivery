@@ -8,6 +8,8 @@ export default class DownloadModal {
         };
         this.modal = document.createElement('div');
         this.modal.id = 'downloadModal';
+        this.modal.setAttribute('role', 'region');
+        this.modal.setAttribute('aria-label', 'Downloadfortschritt');
         this.modal.style.cssText = `
             display:none;
             position:fixed;
@@ -37,9 +39,9 @@ export default class DownloadModal {
                     </thead>
                     <tbody id="downloadFileList"></tbody>
                 </table>
-                <p id="statusText" class="text-sm mb-2"></p>
+                <p id="statusText" class="text-sm mb-2" role="status" aria-live="polite"></p>
                 <div class="w-full h-2 bg-gray-200 rounded overflow-hidden">
-                    <div id="zipProgressBar" class="h-full w-0 bg-blue-500 transition-all"></div>
+                    <div id="zipProgressBar" class="h-full w-0 bg-blue-500 transition-all" role="progressbar" aria-label="ZIP-Download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
                 </div>
                 <p id="progressText" class="text-right text-sm mt-1">0%</p>
                 <button type="button" id="closeModal" class="btn mt-4 hidden">Schließen</button>
@@ -76,6 +78,7 @@ export default class DownloadModal {
             this.fileList.appendChild(tr);
         });
         this.progressBar.style.width = '0%';
+        this.progressBar.setAttribute('aria-valuenow', '0');
         this.progressText.textContent = '0%';
         this.statusText.textContent = this.messages.queued;
         this.closeBtn.classList.add('hidden');
@@ -84,6 +87,7 @@ export default class DownloadModal {
 
     update(progress, status, files = {}) {
         this.progressBar.style.width = `${progress}%`;
+        this.progressBar.setAttribute('aria-valuenow', String(progress));
         this.progressText.textContent = `${progress}%`;
         if (status) {
             const msg = this.messages[status] || status;

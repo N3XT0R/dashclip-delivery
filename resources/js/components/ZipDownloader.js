@@ -18,7 +18,6 @@ export default class ZipDownloader {
         this.submitBtn = document.getElementById('zipSubmit');
         this.selCountEl = document.getElementById('selCount');
 
-        this.modal = new DownloadModal();
         this.modal.onClose(() => {
         });
 
@@ -50,7 +49,7 @@ export default class ZipDownloader {
     }
 
     toggleAll(state) {
-        document.querySelectorAll('.pickbox').forEach(cb => cb.checked = state);
+        document.querySelectorAll('.pickbox:not(:disabled)').forEach(cb => cb.checked = state);
         this.updateCount();
     }
 

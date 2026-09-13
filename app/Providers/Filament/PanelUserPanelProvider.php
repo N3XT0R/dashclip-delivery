@@ -109,7 +109,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->favicon(asset('images/icons/favicon.ico'))
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
-                Js::make('app', app(Vite::class)->asset('resources/js/app.js')),
+                Js::make('app', app(Vite::class)->asset('resources/js/app.js'))->module(),
                 Css::make('app', app(Vite::class)->asset('resources/css/app.css')),
             ])
             ->pages([
