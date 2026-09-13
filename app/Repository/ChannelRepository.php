@@ -23,7 +23,7 @@ class ChannelRepository
     public function getHomepageChannels(): Collection
     {
         return Channel::query()->where('show_on_homepage', true)
-            ->orderBy('name')->orderBy('id')->get(['name', 'youtube_name']);
+            ->orderBy('name')->orderBy('id')->get(['name', 'youtube_name', 'logo_path']);
     }
 
     /**

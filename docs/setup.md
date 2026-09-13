@@ -35,7 +35,10 @@ XSendFilePath /var/www/<domain>/htdocs/current/public/storage/previews
    ```bash
    cp .env.example .env
    php artisan key:generate
+   php artisan storage:link --relative
    ```
+   `storage:link` veröffentlicht hochgeladene Dateien wie Kanallogos. Ohne den Link werden
+   sie zwar gespeichert, sind über das Web aber nicht erreichbar.
 
 - Datenbank/Redis und etc konfigurieren:
    ```bash
