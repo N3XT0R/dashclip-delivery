@@ -8,6 +8,7 @@ return [
     'home' => 'Home',
     'process' => "So funktioniert's",
     'channels' => 'Kanäle',
+    'featured_channels' => 'Diese Kanäle sind unter anderem dabei',
     'offers' => 'Angebote',
     'help' => 'Hilfe',
     'login' => 'Anmelden',

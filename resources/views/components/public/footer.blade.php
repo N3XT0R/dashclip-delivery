@@ -4,7 +4,7 @@
 @endphp
 <footer class="border-t border-border bg-panel">
     <div class="public-width py-14">
-        <h2 class="mb-6 text-sm font-semibold tracking-widest uppercase">{{ __('public.channels') }}</h2>
+        <h2 class="mb-6 text-sm font-semibold tracking-widest uppercase">{{ __('public.featured_channels') }}</h2>
         <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($channels as $channel)
                 <li class="flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-sm">
