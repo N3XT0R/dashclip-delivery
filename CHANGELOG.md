@@ -113,14 +113,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       when left unset.
 
 ### Changed
-- **Frontend review tooling**
-    - separated game updates into movement, timing, and collection steps while
-      preserving gameplay behavior.
-    - removed temporary browser reports and screenshots from version control;
-      retained the approved design references and production assets.
-    - excluded Docker data and temporary files from formatting discovery so the
-      standard dirty-file formatter works without database-directory access.
-- **Public website**
+- **Public website redesign**
+    - replaced the previous public website design with a complete responsive
+      redesign of the homepage and shared public page layout.
     - introduced a consistent visual identity with a dark navy brand header,
       orange accents, light content surfaces, and reusable public UI components.
     - redesigned the homepage with upload entry points, responsive navigation,
@@ -131,6 +126,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       and limited game and download scripts to the pages that use them.
     - signed offers and token pages omit canonical and social URLs and request
       no indexing; download selection excludes already downloaded clips.
+- **Frontend review tooling**
+    - separated game updates into movement, timing, and collection steps while
+      preserving gameplay behavior.
+    - removed temporary browser reports and screenshots from version control;
+      retained the approved design references and production assets.
+    - excluded Docker data and temporary files from formatting discovery so the
+      standard dirty-file formatter works without database-directory access.
 - **Developer workflow**
     - `php artisan test` is now documented consistently with `--parallel` in AGENTS.md/CONTRIBUTING.md,
       matching the CI configuration.
