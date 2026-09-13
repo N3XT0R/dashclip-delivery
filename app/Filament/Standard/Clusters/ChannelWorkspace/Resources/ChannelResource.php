@@ -17,6 +17,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 
 class ChannelResource extends Resource
 {
@@ -49,6 +50,26 @@ class ChannelResource extends Resource
                 Forms\Components\Toggle::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
                     ->required(),
+                Forms\Components\Toggle::make('show_on_homepage')
+                    ->label(__('channel-workspace.channel_resource.show_on_homepage'))
+                    ->helperText(__('channel-workspace.channel_resource.show_on_homepage_hint')),
+                Forms\Components\FileUpload::make('logo_path')
+                    ->label(__('channel-workspace.channel_resource.logo'))
+                    ->helperText(__('channel-workspace.channel_resource.logo_hint'))
+                    ->disk('public')
+                    ->directory('channel-logos')
+                    ->visibility('public')
+                    ->image()
+                    ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])
+                    ->maxSize(512)
+                    ->imageResizeMode('contain')
+                    ->imageResizeTargetWidth('256')
+                    ->imageResizeTargetHeight('256')
+                    ->deleteUploadedFileUsing(static function (?string $file): void {
+                        if ($file !== null) {
+                            Storage::disk('public')->delete($file);
+                        }
+                    }),
             ]);
     }
 
@@ -72,6 +93,13 @@ class ChannelResource extends Resource
                 Infolists\Components\IconEntry::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
                     ->boolean(),
+                Infolists\Components\IconEntry::make('show_on_homepage')
+                    ->label(__('channel-workspace.channel_resource.show_on_homepage'))
+                    ->boolean(),
+                Infolists\Components\ImageEntry::make('logo_path')
+                    ->label(__('channel-workspace.channel_resource.logo'))
+                    ->disk('public')
+                    ->placeholder('-'),
                 Infolists\Components\TextEntry::make('created_at')
                     ->label(__('common.created_at'))
                     ->dateTime()
@@ -101,8 +129,14 @@ class ChannelResource extends Resource
                         return null;
                     }, true)
                     ->searchable(),
+                Tables\Columns\ImageColumn::make('logo_path')
+                    ->label(__('channel-workspace.channel_resource.logo'))
+                    ->disk('public'),
                 Tables\Columns\IconColumn::make('is_video_reception_paused')
                     ->label(__('common.is_video_reception_paused'))
+                    ->boolean(),
+                Tables\Columns\IconColumn::make('show_on_homepage')
+                    ->label(__('channel-workspace.channel_resource.show_on_homepage'))
                     ->boolean(),
             ])
             ->filters([

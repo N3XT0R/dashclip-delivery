@@ -79,8 +79,12 @@ cp .env.example .env
 composer install
 npm install
 php artisan key:generate
+php artisan storage:link --relative
 php artisan migrate
 ```
+
+`storage:link` publishes uploaded files such as channel logos. Without it they are stored
+but never reachable over the web.
 
 ## Useful Commands
 
