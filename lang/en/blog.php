@@ -27,6 +27,8 @@ return [
     'warning' => 'Important',
     'missing' => 'Missing translations',
     'posts' => 'Posts',
+    'post' => 'Post',
+    'tag' => 'Tag',
     'tags' => 'Tags',
     'translations' => 'Translations',
     'content' => 'Content',

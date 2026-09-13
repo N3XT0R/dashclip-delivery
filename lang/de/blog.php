@@ -27,6 +27,8 @@ return [
     'warning' => 'Wichtig',
     'missing' => 'Fehlende Übersetzungen',
     'posts' => 'Beiträge',
+    'post' => 'Beitrag',
+    'tag' => 'Tag',
     'tags' => 'Tags',
     'translations' => 'Übersetzungen',
     'content' => 'Inhalt',

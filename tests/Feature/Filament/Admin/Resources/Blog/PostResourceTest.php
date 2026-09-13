@@ -23,6 +23,25 @@ use Tests\DatabaseTestCase;
 
 final class PostResourceTest extends DatabaseTestCase
 {
+    public function testBlogPageLabelsUseExplicitSingularAndPluralTranslations(): void
+    {
+        $editor = User::factory()->admin()->create();
+        $this->actingAs($editor);
+        foreach (['de' => [['Beitrag', 'Beiträge'], ['Kategorie', 'Kategorien'], ['Tag', 'Tags']], 'en' => [['Post', 'Posts'], ['Category', 'Categories'], ['Tag', 'Tags']]] as $locale => $labels) {
+            $editor->update(['locale' => $locale]);
+            app()->setLocale($locale);
+            foreach ([PostResource::class, PostCategoryResource::class, PostTagResource::class] as $index => $resource) {
+                [$singular, $plural] = $labels[$index];
+                $this->assertSame($singular, $resource::getModelLabel());
+                $this->assertSame($plural, $resource::getPluralModelLabel());
+                $this->get($resource::getUrl('index'))->assertOk()->assertSeeText($plural)
+                    ->assertDontSeeText(['Beiträges', 'Kategoriens', 'Tagses']);
+                $this->get($resource::getUrl('create'))->assertOk()
+                    ->assertSeeText(__('filament-panels::resources/pages/create-record.title', ['label' => $singular]));
+            }
+        }
+    }
+
     public function testEditorCanManageTaxonomiesAndCannotDeleteAnAssignedCategory(): void
     {
         $this->actingAs(User::factory()->admin()->create());

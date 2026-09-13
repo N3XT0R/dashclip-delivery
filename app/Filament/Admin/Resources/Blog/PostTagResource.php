@@ -23,6 +23,11 @@ class PostTagResource extends Resource
 
     public static function getModelLabel(): string
     {
+        return __('blog.tag');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
         return __('blog.tags');
     }
 

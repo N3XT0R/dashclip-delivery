@@ -25,6 +25,11 @@ class PostResource extends Resource
 
     public static function getModelLabel(): string
     {
+        return __('blog.post');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
         return __('blog.posts');
     }
 
