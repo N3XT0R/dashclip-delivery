@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ApiDocsController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\AssignmentDownloadController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\OfferController;
@@ -15,6 +16,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(SetPublicLocale::class)->group(function (): void {
     Route::post('/language', PublicLocaleController::class)->name('public.locale');
+
+    foreach (['de' => 'blog', 'en' => 'en/blog'] as $locale => $prefix) {
+        Route::prefix($prefix)->name('blog.'.($locale === 'en' ? 'en.' : ''))->group(function () use ($locale): void {
+            Route::get('/', [BlogController::class, 'index'])->name('index');
+            Route::get('/search', [BlogController::class, 'index'])->name('search');
+            Route::get('/feed.xml', [BlogController::class, 'feed'])->name('feed');
+            Route::get('/'.($locale === 'de' ? 'kategorie' : 'category').'/{slug}', [BlogController::class, 'index'])->name('category');
+            Route::get('/'.($locale === 'de' ? 'thema' : 'tag').'/{slug}', [BlogController::class, 'index'])->name('tag');
+            Route::get('/{slug}', [BlogController::class, 'show'])->name('show');
+        });
+    }
+    Route::get('/blog-preview/{translation}', [BlogController::class, 'preview'])->middleware('auth')->name('blog.preview');
+    Route::get('/blog-sitemap.xml', [BlogController::class, 'sitemap'])->name('blog.sitemap');
 
     Route::get('/', function () {
         return view('welcome');

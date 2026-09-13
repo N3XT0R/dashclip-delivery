@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('indexable', '1')
 @section('title', __('public.page_title'))
 @section('description', __('public.description'))
 @section('full_width', '1')
@@ -103,6 +104,7 @@
         </div>
     </section>
 
+    <x-blog-homepage />
     <section class="bg-ink text-white">
         <div class="public-width flex flex-col items-start justify-between gap-8 py-16 lg:flex-row lg:items-center">
             <div><h2 class="text-3xl font-bold tracking-tight">{{ __('public.closing_heading') }}</h2><p class="mt-4 text-slate-300">{{ __('public.closing_body') }}</p></div>

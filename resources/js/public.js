@@ -1,4 +1,15 @@
 const themeToggle = document.getElementById('themeToggle');
+document.querySelectorAll('[data-copy-link]').forEach(button => {
+    button.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(button.dataset.copyLink);
+            button.textContent = button.dataset.copiedLabel;
+            document.querySelector('[data-copy-status]').textContent = button.dataset.copiedLabel;
+        } catch {
+            window.prompt(button.textContent, button.dataset.copyLink);
+        }
+    });
+});
 const updateThemeControl = () => {
     themeToggle?.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
 };

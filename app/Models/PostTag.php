@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class PostTag extends Model
 {
@@ -15,6 +16,11 @@ class PostTag extends Model
     protected $table = 'blog_tags';
 
     protected $fillable = ['slug'];
+
+    public function posts(): BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, 'blog_post_tag', 'tag_id', 'post_id');
+    }
 
     public function translations(): HasMany
     {

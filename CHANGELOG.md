@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Editorial blog**
+    - added German and English article pages, search, categories, tags, RSS feeds,
+      a sitemap, and the latest published articles on the homepage.
+    - added permission-controlled editorial forms with translated content, media,
+      search-engine metadata, previews, duplication, and scheduled publication.
 - **Editorial blog design specification**
     - documented the data model for articles with a category, tags, media, and
       search-engine metadata, translated into German and English per article.

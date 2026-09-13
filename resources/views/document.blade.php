@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('indexable', '1')
 @section('title', $title.' | DashClip Delivery')
 @section('description', $description)
 @section('content')

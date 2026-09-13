@@ -8,10 +8,13 @@ use App\Models\PostTranslation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use App\Models\PostCategoryTranslation;
+use App\Models\PostTagTranslation;
 
 class PostRepository
 {
-    private const EAGER = ['post.author', 'post.category.translations', 'post.tags.translations'];
+    private const EAGER = ['post.author', 'post.category.translations', 'post.tags.translations', 'post.translations'];
 
     /**
      * Query the translations a reader may see in one language, newest first.
@@ -48,16 +51,16 @@ class PostRepository
      */
     public function search(string $locale, string $term): Builder
     {
-        $pattern = '%'.addcslashes($term, '%_\\').'%';
+        $pattern = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $term).'%';
 
         return $this->publishedForLocale($locale)
             ->where(static function (Builder $query) use ($pattern): void {
-                $query->where('title', 'like', $pattern)
-                    ->orWhere('excerpt', 'like', $pattern)
-                    ->orWhere('content', 'like', $pattern);
+                $query->whereRaw("title LIKE ? ESCAPE '!'", [$pattern])
+                    ->orWhereRaw("excerpt LIKE ? ESCAPE '!'", [$pattern])
+                    ->orWhereRaw("content LIKE ? ESCAPE '!'", [$pattern]);
             })
             ->reorder()
-            ->orderByRaw('CASE WHEN title LIKE ? THEN 0 ELSE 1 END', [$pattern])
+            ->orderByRaw("CASE WHEN title LIKE ? ESCAPE '!' THEN 0 ELSE 1 END", [$pattern])
             ->orderByDesc('published_at');
     }
 
@@ -74,5 +77,41 @@ class PostRepository
             ->groupBy('blog_posts.category_id')
             ->reorder()
             ->pluck('total', 'category_id');
+    }
+
+    /** Return the latest public articles, hydrating current author and taxonomy data. */
+    public function homepage(string $locale): Collection
+    {
+        $ids = Cache::remember('blog.homepage.'.$locale, 60, fn () =>
+            $this->publishedForLocale($locale)->limit(3)->pluck('id')->all());
+        return $this->publishedForLocale($locale)->whereKey($ids)->get();
+    }
+
+    /** Return translated categories with public article counts. */
+    public function categories(string $locale): Collection
+    {
+        $counts = Cache::remember('blog.category_counts.'.$locale, 60, fn () => $this->categoryCounts($locale));
+        return PostCategoryTranslation::query()->where('locale', $locale)->orderBy('name')->get()
+            ->map(fn ($category) => $category->setAttribute('article_count', $counts[$category->category_id] ?? 0));
+    }
+
+    /** Return translated tags used by public articles. */
+    public function topics(string $locale): Collection
+    {
+        return PostTagTranslation::query()->where('locale', $locale)
+            ->whereHas('tag.posts.translations', fn (Builder $query) => $query->published()->where('locale', $locale))
+            ->orderBy('name')->limit(12)->get();
+    }
+
+    /** Resolve a translated category without exposing internal identifiers. */
+    public function category(string $locale, string $slug): PostCategoryTranslation
+    {
+        return PostCategoryTranslation::query()->where('locale', $locale)->where('slug', $slug)->firstOrFail();
+    }
+
+    /** Resolve a translated tag without exposing internal identifiers. */
+    public function tag(string $locale, string $slug): PostTagTranslation
+    {
+        return PostTagTranslation::query()->where('locale', $locale)->where('slug', $slug)->firstOrFail();
     }
 }

@@ -6,11 +6,18 @@ namespace App\Providers;
 
 use App\Models\ActionToken;
 use App\Models\Channel;
+use App\Models\Post;
+use App\Models\PostCategory;
+use App\Models\PostTag;
+use App\Models\PostTranslation;
+use App\Models\PostCategoryTranslation;
+use App\Models\PostTagTranslation;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use App\Observers\ActionTokenObserver;
 use App\Observers\ChannelObserver;
+use App\Observers\BlogCacheObserver;
 use App\Observers\TeamObserver;
 use App\Observers\UserObserver;
 use App\Observers\VideoObserver;
@@ -18,7 +25,6 @@ use Illuminate\Support\ServiceProvider;
 
 class ObserverServiceProvider extends ServiceProvider
 {
-
     public function boot(): void
     {
         $this->bootObserver();
@@ -26,6 +32,9 @@ class ObserverServiceProvider extends ServiceProvider
 
     protected function bootObserver(): void
     {
+        foreach ([Post::class, PostTranslation::class, PostCategory::class, PostTag::class, PostCategoryTranslation::class, PostTagTranslation::class] as $model) {
+            $model::observe(BlogCacheObserver::class);
+        }
         User::observe(UserObserver::class);
         Team::observe(TeamObserver::class);
         Video::observe(VideoObserver::class);

@@ -72,7 +72,7 @@ final class PublicWebsiteTest extends DatabaseTestCase
         @$document->loadHTML('<?xml encoding="UTF-8">'.$response->getContent());
         $xpath = new DOMXPath($document);
         $this->assertSame(1, $document->getElementsByTagName('h1')->length);
-        $this->assertSame(0, $xpath->query('//a[contains(@href, "mailto:") or contains(@href, "/blog") or contains(@href, "/gallery")]')->length);
+        $this->assertSame(0, $xpath->query('//a[contains(@href, "mailto:") or contains(@href, "/gallery")]')->length);
         $this->assertSame(1, $xpath->query('//button[@id="themeToggle" and @aria-label]')->length);
         $this->assertSame(1, $xpath->query('//nav//details/summary')->length);
         foreach ($xpath->query('//a[contains(@href, "#")]') as $anchor) {
