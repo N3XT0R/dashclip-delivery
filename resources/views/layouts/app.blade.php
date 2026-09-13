@@ -42,7 +42,14 @@
             @endif
         </div>
     @endif
-    @yield('content')
+    @if ($__env->yieldContent('content_language') === 'de' && app()->getLocale() !== 'de')
+        <p class="mb-6 rounded-lg border border-border bg-panel p-4 text-sm">{{ __('public.german_content') }}</p>
+    @endif
+    @hasSection('content_language')
+        <div lang="@yield('content_language')">@yield('content')</div>
+    @else
+        @yield('content')
+    @endif
 </main>
 <x-public.footer />
 @include('components.cookie-banner')

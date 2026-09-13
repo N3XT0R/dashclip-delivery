@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('content_language', 'de')
 @section('title', 'Nicht verwendete Videos | '.$channel->name)
 @section('description', 'Nicht benötigte Clips für eine erneute Verteilung freigeben.')
 @section('robots', 'noindex, nofollow')

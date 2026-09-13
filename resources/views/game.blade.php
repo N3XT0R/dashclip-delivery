@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('content_language', 'de')
 @section('title', 'Sammle die Clips | DashClip Delivery')
 @section('description', 'Das kleine DashClip-Spiel: Sammle grüne Clips und weiche dem roten Störer aus.')
 @section('page_assets')

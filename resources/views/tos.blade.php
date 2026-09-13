@@ -1,5 +1,6 @@
 @php use App\Facades\Cfg; @endphp
 @extends('layouts.app')
+@section('content_language', 'de')
 
 @section('title', 'Nutzungsbedingungen')
 

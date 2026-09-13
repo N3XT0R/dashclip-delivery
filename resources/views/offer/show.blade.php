@@ -1,5 +1,6 @@
 @php use App\Enum\Users\RoleEnum; @endphp
 @extends('layouts.app')
+@section('content_language', 'de')
 @section('title', 'Angebot | '.$channel->name)
 @section('description', 'Deine angebotenen Clips ansehen, auswählen und herunterladen.')
 @section('robots', 'noindex, nofollow')

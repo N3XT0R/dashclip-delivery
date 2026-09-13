@@ -310,3 +310,38 @@ Review limits: self-review was performed without an independent reviewer. No
 screen-reader assessment, production traffic measurement, or live browser ZIP
 archive transfer was performed. Screenshots and browser logs are local review
 artifacts rather than application assets. No development branch was merged.
+
+## Follow-up implementation (2026-09-13)
+
+- Added German/English language buttons in the public header. The POST action is
+  CSRF protected and stores an encrypted, HTTP-only language cookie for one year.
+  Local return URLs retain signed query strings; external redirects are rejected.
+- Public route middleware uses the explicit cookie before weighted browser
+  language preferences, including regional language variants. Unsupported browser
+  languages fall back to the configured application language. Responses vary by
+  language and cookie. Existing panel locale middleware remains unchanged.
+- Translated homepage copy, public navigation, footer, cookie notice, and the new
+  six-step plain-language guide. German-only supporting content is identified with
+  an English notice and native-language markup rather than presented as translated.
+- The hero remains static as requested. No tracking or additional dependencies
+  were introduced.
+- Removed temporary browser review artifacts from version control and retained
+  them locally in `/tmp/dashclip-review-2026-09-13`. The approved mockups remain in
+  `tmp/`. Production bundles remain tracked to preserve the existing repository
+  and test setup; deployment already rebuilds them in the release directory.
+- Added Docker/tmp exclusions to Pint configuration. The normal
+  `vendor/bin/pint --dirty --format agent` command now passes without a temporary
+  configuration or changes to database-directory permissions.
+- Focused tests: 18 tests and 132 assertions passed. Browser verification covered
+  both languages at 360, 390, 768, 1024, 1440 and 1920 pixels, explicit choice
+  persistence, 200% text enlargement and language switching without JavaScript.
+  No horizontal overflow or JavaScript page errors were observed.
+- Implementation and cleanup were committed and pushed separately as `e8f259cf`
+  and `023947c6`. PR #323 is the existing review destination.
+- Complete suite after language selection: 1094 tests, 3331 assertions passed in
+  4m 52s. Final document-language markup is covered by a subsequent focused run.
+- The quality service reported complexity in the extracted game's update
+  function. Movement, timing, enemy movement and collection are now separate
+  functions. A deterministic Chromium comparison of the original and refactored
+  source verified identical movement, collection, bouncing, collision, timeout
+  and reset states.

@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       and automatic browser-language detection on public routes.
     - translated the homepage and shared public navigation, footer, and cookie
       notice; panel account language preferences retain their existing behavior.
+    - identified remaining German-only page content with a language notice and
+      explicit language markup for assistive technology.
     - added a plain-language walkthrough from upload to channel selection,
       downloads, returns, and publication decisions in both languages.
 - **Public website design specification**
@@ -103,6 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Frontend review tooling**
+    - separated game updates into movement, timing, and collection steps while
+      preserving gameplay behavior.
     - removed temporary browser reports and screenshots from version control;
       retained the approved design references and production assets.
     - excluded Docker data and temporary files from formatting discovery so the

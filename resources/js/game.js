@@ -101,7 +101,17 @@
     function update(dt) {
         if (!running) return;
 
-        // Timer & Spawn
+        updateClockAndSpawn(dt);
+        movePlayer(dt);
+        moveEnemy(dt);
+        collectClips();
+        if (dist(player.x, player.y, enemy.x, enemy.y) < player.r + enemy.r) {
+            running = false;
+            endGame();
+        }
+    }
+
+    function updateClockAndSpawn(dt) {
         spawnTimer += dt;
         if (spawnTimer > 0.7) {
             spawnClip();
@@ -115,7 +125,9 @@
         }
         timeEl.textContent = Math.ceil(timeLeft);
 
-        // Move player
+    }
+
+    function movePlayer(dt) {
         let vx = 0, vy = 0;
         if (inputs.up) vy -= 1;
         if (inputs.down) vy += 1;
@@ -129,13 +141,17 @@
         player.x = clamp(player.x + vx * player.speed * dt, player.r, W - player.r);
         player.y = clamp(player.y + vy * player.speed * dt, player.r, H - player.r);
 
-        // Move enemy
+    }
+
+    function moveEnemy(dt) {
         enemy.x += enemy.dx * dt;
         enemy.y += enemy.dy * dt;
         if (enemy.x - enemy.r < 0 || enemy.x + enemy.r > W) enemy.dx *= -1;
         if (enemy.y - enemy.r < 0 || enemy.y + enemy.r > H) enemy.dy *= -1;
 
-        // Collisions
+    }
+
+    function collectClips() {
         for (let i = clips.length - 1; i >= 0; i--) {
             const c = clips[i];
             if (dist(player.x, player.y, c.x, c.y) < player.r + c.r) {
@@ -144,10 +160,6 @@
                 scoreEl.textContent = score;
                 player.speed = Math.min(player.speed + SPEED_INCREMENT, SPEED_CAP);
             }
-        }
-        if (dist(player.x, player.y, enemy.x, enemy.y) < player.r + enemy.r) {
-            running = false;
-            endGame();
         }
     }
 

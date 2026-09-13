@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'language' => 'Sprache auswählen',
+    'german_content' => 'Der Inhalt dieser Seite steht derzeit auf Deutsch zur Verfügung.',
     'home' => 'Home',
     'process' => "So funktioniert's",
     'channels' => 'Kanäle',

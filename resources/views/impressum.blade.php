@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('content_language', 'de')
 
 @section('title', 'Impressum')
 @section('description', 'Anbieterinformationen und Kontakt zu DashClip Delivery.')

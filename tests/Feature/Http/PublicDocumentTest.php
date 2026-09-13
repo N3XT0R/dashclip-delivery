@@ -44,4 +44,12 @@ final class PublicDocumentTest extends DatabaseTestCase
         $response = $this->get('/unknown-public-page?token=private')->assertNotFound()->assertSee('noindex');
         $response->assertDontSee('rel="canonical"', false)->assertDontSee('property="og:url"', false);
     }
+
+    public function testEnglishVisitorsCanIdentifyGermanSourceDocuments(): void
+    {
+        $this->withoutVite();
+        $this->withHeader('Accept-Language', 'en')->get('/impressum')->assertOk()
+            ->assertSee('The content of this page is currently available in German.')
+            ->assertSee('<div lang="de">', false);
+    }
 }

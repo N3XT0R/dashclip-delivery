@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('content_language', 'de')
 
 @section('title', 'API-Dokumentation')
 @section('description', 'Zugang zur API-Dokumentation für Authentifizierung, Einsender und Kanalbetreiber.')

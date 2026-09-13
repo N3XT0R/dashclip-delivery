@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('content_language', 'de')
 @section('title', ($title ?? 'Fehler').' | DashClip Delivery')
 @section('description', 'Diese Seite ist gerade nicht verfügbar. Kehre zur Startseite zurück oder melde dich in deinem Konto an.')
 @section('robots', 'noindex, nofollow')
