@@ -36,11 +36,12 @@ class PostResource extends Resource
             Select::make('category_id')->label(__('blog.category'))->relationship('category', 'slug')->searchable()->preload()->required(),
             Select::make('tags')->label(__('blog.tags'))->relationship('tags', 'slug')->multiple()->searchable()->preload(),
             FileUpload::make('image_path')->label(__('blog.image'))->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->disk('public')->directory('blog')->visibility('public')->maxSize(5120),
-            Repeater::make('translations')->label(__('blog.translations'))->relationship()->defaultItems(1)->maxItems(2)
-                ->helperText(__('blog.missing').': DE / EN')->columnSpanFull()->schema([
+            Repeater::make('translations')->label(__('blog.translations'))->relationship()->defaultItems(1)->minItems(1)->maxItems(2)
+                ->columnSpanFull()->schema([
                     Select::make('locale')->options(['de' => 'Deutsch', 'en' => 'English'])->required()->distinct()->disableOptionsWhenSelectedInSiblingRepeaterItems(),
                     TextInput::make('title')->label(__('blog.title_field'))->required()->maxLength(255),
                     TextInput::make('slug')->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                        ->notIn(['search'])
                         ->unique(table: PostTranslation::class, ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('locale', $get('locale'))),
                     Textarea::make('excerpt')->label(__('blog.excerpt'))->required()->maxLength(500),
                     MarkdownEditor::make('content')->label(__('blog.content'))->required()->maxLength(200000)->columnSpanFull()
@@ -50,7 +51,7 @@ class PostResource extends Resource
                     DateTimePicker::make('published_at')->label(__('blog.publish_at'))->seconds(false)
                         ->required(fn (Get $get) => in_array($get('status'), ['published', 'scheduled'], true)),
                     TextInput::make('meta_title')->maxLength(255),
-                    Textarea::make('meta_description')->maxLength(300),
+                    Textarea::make('meta_description')->maxLength(255),
                     TextInput::make('canonical_url')->url()->maxLength(255)->rules(['nullable', 'regex:~^https?://~i']),
                     Toggle::make('is_indexable')->default(true),
                 ])->columns(2),

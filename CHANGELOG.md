@@ -13,15 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       a sitemap, and the latest published articles on the homepage.
     - added permission-controlled editorial forms with translated content, media,
       search-engine metadata, previews, duplication, and scheduled publication.
-- **Editorial blog design specification**
-    - documented the data model for articles with a category, tags, media, and
-      search-engine metadata, translated into German and English per article.
-    - fixed the separation between the administration panel as the editorial
-      surface and the public website that renders the published content.
-    - reserved a language segment for blog addresses only, leaving every existing
-      public address and its indexing untouched.
-    - deferred the newsletter subscription and the social profile links to
-      separate projects.
+    - added safe Markdown rendering with note and warning callouts, cached public
+      aggregates, responsive article cards, and plain sharing links without trackers.
 
 ## [4.5.0] - 2026-09-13
 

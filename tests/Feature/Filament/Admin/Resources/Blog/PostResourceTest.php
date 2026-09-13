@@ -6,6 +6,11 @@ namespace Tests\Feature\Filament\Admin\Resources\Blog;
 
 use App\Filament\Admin\Resources\Blog\PostResource;
 use App\Filament\Admin\Resources\Blog\PostResource\Pages\EditPost;
+use App\Filament\Admin\Resources\Blog\PostResource\Pages\CreatePost;
+use App\Models\PostCategory;
+use App\Filament\Admin\Resources\Blog\PostCategoryResource\Pages\CreatePostCategory;
+use App\Filament\Admin\Resources\Blog\PostCategoryResource\Pages\EditPostCategory;
+use App\Filament\Admin\Resources\Blog\PostTagResource\Pages\CreatePostTag;
 use App\Application\Blog\DuplicatePostUseCase;
 use App\Models\Post;
 use App\Models\PostTranslation;
@@ -16,6 +21,34 @@ use Tests\DatabaseTestCase;
 
 final class PostResourceTest extends DatabaseTestCase
 {
+    public function testEditorCanManageTaxonomiesAndCannotDeleteAnAssignedCategory(): void
+    {
+        $this->actingAs(User::factory()->admin()->create());
+        $translation = ['locale' => 'de', 'slug' => 'technology', 'name' => 'Technik'];
+        Livewire::test(CreatePostCategory::class)->fillForm(['slug' => 'technology', 'icon' => 'camera', 'translations' => [$translation]])
+            ->call('create')->assertHasNoFormErrors();
+        Livewire::test(CreatePostTag::class)->fillForm(['slug' => 'technology', 'translations' => [$translation]])
+            ->call('create')->assertHasNoFormErrors();
+        $this->assertDatabaseHas('blog_tag_translations', ['slug' => 'technology']);
+        $category = PostCategory::query()->where('slug', 'technology')->firstOrFail();
+        Post::factory()->create(['category_id' => $category->id]);
+        Livewire::test(EditPostCategory::class, ['record' => $category->id])->assertActionDisabled('delete');
+        $this->assertSame(1, $category->posts()->count());
+    }
+
+    public function testEditorCanCreateTranslationsAndDuplicateSlugsAreRejected(): void
+    {
+        $editor = User::factory()->admin()->create();
+        $this->actingAs($editor);
+        $translation = ['locale' => 'de', 'slug' => 'new-article', 'title' => 'New article', 'excerpt' => 'Introduction', 'content' => 'Article body', 'status' => 'draft', 'is_indexable' => true];
+        $form = ['author_id' => $editor->id, 'category_id' => PostCategory::factory()->create()->id, 'translations' => [$translation, [...$translation, 'locale' => 'en']]];
+        Livewire::test(CreatePost::class)->fillForm($form)->call('create')->assertHasNoFormErrors();
+        $this->assertDatabaseHas('blog_post_translations', ['slug' => 'new-article', 'locale' => 'de']);
+        $this->assertDatabaseHas('blog_post_translations', ['slug' => 'new-article', 'locale' => 'en']);
+        Livewire::test(CreatePost::class)->fillForm([...$form, 'translations' => [$translation]])->call('create')->assertHasFormErrors();
+        $this->assertSame(2, PostTranslation::query()->where('slug', 'new-article')->count());
+    }
+
     public function testEditorCanOpenTranslationsAndSaveArticle(): void
     {
         $this->actingAs(User::factory()->admin()->create());

@@ -45,4 +45,7 @@ return [
     'preview_action' => 'Preview',
     'editor_help' => 'Markdown is supported. Note: > [!NOTE] and warning: > [!WARNING]. Upload images directly in the editor.',
     'rss' => 'RSS feed',
+    'note' => 'Note',
+    'warning' => 'Warning',
+    'category_in_use' => 'Reassign articles to another category before deleting this category.',
 ];

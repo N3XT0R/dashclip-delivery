@@ -16,6 +16,12 @@ class PostCategory extends Model
 
     protected $fillable = ['slug', 'icon'];
 
+    /** Return the articles that must be reassigned before this category can be removed. @return HasMany<Post, $this> */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class, 'category_id');
+    }
+
     public function translations(): HasMany
     {
         return $this->hasMany(PostCategoryTranslation::class, 'category_id');

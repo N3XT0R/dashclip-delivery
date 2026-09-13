@@ -17,6 +17,13 @@
         <article class="min-w-0">
             <img src="{{ $blog->image($article) }}" alt="" width="1280" height="720" class="mb-8 aspect-video w-full rounded-xl object-cover">
             <x-public.blog.article-content :html="$articleContent" />
+            <nav aria-label="{{ __('blog.tags') }}" class="mt-8 flex flex-wrap gap-2">
+                @foreach($article->post->tags as $tag)
+                @if($translation = $tag->translation($article->locale))
+                <a class="rounded-full border border-border px-3 py-2 text-sm hover:underline" href="{{ $blog->url('tag', $article->locale, ['slug' => $translation->slug]) }}">{{ $translation->name }}</a>
+                @endif
+                @endforeach
+            </nav>
             @unless($preview)<x-public.blog.share :url="$blog->url('show', $article->locale, ['slug' => $article->slug])" :title="$article->title" />@endunless
         </article>
         <x-public.blog.sidebar :categories="$categories" :topics="$topics" />
@@ -29,9 +36,9 @@
 @foreach($article->post->translations as $sibling)
 @if($sibling->status->value === 'published' && $sibling->published_at?->isPast() && $sibling->is_indexable)
 <link rel="alternate" hreflang="{{ $sibling->locale }}" href="{{ $blog->url('show', $sibling->locale, ['slug' => $sibling->slug]) }}">
-@if($sibling->locale === 'de')<link rel="alternate" hreflang="x-default" href="{{ $blog->url('show', 'de', ['slug' => $sibling->slug]) }}">@endif
 @endif
 @endforeach
+<link rel="alternate" hreflang="x-default" href="{{ $blog->languages($article)['de'] }}">
 <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Article', 'headline' => $article->title, 'image' => $blog->image($article), 'datePublished' => $article->published_at?->toAtomString(), 'dateModified' => $article->updated_at->toAtomString(), 'author' => ['@type' => 'Person', 'name' => $article->post->author->display_name]], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>
 @endunless
 @endpush

@@ -83,7 +83,7 @@ final class BlogController extends Controller
             foreach ($this->posts->categories($locale)->where('article_count', '>', 0) as $category) {
                 $entries[] = $this->presentation->url('category', $locale, ['slug' => $category->slug]);
             }
-            foreach ($this->posts->topics($locale) as $tag) {
+            foreach ($this->posts->topics($locale, null) as $tag) {
                 $entries[] = $this->presentation->url('tag', $locale, ['slug' => $tag->slug]);
             }
         }

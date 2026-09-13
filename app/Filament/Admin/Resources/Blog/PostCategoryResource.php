@@ -32,7 +32,7 @@ class PostCategoryResource extends Resource
         return $schema->components([
             TextInput::make('slug')->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')->unique(ignoreRecord: true),
             Select::make('icon')->options(['video' => 'Video', 'shield' => 'Sicherheit', 'camera' => 'Kamera', 'news' => 'News', 'settings' => 'Technik']),
-            Repeater::make('translations')->label(__('blog.translations'))->relationship()->defaultItems(1)->maxItems(2)->schema([
+            Repeater::make('translations')->label(__('blog.translations'))->relationship()->defaultItems(1)->minItems(1)->maxItems(2)->columnSpanFull()->schema([
                 Select::make('locale')->options(['de' => 'Deutsch', 'en' => 'English'])->required()->distinct()->disableOptionsWhenSelectedInSiblingRepeaterItems(),
                 TextInput::make('name')->required()->maxLength(255),
                 TextInput::make('slug')->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use App\Models\PostCategoryTranslation;
 use App\Models\PostTagTranslation;
+use App\Models\PostTag;
 
 class PostRepository
 {
@@ -79,7 +80,10 @@ class PostRepository
             ->pluck('total', 'category_id');
     }
 
-    /** Return the latest public articles, hydrating current author and taxonomy data. */
+    /**
+     * Return the latest public articles, hydrating current author and taxonomy data.
+     * @return Collection<int, PostTranslation>
+     */
     public function homepage(string $locale): Collection
     {
         $ids = Cache::remember('blog.homepage.'.$locale, 60, fn () =>
@@ -87,7 +91,10 @@ class PostRepository
         return $this->publishedForLocale($locale)->whereKey($ids)->get();
     }
 
-    /** Return translated categories with public article counts. */
+    /**
+     * Return translated categories with public article counts.
+     * @return Collection<int, PostCategoryTranslation>
+     */
     public function categories(string $locale): Collection
     {
         $counts = Cache::remember('blog.category_counts.'.$locale, 60, fn () => $this->categoryCounts($locale));
@@ -95,12 +102,21 @@ class PostRepository
             ->map(fn ($category) => $category->setAttribute('article_count', $counts[$category->category_id] ?? 0));
     }
 
-    /** Return translated tags used by public articles. */
-    public function topics(string $locale): Collection
+    /**
+     * Return translated tags ranked by published article count.
+     * @return Collection<int, PostTagTranslation>
+     */
+    public function topics(string $locale, ?int $limit = 12): Collection
     {
-        return PostTagTranslation::query()->where('locale', $locale)
-            ->whereHas('tag.posts.translations', fn (Builder $query) => $query->published()->where('locale', $locale))
-            ->orderBy('name')->limit(12)->get();
+        $topics = Cache::remember('blog.topics.'.$locale, 60, function () use ($locale): Collection {
+            $published = fn (Builder $query) => $query->whereHas('translations', fn (Builder $query) => $query->published()->where('locale', $locale));
+            return PostTag::query()->whereHas('posts', $published)
+                ->whereHas('translations', fn (Builder $query) => $query->where('locale', $locale))
+                ->with(['translations' => fn ($query) => $query->where('locale', $locale)])
+                ->withCount(['posts' => $published])->orderByDesc('posts_count')->orderBy('id')->get()
+                ->map(fn (PostTag $tag) => $tag->translation($locale));
+        });
+        return $limit === null ? $topics : $topics->take($limit);
     }
 
     /** Resolve a translated category without exposing internal identifiers. */

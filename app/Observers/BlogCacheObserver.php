@@ -15,6 +15,7 @@ final class BlogCacheObserver
         foreach (['de', 'en'] as $locale) {
             Cache::forget('blog.homepage.'.$locale);
             Cache::forget('blog.category_counts.'.$locale);
+            Cache::forget('blog.topics.'.$locale);
         }
     }
 

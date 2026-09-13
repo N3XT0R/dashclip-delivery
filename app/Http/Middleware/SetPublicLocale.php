@@ -36,7 +36,7 @@ class SetPublicLocale
         app()->setLocale($locale);
 
         $response = $next($request);
-        $response->headers->set('Content-Language', $locale);
+        $response->headers->set('Content-Language', app()->getLocale());
         $response->setVary(['Accept-Language', 'Cookie'], false);
 
         return $response;

@@ -2,8 +2,8 @@
 @section('title', $heading.' · DashClip Delivery')
 @section('description', __('blog.intro'))
 @section('full_width', '1')
-@section('indexable', $term === '' ? '1' : '0')
-@section('robots', $term === '' ? 'index, follow' : 'noindex, nofollow')
+@section('indexable', $term === '' && !request()->routeIs('*.search') ? '1' : '0')
+@section('robots', $term === '' && !request()->routeIs('*.search') ? 'index, follow' : 'noindex, nofollow')
 @section('content')
 <x-public.blog.hero :title="$heading" :description="__('blog.intro')" />
 <div class="public-width py-10">

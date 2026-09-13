@@ -13,7 +13,9 @@ class EditPostCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->disabled(fn (): bool => $this->getRecord()->posts()->exists())
+                ->tooltip(__('blog.category_in_use')),
         ];
     }
 }

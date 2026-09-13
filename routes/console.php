@@ -29,7 +29,7 @@ Schedule::command(Commands\RefreshDropboxToken::class)
 # Mail
 Schedule::command(Commands\ScanMailReplies::class)->everyTenMinutes();
 
-# Cleanup
+# Blog
 Schedule::command(Commands\PublishScheduledPostsCommand::class)->everyMinute()->withoutOverlapping();
 
 # Cleanup

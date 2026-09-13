@@ -9,6 +9,9 @@ use App\Models\Post;
 use App\Models\PostTranslation;
 use App\Models\PostCategoryTranslation;
 use App\Models\User;
+use App\Models\PostTag;
+use App\Models\PostTagTranslation;
+use App\Repository\PostRepository;
 use Tests\DatabaseTestCase;
 
 final class BlogPagesTest extends DatabaseTestCase
@@ -88,5 +91,29 @@ final class BlogPagesTest extends DatabaseTestCase
         $this->assertSame(PostStatusEnum::PUBLISHED, $due->fresh()->status);
         $this->assertSame(PostStatusEnum::SCHEDULED, $future->fresh()->status);
         $this->get('/')->assertOk()->assertSee('Due article');
+    }
+
+    public function testCalloutsFeedsTagsAndRetractionRemainConsistent(): void
+    {
+        $article = PostTranslation::factory()->published()->create([
+            'slug' => 'callouts', 'content' => "> [!NOTE]\n> Safe note\n\n> [!WARNING]\n> Safe warning",
+        ]);
+        foreach (range(1, 13) as $number) {
+            $tag = PostTag::factory()->create();
+            PostTagTranslation::factory()->create(['tag_id' => $tag->id, 'locale' => 'de', 'slug' => 'topic-'.$number]);
+            $article->post->tags()->attach($tag);
+        }
+        $this->get('/blog/callouts')->assertOk()->assertSee('blog-callout-note')->assertSee('blog-callout-warning')
+            ->assertDontSee('/js/filament/')->assertDontSee('/css/filament/');
+        $this->get('/blog/thema/topic-13')->assertOk()->assertSee($article->title);
+        $xml = simplexml_load_string($this->get('/blog-sitemap.xml')->assertOk()->getContent());
+        $this->assertNotFalse($xml);
+        $this->assertStringContainsString('/blog/thema/topic-13', $xml->asXML());
+        $this->assertNotFalse(simplexml_load_string($this->get('/blog/feed.xml')->assertOk()->getContent()));
+        $this->assertCount(12, app(PostRepository::class)->topics('de'));
+        $article->update(['status' => PostStatusEnum::RETRACTED]);
+        $this->assertCount(0, app(PostRepository::class)->topics('de'));
+        $this->get('/')->assertOk()->assertDontSee($article->title);
+        $this->get('/blog/callouts')->assertNotFound();
     }
 }

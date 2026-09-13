@@ -45,4 +45,7 @@ return [
     'preview_action' => 'Vorschau',
     'editor_help' => 'Markdown wird unterstützt. Hinweis: > [!NOTE] und Warnung: > [!WARNING]. Bilder können direkt im Editor hochgeladen werden.',
     'rss' => 'RSS-Feed',
+    'note' => 'Hinweis',
+    'warning' => 'Achtung',
+    'category_in_use' => 'Zum Löschen müssen die Beiträge zuerst einer anderen Kategorie zugeordnet werden.',
 ];
