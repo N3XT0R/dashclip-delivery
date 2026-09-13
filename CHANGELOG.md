@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Shared email design**
+    - aligned transactional emails and Markdown notifications with the public
+      website through a reusable layout, branded header, footer, and action button.
+    - removed duplicated document wrappers while preserving message content and links.
 - **Public language selection and platform guide**
     - added German and English language buttons with a persistent explicit choice
       and automatic browser-language detection on public routes.
@@ -117,6 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - excluded Docker data and temporary files from formatting discovery so the
       standard dirty-file formatter works without database-directory access.
 - **Public website**
+    - introduced a consistent visual identity with a dark navy brand header,
+      orange accents, light content surfaces, and reusable public UI components.
     - redesigned the homepage with upload entry points, responsive navigation,
       a dashcam hero, process guidance, help, and six curated channel names.
     - unified public information, error, offer, and confirmation pages with

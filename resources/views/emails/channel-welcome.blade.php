@@ -1,51 +1,28 @@
 @php use App\Facades\Cfg; @endphp
-    <!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ $subject}}</title>
-</head>
-<body style="margin:0; padding:0; background-color:#f8fafc; font-family:Arial, sans-serif;">
-@include('emails.partials.header')
+<x-email-layout :title="$subject ?? config('app.name')" :message="$message ?? null">
+<h1 style="margin:0 0 16px 0; font-size:20px; font-weight:700;">
+    {{__('mails.channel_welcome_email.headline')}}
+</h1>
+<p>{{__('mails.channel_welcome_email.greeting', ['name' => $channel->name ?? 'Liebes Team'])}}</p>
+<p>
+    {{__('mails.channel_welcome_email.channel_registered', ['app_name' => config('app.name')])}}
+</p>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-       style="max-width:600px; width:100%; margin:0 auto; background:#ffffff;
-              border:1px solid #e2e8f0; border-radius:6px;">
-    <tr>
-        <td style="padding:24px; color:#0f172a; line-height:1.6; font-size:16px;">
-            <h1 style="margin:0 0 16px 0; font-size:20px; font-weight:700;">
-                {{__('mails.channel_welcome_email.headline')}}
-            </h1>
-            <p>{{__('mails.channel_welcome_email.greeting', ['name' => $channel->name ?? 'Liebes Team'])}}</p>
-            <p>
-                {{__('mails.channel_welcome_email.channel_registered', ['app_name' => config('app.name')])}}
-            </p>
+<p style="margin-top:16px;">
+    {{__('mails.channel_welcome_email.weekly_opt_in')}}
+</p>
 
-            <p style="margin-top:16px;">
-                {{__('mails.channel_welcome_email.weekly_opt_in')}}
-            </p>
+<p style="text-align:center; margin:24px 0;">
+    <x-email-button :url="$approveUrl">{{__('mails.channel_welcome_email.approve')}}</x-email-button>
+</p>
 
-            <p style="text-align:center; margin:24px 0;">
-                <a href="{{ $approveUrl }}"
-                   style="display:inline-block; padding:12px 24px; background-color:#2563eb; color:#ffffff;
-                          text-decoration:none; border-radius:6px; font-weight:bold;">
-                    {{__('mails.channel_welcome_email.approve')}}
-                </a>
-            </p>
+<p>
+    {{__('messages.after_confirmation', [
+         'email' => Cfg::get('email_admin_mail', 'email')
+     ])}}
+</p>
 
-            <p>
-                {{__('messages.after_confirmation', [
-                     'email' => Cfg::get('email_admin_mail', 'email')
-                 ])}}
-            </p>
-
-            <p style="margin:24px 0 0 0;">
-                {{__('mails.channel_welcome_email.signature', ['app_name' => config('app.name')])}}
-            </p>
-        </td>
-    </tr>
-</table>
-
-@include('emails.partials.footer')
-</body>
-</html>
+<p style="margin:24px 0 0 0;">
+    {{__('mails.channel_welcome_email.signature', ['app_name' => config('app.name')])}}
+</p>
+</x-email-layout>

@@ -1,0 +1,2 @@
+@props(['url'])
+<a href="{{ $url }}" target="_blank" rel="noopener" style="display:inline-block; max-width:100%; box-sizing:border-box; background-color:#f97316; border:1px solid #f97316; border-radius:8px; color:#0c1924; padding:12px 20px; font-family:Arial, Helvetica, sans-serif; font-size:16px; font-weight:700; line-height:1.5; text-align:center; text-decoration:none; mso-padding-alt:12px 20px;">{{ $slot }}</a>
