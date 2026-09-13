@@ -50,9 +50,8 @@ host('prd')
 after('deploy:failed', 'deploy:unlock');
 after('deploy:cleanup', 'artisan:up');
 // Passport encryption keys live in the shared storage dir and must persist across
-// releases. 'artisan:passport:keys' runs `passport:keys` without --force, which is
-// idempotent-safe: Laravel skips generation if the keys already exist, so previously
-// issued tokens/sessions are never invalidated by a later deploy.
+// releases. 'artisan:passport:keys' skips itself when a key is already present, so a
+// later deploy never regenerates them and previously issued tokens stay valid.
 after('deploy:vendors', 'artisan:passport:keys');
 // storage/api-docs is gitignored and l5-swagger's generate_always is false, so both
 // documentation specs must be (re)generated on every deploy (--all covers every

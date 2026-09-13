@@ -100,7 +100,21 @@ desc('Sets the application key');
 task('artisan:key:generate', artisan('key:generate'));
 
 desc('Creates the encryption keys for API authentication');
-task('artisan:passport:keys', artisan('passport:keys'));
+task('artisan:passport:keys', function () {
+    // passport:keys exits with a failure when either key is already present and
+    // --force is not given, so guard on the same condition the command uses. The
+    // keys live in the shared storage dir and must survive a release, because
+    // regenerating them would invalidate every token issued so far.
+    $keyPath = '{{release_or_current_path}}/storage';
+
+    if (test("[ -f $keyPath/oauth-private.key ] || [ -f $keyPath/oauth-public.key ]")) {
+        info('Passport encryption keys already exist, skipping.');
+
+        return;
+    }
+
+    run('{{bin/php}} {{release_or_current_path}}/artisan passport:keys');
+});
 
 desc('Generates the OpenAPI spec served at /api/documentation');
 task('artisan:l5-swagger:generate', artisan('l5-swagger:generate --all'));
