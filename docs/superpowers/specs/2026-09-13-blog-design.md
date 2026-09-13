@@ -3,7 +3,7 @@
 Date: 2026-09-13
 Branch: `feature/327-blog`
 Ticket: #327
-Status: design approved in conversation; written specification awaiting review.
+Status: design and written specification approved by the user on 2026-09-13.
 
 ## Objective and boundaries
 
