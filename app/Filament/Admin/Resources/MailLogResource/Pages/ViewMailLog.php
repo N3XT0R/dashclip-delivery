@@ -6,11 +6,11 @@ namespace App\Filament\Admin\Resources\MailLogResource\Pages;
 
 use App\Filament\Admin\Resources\MailLogResource;
 use App\Models\MailLog;
+use App\Services\Mail\MailContentPresenter;
 use Filament\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class ViewMailLog extends ViewRecord
 {
@@ -68,54 +68,7 @@ class ViewMailLog extends ViewRecord
                 ->icon('heroicon-o-eye')
                 ->modalHeading(__('filament.admin.labels.email_content'))
                 ->modalWidth('5xl')
-                ->modalContent(function (MailLog $record) {
-                    $content = $record->meta['content'] ?? '';
-
-                    if (trim($content) === '') {
-                        return new HtmlString(sprintf('<em>%s</em>', e(__('filament.admin.messages.empty_email_content'))));
-                    }
-
-                    $isHtml = str_contains($content, '<html') || preg_match('/<\/?[a-z][\s>]/i', $content);
-
-                    if ($isHtml) {
-                        return new HtmlString(
-                            <<<HTML
-                            <div style="
-                                background:#ffffff;
-                                color:#1e293b;
-                                font-family: system-ui, sans-serif;
-                                font-size: 15px;
-                                padding:20px;
-                                border-radius:8px;
-                                overflow-y:auto;
-                                max-height:70vh;
-                                line-height:1.6;
-                                box-shadow: inset 0 0 0 1px #e2e8f0;
-                            ">
-                                {$content}
-                            </div>
-                        HTML
-                        );
-                    }
-
-                    $escaped = e($content);
-                    return new HtmlString(
-                        <<<HTML
-                        <pre style="
-                            background:#0f172a;
-                            color:#e2e8f0;
-                            padding:16px;
-                            border-radius:8px;
-                            font-family: monospace;
-                            font-size: 13px;
-                            overflow-x:auto;
-                            white-space:pre-wrap;
-                            line-height:1.5;
-                            max-height:70vh;
-                        ">{$escaped}</pre>
-                    HTML
-                    );
-                })
+                ->modalContent(fn(MailLog $record) => app(MailContentPresenter::class)->render($record))
                 ->visible(fn (MailLog $record) => !empty($record->meta['content']))
                 ->modalSubmitAction(false),
         ];
