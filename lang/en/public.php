@@ -90,7 +90,7 @@ return [
     'guide_intro' => 'Imagine you recorded an interesting situation on the road and want to share it with YouTube channels. Here is how DashClip Delivery helps.',
     'guide_steps' => [
         ['Create an account and upload your video', 'You are the submitter: the person who made the recording. Register, log in and upload your video file. Add the details of your recording. You do not need to upload it again for every channel.'],
-        ['The platform distributes your recording', 'A channel is a recipient who selects videos for their YouTube channel. The platform checks which channels can receive your recording according to its distribution rules. Not every clip goes to every channel immediately.'],
+        ['You choose the channels', 'A channel is a recipient who selects videos for their YouTube channel. You decide which channels you want to submit your clip to. The platform takes your selection into account when distributing clips automatically according to its distribution rules. Not every clip goes to every selected channel immediately.'],
         ['The channel receives an offer', 'An offer invites a channel to view and download specific clips. It does not mean your video will be published. The links are valid for a limited time only.'],
         ['Preview and choose clips', 'The channel watches previews and chooses the recordings it wants to use. It can download a single file or several together as a ZIP. A ZIP file is a package containing multiple files.'],
         ['Return clips that are not needed', 'If a channel no longer needs a downloaded clip, it can release it using the return function. The platform can then distribute it again.'],

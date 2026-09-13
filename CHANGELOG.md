@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       notice; panel account language preferences retain their existing behavior.
     - identified remaining German-only page content with a language notice and
       explicit language markup for assistive technology.
-    - added a plain-language walkthrough from upload to channel selection,
+    - added a plain-language walkthrough from upload to the submitter’s choice of channels,
       downloads, returns, and publication decisions in both languages.
 - **Public website design specification**
     - documented the responsive redesign scope, preservation of existing public
