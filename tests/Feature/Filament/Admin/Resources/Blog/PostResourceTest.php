@@ -10,6 +10,8 @@ use App\Filament\Admin\Resources\Blog\PostTagResource;
 use App\Filament\Admin\Resources\Blog\PostResource\Pages\EditPost;
 use App\Filament\Admin\Resources\Blog\PostResource\Pages\CreatePost;
 use App\Models\PostCategory;
+use App\Models\PostTag;
+use Filament\Forms\Components\Select;
 use App\Filament\Admin\Resources\Blog\PostCategoryResource\Pages\CreatePostCategory;
 use App\Filament\Admin\Resources\Blog\PostCategoryResource\Pages\EditPostCategory;
 use App\Filament\Admin\Resources\Blog\PostTagResource\Pages\CreatePostTag;
@@ -44,7 +46,7 @@ final class PostResourceTest extends DatabaseTestCase
 
     public function testEditorCanManageTaxonomiesAndCannotDeleteAnAssignedCategory(): void
     {
-        $this->actingAs(User::factory()->admin()->create());
+        $this->actingAs(User::factory()->admin()->create(['locale' => 'de']));
         foreach ([PostResource::class, PostCategoryResource::class, PostTagResource::class] as $resource) {
             $this->get($resource::getUrl('index'))->assertOk()->assertSee($resource::getUrl('create'), false);
         }
@@ -55,6 +57,11 @@ final class PostResourceTest extends DatabaseTestCase
             ->call('create')->assertHasNoFormErrors();
         $this->assertDatabaseHas('blog_tag_translations', ['slug' => 'technology']);
         $category = PostCategory::query()->where('slug', 'technology')->firstOrFail();
+        $tag = PostTag::query()->where('slug', 'technology')->firstOrFail();
+        Livewire::test(CreatePost::class)
+            ->assertFormFieldExists('category_id', fn (Select $field): bool => $field->getOptions()[$category->id] === 'Technik')
+            ->assertFormFieldExists('tags', fn (Select $field): bool => $field->getOptions()[$tag->id] === 'Technik')
+            ->assertSee('SEO-Beschreibung')->assertSee('Für Suchmaschinen sichtbar');
         Post::factory()->create(['category_id' => $category->id]);
         Livewire::test(EditPostCategory::class, ['record' => $category->id])->assertActionDisabled('delete');
         $this->assertSame(1, $category->posts()->count());

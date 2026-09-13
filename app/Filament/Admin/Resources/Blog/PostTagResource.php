@@ -35,12 +35,12 @@ class PostTagResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('slug')->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')->unique(ignoreRecord: true),
+            TextInput::make('slug')->label(__('blog.slug'))->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')->unique(ignoreRecord: true),
 
             Repeater::make('translations')->label(__('blog.translations'))->relationship()->defaultItems(1)->minItems(1)->maxItems(2)->columnSpanFull()->schema([
-                Select::make('locale')->options(['de' => 'Deutsch', 'en' => 'English'])->required()->distinct()->disableOptionsWhenSelectedInSiblingRepeaterItems(),
-                TextInput::make('name')->required()->maxLength(255),
-                TextInput::make('slug')->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                Select::make('locale')->label(__('blog.locale'))->options(['de' => 'Deutsch', 'en' => 'English'])->required()->distinct()->disableOptionsWhenSelectedInSiblingRepeaterItems(),
+                TextInput::make('name')->label(__('blog.name'))->required()->maxLength(255),
+                TextInput::make('slug')->label(__('blog.slug'))->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                     ->unique(table: PostTagTranslation::class, ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('locale', $get('locale'))),
 
             ]),
@@ -51,7 +51,7 @@ class PostTagResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->modifyQueryUsing(fn ($query) => $query->with('translations'))
-            ->columns([TextColumn::make('slug')->searchable(), TextColumn::make('translations.name')->listWithLineBreaks()])
+            ->columns([TextColumn::make('slug')->label(__('blog.slug'))->searchable(), TextColumn::make('translations.name')->label(__('blog.translations'))->listWithLineBreaks()])
             ->recordActions([EditAction::make()]);
     }
 

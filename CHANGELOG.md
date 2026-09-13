@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Blog administration labels**
     - corrected explicit singular and plural labels for posts, categories and tags
       in German and English, including page headings and create actions.
+    - translated editorial field and icon labels, and show localized category and
+      tag names in article forms and lists with a slug fallback for missing translations.
 
 ## [4.5.0] - 2026-09-13
 
