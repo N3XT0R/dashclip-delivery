@@ -102,6 +102,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       when left unset.
 
 ### Changed
+- **Frontend review tooling**
+    - removed temporary browser reports and screenshots from version control;
+      retained the approved design references and production assets.
+    - excluded Docker data and temporary files from formatting discovery so the
+      standard dirty-file formatter works without database-directory access.
 - **Public website**
     - redesigned the homepage with upload entry points, responsive navigation,
       a dashcam hero, process guidance, help, and six curated channel names.

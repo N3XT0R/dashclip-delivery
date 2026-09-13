@@ -1,1 +1,0 @@
-{"preset":"psr12","exclude":["docker","tmp"],"rules":{"php_unit_method_casing":false}}
