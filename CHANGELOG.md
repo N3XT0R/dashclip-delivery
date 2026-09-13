@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Unreadable mail content in the mail log**
+    - incoming mail was stored exactly as it arrived, so the log showed transport
+      structure or encoded blocks instead of the message. It is now decoded while
+      reading, preferring the formatted part over the plain one.
+    - the content view no longer places a mail into the administration document.
+      It is shown in an isolated frame, which also repairs outgoing mail, whose
+      complete documents could never render correctly inside a panel.
+    - remote images are held back until they are explicitly requested, so opening
+      an entry no longer confirms the read to the sender.
+    - a maintenance command repairs entries that were stored before this fix.
+    - reading a mail without a usable header no longer aborts the scan, and a
+      stray debug output was removed from that path.
+
 ### Added
 - **Channel operators maintain their own public presentation**
     - the channel area now carries the homepage visibility switch, which previously

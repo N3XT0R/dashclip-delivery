@@ -46,6 +46,8 @@ class InboundHandler implements MessageStrategyInterface
         }
 
 
+        $body = $this->decodeBody($message);
+
         $this->mailRepository->create([
             'message_id' => $messageId,
             'from' => $from,
@@ -57,26 +59,69 @@ class InboundHandler implements MessageStrategyInterface
             'updated_at' => $createdAt,
             'meta' => [
                 'headers' => $this->getHeadersByMessage($message),
-                'content' => $message->getRawBody(),
+                'content' => $body['content'],
+                'content_format' => $body['format'],
             ],
         ]);
 
         Log::info("Inbound mail stored", ['subject' => $subject, 'from' => $from]);
     }
 
+    /**
+     * Resolve the readable body of a message.
+     *
+     * The raw body still carries the MIME structure and the transfer encoding,
+     * so storing it leaves the viewer with boundaries or base64 instead of text.
+     * Prefer the decoded HTML part, fall back to the decoded text part, and keep
+     * the raw payload only when the message offers neither.
+     *
+     * @param Message $message
+     * @return array{content: string, format: string}
+     */
+    protected function decodeBody(Message $message): array
+    {
+        foreach ([['getHTMLBody', 'html'], ['getTextBody', 'text']] as [$method, $format]) {
+            try {
+                $body = (string)$message->{$method}();
+            } catch (\Throwable) {
+                continue;
+            }
+
+            if (trim($body) !== '') {
+                return ['content' => $body, 'format' => $format];
+            }
+        }
+
+        return ['content' => (string)$message->getRawBody(), 'format' => 'raw'];
+    }
+
+    /**
+     * Collect the raw header lines of a message.
+     *
+     * A message without a readable header must not abort the scan, so every
+     * failure falls back to the parsed attributes and finally to an empty list.
+     *
+     * @param Message $message
+     * @return array<int|string, mixed>
+     */
     protected function getHeadersByMessage(Message $message): array
     {
         try {
-            $headers = [];
-            $headerArr = explode("\r\n", $message->getHeader()?->raw);
-            foreach ($headerArr as $line) {
-                $headers[] = trim($line);
+            $raw = $message->getHeader()?->raw;
+
+            if (is_string($raw) && trim($raw) !== '') {
+                return array_map(static fn(string $line): string => trim($line), explode("\r\n", $raw));
             }
         } catch (\Throwable $e) {
-            print_r($e->getMessage());
-            $headers = $message->getHeader()?->getAttributes();
+            Log::warning('Could not read inbound mail headers', ['error' => $e->getMessage()]);
         }
 
-        return $headers;
+        try {
+            return $message->getHeader()?->getAttributes() ?? [];
+        } catch (\Throwable $e) {
+            Log::warning('Could not read inbound mail header attributes', ['error' => $e->getMessage()]);
+
+            return [];
+        }
     }
 }
