@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Public channel visibility**
+    - added an admin checkbox controlling inclusion in the public channel list,
+      enabled by default for existing and new channels.
+    - replaced hardcoded channel names with an alphabetical database-backed list;
+      the channel section is hidden when no channels are enabled.
 - **Shared email design**
     - aligned transactional emails and Markdown notifications with the public
       website through a reusable layout, branded header, footer, and action button.

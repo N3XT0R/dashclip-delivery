@@ -64,6 +64,9 @@ class ChannelResource extends Resource
             Checkbox::make('is_video_reception_paused')
                 ->label(__('filament.admin.labels.pause_video_reception'))
                 ->default(1),
+            Checkbox::make('show_on_homepage')
+                ->label(__('filament.admin.labels.show_on_homepage'))
+                ->default(true),
         ]);
     }
 
@@ -101,6 +104,10 @@ class ChannelResource extends Resource
                     ->sortable(),
                 IconColumn::make('is_video_reception_paused')
                     ->label(__('filament.admin.labels.paused_video_reception'))
+                    ->boolean()
+                    ->sortable(),
+                IconColumn::make('show_on_homepage')
+                    ->label(__('filament.admin.labels.show_on_homepage'))
                     ->boolean()
                     ->sortable(),
             ])

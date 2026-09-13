@@ -235,6 +235,7 @@ return [
             'pages' => 'Seiten',
             'password' => 'Passwort',
             'pause_video_reception' => 'Videoempfang pausieren',
+            'show_on_homepage' => 'Auf der Startseite anzeigen',
             'paused_video_reception' => 'Videoempfang pausiert',
             'preview' => 'Vorschau',
             'recipient' => 'Empfänger',

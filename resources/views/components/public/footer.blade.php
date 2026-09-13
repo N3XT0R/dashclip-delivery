@@ -1,9 +1,9 @@
 @php
     use App\Facades\Version;
-    $channels = ['RLP Dashcam', 'Lets Dashcam', 'Augen auf!', 'Road Rave Germany', 'NEDK - NOCH EIN DASHCAM KANAL', 'Dashcam Stories'];
 @endphp
 <footer class="border-t border-border bg-panel">
     <div class="public-width py-14">
+        @if ($channels->isNotEmpty())
         <h2 class="mb-6 text-sm font-semibold tracking-widest uppercase">{{ __('public.featured_channels') }}</h2>
         <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($channels as $channel)
@@ -13,6 +13,7 @@
                 </li>
             @endforeach
         </ul>
+        @endif
         <div class="mt-12 flex flex-col justify-between gap-8 border-t border-border pt-8 lg:flex-row">
             <div>
                 <p class="font-semibold">DashClip Delivery</p>

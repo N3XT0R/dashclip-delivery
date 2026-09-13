@@ -16,6 +16,17 @@ use Illuminate\Support\Collection as SupportCollection;
 class ChannelRepository
 {
     /**
+     * Return public channel names in a stable alphabetical order.
+     *
+     * @return SupportCollection<int, string>
+     */
+    public function getHomepageChannelNames(): SupportCollection
+    {
+        return Channel::query()->where('show_on_homepage', true)
+            ->orderBy('name')->orderBy('id')->pluck('name');
+    }
+
+    /**
      * Get all active channels where video reception is not paused.
      * @return Collection<Channel>
      */

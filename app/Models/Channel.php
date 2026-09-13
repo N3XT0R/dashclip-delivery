@@ -27,11 +27,17 @@ class Channel extends Model
         'weekly_quota',
         'is_video_reception_paused',
         'approved_at',
+        'show_on_homepage',
     ];
 
     protected $casts = [
+        'show_on_homepage' => 'boolean',
         'is_video_reception_paused' => 'boolean',
         'approved_at' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'show_on_homepage' => true,
     ];
 
     public function getActivitylogOptions(): LogOptions

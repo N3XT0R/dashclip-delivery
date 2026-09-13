@@ -5,15 +5,38 @@ declare(strict_types=1);
 namespace Tests\Feature\Http;
 
 use DOMDocument;
+use App\Models\Channel;
 use DOMXPath;
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 
-final class PublicWebsiteTest extends TestCase
+final class PublicWebsiteTest extends DatabaseTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+        Channel::query()->update(['show_on_homepage' => false]);
         $this->withHeader('Accept-Language', 'de');
+    }
+
+    public function testPublicChannelListUsesDefaultsAndReflectsVisibilityChanges(): void
+    {
+        $zulu = Channel::factory()->create(['name' => 'Zulu public channel']);
+        Channel::factory()->create(['name' => 'Alpha public channel', 'is_video_reception_paused' => true]);
+        $this->assertTrue($zulu->fresh()->show_on_homepage);
+        $this->get('/')->assertOk()->assertSeeInOrder(['Alpha public channel', 'Zulu public channel']);
+
+        $zulu->update(['show_on_homepage' => false]);
+        $this->get('/')->assertOk()->assertDontSee('Zulu public channel');
+        $zulu->update(['show_on_homepage' => true]);
+        $this->get('/')->assertOk()->assertSee('Zulu public channel');
+    }
+
+    public function testPublicChannelSectionIsHiddenWhenNoChannelsAreVisible(): void
+    {
+        Channel::factory()->create(['name' => 'Private channel', 'show_on_homepage' => false]);
+        $this->get('/')->assertOk()
+            ->assertDontSee('Private channel')
+            ->assertDontSee(__('public.featured_channels'));
     }
 
     public function testPublicAssetsStayIsolatedAndPanelScriptsSupportBundledImports(): void
@@ -34,16 +57,15 @@ final class PublicWebsiteTest extends TestCase
 
     public function testHomepageProvidesUploadNavigationAndCuratedChannels(): void
     {
+        Channel::factory()->create(['name' => 'Visible channel']);
+        Channel::factory()->create(['name' => 'Hidden channel', 'show_on_homepage' => false]);
         $this->withoutVite();
         $response = $this->get('/')->assertOk()
             ->assertSee('Clips hochladen')
             ->assertSee(route('filament.standard.auth.register'), false)
-            ->assertSee(route('filament.standard.auth.login'), false)
-            ->assertDontSee('DashboardHeroes')->assertDontSee('Dashboard Heroes');
+            ->assertSee(route('filament.standard.auth.login'), false);
 
-        foreach (['RLP Dashcam', 'Lets Dashcam', 'Augen auf!', 'Road Rave Germany', 'NEDK - NOCH EIN DASHCAM KANAL', 'Dashcam Stories'] as $channel) {
-            $response->assertSee($channel);
-        }
+        $response->assertSee('Visible channel')->assertDontSee('Hidden channel');
 
         $document = new DOMDocument();
         @$document->loadHTML('<?xml encoding="UTF-8">'.$response->getContent());
