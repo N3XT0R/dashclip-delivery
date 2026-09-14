@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Blog preview on the start page**
+    - show the five newest articles instead of three, and move the section above the process
+      description so it is seen without scrolling past the product sections.
+    - the amount is configurable and is part of the cache key, so a changed value takes effect
+      instead of serving the previously cached selection.
 - **Panel configuration**
     - share the common panel middleware stack between the administration and the standard panel
       instead of duplicating it in both panel configurations.
