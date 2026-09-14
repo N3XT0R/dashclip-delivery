@@ -15,7 +15,7 @@ use Filament\Forms\Components\Select;
 use App\Filament\Admin\Resources\Blog\PostCategoryResource\Pages\CreatePostCategory;
 use App\Filament\Admin\Resources\Blog\PostCategoryResource\Pages\EditPostCategory;
 use App\Filament\Admin\Resources\Blog\PostTagResource\Pages\CreatePostTag;
-use App\Application\Blog\DuplicatePostUseCase;
+use App\Filament\Admin\Resources\Blog\PostTagResource\Pages\EditPostTag;
 use App\Models\Post;
 use App\Models\PostTranslation;
 use App\Models\User;
@@ -58,6 +58,10 @@ final class PostResourceTest extends DatabaseTestCase
         $this->assertDatabaseHas('blog_tag_translations', ['slug' => 'technology']);
         $category = PostCategory::query()->where('slug', 'technology')->firstOrFail();
         $tag = PostTag::query()->where('slug', 'technology')->firstOrFail();
+        $this->get(PostTagResource::getUrl('edit', ['record' => $tag]))->assertOk()->assertSee('Technik');
+        Livewire::test(EditPostTag::class, ['record' => $tag->id])
+            ->fillForm(['slug' => 'updated-technology'])->call('save')->assertHasNoFormErrors();
+        $this->assertSame('updated-technology', $tag->fresh()->slug);
         Livewire::test(CreatePost::class)
             ->assertFormFieldExists('category_id', fn (Select $field): bool => $field->getOptions()[$category->id] === 'Technik')
             ->assertFormFieldExists('tags', fn (Select $field): bool => $field->getOptions()[$tag->id] === 'Technik')
@@ -105,7 +109,9 @@ final class PostResourceTest extends DatabaseTestCase
         $this->actingAs(User::factory()->admin()->create());
         $article = PostTranslation::factory()->published()->create();
         $this->get(route('blog.preview', $article))->assertOk()->assertSee('noindex, nofollow');
-        $copy = app(DuplicatePostUseCase::class)->execute($article->post);
+        $page = Livewire::test(EditPost::class, ['record' => $article->post_id])->callAction('duplicate');
+        $copy = Post::query()->whereKeyNot($article->post_id)->latest('id')->firstOrFail();
+        $page->assertRedirect(PostResource::getUrl('edit', ['record' => $copy]));
         $this->assertNotSame($article->post_id, $copy->id);
         $this->assertSame(PostStatusEnum::DRAFT, $copy->translations->first()->status);
         $this->assertNull($copy->translations->first()->published_at);

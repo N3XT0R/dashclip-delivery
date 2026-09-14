@@ -14,10 +14,27 @@ use App\Models\PostTagTranslation;
 use App\Repository\PostRepository;
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
 
 final class BlogPagesTest extends DatabaseTestCase
 {
+    public function testArticleUsesItsUploadedImageAndFallsBackWhenItIsRemoved(): void
+    {
+        $post = Post::factory()->create(['image_path' => 'blog/editorial-cover.webp']);
+        PostTranslation::factory()->for($post)->published()->create(['slug' => 'cover-image']);
+        $imageUrl = Storage::disk('public')->url($post->image_path);
+
+        $this->get('/blog/cover-image')->assertOk()
+            ->assertSee('src="'.$imageUrl.'"', false)
+            ->assertSee('content="'.$imageUrl.'"', false);
+
+        $post->update(['image_path' => null]);
+        $this->get('/blog/cover-image')->assertOk()
+            ->assertSee('src="'.asset('images/marketing/hero.jpg').'"', false)
+            ->assertDontSee($imageUrl, false);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       changes and deletions through a transactional, persistent execution marker.
 
 ### Changed
+- **Blog test coverage**
+    - cover editorial duplication through its admin action, tag editing, taxonomy
+      ownership, article image fallbacks and missing-translation diagnostics.
 - **Shared public components**
     - centralized language option styling for blog links and public language buttons
       within the existing shared header, keeping both variants visually consistent.

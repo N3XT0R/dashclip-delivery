@@ -7,11 +7,24 @@ namespace Tests\Integration\Models\Blog;
 use App\Enum\Blog\PostStatusEnum;
 use App\Models\Post;
 use App\Models\PostTranslation;
+use App\Models\PostCategoryTranslation;
+use App\Models\PostTagTranslation;
 use Illuminate\Database\QueryException;
 use Tests\DatabaseTestCase;
 
 final class PostTest extends DatabaseTestCase
 {
+    public function testTaxonomyTranslationsResolveTheirOwningCategoryAndTag(): void
+    {
+        $categoryTranslation = PostCategoryTranslation::factory()->create();
+        $tagTranslation = PostTagTranslation::factory()->create();
+
+        $this->assertSame($categoryTranslation->category_id, $categoryTranslation->category->id);
+        $this->assertTrue($categoryTranslation->category->translations->contains($categoryTranslation));
+        $this->assertSame($tagTranslation->tag_id, $tagTranslation->tag->id);
+        $this->assertTrue($tagTranslation->tag->translations->contains($tagTranslation));
+    }
+
     public function testAPostCarriesOneTranslationPerLocale(): void
     {
         $post = Post::factory()->create();
