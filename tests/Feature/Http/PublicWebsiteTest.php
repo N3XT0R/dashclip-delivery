@@ -81,6 +81,36 @@ final class PublicWebsiteTest extends DatabaseTestCase
         }
     }
 
+    public function testSharedHeaderLanguageOptionsStayConsistentAcrossPublicPages(): void
+    {
+        $this->withoutVite();
+
+        foreach (['de', 'en'] as $locale) {
+            $expectedClasses = [];
+            foreach (['/', '/impressum', $locale === 'en' ? '/en/blog' : '/blog'] as $path) {
+                $response = $this->withHeader('Accept-Language', $locale)->get($path)->assertOk();
+                $document = new DOMDocument();
+                @$document->loadHTML($response->getContent());
+                $xpath = new DOMXPath($document);
+                $this->assertSame(1, $xpath->query('//header')->length);
+                $options = $xpath->query('//header//button[@name="locale"] | //header//a[@hreflang]');
+                $this->assertCount(2, $options);
+
+                foreach ($options as $option) {
+                    $language = $option->getAttribute('lang');
+                    $classes = preg_split('/\s+/', trim($option->getAttribute('class')));
+                    sort($classes);
+                    if ($path === '/') {
+                        $expectedClasses[$language] = $classes;
+                    }
+                    $this->assertSame($expectedClasses[$language], $classes);
+                    $this->assertSame($language === $locale, in_array('bg-white/15', $classes, true));
+                    $this->assertNotEmpty($option->getAttribute('aria-label'));
+                }
+            }
+        }
+    }
+
     public function testMetadataAndHeroAreStableAndReadyForDiscovery(): void
     {
         $this->withoutVite();

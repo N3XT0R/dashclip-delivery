@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       and a complete German/English introduction; repeated runs preserve editorial
       changes and deletions through a transactional, persistent execution marker.
 
+### Changed
+- **Shared public components**
+    - centralized language option styling for blog links and public language buttons
+      within the existing shared header, keeping both variants visually consistent.
+
 ### Fixed
 - **Blog language selection**
     - restored the active language background and outline on blog pages and aligned
