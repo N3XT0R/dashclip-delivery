@@ -69,6 +69,7 @@ return [
     'user_inactivity_reminder' => [
         'subject' => 'We haven\'t seen you in a while',
         'headline' => 'We missed you',
+        'body_without_login' => 'we haven\'t recorded a login from you at :app in a while. Come back and check what\'s new!',
         'greeting' => 'Hi :name,',
         'body' => 'you haven\'t logged in to :app since :date. Come back and check what\'s new!',
         'cta' => 'Log in now',

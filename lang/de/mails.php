@@ -69,6 +69,7 @@ return [
     'user_inactivity_reminder' => [
         'subject' => 'Du warst länger nicht mehr da',
         'headline' => 'Wir haben dich vermisst',
+        'body_without_login' => 'wir haben seit einiger Zeit keine Anmeldung von dir bei :app erfasst. Schau doch mal wieder vorbei!',
         'greeting' => 'Hallo :name,',
         'body' => 'du hast dich seit dem :date nicht mehr bei :app eingeloggt. Schau doch mal wieder vorbei!',
         'cta' => 'Jetzt einloggen',

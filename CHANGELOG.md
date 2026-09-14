@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Fixed
+- **Inactivity reminders for existing accounts**
+    - include inactive accounts without a recorded login using their account creation date,
+      and send a reminder without inventing a historical login date.
 - **Admin user login activity**
     - display the last login in the sortable user table and the user edit page,
       with a translated placeholder for users without a recorded login.
+    - show the recorded inactivity reminder timestamp as read-only information on the user edit page.
 
 ## [4.6.0] - 2026-09-14
 

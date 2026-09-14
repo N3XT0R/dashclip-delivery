@@ -66,6 +66,11 @@ class UserResource extends Resource
                     ->dateTime()
                     ->placeholder(__('filament.admin.labels.never_logged_in'))
                     ->visibleOn('edit'),
+                TextEntry::make('last_login_reminder_sent_at')
+                    ->label(__('filament.admin.labels.last_login_reminder'))
+                    ->dateTime()
+                    ->placeholder(__('filament.admin.labels.no_login_reminder'))
+                    ->visibleOn('edit'),
                 Forms\Components\TextInput::make('password')
                     ->password(),
                 Forms\Components\Select::make('roles')

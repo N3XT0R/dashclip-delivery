@@ -6,8 +6,8 @@
     {{ __('mails.user_inactivity_reminder.greeting', ['name' => $user->name]) }}
 </p>
 <p style="margin:0 0 20px 0;">
-    {{ __('mails.user_inactivity_reminder.body', [
-        'date' => $lastLoginAt->timezone(config('app.timezone'))->format('d.m.Y'),
+    {{ __($lastLoginAt ? 'mails.user_inactivity_reminder.body' : 'mails.user_inactivity_reminder.body_without_login', [
+        'date' => $lastLoginAt?->timezone(config('app.timezone'))->format('d.m.Y'),
         'app' => config('app.name'),
     ]) }}
 </p>

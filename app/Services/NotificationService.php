@@ -61,10 +61,10 @@ class NotificationService
     /**
      * Send the inactivity reminder notification to the user.
      * @param User $user
-     * @param CarbonInterface $lastLoginAt
+     * @param CarbonInterface|null $lastLoginAt Null when no historical login was recorded.
      * @return void
      */
-    public function notifyUserInactivity(User $user, CarbonInterface $lastLoginAt): void
+    public function notifyUserInactivity(User $user, ?CarbonInterface $lastLoginAt): void
     {
         $user->notify(new UserInactivityReminderNotification($lastLoginAt));
     }

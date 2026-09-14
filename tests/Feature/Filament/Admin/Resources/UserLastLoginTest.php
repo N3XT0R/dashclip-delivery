@@ -13,13 +13,21 @@ final class UserLastLoginTest extends DatabaseTestCase
     public function testLastLoginIsDisplayedOnUserListAndEditPages(): void
     {
         $admin = User::factory()->admin()->create();
-        $user = User::factory()->create(['last_login_at' => '2026-09-10 14:35:00']);
+        $user = User::factory()->create([
+            'last_login_at' => '2026-09-10 14:35:00',
+            'last_login_reminder_sent_at' => '2026-09-12 09:00:00',
+        ]);
 
         $this->actingAs($admin, 'web');
 
         foreach (['de', 'en'] as $locale) {
             $admin->update(['locale' => $locale]);
             app()->setLocale($locale);
+
+            $this->get(UserResource::getUrl('edit', ['record' => $user], panel: 'admin'))
+                ->assertOk()
+                ->assertSee(__('filament.admin.labels.last_login_reminder'))
+                ->assertSee($user->last_login_reminder_sent_at->translatedFormat('M j, Y H:i:s'));
 
             foreach (['index' => [], 'edit' => ['record' => $user]] as $page => $parameters) {
                 $this->get(UserResource::getUrl($page, $parameters, panel: 'admin'))
@@ -36,6 +44,10 @@ final class UserLastLoginTest extends DatabaseTestCase
         $user = User::factory()->create(['last_login_at' => null]);
 
         $this->actingAs($admin, 'web');
+
+        $this->get(UserResource::getUrl('edit', ['record' => $user], panel: 'admin'))
+            ->assertOk()
+            ->assertSee(__('filament.admin.labels.no_login_reminder'));
 
         foreach (['index' => [], 'edit' => ['record' => $user]] as $page => $parameters) {
             $this->get(UserResource::getUrl($page, $parameters, panel: 'admin'))
