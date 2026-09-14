@@ -25,7 +25,7 @@ final class UserLastLoginTest extends DatabaseTestCase
                 $this->get(UserResource::getUrl($page, $parameters, panel: 'admin'))
                     ->assertOk()
                     ->assertSee(__('filament.admin.labels.last_login'))
-                    ->assertSee('10.09.2026 14:35');
+                    ->assertSee($user->last_login_at->translatedFormat('M j, Y H:i:s'));
             }
         }
     }

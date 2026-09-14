@@ -63,7 +63,7 @@ class UserResource extends Resource
                 Forms\Components\DateTimePicker::make('email_verified_at'),
                 TextEntry::make('last_login_at')
                     ->label(__('filament.admin.labels.last_login'))
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime()
                     ->placeholder(__('filament.admin.labels.never_logged_in'))
                     ->visibleOn('edit'),
                 Forms\Components\TextInput::make('password')
@@ -109,7 +109,7 @@ class UserResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('last_login_at')
                     ->label(__('filament.admin.labels.last_login'))
-                    ->dateTime('d.m.Y H:i')
+                    ->dateTime()
                     ->placeholder(__('filament.admin.labels.never_logged_in'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('roles.name')
