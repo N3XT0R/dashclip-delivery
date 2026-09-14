@@ -56,6 +56,16 @@ final class BlogHomepagePreviewTest extends DatabaseTestCase
         $response->assertDontSee($articles[5]->title, escape: false);
     }
 
+    public function testPreviewedArticlesLinkToTheArticleItself(): void
+    {
+        $articles = $this->publishArticles(1);
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('/blog/'.$articles[0]->slug, escape: false);
+    }
+
     public function testHomepageHonoursTheConfiguredArticleLimit(): void
     {
         config(['blog.homepage_limit' => 2]);
