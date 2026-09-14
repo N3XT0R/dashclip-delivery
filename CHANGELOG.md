@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - added an initial content seeder with three bilingual categories, five tags
       and a complete German/English introduction; repeated runs preserve editorial
       changes and deletions through a transactional, persistent execution marker.
+- **Channel operators maintain their own public presentation**
+    - the channel area now carries the homepage visibility switch, which previously
+      only an administrator could set.
+    - channel operators can upload a logo for the public channel list. It is shown at
+      the same size as the previous neutral symbol, which remains the fallback.
+    - both changes are recorded in the channel history, so it stays traceable who
+      changed the public presentation and when.
 
 ### Changed
 - **Blog test coverage**
@@ -41,6 +48,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       in German and English, including page headings and create actions.
     - translated editorial field and icon labels, and show localized category and
       tag names in article forms and lists with a slug fallback for missing translations.
+- **Unreadable mail content in the mail log**
+    - incoming mail was stored exactly as it arrived, so the log showed transport
+      structure or encoded blocks instead of the message. It is now decoded while
+      reading, preferring the formatted part over the plain one.
+    - the content view no longer places a mail into the administration document.
+      It is shown in an isolated frame, which also repairs outgoing mail, whose
+      complete documents could never render correctly inside a panel.
+    - remote images are held back until they are explicitly requested, so opening
+      an entry no longer confirms the read to the sender.
+    - a maintenance command repairs entries that were stored before this fix.
+    - reading a mail without a usable header no longer aborts the scan, and a
+      stray debug output was removed from that path.
+- **Missing API documentation after a deployment**
+    - the deployment now regenerates the interface specifications, which previously
+      existed only as a defined step that nothing ever invoked.
+    - the specifications are versioned instead of ignored, and are regenerated on
+      request by default so an environment can never serve an empty documentation page.
 
 ## [4.5.0] - 2026-09-13
 

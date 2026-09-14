@@ -23,6 +23,7 @@ class Channel extends Model
         'creator_name',
         'email',
         'youtube_name',
+        'logo_path',
         'weight',
         'weekly_quota',
         'is_video_reception_paused',
@@ -46,6 +47,8 @@ class Channel extends Model
             ->logOnly([
                 'id',
                 'name',
+                'show_on_homepage',
+                'logo_path',
             ]);
     }
 

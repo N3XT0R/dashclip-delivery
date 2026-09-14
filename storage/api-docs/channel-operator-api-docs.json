@@ -1,0 +1,751 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Channel Operator API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/",
+            "description": "Application root"
+        }
+    ],
+    "paths": {
+        "/api/v1/channels": {
+            "get": {
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "List channels visible to the authenticated user",
+                "description": "Returns a paginated list of channels the authenticated user operates (channels they are a verified member of). Supports filtering by video-reception state, plus sorting and pagination. Admin-only fields such as weight and weekly quota are never exposed.",
+                "operationId": "9bdb1228fc1d55f033e87acc04516814",
+                "parameters": [
+                    {
+                        "name": "filter[is_video_reception_paused]",
+                        "in": "query",
+                        "description": "Exact match",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/SortNameCreatedAt"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageNumber"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of channels",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Channel"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "channels:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/channels/{channel}": {
+            "get": {
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Show a single channel",
+                "description": "Returns one channel the user operates, by id. Responds with 404 if the channel does not exist or the user has no access to it.",
+                "operationId": "5b893a62478f4df90cb8b727a29787e5",
+                "parameters": [
+                    {
+                        "name": "channel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The channel",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Channel"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Channel not found or not visible to the user"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "channels:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Pause or resume video reception for a channel",
+                "description": "Toggles whether the channel currently accepts new video offers by setting is_video_reception_paused. This is the only channel field writable through the API; any other field in the body is rejected with 422. Responds with 404 for channels not visible to the user.",
+                "operationId": "35fa1d163213d971c753955720105498",
+                "parameters": [
+                    {
+                        "name": "channel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "is_video_reception_paused"
+                                ],
+                                "properties": {
+                                    "is_video_reception_paused": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The updated channel",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Channel"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Channel not found or not visible to the user"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "channels:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/offers": {
+            "get": {
+                "tags": [
+                    "Offers"
+                ],
+                "summary": "List offers visible to the authenticated user",
+                "description": "Returns a paginated list of offers (video-to-channel assignments) the user can see: offers for one of their channels, or for a video they submitted a clip for. Supports filtering by status and channel, plus sorting and pagination. The download token is never exposed.",
+                "operationId": "1f92a20de53fdc048e1fe2b877bb9a97",
+                "parameters": [
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "Exact match",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[channel_id]",
+                        "in": "query",
+                        "description": "Exact match",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Comma-separated sort fields; prefix with \"-\" for descending. Allowed: created_at, expires_at. Default: -created_at",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageNumber"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of offers",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Offer"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/PaginationMeta"
+                                        },
+                                        "links": {
+                                            "$ref": "#/components/schemas/PaginationLinks"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "offers:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Offers"
+                ],
+                "summary": "Create an offer for a video/channel pair",
+                "description": "Manually offers a video to a channel. Both the video and the channel must be visible to the user. The offer is placed in a fresh distribution batch of type \"api\" and gets the default expiry TTL. A pair that already has an offer is rejected with 422; the offer status is managed by the distribution pipeline and cannot be set here. Returns 201 with a Location header.",
+                "operationId": "6fafae8819f1ba93e07ec71f43af8cc2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "video_id",
+                                    "channel_id"
+                                ],
+                                "properties": {
+                                    "video_id": {
+                                        "type": "integer"
+                                    },
+                                    "channel_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Offer created",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the created offer",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Offer"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "offers:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/offers/{offer}": {
+            "get": {
+                "tags": [
+                    "Offers"
+                ],
+                "summary": "Show a single offer",
+                "description": "Returns one offer by id. Responds with 404 if the offer does not exist or is not visible to the authenticated user.",
+                "operationId": "099540ba5325542646827cd4359da471",
+                "parameters": [
+                    {
+                        "name": "offer",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The offer",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Offer"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Offer not found or not visible to the user"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "offers:read"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/offers/{offer}/comment": {
+            "post": {
+                "tags": [
+                    "Offers"
+                ],
+                "summary": "Set the comment note on an offer",
+                "description": "Replaces the free-text note on an offer visible to the user. Responds with 404 for offers not visible to the user and returns the updated offer on success.",
+                "operationId": "b683de9760f01adeae449914d89a51c8",
+                "parameters": [
+                    {
+                        "name": "offer",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "note"
+                                ],
+                                "properties": {
+                                    "note": {
+                                        "type": "string",
+                                        "maxLength": 1000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The updated offer",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Offer"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Offer not found or not visible to the user"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "offers:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Channel": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "creator_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "youtube_name": {
+                        "type": "string"
+                    },
+                    "is_video_reception_paused": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Offer": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "video_id": {
+                        "type": "integer"
+                    },
+                    "channel_id": {
+                        "type": "integer"
+                    },
+                    "note": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationLinks": {
+                "properties": {
+                    "first": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "last": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "prev": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginationMeta": {
+                "properties": {
+                    "pagination": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer"
+                            },
+                            "per_page": {
+                                "type": "integer"
+                            },
+                            "total": {
+                                "type": "integer"
+                            },
+                            "total_pages": {
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "Team": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "owner_id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "errors": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Video": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "original_name": {
+                        "type": "string"
+                    },
+                    "ext": {
+                        "type": "string"
+                    },
+                    "bytes": {
+                        "type": "integer"
+                    },
+                    "human_readable_size": {
+                        "type": "string"
+                    },
+                    "processing_status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "running",
+                            "completed",
+                            "failed",
+                            "deleted"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "Forbidden": {
+                "description": "Missing scope or permission"
+            },
+            "ForbiddenScope": {
+                "description": "Missing scope"
+            },
+            "Unauthorized": {
+                "description": "Unauthenticated"
+            },
+            "ValidationFailed": {
+                "description": "Validation failed",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "PageNumber": {
+                "name": "page[number]",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "PageSize": {
+                "name": "page[size]",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "SortNameCreatedAt": {
+                "name": "sort",
+                "in": "query",
+                "description": "Comma-separated sort fields; prefix with \"-\" for descending. Allowed: name, created_at. Default: -created_at",
+                "schema": {
+                    "type": "string"
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Paste a raw access token: a Personal Access Token created in the Standard panel, or a token obtained through the device grant.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            },
+            "oauth2": {
+                "type": "oauth2",
+                "description": "OAuth2 access tokens. How to obtain one for interactive testing:\n\n- **authorization code**: run the flow below (the browser is redirected to\n  `/oauth/authorize`, the code is exchanged at `/oauth/token`). This produces a\n  user-scoped token and is the one to use for trying the endpoints out.\n- **personal access token**: create one in the Standard panel\n  (\"OAuth\" → \"Personal Access Tokens\") and paste it into the `bearerAuth` scheme.\n  This is the fastest path and needs no client setup.\n- **device**: request a code at `/oauth/device/code`, confirm it at `/oauth/device`,\n  poll `/oauth/token`, then paste the token into `bearerAuth`.\n- **client credentials**: also supported, but these tokens have no user context, so\n  every endpoint here returns 403 or an empty list. It is therefore not offered as an\n  interactive flow.\n\nScopes are `<resource>:<action>` and must be granted to the acting user.",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "/oauth/authorize",
+                        "tokenUrl": "/oauth/token",
+                        "refreshUrl": "/oauth/token",
+                        "scopes": {
+                            "channels:read": "List and read channels",
+                            "channels:write": "Update channel settings",
+                            "offers:read": "List and read offers",
+                            "offers:write": "Create offers and set comments"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Channels",
+            "description": "Channels"
+        },
+        {
+            "name": "Offers",
+            "description": "Offers"
+        }
+    ]
+}

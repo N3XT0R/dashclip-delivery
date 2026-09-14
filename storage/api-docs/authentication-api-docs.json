@@ -1,0 +1,445 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Authentication (OAuth2)",
+        "description": "This interface follows the **OAuth 2.0** standard. If you have not worked with it\nbefore, [oauth.net/2](https://oauth.net/2/) is a good introduction.\n\nThese endpoints obtain and refresh access tokens. Supported grant types: authorization\ncode, client credentials, refresh token and device. A personal access token (created in\nthe Standard panel) is issued outside these endpoints but works the same way once you\nhave it. The resulting token is sent as `Authorization: Bearer <token>` to the Submitter\nor Channel Operator API.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/",
+            "description": "Application root"
+        }
+    ],
+    "paths": {
+        "/oauth/authorize": {
+            "get": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Authorization request (consent screen)",
+                "description": "Starts the authorization_code flow. Redirect the user's browser here with `response_type=code`, `client_id`, `redirect_uri`, `scope` (space-separated) and `state`; add `code_challenge` + `code_challenge_method=S256` for PKCE. The authorization server renders a consent screen; on approval the user is redirected back to `redirect_uri` with `code` and `state`. Requires an authenticated web session.",
+                "operationId": "918e508aef523c524d7ba6bb595a4a14",
+                "parameters": [
+                    {
+                        "name": "response_type",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "code"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "redirect_uri",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "scope",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "code_challenge",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "code_challenge_method",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "S256"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Consent screen (HTML)"
+                    },
+                    "302": {
+                        "description": "Redirect to redirect_uri (auto-approved or error)"
+                    },
+                    "401": {
+                        "description": "No authenticated web session"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Approve the authorization request",
+                "description": "Approves the pending authorization request for the current web session and redirects back to the client's `redirect_uri` with `code` and `state`. CSRF-protected.",
+                "operationId": "afaef4985bd1f21c7c685ba6a6628f57",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to redirect_uri with the authorization code"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Deny the authorization request",
+                "description": "Denies the pending authorization request and redirects back to the client's `redirect_uri` with an `access_denied` error. CSRF-protected.",
+                "operationId": "48f26053e76718b34299b66a4172d52e",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to redirect_uri with error=access_denied"
+                    }
+                }
+            }
+        },
+        "/oauth/device/code": {
+            "post": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Request a device code",
+                "description": "Starts the device grant. A device with no browser posts `client_id` and `scope`; it gets back a `device_code`, a `user_code`, and a `verification_uri`. It then polls `/oauth/token` with `grant_type=urn:ietf:params:oauth:grant-type:device_code` and the `device_code` until the user has approved.",
+                "operationId": "ef488f322493048e2377da2b70f4874c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "client_id"
+                                ],
+                                "properties": {
+                                    "client_id": {
+                                        "type": "string"
+                                    },
+                                    "scope": {
+                                        "description": "Space-separated scopes.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Device authorization issued",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeviceCode"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid client or scope",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuthError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/oauth/device": {
+            "get": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Enter the user code",
+                "description": "The page where a user on another device enters the `user_code` shown by the device. Redirects to the consent screen. Requires an authenticated web session.",
+                "operationId": "320e61556b9957914b99a48024608425",
+                "parameters": [
+                    {
+                        "name": "user_code",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User-code entry / consent screen (HTML)"
+                    },
+                    "401": {
+                        "description": "No authenticated web session"
+                    }
+                }
+            }
+        },
+        "/oauth/device/authorize": {
+            "get": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Device consent screen",
+                "description": "Consent screen for a validated device `user_code`. Requires an authenticated web session.",
+                "operationId": "3e63078ea12eaf075a890d8bb76ad439",
+                "responses": {
+                    "200": {
+                        "description": "Consent screen (HTML)"
+                    },
+                    "401": {
+                        "description": "No authenticated web session"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Approve the device authorization",
+                "description": "Approves the device authorization for the current web session. The polling device then receives a token from `/oauth/token`. CSRF-protected.",
+                "operationId": "731d28f67bfff90672c786757a41f680",
+                "responses": {
+                    "200": {
+                        "description": "Device approved"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Deny the device authorization",
+                "description": "Denies the device authorization. The polling device receives an `access_denied` error from `/oauth/token`. CSRF-protected.",
+                "operationId": "81af2f6e265533a4acc23a88e9fd3ca3",
+                "responses": {
+                    "200": {
+                        "description": "Device denied"
+                    }
+                }
+            }
+        },
+        "/oauth/token": {
+            "post": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Issue or refresh an access token",
+                "description": "Issues an access token. The `grant_type` field selects the flow:\n\n- **authorization_code**: exchange the `code` from `/oauth/authorize` (send\n  `code`, `redirect_uri`, `client_id`, `client_secret` for confidential clients,\n  and `code_verifier` when PKCE was used). Returns an access token and a\n  refresh token.\n- **client_credentials**: machine-to-machine (`client_id`, `client_secret`,\n  optional `scope`). No user context, so the resource APIs return 403 or empty\n  lists for these tokens, so this grant is documented but not useful here.\n- **refresh_token**: exchange a previous `refresh_token` (`client_id`,\n  `client_secret`, optional `scope`) for a new access token.\n\nPersonal access tokens are created in the Standard panel, not here. Device\ntokens are polled here with `grant_type=urn:ietf:params:oauth:grant-type:device_code`.",
+                "operationId": "75539436d1f00a9caec793aed5ce3af3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "grant_type"
+                                ],
+                                "properties": {
+                                    "grant_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "authorization_code",
+                                            "client_credentials",
+                                            "refresh_token",
+                                            "urn:ietf:params:oauth:grant-type:device_code"
+                                        ]
+                                    },
+                                    "client_id": {
+                                        "type": "string"
+                                    },
+                                    "client_secret": {
+                                        "description": "Confidential clients only.",
+                                        "type": "string"
+                                    },
+                                    "code": {
+                                        "description": "authorization_code grant.",
+                                        "type": "string"
+                                    },
+                                    "redirect_uri": {
+                                        "description": "authorization_code grant.",
+                                        "type": "string"
+                                    },
+                                    "code_verifier": {
+                                        "description": "authorization_code grant with PKCE.",
+                                        "type": "string"
+                                    },
+                                    "refresh_token": {
+                                        "description": "refresh_token grant.",
+                                        "type": "string"
+                                    },
+                                    "device_code": {
+                                        "description": "device_code grant.",
+                                        "type": "string"
+                                    },
+                                    "scope": {
+                                        "description": "Space-separated scopes.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token issued",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuthToken"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or grant",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuthError"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Client authentication failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuthError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/oauth/token/refresh": {
+            "post": {
+                "tags": [
+                    "OAuth2"
+                ],
+                "summary": "Refresh the transient first-party token cookie",
+                "description": "Refreshes the short-lived token cookie used by the first-party SPA flow (`CreateFreshApiToken`). This is a web-session endpoint (CSRF-protected), not the OAuth2 refresh_token grant. For that, call `/oauth/token` with `grant_type=refresh_token`.",
+                "operationId": "97b0a9eefcfc5fad1f116f6395fa8915",
+                "responses": {
+                    "200": {
+                        "description": "Cookie refreshed"
+                    },
+                    "401": {
+                        "description": "No authenticated web session"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "OAuthToken": {
+                "description": "A successful token response from the token endpoint.",
+                "properties": {
+                    "token_type": {
+                        "type": "string",
+                        "example": "Bearer"
+                    },
+                    "expires_in": {
+                        "description": "Lifetime of the access token in seconds.",
+                        "type": "integer"
+                    },
+                    "access_token": {
+                        "type": "string"
+                    },
+                    "refresh_token": {
+                        "description": "Only returned for the authorization_code grant.",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "OAuthError": {
+                "description": "An RFC 6749 error response.",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "invalid_grant"
+                    },
+                    "error_description": {
+                        "type": "string"
+                    },
+                    "hint": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "DeviceCode": {
+                "description": "The device authorization response.",
+                "properties": {
+                    "device_code": {
+                        "type": "string"
+                    },
+                    "user_code": {
+                        "description": "Short code the user types at the verification URI.",
+                        "type": "string"
+                    },
+                    "verification_uri": {
+                        "type": "string"
+                    },
+                    "verification_uri_complete": {
+                        "type": "string"
+                    },
+                    "expires_in": {
+                        "type": "integer"
+                    },
+                    "interval": {
+                        "description": "Minimum seconds between token-endpoint polls.",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "OAuth2",
+            "description": "OAuth2"
+        }
+    ],
+    "externalDocs": {
+        "description": "The OAuth 2.0 standard",
+        "url": "https://oauth.net/2/"
+    }
+}
