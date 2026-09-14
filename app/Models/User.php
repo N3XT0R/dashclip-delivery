@@ -33,12 +33,22 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery,
-                                              HasEmailAuthentication, MustVerifyEmail, HasTenants, HasDefaultTenant,
-                                              HasLocalePreference, OAuthenticatable, HasPassportScopeGrantsInterface
+class User extends Authenticatable implements
+    FilamentUser,
+    HasAppAuthentication,
+    HasAppAuthenticationRecovery,
+    HasEmailAuthentication,
+    MustVerifyEmail,
+    HasTenants,
+    HasDefaultTenant,
+    HasLocalePreference,
+    OAuthenticatable,
+    HasPassportScopeGrantsInterface
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory;
+    use Notifiable;
+    use HasRoles;
     use LogsActivity;
     use HasApiTokens;
     use HasPassportScopeGrantsTrait;
@@ -95,7 +105,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         return $query->whereHas(
             'teams',
-            fn($q) => $q->where('owner_id', $user->getKey() ?? $this->getKey())
+            fn ($q) => $q->where('owner_id', $user->getKey() ?? $this->getKey())
         );
     }
 
@@ -114,6 +124,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             'has_email_authentication' => 'boolean',
             'onboarding_completed' => 'boolean',
             'last_login_at' => 'datetime',
+            'last_activity_at' => 'datetime',
             'last_login_reminder_sent_at' => 'datetime',
         ];
     }
@@ -140,6 +151,20 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         $this->setAttribute('last_login_reminder_sent_at', now());
         $this->save();
+    }
+
+    /**
+     * Record panel activity at most every five minutes without changing the last login.
+     */
+    public function recordActivity(): void
+    {
+        if ($this->last_activity_at !== null && $this->last_activity_at->gt(now()->subMinutes(5))) {
+            return;
+        }
+
+        $this->setAttribute('last_activity_at', now());
+        $this->setAttribute('last_login_reminder_sent_at', null);
+        $this->saveQuietly();
     }
 
     public function getAppAuthenticationSecret(): ?string
@@ -205,7 +230,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     protected function displayName(): Attribute
     {
         return Attribute::make(
-            get: static fn($value, array $attributes) => $attributes['submitted_name'] ?? $attributes['name'] ?? null,
+            get: static fn ($value, array $attributes) => $attributes['submitted_name'] ?? $attributes['name'] ?? null,
         );
     }
 

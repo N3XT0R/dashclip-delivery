@@ -61,7 +61,8 @@ class UserRepository
 
     /**
      * Users eligible for the inactivity reminder: their last login (or account creation when no
-     * login is recorded) is at least $days ago, no reminder was sent in the last $days, they hold a role
+     * login is recorded) and any recorded panel activity are at least $days ago,
+     * no reminder was sent in the last $days, they hold a role
      * on the standard-panel guard, and excludes anyone holding the SUPER_ADMIN role, on any guard.
      *
      * @return Collection<User>
@@ -71,6 +72,10 @@ class UserRepository
         $threshold = now()->subDays($days);
 
         return User::query()
+            ->where(function (Builder $query) use ($threshold) {
+                $query->whereNull('last_activity_at')
+                    ->orWhere('last_activity_at', '<=', $threshold);
+            })
             ->where(function (Builder $query) use ($threshold) {
                 $query->where('last_login_at', '<=', $threshold)
                     ->orWhere(function (Builder $query) use ($threshold) {

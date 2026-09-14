@@ -13,6 +13,7 @@ use App\Filament\Standard\Pages\MyOffers;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Filament\Standard\Widgets\OnboardingWizard;
 use App\Http\Middleware\SetUserLocale;
+use App\Http\Middleware\RecordUserActivity;
 use App\Models\Team;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
@@ -155,6 +156,7 @@ class PanelUserPanelProvider extends PanelProvider
 
         return $panel->middleware([
             SetUserLocale::class,
+            RecordUserActivity::class,
         ], isPersistent: true);
     }
 
