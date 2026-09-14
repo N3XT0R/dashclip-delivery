@@ -214,6 +214,8 @@ return [
             'dropbox_connect' => 'Dropbox verbinden',
             'email' => 'E-Mail',
             'email_address' => 'E-Mail-Adresse',
+            'last_login' => 'Letzte Anmeldung',
+            'never_logged_in' => 'Noch keine Anmeldung',
             'email_content' => 'E-Mail-Inhalt',
             'end' => 'Ende',
             'end_time' => 'Endzeit',

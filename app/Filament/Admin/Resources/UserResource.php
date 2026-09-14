@@ -8,6 +8,7 @@ use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
 use Filament\Forms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -60,6 +61,11 @@ class UserResource extends Resource
                     ->email()
                     ->required(),
                 Forms\Components\DateTimePicker::make('email_verified_at'),
+                TextEntry::make('last_login_at')
+                    ->label(__('filament.admin.labels.last_login'))
+                    ->dateTime('d.m.Y H:i')
+                    ->placeholder(__('filament.admin.labels.never_logged_in'))
+                    ->visibleOn('edit'),
                 Forms\Components\TextInput::make('password')
                     ->password(),
                 Forms\Components\Select::make('roles')
@@ -100,6 +106,11 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('last_login_at')
+                    ->label(__('filament.admin.labels.last_login'))
+                    ->dateTime('d.m.Y H:i')
+                    ->placeholder(__('filament.admin.labels.never_logged_in'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->label(__('filament.admin.labels.roles'))

@@ -214,6 +214,8 @@ return [
             'dropbox_connect' => 'Connect Dropbox',
             'email' => 'Email',
             'email_address' => 'Email address',
+            'last_login' => 'Last login',
+            'never_logged_in' => 'Never logged in',
             'email_content' => 'Email Content',
             'end' => 'End',
             'end_time' => 'End Time',

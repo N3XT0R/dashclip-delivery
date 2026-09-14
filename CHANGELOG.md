@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Admin user login activity**
+    - display the last login in the sortable user table and the user edit page,
+      with a translated placeholder for users without a recorded login.
 - **Dynamic XML sitemap**
     - added `/sitemap.xml` for public pages and current German/English blog content,
       advertised through a dynamically generated `robots.txt`.
