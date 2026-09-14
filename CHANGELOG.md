@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       changes and deletions through a transactional, persistent execution marker.
 
 ### Fixed
+- **Blog language selection**
+    - restored the active language background and outline on blog pages and aligned
+      language links with the buttons used throughout the public website.
 - **Blog administration labels**
     - corrected explicit singular and plural labels for posts, categories and tags
       in German and English, including page headings and create actions.

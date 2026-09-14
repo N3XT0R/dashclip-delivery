@@ -1,7 +1,8 @@
 @if (request()->routeIs('blog.*'))
     <nav aria-label="{{ __('public.language') }}" class="flex gap-1">
         @foreach (request()->attributes->get('blog_language_urls', app(\App\Services\Blog\BlogPresentationService::class)->languages()) as $locale => $href)
-            <a href="{{ $href }}" lang="{{ $locale }}" hreflang="{{ $locale }}" aria-current="{{ app()->getLocale() === $locale ? 'page' : 'false' }}" class="min-h-11 min-w-11 rounded-lg px-2 py-3 text-sm font-semibold">{{ strtoupper($locale) }}</a>
+            <a href="{{ $href }}" lang="{{ $locale }}" hreflang="{{ $locale }}" aria-current="{{ app()->getLocale() === $locale ? 'page' : 'false' }}"
+               @class(['inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg px-2 text-sm font-semibold', 'bg-white/15 ring-1 ring-white/40' => app()->getLocale() === $locale])>{{ strtoupper($locale) }}</a>
         @endforeach
     </nav>
 @else

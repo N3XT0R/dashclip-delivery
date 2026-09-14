@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Models\PostTag;
 use App\Models\PostTagTranslation;
 use App\Repository\PostRepository;
+use DOMDocument;
+use DOMXPath;
 use Tests\DatabaseTestCase;
 
 final class BlogPagesTest extends DatabaseTestCase
@@ -68,6 +70,26 @@ final class BlogPagesTest extends DatabaseTestCase
         $this->get('/blog/only-de')->assertOk()->assertSee('href="'.url('/en/blog').'"', false)
             ->assertSee('noindex, nofollow')->assertDontSee('rel="canonical"', false);
         $this->get('/blog-sitemap.xml')->assertOk()->assertDontSee('/blog/only-de');
+    }
+
+    public function testLanguageSwitcherHighlightsOnlyTheCurrentBlogLanguage(): void
+    {
+        foreach (['de' => '/blog', 'en' => '/en/blog'] as $locale => $path) {
+            $response = $this->get($path)->assertOk();
+            $document = new DOMDocument();
+            @$document->loadHTML($response->getContent());
+            $links = (new DOMXPath($document))->query('//nav/a[@hreflang]');
+            $this->assertCount(2, $links);
+
+            foreach ($links as $link) {
+                $isCurrent = $link->getAttribute('hreflang') === $locale;
+                $classes = explode(' ', $link->getAttribute('class'));
+                $this->assertSame($isCurrent ? 'page' : 'false', $link->getAttribute('aria-current'));
+                foreach (['bg-white/15', 'ring-1', 'ring-white/40'] as $class) {
+                    $this->assertSame($isCurrent, in_array($class, $classes, true));
+                }
+            }
+        }
     }
 
     public function testSearchAndTaxonomyPagesFilterPublishedArticles(): void
