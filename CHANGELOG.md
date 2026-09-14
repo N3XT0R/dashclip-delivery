@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Inactivity reminders for active sessions**
+    - track authenticated panel activity, including Livewire requests, at five-minute intervals
+      so users with long-lived sessions are not incorrectly reminded based on an old login.
+    - preserve the last login timestamp separately; deployment requires the last activity migration.
+
 ## [4.6.1] - 2026-09-14
 
 ### Fixed

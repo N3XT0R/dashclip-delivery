@@ -6,6 +6,7 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Http\Middleware\SetUserLocale;
+use App\Http\Middleware\RecordUserActivity;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
@@ -115,6 +116,7 @@ class AdminPanelProvider extends PanelProvider
 
         return $panel->middleware([
             SetUserLocale::class,
+            RecordUserActivity::class,
         ], isPersistent: true);
     }
 
