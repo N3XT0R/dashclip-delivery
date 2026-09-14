@@ -11,11 +11,12 @@ use Illuminate\Queue\SerializesModels;
 
 class UserInactivityReminderMail extends AbstractLoggedMail
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(
         public User $user,
-        public CarbonInterface $lastLoginAt,
+        public ?CarbonInterface $lastLoginAt,
     ) {
         $this->subjectLine = __('mails.user_inactivity_reminder.subject');
     }

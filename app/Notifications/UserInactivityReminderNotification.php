@@ -11,7 +11,7 @@ use Carbon\CarbonInterface;
 
 class UserInactivityReminderNotification extends AbstractUserNotification implements HasToMailContract
 {
-    public function __construct(public readonly CarbonInterface $lastLoginAt)
+    public function __construct(public readonly ?CarbonInterface $lastLoginAt)
     {
     }
 

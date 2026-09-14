@@ -108,10 +108,11 @@ final class UserRepositoryTest extends DatabaseTestCase
         $this->assertDatabaseCount('users', $count);
     }
 
-    public function testExcludesUserWhoNeverLoggedIn(): void
+    public function testExcludesNewUserWithoutRecordedLogin(): void
     {
         $user = User::factory()->standard(GuardEnum::STANDARD)->create([
             'last_login_at' => null,
+            'created_at' => now()->subDay(),
         ]);
 
         $ids = $this->userRepository->getUsersEligibleForInactivityReminder(7)->pluck('id');
