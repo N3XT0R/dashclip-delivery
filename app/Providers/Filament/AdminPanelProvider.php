@@ -5,16 +5,12 @@ namespace App\Providers\Filament;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Admin\Pages\Auth\EditProfile;
-use App\Http\Middleware\SetUserLocale;
-use App\Http\Middleware\RecordUserActivity;
+use App\Providers\Filament\Traits\PanelMiddlewareTrait;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -24,18 +20,14 @@ use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Vite;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use N3XT0R\FilamentPassportUi\FilamentPassportUiPlugin;
 use N3XT0R\LaravelWebdavServerFilament\LaravelWebdavServerFilamentPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
+    use PanelMiddlewareTrait;
+
     public function panel(Panel $panel): Panel
     {
         $this->addDefaults($panel);
@@ -98,26 +90,6 @@ class AdminPanelProvider extends PanelProvider
                 return view('partials.footer')->render();
             }
         );
-    }
-
-    protected function addMiddlewares(Panel $panel): Panel
-    {
-        $panel->middleware([
-            EncryptCookies::class,
-            AddQueuedCookiesToResponse::class,
-            StartSession::class,
-            AuthenticateSession::class,
-            ShareErrorsFromSession::class,
-            PreventRequestForgery::class,
-            SubstituteBindings::class,
-            DisableBladeIconComponents::class,
-            DispatchServingFilamentEvent::class,
-        ]);
-
-        return $panel->middleware([
-            SetUserLocale::class,
-            RecordUserActivity::class,
-        ], isPersistent: true);
     }
 
     protected function addPlugins(Panel $panel): Panel

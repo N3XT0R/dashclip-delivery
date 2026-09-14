@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Panel configuration**
+    - share the common panel middleware stack between the administration and the standard panel
+      instead of duplicating it in both panel configurations.
+    - cover the resulting middleware stack with tests so a missing or misreferenced middleware
+      class is detected before deployment.
+
 ### Fixed
 - **Inactivity reminders for active sessions**
-    - track authenticated panel activity, including Livewire requests, at five-minute intervals
-      so users with long-lived sessions are not incorrectly reminded based on an old login.
+    - track authenticated panel activity, including interactive panel updates, at five-minute
+      intervals so users with long-lived sessions are not incorrectly reminded based on an old login.
     - preserve the last login timestamp separately; deployment requires the last activity migration.
 
 ## [4.6.1] - 2026-09-14
