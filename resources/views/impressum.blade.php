@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('indexable', '1')
 @section('content_language', 'de')
 
 @section('title', 'Impressum')

@@ -1,0 +1,158 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Http;
+
+use App\Enum\Blog\PostStatusEnum;
+use App\Models\Post;
+use App\Models\PostTranslation;
+use App\Models\PostCategoryTranslation;
+use App\Models\User;
+use App\Models\PostTag;
+use App\Models\PostTagTranslation;
+use App\Repository\PostRepository;
+use DOMDocument;
+use DOMXPath;
+use Illuminate\Support\Facades\Storage;
+use Tests\DatabaseTestCase;
+
+final class BlogPagesTest extends DatabaseTestCase
+{
+    public function testArticleUsesItsUploadedImageAndFallsBackWhenItIsRemoved(): void
+    {
+        $post = Post::factory()->create(['image_path' => 'blog/editorial-cover.webp']);
+        PostTranslation::factory()->for($post)->published()->create(['slug' => 'cover-image']);
+        $imageUrl = Storage::disk('public')->url($post->image_path);
+
+        $this->get('/blog/cover-image')->assertOk()
+            ->assertSee('src="'.$imageUrl.'"', false)
+            ->assertSee('content="'.$imageUrl.'"', false);
+
+        $post->update(['image_path' => null]);
+        $this->get('/blog/cover-image')->assertOk()
+            ->assertSee('src="'.asset('images/marketing/hero.jpg').'"', false)
+            ->assertDontSee($imageUrl, false);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+        $this->withHeader('Accept-Language', 'de');
+    }
+
+    public function testPublishedArticlesAreVisibleAndUnsafeMarkdownIsNotExecuted(): void
+    {
+        $author = User::factory()->create(['name' => 'Internal Name', 'submitted_name' => 'Public Author']);
+        $post = Post::factory()->create(['author_id' => $author->id]);
+        PostTranslation::factory()->for($post)->published()->create([
+            'slug' => 'hello', 'title' => 'Public article', 'content' => '## Heading'.PHP_EOL.'<script>alert(1)</script>'.PHP_EOL.'[bad](javascript:alert(1))',
+        ]);
+        $this->get('/blog')->assertOk()->assertSee('Public article')->assertSee('Public Author');
+        $this->get('/blog/hello')->assertOk()->assertSee('Public article')->assertSee('Public Author')
+            ->assertDontSee('<script>alert(1)</script>', false)->assertDontSee('href="javascript:', false)
+            ->assertSee('name="robots" content="index, follow"', false)->assertSee('"@type":"Article"', false);
+        $this->get('/blog/feed.xml')->assertOk()->assertSee('Public article');
+        $this->get('/blog-sitemap.xml')->assertOk()->assertSee('/blog/hello');
+    }
+
+    public function testDraftFutureAndRetractedArticlesStayPrivate(): void
+    {
+        foreach ([PostStatusEnum::DRAFT, PostStatusEnum::SCHEDULED, PostStatusEnum::RETRACTED, PostStatusEnum::PUBLISHED] as $status) {
+            $slug = 'hidden-'.$status->value;
+            PostTranslation::factory()->create(['slug' => $slug, 'title' => $slug, 'status' => $status, 'published_at' => now()->addDay()]);
+            $this->get('/blog/'.$slug)->assertNotFound();
+            $this->get('/blog')->assertOk()->assertDontSee($slug);
+            $this->get('/blog/feed.xml')->assertOk()->assertDontSee($slug);
+            $this->get('/blog-sitemap.xml')->assertOk()->assertDontSee($slug);
+        }
+    }
+
+    public function testUrlLocaleOverridesBrowserAndSwitchesToPublishedSibling(): void
+    {
+        $post = Post::factory()->create();
+        PostTranslation::factory()->for($post)->published()->create(['locale' => 'de', 'slug' => 'deutsch']);
+        PostTranslation::factory()->for($post)->published()->create(['locale' => 'en', 'slug' => 'english', 'title' => 'English article']);
+        $this->get('/en/blog/english')->assertOk()->assertHeader('Content-Language', 'en')
+            ->assertSee('href="'.url('/blog/deutsch').'"', false)->assertSee('hreflang="de"', false);
+        $this->withHeader('Accept-Language', 'en')->get('/blog/deutsch')->assertOk()->assertHeader('Content-Language', 'de')
+            ->assertSee('href="'.url('/en/blog/english').'"', false);
+        $this->get('/blog/english')->assertNotFound();
+    }
+
+    public function testMissingTranslationSwitchFallsBackToOverviewAndNoindexIsRespected(): void
+    {
+        PostTranslation::factory()->published()->create(['slug' => 'only-de', 'is_indexable' => false]);
+        $this->get('/blog/only-de')->assertOk()->assertSee('href="'.url('/en/blog').'"', false)
+            ->assertSee('noindex, nofollow')->assertDontSee('rel="canonical"', false);
+        $this->get('/blog-sitemap.xml')->assertOk()->assertDontSee('/blog/only-de');
+    }
+
+    public function testLanguageSwitcherHighlightsOnlyTheCurrentBlogLanguage(): void
+    {
+        foreach (['de' => '/blog', 'en' => '/en/blog'] as $locale => $path) {
+            $response = $this->get($path)->assertOk();
+            $document = new DOMDocument();
+            @$document->loadHTML($response->getContent());
+            $links = (new DOMXPath($document))->query('//nav/a[@hreflang]');
+            $this->assertCount(2, $links);
+
+            foreach ($links as $link) {
+                $isCurrent = $link->getAttribute('hreflang') === $locale;
+                $classes = explode(' ', $link->getAttribute('class'));
+                $this->assertSame($isCurrent ? 'page' : 'false', $link->getAttribute('aria-current'));
+                foreach (['bg-white/15', 'ring-1', 'ring-white/40'] as $class) {
+                    $this->assertSame($isCurrent, in_array($class, $classes, true));
+                }
+            }
+        }
+    }
+
+    public function testSearchAndTaxonomyPagesFilterPublishedArticles(): void
+    {
+        $post = Post::factory()->create();
+        PostCategoryTranslation::factory()->create(['category_id' => $post->category_id, 'locale' => 'de', 'slug' => 'technik', 'name' => 'Technik']);
+        PostTranslation::factory()->for($post)->published()->create(['slug' => 'camera', 'title' => 'Camera choice', 'content' => 'A literal 100% result.']);
+        $this->get('/blog/search?q=Camera')->assertOk()->assertSee('Camera choice');
+        $this->get('/blog/search?q=100%25')->assertOk()->assertSee('Camera choice');
+        $this->get('/blog/search?q=missing-query')->assertOk()->assertSee(__('blog.empty_search'));
+        $this->get('/blog/kategorie/technik')->assertOk()->assertSee('Camera choice');
+        $this->get('/blog/kategorie/missing')->assertNotFound();
+    }
+
+    public function testSchedulerPublishesOnlyDueTranslationsAndInvalidatesHomepage(): void
+    {
+        $due = PostTranslation::factory()->create(['slug' => 'due', 'title' => 'Due article', 'status' => PostStatusEnum::SCHEDULED, 'published_at' => now()->subMinute()]);
+        $future = PostTranslation::factory()->create(['status' => PostStatusEnum::SCHEDULED, 'published_at' => now()->addDay()]);
+        $this->get('/')->assertOk()->assertDontSee('Due article');
+        $this->artisan('blog:publish-scheduled')->assertSuccessful();
+        $this->assertSame(PostStatusEnum::PUBLISHED, $due->fresh()->status);
+        $this->assertSame(PostStatusEnum::SCHEDULED, $future->fresh()->status);
+        $this->get('/')->assertOk()->assertSee('Due article');
+    }
+
+    public function testCalloutsFeedsTagsAndRetractionRemainConsistent(): void
+    {
+        $article = PostTranslation::factory()->published()->create([
+            'slug' => 'callouts', 'content' => "> [!NOTE]\n> Safe note\n\n> [!WARNING]\n> Safe warning",
+        ]);
+        foreach (range(1, 13) as $number) {
+            $tag = PostTag::factory()->create();
+            PostTagTranslation::factory()->create(['tag_id' => $tag->id, 'locale' => 'de', 'slug' => 'topic-'.$number]);
+            $article->post->tags()->attach($tag);
+        }
+        $this->get('/blog/callouts')->assertOk()->assertSee('blog-callout-note')->assertSee('blog-callout-warning')
+            ->assertDontSee('/js/filament/')->assertDontSee('/css/filament/');
+        $this->get('/blog/thema/topic-13')->assertOk()->assertSee($article->title);
+        $xml = simplexml_load_string($this->get('/blog-sitemap.xml')->assertOk()->getContent());
+        $this->assertNotFalse($xml);
+        $this->assertStringContainsString('/blog/thema/topic-13', $xml->asXML());
+        $this->assertNotFalse(simplexml_load_string($this->get('/blog/feed.xml')->assertOk()->getContent()));
+        $this->assertCount(12, app(PostRepository::class)->topics('de'));
+        $article->update(['status' => PostStatusEnum::RETRACTED]);
+        $this->assertCount(0, app(PostRepository::class)->topics('de'));
+        $this->get('/')->assertOk()->assertDontSee($article->title);
+        $this->get('/blog/callouts')->assertNotFound();
+    }
+}

@@ -1,0 +1,107 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Application\Blog\ShowPostUseCase;
+use App\Application\Blog\ListPublishedPostsUseCase;
+use App\Application\Blog\SearchPostsUseCase;
+use App\Exceptions\Blog\PostNotPublishedException;
+use App\Models\PostTranslation;
+use App\Repository\PostRepository;
+use App\Services\Blog\BlogPresentationService;
+use App\Services\PublicSitemapService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
+
+final class BlogController extends Controller
+{
+    public function __construct(private readonly PostRepository $posts, private readonly BlogPresentationService $presentation)
+    {
+    }
+
+    /** List published articles, optionally narrowing by search, category or tag. */
+    public function index(Request $request, ListPublishedPostsUseCase $list, SearchPostsUseCase $search, ?string $slug = null): View
+    {
+        $request->validate(['q' => ['nullable', 'string', 'max:200']]);
+        $locale = app()->getLocale();
+        $term = trim((string)$request->query('q', ''));
+        $categoryId = null;
+        $tagId = null;
+        $heading = __('blog.title');
+        if ($request->routeIs('*.category')) {
+            $category = $this->posts->category($locale, $slug);
+            $heading = $category->name;
+            $categoryId = $category->category_id;
+        }
+        if ($request->routeIs('*.tag')) {
+            $tag = $this->posts->tag($locale, $slug);
+            $heading = $tag->name;
+            $tagId = $tag->tag_id;
+        }
+        $articles = $term !== ''
+            ? $search->execute($locale, $term, 9, $categoryId, $tagId)
+            : $list->execute($locale, 9, $categoryId, $tagId);
+        return view('blog.index', [
+            'articles' => $articles->withQueryString(), 'heading' => $heading, 'term' => $term,
+            ...$this->sidebar($locale),
+        ]);
+    }
+
+    /** Display a published translation; drafts and missing translations return 404. */
+    public function show(string $slug, ShowPostUseCase $show): View
+    {
+        try {
+            $article = $show->execute(app()->getLocale(), $slug);
+        } catch (PostNotPublishedException) {
+            abort(404);
+        }
+        return $this->articleView($article);
+    }
+
+    /** Preview saved editorial content only for users authorized to edit the post. */
+    public function preview(PostTranslation $translation): View
+    {
+        Gate::authorize('update', $translation->post);
+        app()->setLocale($translation->locale);
+        return $this->articleView($translation, true);
+    }
+
+    /** Publish an RSS feed containing only public translations. */
+    public function feed(): Response
+    {
+        return response()->view('blog.feed', [
+            'articles' => $this->posts->publishedForLocale(app()->getLocale())->limit(30)->get(),
+        ])->header('Content-Type', 'application/rss+xml; charset=UTF-8');
+    }
+
+    /** Publish blog URLs without drafts or explicitly non-indexable articles. */
+    public function sitemap(PublicSitemapService $sitemap): Response
+    {
+        return response()->view('sitemap', ['entries' => $sitemap->blogEntries()])
+            ->header('Content-Type', 'application/xml; charset=UTF-8');
+    }
+
+    /** Assemble reusable public article data without depending on the administration panel. */
+    private function articleView(PostTranslation $article, bool $preview = false): View
+    {
+        $article->loadMissing(['post.author', 'post.translations', 'post.category.translations', 'post.tags.translations']);
+        request()->attributes->set('blog_language_urls', $this->presentation->languages($article));
+        return view('blog.show', [
+            'article' => $article, 'preview' => $preview,
+            'articleContent' => $this->presentation->content($article->content),
+            'related' => $this->posts->publishedForLocale($article->locale)->where('post_id', '!=', $article->post_id)
+                ->whereHas('post', fn ($query) => $query->where('category_id', $article->post->category_id))->limit(3)->get(),
+            ...$this->sidebar($article->locale),
+        ]);
+    }
+
+    /** @return array<string, mixed> Public sidebar collections. */
+    private function sidebar(string $locale): array
+    {
+        return ['categories' => $this->posts->categories($locale), 'topics' => $this->posts->topics($locale)];
+    }
+}

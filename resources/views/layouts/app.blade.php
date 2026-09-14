@@ -7,6 +7,10 @@
     <title>@yield('title', 'DashClip Delivery')</title>
     <x-public.metadata
         :title="trim($__env->yieldContent('title', 'DashClip Delivery'))"
+        :indexable="$__env->yieldContent('indexable') === '1'"
+        :canonical="$__env->yieldContent('canonical')"
+        :image="$__env->yieldContent('social_image')"
+        :type="$__env->yieldContent('og_type', 'website')"
         :description="trim($__env->yieldContent('description', __('public.default_description')))"
         :robots="trim($__env->yieldContent('robots', 'index, follow'))" />
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
@@ -20,6 +24,7 @@
     @vite(['resources/css/public.css', 'resources/js/public.js'])
     @yield('page_assets')
     @stack('styles')
+    @stack('head')
 </head>
 <body class="flex min-h-screen flex-col">
 <a href="#main-content" class="sr-only z-50 rounded-lg bg-panel p-4 text-text focus:not-sr-only focus:absolute focus:top-3 focus:left-3">{{ __('public.skip') }}</a>

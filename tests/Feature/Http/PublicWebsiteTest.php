@@ -72,12 +72,42 @@ final class PublicWebsiteTest extends DatabaseTestCase
         @$document->loadHTML('<?xml encoding="UTF-8">'.$response->getContent());
         $xpath = new DOMXPath($document);
         $this->assertSame(1, $document->getElementsByTagName('h1')->length);
-        $this->assertSame(0, $xpath->query('//a[contains(@href, "mailto:") or contains(@href, "/blog") or contains(@href, "/gallery")]')->length);
+        $this->assertSame(0, $xpath->query('//a[contains(@href, "mailto:") or contains(@href, "/gallery")]')->length);
         $this->assertSame(1, $xpath->query('//button[@id="themeToggle" and @aria-label]')->length);
         $this->assertSame(1, $xpath->query('//nav//details/summary')->length);
         foreach ($xpath->query('//a[contains(@href, "#")]') as $anchor) {
             $fragment = parse_url($anchor->getAttribute('href'), PHP_URL_FRAGMENT);
             $this->assertSame(1, $xpath->query('//*[@id="'.$fragment.'"]')->length, $fragment);
+        }
+    }
+
+    public function testSharedHeaderLanguageOptionsStayConsistentAcrossPublicPages(): void
+    {
+        $this->withoutVite();
+
+        foreach (['de', 'en'] as $locale) {
+            $expectedClasses = [];
+            foreach (['/', '/impressum', $locale === 'en' ? '/en/blog' : '/blog'] as $path) {
+                $response = $this->withHeader('Accept-Language', $locale)->get($path)->assertOk();
+                $document = new DOMDocument();
+                @$document->loadHTML($response->getContent());
+                $xpath = new DOMXPath($document);
+                $this->assertSame(1, $xpath->query('//header')->length);
+                $options = $xpath->query('//header//button[@name="locale"] | //header//a[@hreflang]');
+                $this->assertCount(2, $options);
+
+                foreach ($options as $option) {
+                    $language = $option->getAttribute('lang');
+                    $classes = preg_split('/\s+/', trim($option->getAttribute('class')));
+                    sort($classes);
+                    if ($path === '/') {
+                        $expectedClasses[$language] = $classes;
+                    }
+                    $this->assertSame($expectedClasses[$language], $classes);
+                    $this->assertSame($language === $locale, in_array('bg-white/15', $classes, true));
+                    $this->assertNotEmpty($option->getAttribute('aria-label'));
+                }
+            }
         }
     }
 

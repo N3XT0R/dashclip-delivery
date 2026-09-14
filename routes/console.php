@@ -29,6 +29,9 @@ Schedule::command(Commands\RefreshDropboxToken::class)
 # Mail
 Schedule::command(Commands\ScanMailReplies::class)->everyTenMinutes();
 
+# Blog
+Schedule::command(Commands\PublishScheduledPostsCommand::class)->everyMinute()->withoutOverlapping();
+
 # Cleanup
 Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
 Schedule::command(Commands\CleanFfmpegTmpCommand::class)->hourly();
@@ -42,4 +45,3 @@ Schedule::command(Commands\VideoProcessing\RequeueStaleRunningCommand::class)->e
 Schedule::command(Commands\VideoProcessing\RequeueFailedVideosCommand::class)->everyFifteenMinutes();
 Schedule::command(Commands\VideoProcessing\RequeueNeverRanVideosCommand::class)->everyFifteenMinutes();
 Schedule::command(Commands\VideoProcessing\RequeueMissingIngestStepsCommand::class)->daily();
-

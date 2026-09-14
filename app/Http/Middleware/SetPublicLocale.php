@@ -30,10 +30,13 @@ class SetPublicLocale
             ? $saved
             : $request->getPreferredLanguage($preferred);
 
+        if ($request->routeIs('blog.*')) {
+            $locale = $request->routeIs('blog.en.*') ? 'en' : 'de';
+        }
         app()->setLocale($locale);
 
         $response = $next($request);
-        $response->headers->set('Content-Language', $locale);
+        $response->headers->set('Content-Language', app()->getLocale());
         $response->setVary(['Accept-Language', 'Cookie'], false);
 
         return $response;

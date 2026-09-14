@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             TeamSeeder::class,
             ShieldSeeder::class,
+            BlogPermissionSeeder::class,
             AdminSeeder::class,
             PassportScopeTaxonomySeeder::class,
         ]);

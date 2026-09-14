@@ -60,4 +60,8 @@
     .editorial pre { @apply overflow-x-auto rounded-lg bg-bg p-4; }
     .editorial table { @apply block max-w-full overflow-x-auto; }
     .editorial th, .editorial td { @apply border border-border p-3 text-left; }
+    .blog-article blockquote { @apply my-6 border-l-4 border-brand bg-panel px-5 py-2; }
+    .blog-article .blog-callout { @apply rounded-r-xl; }
+    .blog-article .blog-callout-warning { @apply border-amber-500; }
+    .blog-article img { @apply h-auto max-w-full rounded-lg; }
 }

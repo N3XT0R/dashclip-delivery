@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Dynamic XML sitemap**
+    - added `/sitemap.xml` for public pages and current German/English blog content,
+      advertised through a dynamically generated `robots.txt`.
+    - exclude unpublished, non-indexable and non-canonical articles; article modification
+      dates reflect stored content changes, and the existing blog sitemap shares the same source.
+- **Editorial blog**
+    - added German and English article pages, search, categories, tags, RSS feeds,
+      a sitemap, and the latest published articles on the homepage.
+    - added permission-controlled editorial forms with translated content, media,
+      search-engine metadata, previews, duplication, and scheduled publication.
+    - added safe Markdown rendering with note and warning callouts, cached public
+      aggregates, responsive article cards, and plain sharing links without trackers.
+    - added an initial content seeder with three bilingual categories, five tags
+      and a complete German/English introduction; repeated runs preserve editorial
+      changes and deletions through a transactional, persistent execution marker.
 - **Channel operators maintain their own public presentation**
     - the channel area now carries the homepage visibility switch, which previously
       only an administrator could set.
@@ -16,7 +31,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - both changes are recorded in the channel history, so it stays traceable who
       changed the public presentation and when.
 
+### Changed
+- **Blog test coverage**
+    - cover editorial duplication through its admin action, tag editing, taxonomy
+      ownership, article image fallbacks and missing-translation diagnostics.
+- **Shared public components**
+    - centralized language option styling for blog links and public language buttons
+      within the existing shared header, keeping both variants visually consistent.
+
 ### Fixed
+- **Blog language selection**
+    - restored the active language background and outline on blog pages and aligned
+      language links with the buttons used throughout the public website.
+- **Blog administration labels**
+    - corrected explicit singular and plural labels for posts, categories and tags
+      in German and English, including page headings and create actions.
+    - translated editorial field and icon labels, and show localized category and
+      tag names in article forms and lists with a slug fallback for missing translations.
 - **Unreadable mail content in the mail log**
     - incoming mail was stored exactly as it arrived, so the log showed transport
       structure or encoded blocks instead of the message. It is now decoded while
