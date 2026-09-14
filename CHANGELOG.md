@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.6.0] - 2026-09-14
+
 ### Added
 - **Dynamic XML sitemap**
     - added `/sitemap.xml` for public pages and current German/English blog content,
