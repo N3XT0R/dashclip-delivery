@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -54,12 +55,25 @@ final class PanelMiddlewareTest extends TestCase
     }
 
     #[DataProvider('panelProvider')]
-    public function testPanelRegistersLocaleAndActivityMiddlewareAsPersistent(PanelEnum $panel): void
+    public function testPanelRegistersLocaleAndActivityMiddleware(PanelEnum $panel): void
     {
         $middleware = Filament::getPanel($panel->value)->getMiddleware();
 
         self::assertContains(SetUserLocale::class, $middleware);
         self::assertContains(RecordUserActivity::class, $middleware);
+    }
+
+    /**
+     * Locale and activity middleware must also run on the asynchronous panel updates that do not go
+     * through the full request stack. That registry is global rather than per panel, so this asserts
+     * the combined registration of both panel providers.
+     */
+    public function testLocaleAndActivityMiddlewareArePersistent(): void
+    {
+        $persistent = Livewire::getPersistentMiddleware();
+
+        self::assertContains(SetUserLocale::class, $persistent);
+        self::assertContains(RecordUserActivity::class, $persistent);
     }
 
     #[DataProvider('panelProvider')]
