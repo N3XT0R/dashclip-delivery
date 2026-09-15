@@ -37,6 +37,7 @@ final class ChannelOperatorApiSpec
         'channels:read' => 'List and read channels',
         'channels:write' => 'Update channel settings',
         'offers:read' => 'List and read offers',
+        'offers:download' => 'Download offered videos for accessible channels',
         'offers:write' => 'Create offers and set comments',
     ];
 }

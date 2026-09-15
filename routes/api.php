@@ -49,6 +49,11 @@ Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function ():
         Route::get('/offers/{offer}', [OfferController::class, 'show'])->name('offers.show')->whereNumber('offer');
     });
 
+    Route::get('/offers/{offer}/download', [OfferController::class, 'download'])
+        ->middleware(['scope:offers:download', 'standard.permission:View:MyOffers'])
+        ->name('offers.download')
+        ->whereNumber('offer');
+
     Route::middleware(['scope:offers:write', 'standard.permission:View:MyOffers'])->group(function (): void {
         Route::post('/offers', [OfferController::class, 'store'])->name('offers.store');
         Route::post('/offers/{offer}/comment', [OfferController::class, 'comment'])

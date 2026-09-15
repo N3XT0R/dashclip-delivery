@@ -35,6 +35,11 @@ class PassportScopeTaxonomySeeder extends Seeder
             );
         }
 
+        PassportScopeAction::query()->firstOrCreate(
+            ['name' => 'download', 'resource_id' => PassportScopeResource::query()->where('name', 'offers')->sole()->getKey()],
+            ['description' => 'Download offered videos', 'is_active' => true],
+        );
+
         app(ScopeRegistryService::class)->clearCache();
     }
 }

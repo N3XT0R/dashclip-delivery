@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Operator API downloads**
+    - download offered videos through `GET /api/v1/offers/{offer}/download` with the dedicated
+      `offers:download` scope, channel access checks, expiry checks and download tracking.
+    - register the new scope by running the idempotent `PassportScopeTaxonomySeeder` on deployment.
+
 ### Changed
 - **Panel configuration**
     - share the common panel middleware stack between the administration and the standard panel
