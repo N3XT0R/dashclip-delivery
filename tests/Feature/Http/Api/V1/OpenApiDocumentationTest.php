@@ -31,8 +31,9 @@ final class OpenApiDocumentationTest extends DatabaseTestCase
                     '/api/v1/offers',
                     '/api/v1/offers/{offer}',
                     '/api/v1/offers/{offer}/comment',
+                    '/api/v1/offers/{offer}/download',
                 ],
-                ['channels:read', 'offers:read'],
+                ['channels:read', 'offers:read', 'offers:download'],
             ],
         ];
     }

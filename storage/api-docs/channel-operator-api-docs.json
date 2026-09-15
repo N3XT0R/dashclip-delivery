@@ -407,6 +407,61 @@
                 ]
             }
         },
+        "/api/v1/offers/{offer}/download": {
+            "get": {
+                "tags": [
+                    "Offers"
+                ],
+                "summary": "Download an offered video",
+                "description": "Streams the offered video as an attachment. Requires offers:download and permission to view offers, plus access to the receiving channel; submitting a clip does not grant download access. Returns 404 for inaccessible offers or missing files, and 410 for expired or rejected offers. Queued, notified and previously picked-up offers can be downloaded until their expiry. A completed server-side stream records the download and marks the offer picked_up. No download token or public URL is exposed.",
+                "operationId": "46adc1ae615c08b970fe9aaca777afc5",
+                "parameters": [
+                    {
+                        "name": "offer",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Video file attachment",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Offer inaccessible or video file missing"
+                    },
+                    "410": {
+                        "description": "Offer expired or no longer available"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "offers:download"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/offers/{offer}/comment": {
             "post": {
                 "tags": [
@@ -731,6 +786,7 @@
                             "channels:read": "List and read channels",
                             "channels:write": "Update channel settings",
                             "offers:read": "List and read offers",
+                            "offers:download": "Download offered videos for accessible channels",
                             "offers:write": "Create offers and set comments"
                         }
                     }

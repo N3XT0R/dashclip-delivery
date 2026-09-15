@@ -18,6 +18,7 @@ final class RoleBoundScopeResolverTest extends DatabaseTestCase
 
         $this->assertSame(['ManageChannels:Team'], $map->get('channels:read'));
         $this->assertSame(['View:MyOffers'], $map->get('offers:read'));
+        $this->assertSame(['View:MyOffers'], $map->get('offers:download'));
         $this->assertSame(['ViewAny:Video'], $map->get('videos:read'));
         $this->assertEqualsCanonicalizing(['Create:Video', 'Update:Video'], $map->get('videos:write'));
         $this->assertSame([], $map->get('teams:read'), 'Teams are governed by ownership, not a permission.');
@@ -29,6 +30,7 @@ final class RoleBoundScopeResolverTest extends DatabaseTestCase
 
         $this->assertContains('channels:read', $allowed);
         $this->assertContains('offers:write', $allowed);
+        $this->assertContains('offers:download', $allowed);
         $this->assertNotContains('videos:read', $allowed);
         $this->assertNotContains('videos:delete', $allowed);
     }
@@ -40,6 +42,7 @@ final class RoleBoundScopeResolverTest extends DatabaseTestCase
         $this->assertContains('videos:read', $allowed);
         $this->assertContains('videos:delete', $allowed);
         $this->assertNotContains('offers:read', $allowed);
+        $this->assertNotContains('offers:download', $allowed);
     }
 
     public function testTeamScopesNeedNoPermissionAndAreAlwaysAvailable(): void

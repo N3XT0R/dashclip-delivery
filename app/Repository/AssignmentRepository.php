@@ -20,6 +20,18 @@ use Illuminate\Support\Collection;
 class AssignmentRepository
 {
     /**
+     * Query offers on the user's channels, excluding visibility through submitted clips alone.
+     *
+     * @return Builder<Assignment>
+     */
+    public function forOperator(User $user): Builder
+    {
+        return Assignment::query()->whereHas('channel', static function (Builder $channel) use ($user): void {
+            $channel->userHasAccess($user);
+        });
+    }
+
+    /**
      * Query the offers visible to the given user: assignments on a channel
      * they have access to, or assignments for videos backed by their own
      * clips.

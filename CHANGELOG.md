@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Operator API downloads**
+    - download offered videos through `GET /api/v1/offers/{offer}/download` with the dedicated
+      `offers:download` scope, channel access checks, expiry checks and download tracking.
+    - register the new scope by running the idempotent `PassportScopeTaxonomySeeder` on deployment.
+
 ### Changed
 - **Blog preview on the start page**
     - show the five newest articles instead of three, and move the section above the process
