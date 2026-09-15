@@ -28,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       class is detected before deployment.
 
 ### Fixed
+- **Scheduled mailbox scan during mailbox outages**
+    - treat an unreachable mailbox as a temporary condition: the scheduled reply scan now logs the
+      failure and completes instead of aborting with an error on every run.
+    - translate transport and folder failures into dedicated mail exceptions, and report a missing
+      inbox folder explicitly instead of failing on an empty result.
 - **Filament log viewer compatibility**
     - exclude the log viewer's detail page from Shield's permission label discovery so the current
       log viewer release can initialize its record during mount without causing admin pages to fail.

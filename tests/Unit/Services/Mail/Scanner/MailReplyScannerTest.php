@@ -6,6 +6,8 @@ namespace Tests\Unit\Services\Mail\Scanner;
 
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
+use App\Exceptions\Mail\MailConnectionException;
+use App\Exceptions\Mail\MailFolderNotFoundException;
 use App\Services\Mail\Scanner\MailReplyScanner;
 use Illuminate\Support\Facades\Log;
 use Mockery;
@@ -15,6 +17,7 @@ use Webklex\PHPIMAP\Client as ClientAlias;
 use Webklex\PHPIMAP\Folder;
 use Webklex\PHPIMAP\Message;
 use Webklex\PHPIMAP\Query\WhereQuery;
+use Webklex\PHPIMAP\Exceptions\ConnectionFailedException;
 use Webklex\PHPIMAP\Support\MessageCollection;
 
 class MailReplyScannerTest extends TestCase
@@ -131,6 +134,54 @@ class MailReplyScannerTest extends TestCase
 
         $this->assertSame(1, $handler->matchesCalled);
         $this->assertSame(1, $handler->handledCalled);
+    }
+
+    public function testItTranslatesConnectionFailureIntoDomainException(): void
+    {
+        $vendorException = new ConnectionFailedException('connection failed');
+
+        $client = Mockery::mock(ClientAlias::class);
+        Client::shouldReceive('account')->once()->with(null)->andReturn($client);
+        $client->shouldReceive('connect')->once()->andThrow($vendorException);
+
+        $scanner = new MailReplyScanner([new FakeHandler()]);
+
+        try {
+            $scanner->scan();
+            $this->fail('Expected MailConnectionException to be thrown.');
+        } catch (MailConnectionException $e) {
+            $this->assertSame($vendorException, $e->getPrevious());
+        }
+    }
+
+    public function testItTranslatesFolderFetchFailureIntoDomainException(): void
+    {
+        $vendorException = new ConnectionFailedException('connection failed');
+
+        $client = Mockery::mock(ClientAlias::class);
+        Client::shouldReceive('account')->once()->with(null)->andReturn($client);
+        $client->shouldReceive('connect')->once();
+        $client->shouldReceive('getFolder')->with('INBOX')->andThrow($vendorException);
+
+        $scanner = new MailReplyScanner([new FakeHandler()]);
+
+        $this->expectException(MailConnectionException::class);
+
+        $scanner->scan();
+    }
+
+    public function testItThrowsWhenInboxFolderIsMissing(): void
+    {
+        $client = Mockery::mock(ClientAlias::class);
+        Client::shouldReceive('account')->once()->with(null)->andReturn($client);
+        $client->shouldReceive('connect')->once();
+        $client->shouldReceive('getFolder')->with('INBOX')->andReturn(null);
+
+        $scanner = new MailReplyScanner([new FakeHandler()]);
+
+        $this->expectException(MailFolderNotFoundException::class);
+
+        $scanner->scan();
     }
 
     private function createMessageMock(bool $autoSubmitted = false)
