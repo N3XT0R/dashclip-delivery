@@ -28,15 +28,15 @@ class BlogEditorialQueueSeederTest extends DatabaseTestCase
         Storage::fake('public');
     }
 
-    public function testSeederSchedulesTenBilingualArticlesOneWeekApart(): void
+    public function testSeederSchedulesEveryArticleOneWeekApart(): void
     {
         Carbon::setTestNow('2026-09-15 13:45:00');
         $author = User::factory()->admin()->create();
 
         $this->seed(BlogEditorialQueueSeeder::class);
 
-        $this->assertSame(10, Post::query()->count());
-        $this->assertSame(20, PostTranslation::query()->count());
+        $this->assertSame(67, Post::query()->count());
+        $this->assertSame(134, PostTranslation::query()->count());
         $posts = Post::query()->with(['translations', 'tags', 'category'])->orderBy('id')->get();
         foreach ($posts as $index => $post) {
             $this->assertSame($author->id, $post->author_id);
@@ -116,7 +116,7 @@ class BlogEditorialQueueSeederTest extends DatabaseTestCase
         $this->seed(BlogEditorialQueueSeeder::class);
 
         $this->assertSame($edited, $this->snapshot());
-        $this->assertSame(9, Post::query()->count());
+        $this->assertSame(66, Post::query()->count());
     }
 
     public function testMissingAuthorLeavesNoContentOrMarkerAndCanBeRetried(): void
@@ -134,7 +134,7 @@ class BlogEditorialQueueSeederTest extends DatabaseTestCase
 
         $user->assignRole('super_admin');
         $this->seed(BlogEditorialQueueSeeder::class);
-        $this->assertSame(10, Post::query()->count());
+        $this->assertSame(67, Post::query()->count());
     }
 
     public function testLateFailureRollsBackAllNewRecordsAndAllowsRetry(): void
@@ -154,7 +154,7 @@ class BlogEditorialQueueSeederTest extends DatabaseTestCase
 
         $conflict->update(['slug' => 'existing-article']);
         $this->seed(BlogEditorialQueueSeeder::class);
-        $this->assertSame(11, Post::query()->count());
+        $this->assertSame(68, Post::query()->count());
         $this->assertSame(1, DB::table('blog_seed_runs')->count());
     }
 
@@ -169,7 +169,7 @@ class BlogEditorialQueueSeederTest extends DatabaseTestCase
         Artisan::call(PublishScheduledPostsCommand::class);
 
         $this->assertSame(2, PostTranslation::query()->published()->count());
-        $this->assertSame(18, PostTranslation::query()->where('status', PostStatusEnum::SCHEDULED)->count());
+        $this->assertSame(132, PostTranslation::query()->where('status', PostStatusEnum::SCHEDULED)->count());
     }
 
     /** @return array<string, string> Exact persisted content, relationships and execution markers. */
