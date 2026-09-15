@@ -11,4 +11,10 @@ final class BlogSeedAuthorMissingException extends BlogException
     {
         return new self('BlogContentSeeder requires an existing user with the super_admin role for the web guard. No blog content was created.');
     }
+
+    /** Explain the prerequisite for the scheduled editorial queue without changing any account. */
+    public static function forEditorialQueue(): self
+    {
+        return new self('BlogEditorialQueueSeeder requires an existing user with the super_admin role for the web guard. No blog content was created.');
+    }
 }

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Weekly blog article queue**
+    - schedule 67 bilingual articles, one per week starting a week after the seeder runs, through
+      the new `BlogEditorialQueueSeeder`; the existing publication command releases each article
+      on its date.
+    - cover each article with its own artwork, copied to the public disk on the first run and left
+      untouched where an editor has replaced it.
+    - rebuild the artwork from the committed sources with
+      `node database/seeders/data/images/build-covers.mjs`.
+
 ## [4.7.0] - 2026-09-15
 
 ### Added
