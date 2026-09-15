@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       intervals so users with long-lived sessions are not incorrectly reminded based on an old login.
     - preserve the last login timestamp separately; deployment requires the last activity migration.
 
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
 ## [4.6.1] - 2026-09-14
 
 ### Fixed

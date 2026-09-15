@@ -15,10 +15,12 @@
     "skills": [
         "infer-conventions",
         "laravel-best-practices",
+        "testing-best-practices",
         "configuring-horizon",
         "passport-development",
         "echo-development",
         "tailwindcss-development",
+        "filament-development",
         "debug-using-debugbar"
     ]
 }
