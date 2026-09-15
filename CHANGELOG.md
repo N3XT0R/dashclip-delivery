@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.7.0] - 2026-09-15
+
 ### Added
 - **Operator API downloads**
     - download offered videos through `GET /api/v1/offers/{offer}/download` with the dedicated
