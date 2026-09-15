@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Repository\PostRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
@@ -13,7 +14,7 @@ final class BlogCacheObserver
     public function saved(Model $model): void
     {
         foreach (['de', 'en'] as $locale) {
-            Cache::forget('blog.homepage.'.$locale);
+            Cache::forget(PostRepository::homepageCacheKey($locale));
             Cache::forget('blog.category_counts.'.$locale);
             Cache::forget('blog.topics.'.$locale);
         }

@@ -17,6 +17,9 @@ class PostRepository
 {
     private const EAGER = ['post.author', 'post.category.translations', 'post.tags.translations', 'post.translations'];
 
+    /** Used when the blog configuration is unavailable. */
+    private const DEFAULT_HOMEPAGE_LIMIT = 5;
+
     /**
      * Return indexable public translations without loading unrelated presentation data.
      * @return Builder<PostTranslation>
@@ -115,13 +118,31 @@ class PostRepository
 
     /**
      * Return the latest public articles, hydrating current author and taxonomy data.
+     * The amount is taken from the blog configuration and is part of the cache key, so a changed
+     * limit does not keep serving the previously cached selection.
      * @return Collection<int, PostTranslation>
      */
     public function homepage(string $locale): Collection
     {
-        $ids = Cache::remember('blog.homepage.'.$locale, 60, fn () =>
-            $this->publishedForLocale($locale)->limit(3)->pluck('id')->all());
+        $limit = self::homepageLimit();
+        $ids = Cache::remember(self::homepageCacheKey($locale), 60, fn () =>
+            $this->publishedForLocale($locale)->limit($limit)->pluck('id')->all());
         return $this->publishedForLocale($locale)->whereKey($ids)->get();
+    }
+
+    /** Amount of articles the start page previews. */
+    public static function homepageLimit(): int
+    {
+        return (int)config('blog.homepage_limit', self::DEFAULT_HOMEPAGE_LIMIT);
+    }
+
+    /**
+     * Cache key of the start page selection. The limit is part of it, so a changed value is not
+     * answered from the previously cached selection. Invalidation must use this same key.
+     */
+    public static function homepageCacheKey(string $locale): string
+    {
+        return 'blog.homepage.'.$locale.'.'.self::homepageLimit();
     }
 
     /**
