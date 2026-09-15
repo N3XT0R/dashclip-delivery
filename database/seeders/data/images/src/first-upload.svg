@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c1924"/>
+      <stop offset="1" stop-color="#132431"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <path d="M0 720 L1280 720 L1280 540 Z" fill="#f97316" fill-opacity="0.08"/>
+  
+    <circle cx="931" cy="241" r="22" fill="#f97316"/>
+    <path d="M985 187 a76 76 0 0 1 0 108" fill="none" stroke="#f97316" stroke-opacity="0.75" stroke-width="7" stroke-linecap="round"/>
+    <path d="M1035 137 a147 147 0 0 1 0 208" fill="none" stroke="#f97316" stroke-opacity="0.5" stroke-width="7" stroke-linecap="round"/>
+    <path d="M877 295 a76 76 0 0 1 0 -108" fill="none" stroke="#f97316" stroke-opacity="0.75" stroke-width="7" stroke-linecap="round"/>
+    <path d="M827 345 a147 147 0 0 1 0 -208" fill="none" stroke="#f97316" stroke-opacity="0.5" stroke-width="7" stroke-linecap="round"/>
+  <rect x="96" y="96" width="76" height="6" rx="3" fill="#f97316"/>
+  <text x="96" y="152" font-family="DejaVu Sans" font-size="24" font-weight="bold" letter-spacing="3" fill="#f97316">NEUIGKEITEN</text>
+  <text font-family="DejaVu Sans" font-size="52" font-weight="bold" fill="#edf2f6"><tspan x="96" y="338">Dein erster Upload:</tspan><tspan x="96" y="404">Schritt für Schritt zur</tspan><tspan x="96" y="470">ersten Einsendung</tspan></text>
+  <text x="96" y="604" font-family="DejaVu Sans" font-size="26" fill="#b5c2ce">DashClip Delivery</text>
+</svg>

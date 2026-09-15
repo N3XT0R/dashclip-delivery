@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c1924"/>
+      <stop offset="1" stop-color="#132431"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <path d="M0 720 L1280 720 L1280 540 Z" fill="#f97316" fill-opacity="0.08"/>
+  
+    <circle cx="997" cy="259" r="150" fill="none" stroke="#f97316" stroke-opacity="0.45" stroke-width="3"/>
+    <circle cx="997" cy="259" r="104" fill="none" stroke="#f97316" stroke-opacity="0.7" stroke-width="5"/>
+    <circle cx="997" cy="259" r="46" fill="#f97316" fill-opacity="0.22"/>
+    <circle cx="997" cy="259" r="16" fill="#f97316"/>
+    <path d="M757 469 L1237 469" stroke="#b5c2ce" stroke-opacity="0.25" stroke-width="6" stroke-dasharray="34 26"/>
+  <rect x="96" y="96" width="76" height="6" rx="3" fill="#f97316"/>
+  <text x="96" y="152" font-family="DejaVu Sans" font-size="24" font-weight="bold" letter-spacing="3" fill="#f97316">DASHCAM-WISSEN</text>
+  <text font-family="DejaVu Sans" font-size="60" font-weight="bold" fill="#edf2f6"><tspan x="96" y="322">Gesichter und</tspan><tspan x="96" y="396">Kennzeichen unkenntlich</tspan><tspan x="96" y="470">machen</tspan></text>
+  <text x="96" y="604" font-family="DejaVu Sans" font-size="26" fill="#b5c2ce">DashClip Delivery</text>
+</svg>
