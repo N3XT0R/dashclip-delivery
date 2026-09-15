@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       class is detected before deployment.
 
 ### Fixed
+- **Filament log viewer compatibility**
+    - exclude the log viewer's detail page from Shield's permission label discovery so the current
+      log viewer release can initialize its record during mount without causing admin pages to fail.
 - **Inactivity reminders for active sessions**
     - track authenticated panel activity, including interactive panel updates, at five-minute
       intervals so users with long-lived sessions are not incorrectly reminded based on an old login.

@@ -202,6 +202,8 @@ return [
         'exclude' => [
             \Filament\Pages\Dashboard::class,
             \App\Filament\Standard\Pages\Auth\Register::class,
+            // The log viewer resolves its record only during mount; Shield may resolve page labels earlier.
+            \Boquizo\FilamentLogViewer\Pages\ViewLog::class,
         ],
     ],
 
