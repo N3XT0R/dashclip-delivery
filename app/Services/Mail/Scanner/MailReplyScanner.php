@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Mail\Scanner;
 
+use App\Exceptions\Mail\MailConnectionException;
+use App\Exceptions\Mail\MailFolderNotFoundException;
 use App\Services\Mail\Scanner\Contracts\MessageStrategyInterface;
 use App\Services\Mail\Scanner\Contracts\MoveToFolderInterface;
 use Illuminate\Support\Facades\Log;
@@ -27,12 +29,29 @@ class MailReplyScanner
         }
     }
 
+    /**
+     * Scan the configured mailbox for unread replies and bounces.
+     *
+     * @param string|null $account Configured mailbox account identifier, null for the default account.
+     *
+     * @throws MailConnectionException When the mailbox cannot be reached or its folders cannot be read.
+     * @throws MailFolderNotFoundException When the server does not expose an INBOX folder.
+     */
     public function scan(?string $account = null): void
     {
-        $client = Client::account($account);
-        $client->connect();
-        $messages = $client->getFolder('INBOX')?->messages()->unseen()->get();
+        try {
+            $client = Client::account($account);
+            $client->connect();
+            $inbox = $client->getFolder('INBOX');
+        } catch (Throwable $e) {
+            throw MailConnectionException::forAccount($account, $e);
+        }
 
+        if ($inbox === null) {
+            throw MailFolderNotFoundException::forPath('INBOX', $account);
+        }
+
+        $messages = $inbox->messages()->unseen()->get();
 
         foreach ($messages as $message) {
             try {
