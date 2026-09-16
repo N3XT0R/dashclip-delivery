@@ -4,13 +4,18 @@
     "name": "ZipDownloader"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Pmd7zRP6.css",
+    "file": "assets/app-DIrixoD9.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-BLU2A_cH.css",
+    "file": "assets/theme-Com5Jr8d.css",
     "src": "resources/css/filament/admin/theme.css",
+    "isEntry": true
+  },
+  "resources/css/filament/standard/theme.css": {
+    "file": "assets/theme-D87ChhUC.css",
+    "src": "resources/css/filament/standard/theme.css",
     "isEntry": true
   },
   "resources/css/game.css": {
@@ -19,7 +24,7 @@
     "isEntry": true
   },
   "resources/css/public.css": {
-    "file": "assets/public-DEU6SBtl.css",
+    "file": "assets/public-DGJv3K--.css",
     "src": "resources/css/public.css",
     "isEntry": true
   },
