@@ -72,11 +72,44 @@ final class LoginPageTest extends DatabaseTestCase
             ->assertOk()->assertSee('Willkommen');
     }
 
-    /** Submit the actual rendered Livewire snapshot through its HTTP endpoint. */
-    private function submitCredentials(string $email, string $password): TestResponse
+    public function testAdminLoginUsesTheSharedDesignWithoutRegistration(): void
     {
-        Filament::setCurrentPanel('standard');
-        $response = $this->get('/standard/login')->assertOk();
+        $this->withCookie('public_locale', 'en')->get('/admin/login')
+            ->assertOk()->assertSee('Welcome back')
+            ->assertSee('dc-login-layout', false)
+            ->assertSee('images/marketing/logo.webp')
+            ->assertDontSee('Create an account')
+            ->assertSee(route('filament.admin.auth.password-reset.request'), false);
+    }
+
+    public function testAdministratorCanSignInAndSeeTheSharedPanelShell(): void
+    {
+        $user = User::factory()->admin(GuardEnum::DEFAULT)->create();
+
+        $this->submitCredentials($user->email, 'password', 'admin')->assertOk();
+
+        $this->assertAuthenticatedAs($user, GuardEnum::DEFAULT->value);
+        $this->get('/admin')->assertOk()
+            ->assertSee('dc-support', false)->assertSee('dc-footer', false);
+        $this->assertSame(route('filament.admin.pages.dashboard'), Filament::getHomeUrl());
+    }
+
+    public function testStandardAccountCannotSignInToTheAdminPanel(): void
+    {
+        $user = User::factory()->standard(GuardEnum::STANDARD)->create();
+
+        $response = $this->submitCredentials($user->email, 'password', 'admin')->assertOk();
+
+        $this->assertGuest(GuardEnum::DEFAULT->value);
+        $snapshot = json_decode($response->json('components.0.snapshot'), true);
+        $this->assertArrayHasKey('data.email', $snapshot['memo']['errors']);
+    }
+
+    /** Submit the actual rendered Livewire snapshot through its HTTP endpoint. */
+    private function submitCredentials(string $email, string $password, string $panel = 'standard'): TestResponse
+    {
+        Filament::setCurrentPanel($panel);
+        $response = $this->get('/'.$panel.'/login')->assertOk();
         $document = new DOMDocument();
         @$document->loadHTML($response->getContent());
         $component = (new DOMXPath($document))->query('//*[@*[name()="wire:snapshot"]]')->item(0);

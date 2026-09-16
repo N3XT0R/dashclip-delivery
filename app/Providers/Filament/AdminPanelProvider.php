@@ -5,18 +5,22 @@ namespace App\Providers\Filament;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Filament\Admin\Pages\Auth\EditProfile;
+use App\Filament\Pages\Auth\Login;
+use App\Http\Middleware\SetGuestLocale;
 use App\Providers\Filament\Traits\PanelMiddlewareTrait;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Boquizo\FilamentLogViewer\FilamentLogViewerPlugin;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
+use Filament\Enums\ThemeMode;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
@@ -32,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
     {
         $this->addDefaults($panel);
         $this->addMiddlewares($panel);
+        $panel->middleware([SetGuestLocale::class], isPersistent: true);
         $this->addPlugins($panel);
         $this->addRenderHooks($panel);
         $this->addMFA($panel);
@@ -54,20 +59,23 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->assets([
                 Js::make('app', app(Vite::class)->asset('resources/js/app.js'))->module(),
-                Css::make('app', app(Vite::class)->asset('resources/css/app.css')),
             ])
-            ->brandLogo(asset('images/logo.png'))
-            ->brandLogoHeight('75px')
+            ->brandLogo(fn () => view('filament.components.brand'))
+            ->brandLogoHeight('48px')
+            ->sidebarWidth('15rem')
+            ->maxContentWidth(Width::Full)
+            ->defaultThemeMode(ThemeMode::Light)
+            ->homeUrl(fn (): string => Filament::auth()->check() ? Dashboard::getUrl(panel: PanelEnum::ADMIN->value) : route('home'))
             ->id(PanelEnum::ADMIN->value)
             ->path(PanelEnum::ADMIN->value)
             ->authGuard(GuardEnum::DEFAULT->value)
             ->tenant(null)
-            ->login()
+            ->login(Login::class)
             ->emailVerification()
             ->emailChangeVerification()
             ->profile(EditProfile::class, false)
             ->colors([
-                'primary' => Color::Red,
+                'primary' => Color::Orange,
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
@@ -84,12 +92,13 @@ class AdminPanelProvider extends PanelProvider
 
     protected function addRenderHooks(Panel $panel): Panel
     {
-        return $panel->renderHook(
-            PanelsRenderHook::CONTENT_END,
-            function (): ?string {
-                return view('partials.footer')->render();
-            }
-        );
+        return $panel->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.components.support'))
+            ->renderHook(
+                PanelsRenderHook::CONTENT_END,
+                function (): ?string {
+                    return view('filament.components.footer')->render();
+                }
+            );
     }
 
     protected function addPlugins(Panel $panel): Panel

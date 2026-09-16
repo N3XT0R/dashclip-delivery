@@ -7,7 +7,7 @@ use App\Enum\PanelEnum;
 use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
-use App\Filament\Standard\Pages\Auth\Login;
+use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\SetGuestLocale;
 use App\Filament\Standard\Pages\ChannelApplication;
 use App\Filament\Standard\Pages\Dashboard;
@@ -84,7 +84,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->path(PanelEnum::STANDARD->value)
             ->defaultThemeMode(ThemeMode::Light)
             ->favicon(asset('images/icons/favicon.ico'))
-            ->brandLogo(fn () => view('filament.standard.components.brand'))
+            ->brandLogo(fn () => view('filament.components.brand'))
             ->brandLogoHeight('48px')
             ->sidebarWidth('15rem')
             ->maxContentWidth(Width::Full)
@@ -129,12 +129,12 @@ class PanelUserPanelProvider extends PanelProvider
 
     protected function addRenderHooks(Panel $panel): Panel
     {
-        return $panel->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.standard.components.support'))
-            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn () => view('filament.standard.components.login-register'), scopes: [Login::class])
+        return $panel->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.components.support'))
+            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn () => view('filament.components.login-register'), scopes: [Login::class])
             ->renderHook(
                 PanelsRenderHook::CONTENT_END,
                 function (): ?string {
-                    return view('filament.standard.components.footer')->render();
+                    return view('filament.components.footer')->render();
                 }
             );
     }

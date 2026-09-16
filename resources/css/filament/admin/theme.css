@@ -1,6 +1,10 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 @import '../../../../vendor/pxlrbt/filament-activity-log/resources/css/styles.css';
+@import '../panel.css';
+@import '../login.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+@source '../../../../resources/views/components/public/brand.blade.php';
+@source '../../../../resources/views/components/public/language*.blade.php';
 @source '../../../../vendor/gboquizosanchez/filament-log-viewer/resources/views/**/*.blade.php';
