@@ -6,18 +6,15 @@ namespace Tests\Unit\Filament\Standard\Pages;
 
 use App\Filament\Standard\Pages\Dashboard;
 use App\Filament\Standard\Widgets\OnboardingWizard;
-use Filament\Widgets\AccountWidget;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
-
-    public function testGetWidgetsReturnsConfiguredWidgets(): void
+    public function testGetWidgetsOmitsTheLegacyWelcomeWidget(): void
     {
         $dashboard = new Dashboard();
         $widgets = $dashboard->getWidgets();
 
-        $this->assertContains(OnboardingWizard::class, $widgets);
-        $this->assertContains(AccountWidget::class, $widgets);
+        $this->assertNotContains(OnboardingWizard::class, $widgets);
     }
 }

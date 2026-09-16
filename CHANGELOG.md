@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - rebuild the artwork from the committed sources with
       `node database/seeders/data/images/build-covers.mjs`.
 
+### Changed
+- **Standard panel redesign**
+    - introduce a dark sidebar, orange accents, responsive dashboard and dedicated panel theme
+      with a shared stylesheet that other panels can adopt.
+    - show team-scoped video and download statistics, recent footage, authorized shortcuts and
+      setup progress in German and English, with support for dark mode.
+    - reuse the homepage logo, add a subtly translucent support card, hide the sidebar scrollbar
+      without disabling scrolling, and replace the old welcome widget with the new dashboard.
+    - resolve the panel logo link to the current team's dashboard instead of a relative URL.
+
 ## [4.7.0] - 2026-09-15
 
 ### Added

@@ -19,13 +19,14 @@ use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Enums\ThemeMode;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Foundation\Vite;
@@ -80,9 +81,11 @@ class PanelUserPanelProvider extends PanelProvider
             ->path(PanelEnum::STANDARD->value)
             ->defaultThemeMode(ThemeMode::Light)
             ->favicon(asset('images/icons/favicon.ico'))
-            ->brandLogo(asset('images/logo.png'))
-            ->brandLogoHeight('75px')
-            ->homeUrl('dashboard')
+            ->brandLogo(fn () => view('filament.standard.components.brand'))
+            ->brandLogoHeight('48px')
+            ->sidebarWidth('15rem')
+            ->maxContentWidth(Width::Full)
+            ->homeUrl(fn (): string => Filament::getTenant() ? Dashboard::getUrl() : route('home'))
             ->authGuard(GuardEnum::STANDARD->value)
             ->tenant(
                 model: Team::class,
@@ -97,13 +100,12 @@ class PanelUserPanelProvider extends PanelProvider
             ->emailVerification()
             ->emailChangeVerification()
             ->colors([
-                'primary' => Color::Slate,
+                'primary' => Color::Orange,
             ])
             ->favicon(asset('images/icons/favicon.ico'))
-            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->viteTheme('resources/css/filament/standard/theme.css')
             ->assets([
                 Js::make('app', app(Vite::class)->asset('resources/js/app.js'))->module(),
-                Css::make('app', app(Vite::class)->asset('resources/css/app.css')),
             ])
             ->pages([
                 Dashboard::class,
@@ -124,12 +126,13 @@ class PanelUserPanelProvider extends PanelProvider
 
     protected function addRenderHooks(Panel $panel): Panel
     {
-        return $panel->renderHook(
-            PanelsRenderHook::CONTENT_END,
-            function (): ?string {
-                return view('partials.footer')->render();
-            }
-        );
+        return $panel->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.standard.components.support'))
+            ->renderHook(
+                PanelsRenderHook::CONTENT_END,
+                function (): ?string {
+                    return view('filament.standard.components.footer')->render();
+                }
+            );
     }
 
     protected function addTenantMiddlewares(Panel $panel): Panel

@@ -5,8 +5,7 @@
 <header class="border-b border-white/10 bg-ink text-white">
     <div class="public-width flex flex-wrap items-center justify-between gap-4 py-4">
         <a href="{{ url('/') }}" class="flex shrink-0 items-center gap-3" aria-label="{{ __('public.home_link') }}">
-            <img src="{{ asset('images/marketing/logo.webp') }}" width="160" height="160" alt="" class="size-11 rounded-lg bg-white object-contain">
-            <span class="text-lg leading-tight font-bold">DashClip<span class="block text-orange-400">Delivery</span></span>
+            <x-public.brand />
         </a>
         <nav aria-label="{{ __('public.navigation') }}" class="order-3 w-full lg:order-none lg:w-auto">
             <div class="hidden items-center gap-5 text-sm lg:flex">
