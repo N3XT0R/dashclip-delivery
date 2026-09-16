@@ -1,12 +1,13 @@
 @php
     use App\Application\Clips\GetPreviewUrl;
     use App\Enum\ProcessingStatusEnum;
+    use App\Models\Video;
 
-    $video = $record->video ?? $record;
+    $video = $record instanceof Video ? $record : $record?->video;
     $clip = $video?->clips()->first();
     $previewUrl = app(GetPreviewUrl::class)->handle($clip);
 
-    $shouldPoll = !$previewUrl
+    $shouldPoll = $video !== null && !$previewUrl
         && $video?->processing_status !== ProcessingStatusEnum::Completed
         && $video?->processing_status !== ProcessingStatusEnum::Failed;
 @endphp

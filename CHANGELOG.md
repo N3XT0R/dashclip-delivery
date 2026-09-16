@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       without disabling scrolling, and replace the old welcome widget with the new dashboard.
     - resolve the panel logo link to the current team's dashboard instead of a relative URL.
 
+### Fixed
+- **My Offers**: Prevent a preview error when an offer references a deleted video.
+
 ## [4.7.0] - 2026-09-15
 
 ### Added
