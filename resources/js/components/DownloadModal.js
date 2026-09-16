@@ -25,11 +25,15 @@ export default class DownloadModal {
               style="
                 max-width:600px;
                 width:90%;
+                max-height:90dvh;
+                overflow:auto;
+                padding:24px;
+                border-radius:12px;
                 background:${this.options.panelBackground};
                 color:${this.options.panelTextColor};
               "
             >
-                <h3>Download läuft...</h3>
+                <h3>Deine Downloads</h3>
                 <table class="w-full my-3 text-sm">
                     <thead>
                         <tr>
@@ -44,7 +48,9 @@ export default class DownloadModal {
                     <div id="zipProgressBar" class="h-full w-0 bg-blue-500 transition-all" role="progressbar" aria-label="ZIP-Download" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
                 </div>
                 <p id="progressText" class="text-right text-sm mt-1">0%</p>
-                <button type="button" id="closeModal" class="btn mt-4 hidden">Schließen</button>
+                <div id="downloadLinks" style="display:grid;gap:10px;max-height:35vh;overflow:auto;margin-top:16px"></div>
+                <button type="button" id="retryDownload" class="btn mt-4" hidden>Erneut versuchen</button>
+                <button type="button" id="closeModal" class="btn mt-4">Schließen</button>
             </div>`;
         document.body.appendChild(this.modal);
         this.fileList = this.modal.querySelector('#downloadFileList');
@@ -52,6 +58,8 @@ export default class DownloadModal {
         this.progressText = this.modal.querySelector('#progressText');
         this.statusText = this.modal.querySelector('#statusText');
         this.closeBtn = this.modal.querySelector('#closeModal');
+        this.links = this.modal.querySelector('#downloadLinks');
+        this.retryBtn = this.modal.querySelector('#retryDownload');
 
         this.messages = {
             queued: 'Wartet...',
@@ -81,7 +89,8 @@ export default class DownloadModal {
         this.progressBar.setAttribute('aria-valuenow', '0');
         this.progressText.textContent = '0%';
         this.statusText.textContent = this.messages.queued;
-        this.closeBtn.classList.add('hidden');
+        this.links.replaceChildren();
+        this.retryBtn.hidden = true;
         this.modal.style.display = 'flex';
     }
 
@@ -94,7 +103,7 @@ export default class DownloadModal {
             this.statusText.textContent = msg;
         }
         Object.entries(files).forEach(([name, st]) => {
-            let row = this.fileList.querySelector(`tr[data-name="${name}"]`);
+            let row = Array.from(this.fileList.children).find(row => row.dataset.name === name);
             if (!row) {
                 row = document.createElement('tr');
                 row.dataset.name = name;
@@ -112,8 +121,33 @@ export default class DownloadModal {
     }
 
     showClose() {
-        this.statusText.textContent = 'Fertig';
         this.closeBtn.classList.remove('hidden');
+    }
+
+    show() {
+        this.modal.style.display = 'flex';
+    }
+
+    setDownloads(downloads = []) {
+        this.links.replaceChildren();
+        downloads.forEach(({name, url}) => {
+            const link = document.createElement('a');
+            link.href = url;
+            link.textContent = name;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.style.cssText = 'text-decoration:underline;overflow-wrap:anywhere';
+            this.links.appendChild(link);
+        });
+    }
+
+    showError(message) {
+        this.statusText.textContent = message;
+        this.retryBtn.hidden = false;
+    }
+
+    onRetry(callback) {
+        this.retryBtn.addEventListener('click', callback);
     }
 
     onClose(cb) {

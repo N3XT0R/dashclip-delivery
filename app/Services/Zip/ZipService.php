@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Zip;
 
 use App\Enum\DownloadStatusEnum;
+use App\Exceptions\Zip\ZipBuildException;
 use App\Models\{Assignment, Batch, Channel, Video};
 use App\Services\CsvService;
 use App\Services\DownloadCacheService;
@@ -41,11 +42,14 @@ class ZipService
         ?string $userAgent,
         ?string $jobId = null
     ): string {
-        if ($batch) {
+        if ($batch && $jobId === null) {
             $jobId = $this->jobId($batch, $channel);
         }
 
         $downloadName = $this->downloadName($batch, $channel);
+        if ($items->isEmpty()) {
+            throw new ZipBuildException('No downloadable videos remain in this selection.');
+        }
         $tmpPath = $this->zipPath($jobId);
 
         $this->prepareDirectories();
@@ -60,15 +64,17 @@ class ZipService
             $this->cache->setStatus($jobId, DownloadStatusEnum::PREPARING->value);
             $this->cache->setProgress($jobId, 0);
 
-            $tmpFiles = $this->addAssignmentsToZip($zip, $jobId, $items, $ip, $userAgent);
+            $this->addAssignmentsToZip($zip, $jobId, $items, $ip, $userAgent, $tmpFiles);
 
             $this->finalizeZip($zip, $tmpFiles, $jobId, $tmpPath, $downloadName);
         } catch (\Throwable $e) {
+            $this->cache->setStatus($jobId, DownloadStatusEnum::FAILED->value);
             // zip->close() must be called even on failure or libzip leaks file handles
             try {
                 $zip->close();
             } catch (\Throwable) {
             }
+            Storage::delete($tmpPath);
             throw $e;
         } finally {
             // always wipe any Dropbox tmp copies regardless of success or failure
@@ -113,24 +119,28 @@ class ZipService
     private function createZipArchive(string $tmpPath, Collection $items): ZipArchive
     {
         $zip = new ZipArchive();
-        $zip->open(Storage::path($tmpPath), ZipArchive::CREATE | ZipArchive::OVERWRITE);
-        $zip->addFromString('info.csv', $this->csvService->buildInfoCsv($items));
+        if ($zip->open(Storage::path($tmpPath), ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            throw new ZipBuildException('Cannot create the ZIP archive.');
+        }
+        if (!$zip->addFromString('info.csv', $this->csvService->buildInfoCsv($items))) {
+            throw new ZipBuildException('Cannot add metadata to the ZIP archive.');
+        }
 
         return $zip;
     }
 
     /**
      * @param Collection<Assignment> $items
-     * @return array<int, string>  temporary files created during download
+     * @param array<int, string> $tmpFiles Temporary files to clean up even if processing fails.
      */
     private function addAssignmentsToZip(
         ZipArchive $zip,
         string $jobId,
         Collection $items,
         string $ip,
-        ?string $userAgent
-    ): array {
-        $tmpFiles = [];
+        ?string $userAgent,
+        array &$tmpFiles
+    ): void {
         $total = max($items->count(), 1);
         $processed = 0;
 
@@ -141,7 +151,6 @@ class ZipService
             $this->updateProgress($jobId, $processed, $total);
         }
 
-        return $tmpFiles;
     }
 
     /**
@@ -157,6 +166,9 @@ class ZipService
     ): void {
         /** @var Video $video */
         $video = $assignment->video;
+        if ($video === null) {
+            throw new ZipBuildException('An offered video is no longer available.');
+        }
         $disk = $video->getDisk();
         $path = $video->getAttribute('path');
 
@@ -166,10 +178,13 @@ class ZipService
                 'video_id' => $video->getKey(),
                 'disk' => $video->getAttribute('disk'),
             ]);
-            return;
+            throw new ZipBuildException('An offered video file is missing.');
         }
 
         $nameInZip = $this->sanitizeName($video);
+        while ($zip->locateName($nameInZip) !== false) {
+            $nameInZip = $assignment->getKey() . '_' . $nameInZip;
+        }
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::QUEUED->value);
         $localPath = $this->localVideoPath($video, $disk->path($path), $jobId, $nameInZip, $tmpFiles);
 
@@ -180,7 +195,7 @@ class ZipService
                 'video_id' => $video->getKey(),
                 'disk' => $video->getAttribute('disk'),
             ]);
-            return;
+            throw new ZipBuildException('An offered video could not be read.');
         }
 
         $this->cache->setStatus($jobId, DownloadStatusEnum::PACKING->value);
@@ -194,6 +209,7 @@ class ZipService
                 'disk' => $video->getAttribute('disk'),
                 'exists' => file_exists($localPath),
             ]);
+            throw new ZipBuildException('An offered video could not be added to the ZIP archive.');
         }
 
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::READY->value);
@@ -249,7 +265,10 @@ class ZipService
             }
 
             try {
-                stream_copy_to_stream($stream, $localHandle);
+                $bytes = stream_copy_to_stream($stream, $localHandle);
+                if ($bytes === false || $bytes !== $disk->size($path)) {
+                    throw new ZipBuildException('The remote video transfer was incomplete.');
+                }
             } finally {
                 fclose($localHandle);
             }
@@ -288,7 +307,9 @@ class ZipService
         string $downloadName
     ): void {
         $this->cache->setStatus($jobId, DownloadStatusEnum::PACKING->value);
-        $zip->close();
+        if (!$zip->close()) {
+            throw new ZipBuildException('The ZIP archive could not be finalized.');
+        }
 
         foreach ($tmpFiles as $file) {
             Storage::delete($file);

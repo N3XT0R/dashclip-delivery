@@ -3,6 +3,10 @@
 namespace App\Jobs;
 
 use App\DTO\Zip\AssignmentZipDto;
+use App\Enum\DownloadStatusEnum;
+use App\Services\DownloadCacheService;
+use Throwable;
+use App\Exceptions\Zip\ZipBuildException;
 use App\Repository\AssignmentRepository;
 use App\Repository\BatchRepository;
 use App\Repository\ChannelRepository;
@@ -13,19 +17,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use RuntimeException;
 
 /**
  * Job to build a ZIP file for a batch of assignments in a specific channel.
  */
 class BuildZipJob implements ShouldQueue
 {
-    use Queueable, SerializesModels, Dispatchable, InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
 
     /** Max attempts before the job is marked as failed */
     public int $tries = 1;
 
     public int $timeout = 1200;       // 20 minutes for big ZIPs
+
+    public bool $failOnTimeout = true;
 
     /**
      * Create a new job instance.
@@ -51,14 +59,14 @@ class BuildZipJob implements ShouldQueue
      */
     public function handle(AssignmentService $assignments, ZipService $svc): void
     {
-        $jobId = null;
+        $jobId = $this->assignmentZipDto->jobId;
         $batch = $this->assignmentZipDto->isBatch()
             ? app(BatchRepository::class)->findById($this->assignmentZipDto->batchId)
             : null;
         $channel = app(ChannelRepository::class)->findById($this->assignmentZipDto->channelId);
 
         if (!$channel) {
-            throw new RuntimeException(
+            throw new ZipBuildException(
                 sprintf(
                     'Channel with ID %s not found',
                     $this->assignmentZipDto->channelId
@@ -68,7 +76,12 @@ class BuildZipJob implements ShouldQueue
 
         $assignmentIds = collect($this->assignmentZipDto->assignmentIds);
 
-        if ($batch) {
+        if ($jobId !== null) {
+            $items = app(AssignmentRepository::class)->fetchDownloadableForChannel($channel, $assignmentIds, $batch);
+            if ($items->count() !== $assignmentIds->count()) {
+                throw new ZipBuildException('Some selected offers are no longer available.');
+            }
+        } elseif ($batch) {
             $items = $assignments->fetchForZip($batch, $channel, $assignmentIds);
         } else {
             $items = app(AssignmentRepository::class)->fetchForZipForChannel(
@@ -77,9 +90,9 @@ class BuildZipJob implements ShouldQueue
             );
 
             $jobId = 'channel_' . $this->assignmentZipDto->channelId . '_' . hash(
-                    'sha256',
-                    implode('_', $this->assignmentZipDto->assignmentIds)
-                );
+                'sha256',
+                implode('_', $this->assignmentZipDto->assignmentIds)
+            );
         }
 
 
@@ -104,5 +117,13 @@ class BuildZipJob implements ShouldQueue
                 ],
             ])
             ->log('ZIP-File created');
+    }
+
+    /** Publish terminal failures for clients polling a newly prepared download. */
+    public function failed(?Throwable $exception): void
+    {
+        if ($this->assignmentZipDto->jobId !== null) {
+            app(DownloadCacheService::class)->setStatus($this->assignmentZipDto->jobId, DownloadStatusEnum::FAILED->value);
+        }
     }
 }

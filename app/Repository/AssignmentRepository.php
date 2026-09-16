@@ -20,6 +20,15 @@ use Illuminate\Support\Collection;
 class AssignmentRepository
 {
     /**
+     * @param list<int> $ids
+     * @return EloquentCollection<int, Assignment>
+     */
+    public function findByIds(array $ids): EloquentCollection
+    {
+        return Assignment::whereIn('id', $ids)->get();
+    }
+
+    /**
      * Query offers on the user's channels, excluding visibility through submitted clips alone.
      *
      * @return Builder<Assignment>
@@ -206,6 +215,24 @@ class AssignmentRepository
             ->where('channel_id', $channel->getKey())
             ->whereIn('id', $ids)
             ->whereIn('status', StatusEnum::getReadyStatus())
+            ->get();
+    }
+
+    /**
+     * Fetch available and previously downloaded offers within the authorized channel and batch.
+     *
+     * @param Collection<int, int> $ids
+     * @return EloquentCollection<int, Assignment>
+     */
+    public function fetchDownloadableForChannel(Channel $channel, Collection $ids, ?Batch $batch = null): EloquentCollection
+    {
+        return Assignment::with('video.clips.preferredChannel')
+            ->where('channel_id', $channel->getKey())
+            ->when($batch, fn (Builder $query) => $query->where('batch_id', $batch->getKey()))
+            ->whereIn('id', $ids)
+            ->whereIn('status', StatusEnum::getReturnableStatuses())
+            ->where(fn (Builder $query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+            ->whereHas('video')
             ->get();
     }
 

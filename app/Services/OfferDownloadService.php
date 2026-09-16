@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\StatusEnum;
+use App\Exceptions\IO\FileReadException;
 use App\Models\Assignment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -31,15 +32,20 @@ class OfferDownloadService
         abort_unless($disk->exists($video->path), 404);
         $stream = $disk->readStream($video->path);
         abort_unless(is_resource($stream), 404);
+        $size = $disk->size($video->path);
 
-        return response()->streamDownload(function () use ($stream, $assignment, $ip, $userAgent): void {
+        return response()->streamDownload(function () use ($stream, $size, $assignment, $ip, $userAgent): void {
             try {
-                if (fpassthru($stream) !== false && !connection_aborted()) {
+                $bytes = fpassthru($stream);
+                if ($bytes !== $size) {
+                    throw new FileReadException('The offered video transfer was incomplete.');
+                }
+                if (!connection_aborted()) {
                     DB::transaction(fn () => $this->assignments->markDownloaded($assignment, $ip, $userAgent));
                 }
             } finally {
                 fclose($stream);
             }
-        }, basename($video->path), ['Content-Type' => 'application/octet-stream', 'Cache-Control' => 'private, no-store']);
+        }, basename($video->path), ['Content-Type' => 'application/octet-stream', 'Content-Length' => (string) $size, 'Cache-Control' => 'private, no-store']);
     }
 }

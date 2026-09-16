@@ -4,158 +4,72 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http\Controllers;
 
-use App\Enum\DownloadStatusEnum;
-use App\Jobs\BuildZipJob;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Services\DownloadCacheService;
-use Illuminate\Support\Facades\Queue;
-use Mockery;
+use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
 
 class ZipControllerTest extends DatabaseTestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
+        config()->set('queue.default', 'database');
     }
 
     public function testStartDispatchesZipJobAndInitializesCache(): void
     {
-        Queue::fake();
+        $assignment = Assignment::factory()->create();
+        $response = $this->postJson(URL::temporarySignedRoute('zips.start', now()->addHour(), [
+            'batch' => $assignment->batch_id, 'channel' => $assignment->channel_id,
+        ]), ['assignment_ids' => [$assignment->id]])->assertOk();
 
-        $batch = Batch::factory()->create();
-        $channel = Channel::factory()->create();
-        $assignment = Assignment::factory()
-            ->for($channel)
-            ->withBatch($batch)
-            ->create();
-
-        $downloadCache = Mockery::mock(DownloadCacheService::class);
-        $downloadCache->shouldReceive('init')
-            ->once()
-            ->with($batch->id . '_' . $channel->id);
-        $this->app->instance(DownloadCacheService::class, $downloadCache);
-
-        $response = $this->postJson("/zips/{$batch->id}/{$channel->id}", [
-            'assignment_ids' => [$assignment->id, 'invalid'],
-        ]);
-
-        $response->assertOk();
-        $response->assertJson([
-            'jobId' => $batch->id . '_' . $channel->id,
-            'status' => DownloadStatusEnum::QUEUED->value,
-        ]);
-
-        Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
-            return $job->getAssignmentIds() === [$assignment->getKey()];
-        });
+        $this->assertSame('queued', app(DownloadCacheService::class)->getStatus($response->json('jobId')));
+        $this->assertDatabaseCount('jobs', 1);
+        $this->assertCount(1, $response->json('downloads'));
     }
 
     public function testStartForChannelDispatchesZipJobAndInitializesCache(): void
     {
-        Queue::fake();
+        $assignment = Assignment::factory()->create();
+        $response = $this->postJson(URL::temporarySignedRoute('zips.channel.start', now()->addHour(), [
+            'channel' => $assignment->channel_id,
+        ]), ['assignment_ids' => [$assignment->id]])->assertOk();
 
-        $batch = Batch::factory()->create();
-        $channel = Channel::factory()->create();
-        $assignment = Assignment::factory()
-            ->for($channel)
-            ->withBatch($batch)
-            ->create();
-
-        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', [$assignment->getKey()]));
-
-        $downloadCache = Mockery::mock(DownloadCacheService::class);
-        $downloadCache->shouldReceive('init')
-            ->once()
-            ->with($jobId);
-        $this->app->instance(DownloadCacheService::class, $downloadCache);
-
-        $response = $this->postJson("/zips/channel/{$channel->id}", [
-            'assignment_ids' => [$assignment->id, 'invalid'],
-        ]);
-
-        $response->assertOk();
-        $response->assertJson([
-            'status' => DownloadStatusEnum::QUEUED->value,
-        ]);
-
-        Queue::assertPushed(BuildZipJob::class, static function (BuildZipJob $job) use ($assignment) {
-            return $job->getAssignmentIds() === [$assignment->getKey()];
-        });
+        $this->assertSame('queued', app(DownloadCacheService::class)->getStatus($response->json('jobId')));
+        $this->assertDatabaseCount('jobs', 1);
     }
 
     public function testStartReturnsErrorWhenAssignmentsAreMissing(): void
     {
-        Queue::fake();
-
-        $batch = Batch::factory()->create();
-        $channel = Channel::factory()->create();
-
-        $downloadCache = Mockery::mock(DownloadCacheService::class);
-        $downloadCache->shouldReceive('init')->never();
-        $this->app->instance(DownloadCacheService::class, $downloadCache);
-
-        $response = $this->postJson("/zips/{$batch->id}/{$channel->id}", [
-            'assignment_ids' => [123],
-        ]);
-
-        $response->assertStatus(422);
-        $response->assertJson([
-            'error' => 'Die Auswahl ist nicht mehr verfügbar.',
-        ]);
-
-        Queue::assertNothingPushed();
+        $this->postJson(URL::temporarySignedRoute('zips.start', now()->addHour(), [
+            'batch' => Batch::factory()->create()->id, 'channel' => Channel::factory()->create()->id,
+        ]), ['assignment_ids' => [123]])->assertUnprocessable();
+        $this->assertDatabaseCount('jobs', 0);
     }
 
     public function testStartForChannelReturnsErrorWhenAssignmentsAreMissing(): void
     {
-        Queue::fake();
-
-        $channel = Channel::factory()->create();
-
-        $downloadCache = Mockery::mock(DownloadCacheService::class);
-        $downloadCache->shouldReceive('init')->never();
-        $this->app->instance(DownloadCacheService::class, $downloadCache);
-
-        $response = $this->postJson("/zips/channel/{$channel->getKey()}", [
-            'assignment_ids' => [123],
-        ]);
-
-        $response->assertStatus(422);
-        $response->assertJson([
-            'error' => 'Die Auswahl ist nicht mehr verfügbar.',
-        ]);
-
-        Queue::assertNothingPushed();
+        $this->postJson(URL::temporarySignedRoute('zips.channel.start', now()->addHour(), [
+            'channel' => Channel::factory()->create()->id,
+        ]), ['assignment_ids' => [123]])->assertUnprocessable();
+        $this->assertDatabaseCount('jobs', 0);
     }
 
     public function testProgressReturnsCachedValues(): void
     {
-        $downloadCache = Mockery::mock(DownloadCacheService::class);
-        $downloadCache->shouldReceive('getStatus')
-            ->once()
-            ->with('job-1')
-            ->andReturn(DownloadStatusEnum::READY->value);
-        $downloadCache->shouldReceive('getProgress')
-            ->once()
-            ->with('job-1')
-            ->andReturn(80);
-        $downloadCache->shouldReceive('getName')
-            ->once()
-            ->with('job-1')
-            ->andReturn('clips.zip');
-        $this->app->instance(DownloadCacheService::class, $downloadCache);
-
-        $response = $this->getJson('/zips/job-1/progress');
-
-        $response->assertOk();
-        $response->assertJson([
-            'status' => DownloadStatusEnum::READY->value,
-            'progress' => 80,
-            'name' => 'clips.zip',
-        ]);
+        $cache = app(DownloadCacheService::class);
+        $cache->init('job-1');
+        $cache->setStatus('job-1', 'ready');
+        $cache->setProgress('job-1', 80);
+        $cache->setName('job-1', 'clips.zip');
+        $cache->setFileStatus('job-1', 'video.mp4', 'ready');
+        $this->getJson(URL::temporarySignedRoute('zips.progress', now()->addHour(), ['id' => 'job-1']))
+            ->assertOk()->assertJson([
+                'status' => 'ready', 'progress' => 80, 'name' => 'clips.zip',
+                'files' => ['video.mp4' => 'ready'],
+            ]);
     }
 }

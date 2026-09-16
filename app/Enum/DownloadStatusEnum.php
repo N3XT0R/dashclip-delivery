@@ -19,4 +19,6 @@ enum DownloadStatusEnum: string
     case READY = 'ready';
 
     case UNKNOWN = 'unknown';
+
+    case FAILED = 'failed';
 }

@@ -37,6 +37,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       without disabling scrolling, and replace the old welcome widget with the new dashboard.
     - resolve the panel logo link to the current team's dashboard instead of a relative URL.
 
+### Fixed
+- **Offer downloads**
+    - download single videos directly and prepare multi-video ZIPs without requiring WebSockets;
+      retain individual video links when ZIP preparation fails or the queue is unavailable.
+    - poll resumable preparation status, preserve links across page reloads, and hand files to the
+      browser without buffering the entire archive in JavaScript.
+    - isolate concurrent ZIP requests, report incomplete archives as failures, and retain archives
+      for retries with automatic cleanup after two days.
+    - keep queue reservations longer than the application's job timeouts to prevent concurrent retries
+      during long ZIP builds and video processing.
+    - validate signed preparation, status and file URLs and recheck individual offer availability.
+
 ## [4.7.0] - 2026-09-15
 
 ### Added

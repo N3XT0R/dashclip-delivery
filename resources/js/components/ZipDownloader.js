@@ -1,49 +1,37 @@
 import axios from 'axios';
 import DownloadModal from './DownloadModal';
 
-/**
- * hating js for being js, backend development would be so much easier without this mess
- */
 export default class ZipDownloader {
     constructor(arg) {
-        if (arg instanceof HTMLFormElement) {
-            this.form = arg;
-            this.modal = new DownloadModal(); // legacy default
-        } else {
-            this.form = arg.form;
-            this.modal = arg.modal ?? new DownloadModal();
-        }
-        this.selectAllBtn = document.getElementById('selectAll');
-        this.selectNoneBtn = document.getElementById('selectNone');
-        this.submitBtn = document.getElementById('zipSubmit');
-        this.selCountEl = document.getElementById('selCount');
-
+        this.form = arg instanceof HTMLFormElement ? arg : arg.form;
+        this.modal = arg.modal ?? new DownloadModal();
+        this.storageKey = `offer-download:${new URL(this.form.dataset.zipPostUrl, window.location.href).pathname}`;
+        this.generation = 0;
+        this.running = false;
         this.modal.onClose(() => {
+            this.generation++;
+            this.running = false;
         });
-
+        this.modal.onRetry(() => this.startDownload(this.selected));
         this.init();
-    }
-
-    sanitizeName(name) {
-        return name.replace(/[\\/:*?"<>|]+/g, '_');
+        this.restore();
     }
 
     init() {
         this.updateCount();
-        this.selectAllBtn?.addEventListener('click', () => this.toggleAll(true));
-        this.selectNoneBtn?.addEventListener('click', () => this.toggleAll(false));
+        document.getElementById('selectAll')?.addEventListener('click', () => this.toggleAll(true));
+        document.getElementById('selectNone')?.addEventListener('click', () => this.toggleAll(false));
         document.addEventListener('change', e => {
-            if (e.target && e.target.classList?.contains('pickbox')) {
-                this.updateCount();
-            }
+            if (e.target?.classList?.contains('pickbox')) this.updateCount();
         });
-        this.submitBtn?.addEventListener('click', () => this.startDownload());
-        // Einzel-Download-Buttons
+        document.getElementById('zipSubmit')?.addEventListener('click', e => {
+            e.preventDefault();
+            this.startDownload();
+        });
         document.querySelectorAll('.single-download').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = btn.dataset.assignmentId;
-                if (!id) return;
-                await this.startDownload([id]);
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                if (btn.dataset.assignmentId) this.startDownload([btn.dataset.assignmentId]);
             });
         });
     }
@@ -54,74 +42,130 @@ export default class ZipDownloader {
     }
 
     updateCount() {
-        const n = document.querySelectorAll('.pickbox:checked').length;
-        if (this.selCountEl) this.selCountEl.textContent = `${n} ausgewählt`;
+        const element = document.getElementById('selCount');
+        if (element) element.textContent = `${document.querySelectorAll('.pickbox:checked').length} ausgewählt`;
     }
 
     async startDownload(forcedIds = null) {
-        const boxes = Array.from(document.querySelectorAll('.pickbox:checked'));
-        const selected = forcedIds || boxes.map(cb => cb.value);
-        if (!selected.length) {
-            alert('Bitte wähle mindestens ein Video aus.');
+        if (this.running) {
+            this.modal.show();
             return;
         }
-
-        const files = boxes
-            .map(cb => cb.closest('.card')?.querySelector('.file-name')?.textContent?.trim())
-            .filter(Boolean)
-            .map(name => this.sanitizeName(name));
-        this.modal.open(files);
-
-        const postUrl = this.form.dataset.zipPostUrl;
-        const token = document
-            .querySelector('meta[name="csrf-token"]')
-            .getAttribute('content');
-        const {
-            data: {jobId}
-        } = await axios.post(
-            postUrl,
-            {assignment_ids: selected},
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token
-                }
-            }
-        );
-
-        let downloading = false;
-        const channelName = `zip.${jobId}`;
-        window.Echo.channel(channelName).listen('.zip.progress', async r => {
-            if (r.status === 'ready' && !downloading) {
-                downloading = true;
-                this.modal.update(r.progress || 0, null, r.files || {});
-                await this.downloadZip(jobId, r.name);
-                window.Echo.leave(channelName);
+        this.selected = forcedIds || Array.from(document.querySelectorAll('.pickbox:checked'), cb => cb.value);
+        if (!this.selected.length) return;
+        const generation = ++this.generation;
+        this.running = true;
+        this.modal.open();
+        try {
+            const {data} = await axios.post(this.form.dataset.zipPostUrl, {
+                assignment_ids: this.selected,
+                direct_if_single: true,
+            }, {
+                timeout: 30000,
+                headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content},
+            });
+            if (generation !== this.generation) return;
+            this.save(data);
+            this.modal.setDownloads(data.downloads);
+            if (!data.jobId) {
+                this.deliver(data.downloads[0].url);
+                this.modal.update(100, 'Der Download wurde an den Browser übergeben. Bei Bedarf den Video-Link erneut anklicken.');
+                this.running = false;
             } else {
-                this.modal.update(r.progress || 0, r.status, r.files || {});
+                await this.poll(data, generation);
             }
-        });
+        } catch (error) {
+            if (generation !== this.generation) return;
+            this.running = false;
+            const status = error.response?.status;
+            this.modal.showError(status === 403
+                ? 'Der Link ist abgelaufen oder ungültig. Bitte die Angebotsseite neu öffnen.'
+                : status === 422 ? 'Die Auswahl ist nicht mehr verfügbar. Bitte die Angebotsseite aktualisieren.'
+                    : 'Der Download konnte nicht vorbereitet werden. Bitte erneut versuchen.');
+        }
     }
 
-    async downloadZip(jobId, filename) {
-
-        const response = await axios.get(`/zips/${jobId}/download`, {
-            responseType: 'blob'
-        });
-        if (response.status === 200) {
-            this.modal.update(100, 'ready');
-            this.modal.showClose();
-            window.location.reload();
+    async poll(data, generation) {
+        const deadline = Date.now() + 25 * 60 * 1000;
+        let failures = 0;
+        if (data.status === 'failed') {
+            this.running = false;
+            this.modal.showError('Die ZIP-Erstellung ist fehlgeschlagen. Die Videos können einzeln heruntergeladen werden.');
+            return;
         }
-        const blob = new Blob([response.data], {type: 'application/zip'});
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', filename || `download-${jobId}.zip`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
+        while (generation === this.generation && Date.now() < deadline) {
+            try {
+                const {data: state} = await axios.get(data.progressUrl, {timeout: 15000});
+                if (generation !== this.generation) return;
+                failures = 0;
+                this.modal.update(state.progress, state.status, state.files);
+                if (state.status === 'ready') {
+                    this.modal.setDownloads([{name: state.name || 'ZIP herunterladen', url: data.downloadUrl}, ...data.downloads]);
+                    this.save({...data, status: 'ready', name: state.name});
+                    this.deliver(data.downloadUrl);
+                    this.modal.update(100, 'ZIP bereit. Der Download wurde an den Browser übergeben. Der Link bleibt für einen erneuten Versuch verfügbar.');
+                    this.running = false;
+                    return;
+                }
+                if (['failed', 'unknown'].includes(state.status)) {
+                    this.running = false;
+                    this.modal.showError('Die ZIP ist nicht verfügbar. Bitte einzeln herunterladen oder die ZIP erneut erstellen.');
+                    return;
+                }
+            } catch (error) {
+                if (generation !== this.generation) return;
+                if ([403, 404, 410].includes(error.response?.status)) break;
+                failures++;
+                this.modal.update(0, 'Verbindung unterbrochen. Der Status wird erneut abgefragt; Einzel-Downloads bleiben verfügbar.');
+            }
+            await new Promise(resolve => setTimeout(resolve, Math.min(2000 * 2 ** failures, 15000)));
+        }
+        if (generation !== this.generation) return;
+        this.running = false;
+        this.modal.showError('Die ZIP ist noch nicht verfügbar. Bitte einzeln herunterladen oder später erneut versuchen.');
+    }
 
+    deliver(url) {
+        if (!this.frame) {
+            this.frame = document.createElement('iframe');
+            this.frame.hidden = true;
+            this.frame.title = 'Dateidownload';
+            this.frame.addEventListener('load', () => {
+                try {
+                    if (this.frame.contentDocument?.body?.textContent?.trim()) {
+                        this.modal.showError('Die Datei konnte nicht abgerufen werden. Bitte den Download-Link öffnen oder erneut versuchen.');
+                    }
+                } catch {
+                    this.modal.showError('Bitte den Download-Link öffnen, um den Abruf erneut zu versuchen.');
+                }
+            });
+            document.body.appendChild(this.frame);
+        }
+        this.frame.src = url;
+    }
+
+    save(data) {
+        try {
+            sessionStorage.setItem(this.storageKey, JSON.stringify({data, selected: this.selected, savedAt: Date.now()}));
+        } catch { /* Downloads also work when browser storage is unavailable. */ }
+    }
+
+    restore() {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem(this.storageKey));
+            if (!saved || Date.now() - saved.savedAt > 24 * 60 * 60 * 1000) return;
+            this.selected = saved.selected;
+            this.modal.open();
+            const data = saved.data;
+            this.modal.setDownloads(data.status === 'ready' && data.jobId
+                ? [{name: data.name || 'ZIP herunterladen', url: data.downloadUrl}, ...data.downloads]
+                : data.downloads);
+            if (data.jobId && data.status !== 'ready') {
+                this.running = true;
+                this.poll(data, ++this.generation);
+            } else {
+                this.modal.update(100, 'Die Download-Links stehen weiterhin bereit.');
+            }
+        } catch { /* Ignore expired or unavailable session state. */ }
     }
 }
