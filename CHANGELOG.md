@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.8.0] - 2026-09-16
+
 ### Added
 - **Weekly blog article queue**
     - schedule 67 bilingual articles, one per week starting a week after the seeder runs, through
