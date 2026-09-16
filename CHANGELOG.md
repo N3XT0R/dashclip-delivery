@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `node database/seeders/data/images/build-covers.mjs`.
 
 ### Changed
+- **Admin panel design**
+    - adopt the shared dark navigation, orange accents, homepage branding, translucent support
+      card and responsive login design while retaining the admin resources and widgets.
+    - share login views and guest language selection across both panels without adding admin registration.
+- **Standard panel login**
+    - add a responsive split-screen sign-in page with the homepage branding, a highway image,
+      translated guidance and a persistent guest language selector.
+    - adapt spacing to viewport height and use a compact mobile layout to avoid unnecessary
+      scrolling while allowing overflow for small landscape screens and enlarged text.
+    - retain Filament's authentication, password recovery and multi-factor challenge forms.
 - **Standard panel redesign**
     - introduce a dark sidebar, orange accents, responsive dashboard and dedicated panel theme
       with a shared stylesheet that other panels can adopt.
