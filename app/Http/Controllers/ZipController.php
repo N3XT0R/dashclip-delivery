@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\DTO\Zip\AssignmentZipDto;
 use App\Enum\DownloadStatusEnum;
-use App\Jobs\BuildZipJob;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
-use App\Repository\AssignmentRepository;
 use App\Services\AssignmentService;
 use App\Services\DownloadCacheService;
-use Filament\Facades\Filament;
+use App\Services\OfferDownloadPreparationService;
+use App\Services\OfferDownloadService;
+use App\Repository\AssignmentRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ZipController extends Controller
 {
@@ -25,137 +25,63 @@ class ZipController extends Controller
         private readonly AssignmentService $assignments,
         private readonly DownloadCacheService $cache,
         private readonly AssignmentRepository $assignmentRepository,
+        private readonly OfferDownloadPreparationService $preparation,
     ) {
     }
 
-    /**
-     * Starts a zip creation job for the given batch and channel.
-     * @param Request $req
-     * @param Batch $batch
-     * @param Channel $channel
-     * @return JsonResponse
-     * @deprecated use startForChannel instead
-     */
-    // POST /zips/{batch}/{channel} -> Starts Job
-    public function start(Request $req, Batch $batch, Channel $channel): JsonResponse
+    /** Prepare downloads authorized by the signed batch and channel URL. */
+    public function start(Request $request, Batch $batch, Channel $channel): JsonResponse
     {
-        $validated = $req->validate([
-            'assignment_ids' => ['required', 'array', 'min:1'],
-        ]);
-
-        $batchId = $batch->getKey();
-        $jobId = $batchId . '_' . $channel->getKey();
-
-        $ids = collect($validated['assignment_ids'])
-            ->filter(static fn($v) => ctype_digit((string)$v))
-            ->map(static fn($v) => (int)$v)
-            ->values();
-
-
-        $items = $this->assignments->fetchForZip($batch, $channel, $ids);
-
-        if ($items->isEmpty()) {
-            return response()->json(['error' => 'Die Auswahl ist nicht mehr verfügbar.'], 422);
-        }
-
-        // initialer Status
-        $this->cache->init($jobId);
-
-        $dto = new AssignmentZipDto(
-            batchId: $batchId,
-            channelId: $channel->getKey(),
-            assignmentIds: $ids->all(),
-            ip: $req->ip(),
-            userAgent: $req->userAgent(),
-        );
-
-        BuildZipJob::dispatch($dto, Auth::user());
-
-        return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
+        return response()->json($this->preparation->prepare($request, $channel, $this->selectedIds($request), $batch));
     }
 
-    /**
-     * Start a zip creation job for the given channel without a batch.
-     * @param Request $req
-     * @param Channel $channel
-     * @return JsonResponse
-     */
-    public function startForChannel(Request $req, Channel $channel): JsonResponse
+    /** Prepare downloads authorized by the signed channel URL. */
+    public function startForChannel(Request $request, Channel $channel): JsonResponse
     {
-        $validated = $req->validate([
-            'assignment_ids' => ['required', 'array', 'min:1'],
-        ]);
-
-
-        $ids = collect($validated['assignment_ids'])
-            ->filter(static fn($v) => ctype_digit((string)$v))
-            ->map(static fn($v) => (int)$v)
-            ->values();
-
-        $jobId = 'channel_' . $channel->getKey() . '_' . hash('sha256', implode('_', $ids->all()));
-        $items = $this->assignmentRepository->fetchForZipForChannel($channel, $ids);
-
-        if ($items->isEmpty()) {
-            return response()->json(['error' => 'Die Auswahl ist nicht mehr verfügbar.'], 422);
-        }
-
-        // initialer Status
-        $this->cache->init($jobId);
-
-        $dto = new AssignmentZipDto(
-            batchId: null,
-            channelId: $channel->getKey(),
-            assignmentIds: $ids->all(),
-            ip: $req->ip(),
-            userAgent: $req->userAgent(),
-        );
-
-        BuildZipJob::dispatch(
-            $dto,
-            Auth::user()
-        );
-
-        return response()->json(['jobId' => $jobId, 'status' => DownloadStatusEnum::QUEUED->value]);
+        return response()->json($this->preparation->prepare($request, $channel, $this->selectedIds($request)));
     }
 
-    // GET /zips/{id}/progress ->  Polling for Frontend
-    public function progress(string $id)
+    /** Return a snapshot that remains available even if a client misses updates. */
+    public function progress(string $id): JsonResponse
     {
-        $status = $this->cache->getStatus($id);
-        $progress = $this->cache->getProgress($id);
-        $name = $status === DownloadStatusEnum::READY->value ? $this->cache->getName($id) : null;
-
-        return response()->json(compact('status', 'progress', 'name'));
+        return response()->json([
+            'status' => $this->cache->getStatus($id),
+            'progress' => $this->cache->getProgress($id),
+            'name' => $this->cache->getName($id),
+            'files' => $this->cache->getFiles($id),
+        ])->header('Cache-Control', 'private, no-store');
     }
 
-    // GET /zips/{id}/download -> delivers zip
-    public function download(Request $req, string $id)
+    /** Serve the archive without deleting it, so the browser can retry or resume. */
+    public function download(Request $request, string $id): BinaryFileResponse
     {
         $path = $this->cache->getFile($id);
-        $name = $this->cache->getName($id, "{$id}.zip");
-
-        if (!$path) {
-            abort(404);
-        }
-
+        abort_unless($path && $this->cache->getStatus($id) === DownloadStatusEnum::READY->value, 404);
         $fullPath = Storage::exists($path) ? Storage::path($path) : $path;
-        if (!is_file($fullPath)) {
-            abort(404);
+        abort_unless(is_file($fullPath), 404);
+
+        foreach ($this->assignmentRepository->findByIds($this->cache->getAssignments($id)) as $assignment) {
+            $this->assignments->markDownloaded($assignment, $request->ip(), $request->userAgent());
         }
 
-        if (false === (bool)Filament::auth()?->check()) {
-            $assignmentIds = $this->cache->getAssignments($id);
-            if ($assignmentIds !== []) {
-                Assignment::query()->whereIn('id', $assignmentIds)->get()->each(
-                    fn(Assignment $assignment) => $this->assignments->markDownloaded(
-                        $assignment,
-                        $req->ip(),
-                        $req->userAgent(),
-                    )
-                );
-            }
-        }
+        return response()->download($fullPath, $this->cache->getName($id, "{$id}.zip"), ['Cache-Control' => 'private, no-store']);
+    }
 
-        return response()->download($fullPath, $name)->deleteFileAfterSend();
+    /** Stream an individually authorized video without a ZIP job or WebSocket connection. */
+    public function video(Request $request, Assignment $assignment, OfferDownloadService $downloads): StreamedResponse
+    {
+        return $downloads->download($assignment, $request->ip(), $request->userAgent());
+    }
+
+    /** @return list<int> */
+    private function selectedIds(Request $request): array
+    {
+        $validated = $request->validate([
+            'assignment_ids' => ['required', 'array', 'min:1', 'max:500'],
+            'assignment_ids.*' => ['required', 'integer', 'min:1'],
+            'direct_if_single' => ['sometimes', 'boolean'],
+        ]);
+
+        return array_values(array_unique(array_map(intval(...), $validated['assignment_ids'])));
     }
 }

@@ -1,6 +1,6 @@
 {
-  "_ZipDownloader-CiA7gBIY.js": {
-    "file": "assets/ZipDownloader-CiA7gBIY.js",
+  "_ZipDownloader-T3Gd-5Ul.js": {
+    "file": "assets/ZipDownloader-T3Gd-5Ul.js",
     "name": "ZipDownloader"
   },
   "resources/css/app.css": {
@@ -29,12 +29,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CzjZC-wW.js",
+    "file": "assets/app-DaZHTSGo.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_ZipDownloader-CiA7gBIY.js"
+      "_ZipDownloader-T3Gd-5Ul.js"
     ],
     "css": [
       "assets/app-Bv9XE-cB.css"
@@ -47,12 +47,12 @@
     "isEntry": true
   },
   "resources/js/offers.js": {
-    "file": "assets/offers-BABLmTpT.js",
+    "file": "assets/offers-BaaAYbaS.js",
     "name": "offers",
     "src": "resources/js/offers.js",
     "isEntry": true,
     "imports": [
-      "_ZipDownloader-CiA7gBIY.js"
+      "_ZipDownloader-T3Gd-5Ul.js"
     ]
   },
   "resources/js/public.js": {

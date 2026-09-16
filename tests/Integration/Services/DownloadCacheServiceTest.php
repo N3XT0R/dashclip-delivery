@@ -16,7 +16,7 @@ use Tests\TestCase;
  *
  * - Uses the in-memory array cache to avoid external dependencies.
  * - Verifies cache mutations (status/progress/files/file/assignments/name).
- * - Verifies that a ZipProgressUpdated event is broadcast on each mutating call.
+ * - Verifies that status updates do not depend on broadcasting.
  */
 class DownloadCacheServiceTest extends TestCase
 {
@@ -32,7 +32,7 @@ class DownloadCacheServiceTest extends TestCase
         Event::fake();
     }
 
-    public function testInitSeedsCacheAndBroadcastsQueuedZeroProgress(): void
+    public function testInitSeedsCacheWithoutBroadcasting(): void
     {
         $svc = new DownloadCacheService();
         $jobId = 'job-1';
@@ -47,22 +47,10 @@ class DownloadCacheServiceTest extends TestCase
         $this->assertSame([], $svc->getAssignments($jobId));
         $this->assertNull($svc->getName($jobId));
 
-        // One broadcast from init(): setStatus -> setProgress -> files put triggers only
-        // two broadcasts via setStatus/setProgress; init() itself calls setStatus & setProgress
-        // and a direct Cache::put for files (which then triggers broadcast inside setters).
-        Event::assertDispatchedTimes(ZipProgressUpdated::class, 2);
-
-        // Check last dispatched event payload (status queued, progress 0)
-        Event::assertDispatched(ZipProgressUpdated::class, function (ZipProgressUpdated $e) use ($jobId) {
-            return $e->jobId === $jobId
-                && $e->status === DownloadStatusEnum::QUEUED->value
-                && $e->progress === 0
-                && $e->name === null
-                && $e->files === [];
-        });
+        Event::assertNotDispatched(ZipProgressUpdated::class);
     }
 
-    public function testSettersUpdateCacheAndBroadcast(): void
+    public function testSettersUpdateCacheWithoutBroadcasting(): void
     {
         $svc = new DownloadCacheService();
         $jobId = 'job-2';
@@ -83,16 +71,7 @@ class DownloadCacheServiceTest extends TestCase
         $this->assertSame(['a.mp4' => 'queued'], $svc->getFiles($jobId));
         $this->assertSame('bundle-aug.zip', $svc->getName($jobId));
 
-        // One broadcast per mutating call above
-        Event::assertDispatchedTimes(ZipProgressUpdated::class, 4);
-
-        // The most recent event should reflect the final state
-        Event::assertDispatched(ZipProgressUpdated::class, function (ZipProgressUpdated $e) {
-            return $e->status === 'processing'
-                && $e->progress === 10
-                && $e->name === 'bundle-aug.zip'
-                && $e->files === ['a.mp4' => 'queued'];
-        });
+        Event::assertNotDispatched(ZipProgressUpdated::class);
     }
 
     public function testSetFileAndAssignmentsRoundtrip(): void

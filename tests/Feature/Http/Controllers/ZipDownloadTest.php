@@ -5,11 +5,11 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\{Assignment, Batch, Channel, Video};
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
 
 class ZipDownloadTest extends DatabaseTestCase
 {
-
     public function testDownloadSucceedsWhenFileExists(): void
     {
         Storage::fake();
@@ -20,8 +20,9 @@ class ZipDownloadTest extends DatabaseTestCase
         $absolute = Storage::path($path);
         Cache::put("zipjob:{$id}:file", $absolute, 600);
         Cache::put("zipjob:{$id}:name", 'download.zip', 600);
+        Cache::put("zipjob:{$id}:status", 'ready', 600);
 
-        $response = $this->get("/zips/{$id}/download");
+        $response = $this->get(URL::temporarySignedRoute('zips.download', now()->addHour(), ['id' => $id]));
 
         $response->assertOk();
         $response->assertHeader('content-disposition');
@@ -48,8 +49,9 @@ class ZipDownloadTest extends DatabaseTestCase
         Cache::put("zipjob:{$id}:file", $absolute, 600);
         Cache::put("zipjob:{$id}:name", 'download.zip', 600);
         Cache::put("zipjob:{$id}:assignments", [$assignment->id], 600);
+        Cache::put("zipjob:{$id}:status", 'ready', 600);
 
-        $this->get("/zips/{$id}/download")->assertOk();
+        $this->get(URL::temporarySignedRoute('zips.download', now()->addHour(), ['id' => $id]))->assertOk();
 
         $this->assertDatabaseHas('assignments', [
             'id' => $assignment->id,

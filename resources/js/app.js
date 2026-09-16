@@ -1,12 +1,17 @@
 import './bootstrap';
 import ZipDownloader from './components/ZipDownloader';
-import DownloadModal from './components/DownloadModal';
 import 'cookieconsent/build/cookieconsent.min.css';
+
+const downloaders = new WeakMap();
+function downloaderFor(form) {
+    if (!downloaders.has(form)) downloaders.set(form, new ZipDownloader(form));
+    return downloaders.get(form);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('zipForm');
     if (form) {
-        new ZipDownloader(form);
+        downloaderFor(form);
     }
 });
 
@@ -22,16 +27,6 @@ document.addEventListener('livewire:init', () => {
             return;
         }
 
-        const modal = new DownloadModal({
-            overlayBackground: 'transparent',
-            panelBackground: '#ffffff',
-            panelTextColor: '#111827',
-        });
-
-        const downloader = new ZipDownloader({
-            form,
-            modal,
-        });
-        downloader.startDownload(ids);
+        downloaderFor(form).startDownload(ids);
     });
 });
