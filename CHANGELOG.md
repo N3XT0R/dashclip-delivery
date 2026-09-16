@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - keep queue reservations longer than the application's job timeouts to prevent concurrent retries
       during long ZIP builds and video processing.
     - validate signed preparation, status and file URLs and recheck individual offer availability.
+- **My Offers**: Prevent a preview error when an offer references a deleted video.
 
 ## [4.7.0] - 2026-09-15
 
