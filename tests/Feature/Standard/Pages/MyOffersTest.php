@@ -62,6 +62,25 @@ final class MyOffersTest extends DatabaseTestCase
             ->assertForbidden();
     }
 
+    public function testOffersWithDeletedVideosRenderWithoutAPreview(): void
+    {
+        $user = User::factory()->create();
+        Role::findOrCreate(RoleEnum::CHANNEL_OPERATOR->value, GuardEnum::STANDARD->value);
+        $user->syncRoles([RoleEnum::CHANNEL_OPERATOR->value]);
+        $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
+        $channel = Channel::factory()->create();
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
+        $assignment = Assignment::factory()->forChannel($channel)->create();
+        $assignment->video->delete();
+
+        Filament::setTenant($team, true);
+        $this->actingAs($user, GuardEnum::STANDARD->value);
+
+        $this->get(MyOffers::getUrl())
+            ->assertOk()
+            ->assertSee('images/status/no_preview.jpg');
+    }
+
     public function testTabsAreRendered(): void
     {
         $user = User::factory()->create();

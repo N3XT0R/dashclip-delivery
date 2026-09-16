@@ -60,6 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       class is detected before deployment.
 
 ### Fixed
+
+- **My Offers**: Prevent a preview error when an offer references a deleted video.
 - **Scheduled mailbox scan during mailbox outages**
     - treat an unreachable mailbox as a temporary condition: the scheduled reply scan now logs the
       failure and completes instead of aborting with an error on every run.
