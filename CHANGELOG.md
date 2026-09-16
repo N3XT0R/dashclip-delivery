@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Account profile**: Group personal details, sign-in settings and notifications into translated
+  sections using the shared panel design.
+
+### Security
+- **Account profile**: Require the current password before changing an email address or password.
+
 ## [4.8.0] - 2026-09-16
 
 ### Added
