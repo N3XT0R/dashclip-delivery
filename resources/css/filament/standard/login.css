@@ -1,0 +1,102 @@
+.fi-body:has(.dc-login-layout) { height: 100dvh; }
+.dc-login-layout { display: grid; grid-template-columns: 56% 44%; min-height: 100%; }
+.dc-login-story { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; padding: 2.25rem 7.5%; color: #fff; background: #06131e; }
+.dc-login-background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 58% center; z-index: -2; }
+.dc-login-story::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(100deg, #04111df5, #04111d99 60%, #04111d30), linear-gradient(0deg, #04111d85, transparent 65%); }
+.dc-login-brand { align-self: flex-start; }
+.dc-login-story-content { margin-block: auto; padding-block: 4rem 2rem; max-width: 36rem; }
+.dc-login-eyebrow { color: #b9c8d8; font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 1rem; }
+.dc-login-story h2 { font-size: clamp(2rem, 3.3vw, 3.2rem); line-height: 1.1; font-weight: 750; letter-spacing: -.03em; }
+.dc-login-story h2 span { display: block; color: #ff850a; margin-top: .35rem; }
+.dc-login-intro { font-size: 1.1rem; line-height: 1.65; margin-top: 1rem; max-width: 34rem; }
+.dc-login-benefits { display: flex; flex-direction: column; gap: 1.6rem; margin-block: 2.5rem 1.5rem; }
+.dc-login-benefits li { display: flex; gap: 1.5rem; align-items: flex-start; }
+.dc-login-benefit-icon { display: flex; align-items: center; justify-content: center; width: 3.6rem; height: 3.6rem; border-radius: 50%; background: #ffffff12; flex-shrink: 0; }
+.dc-login-benefit-icon svg { width: 1.7rem; height: 1.7rem; }
+.dc-login-benefits h3 { font-size: 1rem; font-weight: 650; }
+.dc-login-benefits p { color: #d6e1ec; font-size: .88rem; line-height: 1.5; margin-top: .2rem; max-width: 17rem; }
+.dc-login-motto { max-width: 17rem; padding-top: 2rem; border-top: 1px solid #ffffff30; font-family: cursive; font-size: 1.8rem; line-height: 1.35; font-style: italic; transform: rotate(-5deg); }
+.dc-login-motto::after { content: ''; display: block; width: 70%; height: .25rem; margin: .6rem auto 0; background: #ff850a; border-radius: 100%; transform: rotate(-5deg); }
+.dc-login-main { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2rem; padding: 2.25rem clamp(1.25rem, 4vw, 4rem); background: var(--dc-soft); }
+.dc-login-language { align-self: flex-end; }
+.dc-login-language form { border: 1px solid var(--dc-border); border-radius: .65rem; background: var(--dc-surface); padding: .1rem; }
+.dc-login-language button { color: var(--dc-muted); }
+.dc-login-language button[aria-pressed=true] { color: var(--dc-accent); background: var(--dc-orange-soft); box-shadow: none; }
+.dc-login-card { width: 100%; max-width: 35rem; margin-block: auto; padding: 2.8rem 2.4rem; background: var(--dc-surface); border: 1px solid var(--dc-border); border-radius: 1rem; box-shadow: 0 4px 24px #172a4504; }
+.dc-login-card .fi-simple-header { gap: 1.2rem; }
+.dc-login-card .fi-simple-header .fi-logo { margin-bottom: .9rem; }
+.dc-login-card .fi-simple-header-heading { font-size: 1.9rem; letter-spacing: -.035em; font-weight: 750; }
+.dc-login-card .fi-simple-header-subheading { color: var(--dc-muted); font-size: .95rem; line-height: 1.6; }
+.dc-login-card .fi-simple-header-subheading { margin-top: 0; }
+.dc-login-card .fi-simple-page-content { gap: 2rem; }
+.dc-login-card .fi-input-wrp { border-radius: .6rem; min-height: 3rem; }
+.dc-login-card .fi-input { min-height: 3rem; }
+.dc-login-card .fi-btn { min-height: 3.1rem; border-radius: .55rem; }
+.dc-login-card .fi-fo-field-label { font-weight: 600; }
+.dc-login-register { text-align: center; font-size: .85rem; }
+.dc-login-divider { display: flex; align-items: center; gap: 1rem; color: var(--dc-muted); margin-bottom: 1.3rem; }
+.dc-login-divider::before, .dc-login-divider::after { content: ''; height: 1px; flex: 1; background: var(--dc-border); }
+.dc-login-register-link { display: flex; justify-content: center; align-items: center; min-height: 3rem; margin-top: .55rem; border: 1px solid var(--dc-muted); border-radius: .55rem; font-weight: 600; }
+.dc-login-register-link:hover { background: var(--dc-soft); }
+.dc-login-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem 1.6rem; color: var(--dc-muted); font-size: .75rem; padding-top: .8rem; }
+.dc-login-layout a:focus-visible, .dc-login-language button:focus-visible { outline: 2px solid var(--dc-accent); outline-offset: 4px; }
+@media (min-width: 1600px) { .dc-login-story { padding-inline: 10%; } }
+@media (max-width: 1100px) { .dc-login-layout { grid-template-columns: 48% 52%; } .dc-login-story { padding: 2rem; } .dc-login-card { padding: 2rem 1.5rem; } }
+@media (max-width: 900px) {
+    .dc-login-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .dc-login-story { padding: 1rem; }
+    .dc-login-story-content { display: none; }
+    .dc-login-story h2 { font-size: 2rem; }
+    .dc-login-intro { font-size: .95rem; }
+    .dc-login-benefits, .dc-login-motto { display: none; }
+    .dc-login-main { padding: 1rem 1rem 1.25rem; gap: 1rem; }
+    .dc-login-language { position: absolute; top: 1rem; right: 1rem; }
+    .dc-login-card { max-width: 35rem; padding: 1.5rem 1.25rem; }
+    .dc-login-card .fi-simple-header .fi-logo { display: none; }
+    .dc-login-card .fi-simple-header-heading { font-size: 1.6rem; }
+    .dc-login-card .fi-simple-header { gap: .65rem; }
+    .dc-login-card .fi-simple-page-content { gap: 1.25rem; }
+    .dc-login-card .fi-sc { row-gap: 1.1rem; }
+    .dc-login-card .fi-simple-header-subheading { font-size: .875rem; }
+    .dc-login-divider { margin-bottom: .65rem; }
+    .dc-login-main { flex: 1; }
+    .dc-login-footer { padding-top: 0; }
+}
+@media (min-width: 901px) and (max-height: 900px) {
+    .dc-login-main { padding-block: 1.25rem; gap: 1rem; }
+    .dc-login-card { padding-block: 1.5rem; }
+    .dc-login-card .fi-simple-header { gap: .65rem; }
+    .dc-login-card .fi-simple-header .fi-logo { margin-bottom: .25rem; }
+    .dc-login-card .fi-simple-header-heading { font-size: 1.65rem; }
+    .dc-login-card .fi-simple-header-subheading { font-size: .875rem; }
+    .dc-login-card .fi-simple-page-content { gap: 1.25rem; }
+    .dc-login-card .fi-sc { row-gap: 1rem; }
+    .dc-login-divider { margin-bottom: .65rem; }
+    .dc-login-footer { padding-top: 0; }
+    .dc-login-story { padding-block: 1.5rem; }
+    .dc-login-story-content { padding-block: 2rem 1rem; }
+    .dc-login-benefits { gap: 1rem; margin-block: 1.5rem; }
+    .dc-login-motto { font-size: 1.5rem; padding-top: 1rem; }
+}
+@media (min-width: 901px) and (max-height: 850px) {
+    .dc-login-card .fi-simple-header .fi-logo, .dc-login-motto { display: none; }
+    .dc-login-story h2 { font-size: 2.25rem; }
+    .dc-login-benefit-icon { width: 3rem; height: 3rem; }
+    .dc-login-story { padding-block: 1rem; }
+    .dc-login-story-content { padding-top: 1rem; }
+    .dc-login-main { padding-block: .8rem; gap: .75rem; }
+}
+@media (max-width: 900px) and (max-height: 740px) {
+    .dc-login-main { padding: .6rem 1rem; gap: .75rem; }
+    .dc-login-card { padding: 1rem; }
+    .dc-login-card .dc-login-initial .fi-simple-header-subheading { display: none; }
+    .dc-login-card .fi-simple-page-content, .dc-login-card .fi-sc-form { gap: 1rem; }
+    .dc-login-card .fi-sc { row-gap: .85rem; }
+    .dc-login-card .fi-input, .dc-login-card .fi-input-wrp, .dc-login-card .fi-btn { min-height: 2.75rem; }
+    .dc-login-divider { margin-bottom: .4rem; }
+    .dc-login-register-link { min-height: 2.75rem; }
+    .dc-login-footer { gap: .5rem 1rem; }
+    .dc-login-register > p { display: none; }
+    .dc-login-register-link { margin-top: 0; }
+    .dc-login-story { padding-block: .75rem; }
+}

@@ -7,6 +7,8 @@ use App\Enum\PanelEnum;
 use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
+use App\Filament\Standard\Pages\Auth\Login;
+use App\Http\Middleware\SetGuestLocale;
 use App\Filament\Standard\Pages\ChannelApplication;
 use App\Filament\Standard\Pages\Dashboard;
 use App\Filament\Standard\Pages\MyOffers;
@@ -41,6 +43,7 @@ class PanelUserPanelProvider extends PanelProvider
     {
         $this->addDefaults($panel);
         $this->addMiddlewares($panel);
+        $panel->middleware([SetGuestLocale::class], isPersistent: true);
         $this->addPlugins($panel);
         $this->addRenderHooks($panel);
         $this->addMFA($panel);
@@ -95,7 +98,7 @@ class PanelUserPanelProvider extends PanelProvider
             ->tenantMenu(false)
             ->tenantProfile(EditTenantProfile::class)
             ->profile(EditProfile::class)
-            ->login()
+            ->login(Login::class)
             ->registration(Register::class)
             ->emailVerification()
             ->emailChangeVerification()
@@ -127,6 +130,7 @@ class PanelUserPanelProvider extends PanelProvider
     protected function addRenderHooks(Panel $panel): Panel
     {
         return $panel->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.standard.components.support'))
+            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn () => view('filament.standard.components.login-register'), scopes: [Login::class])
             ->renderHook(
                 PanelsRenderHook::CONTENT_END,
                 function (): ?string {

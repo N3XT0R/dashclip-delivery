@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `node database/seeders/data/images/build-covers.mjs`.
 
 ### Changed
+- **Standard panel login**
+    - add a responsive split-screen sign-in page with the homepage branding, a highway image,
+      translated guidance and a persistent guest language selector.
+    - adapt spacing to viewport height and use a compact mobile layout to avoid unnecessary
+      scrolling while allowing overflow for small landscape screens and enlarged text.
+    - retain Filament's authentication, password recovery and multi-factor challenge forms.
 - **Standard panel redesign**
     - introduce a dark sidebar, orange accents, responsive dashboard and dedicated panel theme
       with a shared stylesheet that other panels can adopt.
