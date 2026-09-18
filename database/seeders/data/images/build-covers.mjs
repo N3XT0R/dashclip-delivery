@@ -1,12 +1,14 @@
 #!/usr/bin/env node
-// Build the cover artwork for the weekly blog articles.
+// Build the cover artwork for the weekly blog articles and the release news.
 //
-//   node database/seeders/data/images/build-covers.mjs
+//   node database/seeders/data/images/build-covers.mjs [key ...]
 //
-// Reads the article list from blog-editorial-queue.php, writes one SVG per article to src/
-// and rasterises each one to covers/<key>.webp at 1280x720, the aspect ratio the blog cards
-// and the social preview both expect. Both the sources and the rendered files are committed,
-// so seeding never depends on this script being run again.
+// Reads the article list from blog-editorial-queue.php and the release news from
+// releases/<version>.php, writes one SVG per article to src/ and rasterises each one to
+// covers/<key>.webp at 1280x720, the aspect ratio the blog cards and the social preview both
+// expect. Pass article keys to render only those covers and leave the committed ones untouched.
+// Both the sources and the rendered files are committed, so seeding never depends on this
+// script being run again.
 
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -130,9 +132,13 @@ const articles = JSON.parse(
         '-r',
         '$d = require "'
             + join(here, '..', 'blog-editorial-queue.php')
-            + '"; $out = []; foreach ($d["articles"] as $k => $a) { $out[] = ["key" => $k, "category" => $a["category"], "title" => $a["translations"]["de"]["title"]]; } echo json_encode($out);',
+            + '"; $out = []; foreach ($d["articles"] as $k => $a) { $out[] = ["key" => $k, "category" => $a["category"], "title" => $a["translations"]["de"]["title"]]; }'
+            + ' foreach (glob("'
+            + join(here, '..', 'releases')
+            + '/*.php") as $f) { $r = require $f; $out[] = ["key" => $r["key"], "category" => "news", "title" => $r["translations"]["de"]["title"]]; }'
+            + ' echo json_encode($out);',
     ]).toString(),
-);
+).filter((article) => process.argv.length <= 2 || process.argv.slice(2).includes(article.key));
 
 mkdirSync(sourceDirectory, { recursive: true });
 mkdirSync(targetDirectory, { recursive: true });
@@ -143,7 +149,12 @@ for (const article of articles) {
 
 execFileSync(
     'npx',
-    ['-y', 'sharp-cli', '--input', join(sourceDirectory, '*.svg'), '--output', targetDirectory, '--format', 'webp'],
+    [
+        '-y', 'sharp-cli',
+        '--input', ...articles.map((article) => join(sourceDirectory, `${article.key}.svg`)),
+        '--output', targetDirectory,
+        '--format', 'webp',
+    ],
     { stdio: 'ignore' },
 );
 

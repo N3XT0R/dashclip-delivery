@@ -65,3 +65,21 @@ verändern nichts, auch wenn Titel oder Slugs inzwischen geändert oder Inhalte 
 Bereits vorhandene Kategorien und Tags mit den initialen Slugs werden beim Erstlauf verwendet;
 ihre vorhandenen Übersetzungen bleiben erhalten. Inhalt und Ausführungsmarkierung werden in
 derselben Transaktion gespeichert: Bei einem Fehler bleibt kein halbfertiger Erstlauf zurück.
+
+### Release-Neuigkeiten
+
+Zu jeder neuen Version erscheint ein Neuigkeiten-Artikel auf Deutsch und Englisch, der die
+Änderungen für Einsender und Kanalbetreiber verständlich zusammenfasst. Weil ein Deployment nur
+die Migrationen ausführt, veröffentlicht eine Migration pro Version den Artikel über den
+`ReleaseNewsSeeder`. Der Artikel ist damit direkt nach dem Deployment öffentlich; ein
+zusätzlicher Befehl ist nicht nötig.
+
+Die Inhalte liegen unter `database/seeders/data/releases/`: `<version>.php` enthält Slugs, Titel,
+Kurzbeschreibungen und Metadaten, `<version>.de.md` und `<version>.en.md` die Artikeltexte. Das
+Titelbild entsteht mit `node database/seeders/data/images/build-covers.mjs release-<version>`,
+wobei die Punkte der Versionsnummer durch Bindestriche ersetzt werden (etwa `release-4-9-0`).
+
+Auch hier verhindert `blog_seed_runs` eine doppelte Veröffentlichung (`release-news-<version>`).
+Gibt es noch keinen Benutzer mit der Rolle `super_admin` im Guard `web`, überspringt die
+Migration den Artikel, ohne das Deployment abzubrechen; ein späterer Aufruf von
+`ReleaseNewsSeeder` mit derselben Version holt ihn nach.

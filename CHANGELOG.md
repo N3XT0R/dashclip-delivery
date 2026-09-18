@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Passkeys**: Sign in with a passkey from the login page, or use one as a second sign-in step.
   Add, rename and remove passkeys in the account profile.
+- **Release news**: Publish a German and English news article with every version that explains the
+  changes for submitters and channel operators, starting with 4.9.0. It goes live with the
+  deployment.
 
 ### Changed
 - **Account profile**: Group personal details, sign-in settings and notifications into translated
