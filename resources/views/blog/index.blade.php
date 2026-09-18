@@ -28,3 +28,11 @@
     </div>
 </div>
 @endsection
+@push('head')
+@foreach($alternates as $locale => $href)
+<link rel="alternate" hreflang="{{ $locale }}" href="{{ $href }}">
+@endforeach
+@if($alternates !== [])
+<link rel="alternate" hreflang="x-default" href="{{ $alternates['de'] ?? reset($alternates) }}">
+@endif
+@endpush

@@ -32,21 +32,28 @@ final class BlogController extends Controller
         $categoryId = null;
         $tagId = null;
         $heading = __('blog.title');
+        $alternates = $this->presentation->languages();
         if ($request->routeIs('*.category')) {
             $category = $this->posts->category($locale, $slug);
             $heading = $category->name;
             $categoryId = $category->category_id;
+            $alternates = $this->presentation->taxonomyLanguages('category', $category->category->translations);
         }
         if ($request->routeIs('*.tag')) {
             $tag = $this->posts->tag($locale, $slug);
             $heading = $tag->name;
             $tagId = $tag->tag_id;
+            $alternates = $this->presentation->taxonomyLanguages('tag', $tag->tag->translations);
+        }
+        $request->attributes->set('blog_language_urls', [...$this->presentation->languages(), ...$alternates]);
+        if ($term !== '' || $request->routeIs('*.search') || $request->integer('page') > 1) {
+            $alternates = [];
         }
         $articles = $term !== ''
             ? $search->execute($locale, $term, 9, $categoryId, $tagId)
             : $list->execute($locale, 9, $categoryId, $tagId);
         return view('blog.index', [
-            'articles' => $articles->withQueryString(), 'heading' => $heading, 'term' => $term,
+            'articles' => $articles->withQueryString(), 'heading' => $heading, 'term' => $term, 'alternates' => $alternates,
             ...$this->sidebar($locale),
         ]);
     }
