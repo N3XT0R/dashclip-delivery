@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'title' => 'Passkeys',
-    'description' => 'Hinterlege mehrere Passkeys, zum Beispiel für dein Smartphone, deinen Computer und einen Sicherheitsschlüssel. Sie gelten für dein Konto in beiden Panels.',
+    'description' => 'Hinterlege mehrere Passkeys, zum Beispiel für dein Smartphone, deinen Computer und einen Sicherheitsschlüssel. So kannst du dich auf jedem dieser Geräte ohne Passwort anmelden.',
     'registered' => 'Deine Passkeys',
     'add' => 'Passkey hinzufügen',
     'name' => 'Name',

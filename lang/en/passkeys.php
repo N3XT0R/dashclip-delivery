@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'title' => 'Passkeys',
-    'description' => 'Add multiple passkeys, for example for your phone, computer and security key. They work for your account in both panels.',
+    'description' => 'Add multiple passkeys, for example for your phone, computer and security key. This lets you sign in without a password on each of these devices.',
     'registered' => 'Your passkeys',
     'add' => 'Add passkey',
     'name' => 'Name',
