@@ -69,7 +69,14 @@ class ChannelTeamResource extends Resource
         return $schema
             ->components([
                 Forms\Components\Select::make('channel_id')
-                    ->relationship('channel', 'name')
+                    ->relationship(
+                        'channel',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, ?ChannelTeamPivot $record): Builder => $query->where(
+                            fn (Builder $query): Builder => $query->isActive()
+                                ->when($record?->channel_id, fn (Builder $query, int $channelId): Builder => $query->orWhereKey($channelId))
+                        ),
+                    )
                     ->required(),
                 Forms\Components\TextInput::make('quota')
                     ->numeric()

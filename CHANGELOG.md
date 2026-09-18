@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Account profile**: Open the profile inside the regular user area with the full navigation,
   scoped to the user's own team.
 
+### Fixed
+- **Team channels**: Only offer channels that currently accept videos when assigning a channel to a
+  team. Existing assignments to paused channels stay editable.
+
 ### Security
 - **Account profile**: Require the current password before changing an email address or password.
 
