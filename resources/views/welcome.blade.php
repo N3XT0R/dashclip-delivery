@@ -3,6 +3,10 @@
 @section('title', __('public.page_title'))
 @section('description', __('public.description'))
 @section('full_width', '1')
+@push('head')
+<x-public.structured-data :data="app(\App\Services\StructuredDataService::class)->organization()" />
+<x-public.structured-data :data="app(\App\Services\StructuredDataService::class)->website()" />
+@endpush
 
 @section('content')
     <section class="relative isolate overflow-hidden bg-ink text-white" aria-labelledby="hero-title">

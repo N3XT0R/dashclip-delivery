@@ -39,6 +39,6 @@
 @endif
 @endforeach
 <link rel="alternate" hreflang="x-default" href="{{ $blog->languages($article)['de'] }}">
-<script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'Article', 'headline' => $article->title, 'image' => $blog->image($article), 'datePublished' => $article->published_at?->toAtomString(), 'dateModified' => $article->updated_at->toAtomString(), 'author' => ['@type' => 'Person', 'name' => $article->post->author->display_name]], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>
+<x-public.structured-data :data="app(\App\Services\StructuredDataService::class)->article($article, $article->canonical_url ?: $blog->url('show', $article->locale, ['slug' => $article->slug]))" />
 @endunless
 @endpush

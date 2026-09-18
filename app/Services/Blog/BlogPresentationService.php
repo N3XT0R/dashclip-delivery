@@ -51,4 +51,19 @@ final class BlogPresentationService
         }
         return $links;
     }
+
+    /**
+     * Map translated taxonomy slugs to their addresses in each blog language.
+     * @param iterable<object{locale: string, slug: string}> $translations Category or tag translations.
+     * @return array<string, string>
+     */
+    public function taxonomyLanguages(string $action, iterable $translations): array
+    {
+        $links = [];
+        foreach ($translations as $translation) {
+            $links[$translation->locale] = $this->url($action, $translation->locale, ['slug' => $translation->slug]);
+        }
+        ksort($links);
+        return $links;
+    }
 }
