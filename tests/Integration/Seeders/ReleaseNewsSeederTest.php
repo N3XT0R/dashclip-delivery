@@ -57,11 +57,37 @@ class ReleaseNewsSeederTest extends DatabaseTestCase
         $this->get('/blog/neu-in-version-4-9-0')
             ->assertOk()
             ->assertSee('Neu in Version 4.9.0: Passkeys und ein aufgeräumtes Profil')
-            ->assertSee('Anmelden mit Passkey');
+            ->assertSee('Anmelden mit Passkey')
+            ->assertSee('href="https://www.bsi.bund.de/DE/', false);
         $this->get('/en/blog/new-in-version-4-9-0')
             ->assertOk()
             ->assertSee('New in version 4.9.0: passkeys and a tidier profile')
-            ->assertSee('Sign in with a passkey');
+            ->assertSee('Sign in with a passkey')
+            ->assertSee('href="https://www.bsi.bund.de/DE/', false);
+    }
+
+    public function testRefreshUpdatesUneditedPublishedReleaseNews(): void
+    {
+        User::factory()->admin()->create();
+        $this->app->make(ReleaseNewsSeeder::class)->run('4.9.0');
+        PostTranslation::query()->update(['content' => 'Previously shipped text.', 'updated_at' => DB::raw('created_at')]);
+
+        (require database_path('migrations/2026_09_18_210000_refresh_release_news_4_9_0.php'))->up();
+
+        foreach (PostTranslation::query()->get() as $translation) {
+            $this->assertStringContainsString('bsi.bund.de', $translation->content);
+        }
+    }
+
+    public function testRefreshKeepsEditorialChanges(): void
+    {
+        User::factory()->admin()->create();
+        $this->app->make(ReleaseNewsSeeder::class)->run('4.9.0');
+        PostTranslation::query()->update(['content' => 'Edited by the editorial team.', 'updated_at' => now()->addHour()]);
+
+        $this->app->make(ReleaseNewsSeeder::class)->refreshContent('4.9.0');
+
+        $this->assertSame(['Edited by the editorial team.'], PostTranslation::query()->pluck('content')->unique()->values()->all());
     }
 
     public function testReleaseNewsIsPublishedOnlyOnce(): void

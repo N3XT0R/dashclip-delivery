@@ -41,6 +41,14 @@ Argument: the version (e.g. `4.10.0`). If missing, ask for it.
    `/blog/<de-slug>` and `/en/blog/<en-slug>`.
 8. **Commit** `feat(blog): publish the <version> release news`, push, open the PR.
 
+## Correcting an already deployed article
+
+The publish migration runs once per environment, so later edits to the Markdown files do not reach
+articles that are already live. Edit the `.md` files, then add a migration whose `up()` calls
+`app(ReleaseNewsSeeder::class)->refreshContent('<version>')` (see
+`2026_09_18_210000_refresh_release_news_4_9_0.php`). It only updates translations nobody edited in
+the editor since they were created.
+
 ## Writing rules
 
 | Rule | Detail |
@@ -50,7 +58,7 @@ Argument: the version (e.g. `4.10.0`). If missing, ask for it.
 | Forbidden terms | Framework or library names, "Panel", "Tenant", class names, ticket numbers, internal wording from the changelog. |
 | Punctuation | No em-dashes. Use commas, colons or periods. |
 | Callouts | Only `> [!NOTE]` and `> [!WARNING]`. Other types do not render. |
-| Links | Relative app paths such as `/standard/profile`, `/standard/login`, `/standard/register`, `/blog`. |
+| Links | Relative app paths such as `/standard/profile`, `/standard/login`, `/standard/register`, `/blog`. External sources only from verified official pages; mark German-only sources with "(in German)" in the English text. |
 | Accuracy | Describe behaviour as it is, including side effects users will notice. |
 
 ## Common mistakes
