@@ -7,15 +7,14 @@ namespace Database\Seeders;
 use App\Enum\Blog\PostStatusEnum;
 use App\Exceptions\Blog\BlogSeedAuthorMissingException;
 use App\Models\Post;
-use App\Models\PostCategory;
-use App\Models\PostTag;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
+use Database\Seeders\Concerns\SeedsBlogContent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class BlogContentSeeder extends Seeder
 {
+    use SeedsBlogContent;
+
     private const SEED_NAME = 'initial-editorial-content';
 
     /**
@@ -31,8 +30,7 @@ class BlogContentSeeder extends Seeder
                 return;
             }
 
-            $author = User::query()->whereHas('roles', static fn (Builder $query) => $query
-                ->where('name', 'super_admin')->where('guard_name', 'web'))->orderBy('id')->first();
+            $author = $this->blogAuthor();
             if ($author === null) {
                 throw BlogSeedAuthorMissingException::forInitialContent();
             }
@@ -53,41 +51,5 @@ class BlogContentSeeder extends Seeder
             }
             $this->command?->info('Initial blog categories, tags and the German/English introduction have been created.');
         });
-    }
-
-    /**
-     * Reuse existing category slugs while preserving their editorial labels.
-     * @param array<string, array{icon: string, translations: array<string, array{name: string, slug: string, description: string}>}> $categories
-     * @return array<string, int> Category identifiers keyed by the initial slug.
-     */
-    private function seedCategories(array $categories): array
-    {
-        $ids = [];
-        foreach ($categories as $slug => $data) {
-            $category = PostCategory::query()->firstOrCreate(['slug' => $slug], ['icon' => $data['icon']]);
-            foreach ($data['translations'] as $locale => $translation) {
-                $category->translations()->firstOrCreate(['locale' => $locale], $translation);
-            }
-            $ids[$slug] = $category->id;
-        }
-        return $ids;
-    }
-
-    /**
-     * Reuse existing tag slugs and create only missing translations.
-     * @param array<string, array<string, array{name: string, slug: string}>> $tags
-     * @return array<string, int> Tag identifiers keyed by the initial slug.
-     */
-    private function seedTags(array $tags): array
-    {
-        $ids = [];
-        foreach ($tags as $slug => $translations) {
-            $tag = PostTag::query()->firstOrCreate(['slug' => $slug]);
-            foreach ($translations as $locale => $translation) {
-                $tag->translations()->firstOrCreate(['locale' => $locale], $translation);
-            }
-            $ids[$slug] = $tag->id;
-        }
-        return $ids;
     }
 }
