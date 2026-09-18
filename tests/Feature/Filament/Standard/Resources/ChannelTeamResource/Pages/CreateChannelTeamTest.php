@@ -58,4 +58,34 @@ final class CreateChannelTeamTest extends DatabaseTestCase
             'quota' => 9,
         ]);
     }
+
+    public function testPausedChannelIsNotOfferedForSelection(): void
+    {
+        $active = Channel::factory()->create(['name' => 'Active Channel']);
+        $paused = Channel::factory()->create(['name' => 'Paused Channel', 'is_video_reception_paused' => true]);
+
+        $options = Livewire::test(CreateChannelTeam::class)
+            ->instance()
+            ->getSchema('form')
+            ->getComponent('channel_id')
+            ->getSearchResults('Channel');
+
+        $this->assertArrayHasKey($active->getKey(), $options);
+        $this->assertArrayNotHasKey($paused->getKey(), $options);
+    }
+
+    public function testPausedChannelCannotBeAssigned(): void
+    {
+        $channel = Channel::factory()->create(['is_video_reception_paused' => true]);
+
+        Livewire::test(CreateChannelTeam::class)
+            ->fillForm([
+                'channel_id' => $channel->getKey(),
+                'quota' => 9,
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['channel_id']);
+
+        $this->assertDatabaseMissing(ChannelTeamPivot::class, ['channel_id' => $channel->getKey()]);
+    }
 }
