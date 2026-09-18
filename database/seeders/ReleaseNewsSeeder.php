@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Enum\Blog\PostStatusEnum;
 use App\Exceptions\Blog\BlogSeedCoverMissingException;
 use App\Models\Post;
+use App\Models\PostTranslation;
 use Database\Seeders\Concerns\SeedsBlogContent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -64,5 +65,22 @@ class ReleaseNewsSeeder extends Seeder
             }
             $this->command?->info('The '.$version.' release news has been published in German and English.');
         });
+    }
+
+    /**
+     * Bring already published release news up to date with the shipped article text.
+     * Translations edited in the editor since they were created are left untouched.
+     */
+    public function refreshContent(string $version): void
+    {
+        $release = require database_path('seeders/data/releases/'.$version.'.php');
+        foreach ($release['translations'] as $locale => $translation) {
+            $updated = PostTranslation::query()
+                ->where('locale', $locale)
+                ->where('slug', $translation['slug'])
+                ->whereColumn('updated_at', 'created_at')
+                ->update(['content' => (string)file_get_contents(database_path('seeders/data/releases/'.$version.'.'.$locale.'.md'))]);
+            $this->command?->info('Refreshed '.$updated.' '.$locale.' translation(s) of the '.$version.' release news.');
+        }
     }
 }
