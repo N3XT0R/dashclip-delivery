@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Passkeys**: Sign in with a passkey from the login page, or use one as a second sign-in step.
+  Add, rename and remove passkeys in the account profile.
+
 ### Changed
 - **Account profile**: Group personal details, sign-in settings and notifications into translated
   sections using the shared panel design.

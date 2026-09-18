@@ -1,4 +1,5 @@
 import './bootstrap';
+import './components/passkeys';
 import ZipDownloader from './components/ZipDownloader';
 import 'cookieconsent/build/cookieconsent.min.css';
 
