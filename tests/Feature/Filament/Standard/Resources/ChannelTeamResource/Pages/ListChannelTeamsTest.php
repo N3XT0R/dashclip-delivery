@@ -64,4 +64,22 @@ final class ListChannelTeamsTest extends DatabaseTestCase
             ->assertTableColumnStateSet('channel.name', $channel->name, record: $tenantChannelTeam)
             ->assertTableColumnStateSet('quota', 5, record: $tenantChannelTeam);
     }
+
+    public function testListChannelTeamsHidesPausedChannels(): void
+    {
+        $activeChannelTeam = ChannelTeamPivot::query()->create([
+            'team_id' => $this->tenant->getKey(),
+            'channel_id' => Channel::factory()->create()->getKey(),
+            'quota' => 5,
+        ]);
+        $pausedChannelTeam = ChannelTeamPivot::query()->create([
+            'team_id' => $this->tenant->getKey(),
+            'channel_id' => Channel::factory()->create(['is_video_reception_paused' => true])->getKey(),
+            'quota' => 5,
+        ]);
+
+        Livewire::test(ListChannelTeams::class)
+            ->assertCanSeeTableRecords([$activeChannelTeam])
+            ->assertCanNotSeeTableRecords([$pausedChannelTeam]);
+    }
 }

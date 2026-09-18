@@ -18,8 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   scoped to the user's own team.
 
 ### Fixed
-- **Team channels**: Only offer channels that currently accept videos when assigning a channel to a
-  team. Existing assignments to paused channels stay editable.
+- **Team channels**: Hide channels with paused video reception from the team channel list and only
+  offer channels that currently accept videos when assigning a channel to a team.
 
 ### Security
 - **Account profile**: Require the current password before changing an email address or password.
