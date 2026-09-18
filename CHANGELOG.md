@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Search engines and link previews**: Describe the organization, website and articles with
+  structured data, link the German and English versions of the blog overview, categories and tags,
+  and name the site and language in link previews. The blog language switcher on a category or tag
+  page now leads to the same category or tag in the other language.
+
+### Fixed
+- **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for
+  search engines.
+
 ## [4.9.0] - 2026-09-18
 
 ### Added
@@ -21,14 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sections using the shared panel design.
 - **Account profile**: Open the profile inside the regular user area with the full navigation,
   scoped to the user's own team.
-- **Search engines and link previews**: Describe the organization, website and articles with
-  structured data, link the German and English versions of the blog overview, categories and tags,
-  and name the site and language in link previews. The blog language switcher on a category or tag
-  page now leads to the same category or tag in the other language.
 
 ### Fixed
-- **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for
-  search engines.
 - **Team channels**: Hide channels with paused video reception from the team channel list and only
   offer channels that currently accept videos when assigning a channel to a team.
 
