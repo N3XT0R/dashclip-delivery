@@ -6,6 +6,7 @@ namespace Tests\Integration\Filament\Admin\Pages\Auth;
 
 use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
@@ -67,6 +68,7 @@ final class EditProfilePageTest extends DatabaseTestCase
                 'email' => 'updated@example.com',
                 'password' => 'new-password-123',
                 'passwordConfirmation' => 'new-password-123',
+                'currentPassword' => 'old-password',
             ])
             ->call('save')
             ->assertHasNoFormErrors();
@@ -84,5 +86,52 @@ final class EditProfilePageTest extends DatabaseTestCase
             Hash::check('new-password-123', $this->user->fresh()->password),
             'Expected password to be hashed correctly in the database.'
         );
+    }
+
+    public function testPasswordChangeRequiresCurrentPassword(): void
+    {
+        $this->actingAs($this->user);
+
+        Livewire::test(EditProfile::class)
+            ->fillForm([
+                'password' => 'new-password-123',
+                'passwordConfirmation' => 'new-password-123',
+            ])
+            ->call('save')
+            ->assertHasFormErrors(['currentPassword' => 'required']);
+
+        $this->assertTrue(Hash::check('old-password', $this->user->fresh()->password));
+    }
+
+    public function testEmailChangeRejectsIncorrectCurrentPassword(): void
+    {
+        $this->actingAs($this->user);
+
+        Livewire::test(EditProfile::class)
+            ->fillForm([
+                'email' => 'changed@example.com',
+                'currentPassword' => 'incorrect-password',
+            ])
+            ->call('save')
+            ->assertHasFormErrors(['currentPassword' => 'current_password']);
+
+        $this->assertSame('original@example.com', $this->user->fresh()->email);
+    }
+
+    public function testStandardPanelValidatesThePasswordAgainstItsOwnGuard(): void
+    {
+        Filament::setCurrentPanel('standard');
+        $this->actingAs($this->user, 'standard');
+
+        Livewire::test(EditProfile::class)
+            ->fillForm([
+                'password' => 'new-password-123',
+                'passwordConfirmation' => 'new-password-123',
+                'currentPassword' => 'old-password',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertTrue(Hash::check('new-password-123', $this->user->fresh()->password));
     }
 }

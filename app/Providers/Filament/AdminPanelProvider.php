@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
+use App\Filament\Auth\PasskeyProvider;
 use App\Filament\Admin\Pages\Auth\EditProfile;
 use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\SetGuestLocale;
@@ -123,6 +124,7 @@ class AdminPanelProvider extends PanelProvider
             AppAuthentication::make()
                 ->recoverable(),
             EmailAuthentication::make(),
+            PasskeyProvider::make(),
         ]);
     }
 

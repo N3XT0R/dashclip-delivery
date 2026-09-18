@@ -4,7 +4,8 @@ namespace App\Providers\Filament;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
-use App\Filament\Admin\Pages\Auth\EditProfile;
+use App\Filament\Auth\PasskeyProvider;
+use App\Filament\Standard\Pages\Auth\EditProfile;
 use App\Filament\Standard\Pages\Auth\EditTenantProfile;
 use App\Filament\Standard\Pages\Auth\Register;
 use App\Filament\Pages\Auth\Login;
@@ -97,7 +98,7 @@ class PanelUserPanelProvider extends PanelProvider
             )
             ->tenantMenu(false)
             ->tenantProfile(EditTenantProfile::class)
-            ->profile(EditProfile::class)
+            ->profile(EditProfile::class, isSimple: false)
             ->login(Login::class)
             ->registration(Register::class)
             ->emailVerification()
@@ -152,6 +153,7 @@ class PanelUserPanelProvider extends PanelProvider
             AppAuthentication::make()
                 ->recoverable(),
             EmailAuthentication::make(),
+            PasskeyProvider::make(),
         ]);
     }
 

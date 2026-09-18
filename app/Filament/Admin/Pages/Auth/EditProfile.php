@@ -15,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 
 class EditProfile extends BaseEditProfile
@@ -23,7 +24,32 @@ class EditProfile extends BaseEditProfile
 
     private const CHECKBOX_NAMESPACE = 'notifications.mail.types.';
 
+    public function getSubheading(): ?string
+    {
+        return __('profile.description');
+    }
 
+    /**
+     * Keep the security methods alongside account details in the full panel layout.
+     */
+    public function content(Schema $schema): Schema
+    {
+        $components = [$this->getFormContentComponent()->columnSpan(static::isSimple() ? 1 : ['xl' => 2])];
+        $multiFactorSection = $this->getMultiFactorAuthenticationContentComponent();
+
+        if ($multiFactorSection !== null) {
+            $components[] = $multiFactorSection;
+        }
+
+        return $schema
+            ->columns(static::isSimple() ? 1 : ['xl' => 3])
+            ->components($components);
+    }
+
+
+    /**
+     * Group account preferences and sensitive changes using the shared panel components.
+     */
     public function form(Schema $schema): Schema
     {
         /**
@@ -31,14 +57,27 @@ class EditProfile extends BaseEditProfile
          */
         $nameComponent = $this->getNameFormComponent();
         return $schema
+            ->inlineLabel(false)
             ->components([
-                $nameComponent
-                    ->unique(),
-                $this->getSubmittedNameComponent(),
-                $this->getEmailFormComponent(),
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
-                $this->getLocaleComponent(),
+                Section::make(__('profile.account.title'))
+                    ->description(__('profile.account.description'))
+                    ->icon(Heroicon::OutlinedUserCircle)
+                    ->columns(2)
+                    ->schema([
+                        $nameComponent->unique(),
+                        $this->getSubmittedNameComponent(),
+                        $this->getLocaleComponent(),
+                    ]),
+                Section::make(__('profile.security.title'))
+                    ->description(__('profile.security.description'))
+                    ->icon(Heroicon::OutlinedLockClosed)
+                    ->columns(2)
+                    ->schema([
+                        $this->getEmailFormComponent()->columnSpanFull(),
+                        $this->getPasswordFormComponent(),
+                        $this->getPasswordConfirmationFormComponent(),
+                        $this->getCurrentPasswordFormComponent()->columnSpanFull(),
+                    ]),
                 $this->getNotificationComponent(),
             ]);
     }
@@ -75,6 +114,7 @@ class EditProfile extends BaseEditProfile
         $repo = app(UserMailConfigRepository::class);
 
         return Section::make(__('notifications.mail.title'))
+            ->icon(Heroicon::OutlinedBell)
             ->collapsed()
             ->schema(
                 collect(NotificationDiscovery::list())

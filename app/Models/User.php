@@ -32,6 +32,8 @@ use N3XT0R\LaravelPassportAuthorizationCore\Models\Traits\HasPassportScopeGrants
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\LaravelPasskeys\Models\Concerns\HasPasskeys;
+use Spatie\LaravelPasskeys\Models\Concerns\InteractsWithPasskeys;
 
 class User extends Authenticatable implements
     FilamentUser,
@@ -43,7 +45,8 @@ class User extends Authenticatable implements
     HasDefaultTenant,
     HasLocalePreference,
     OAuthenticatable,
-    HasPassportScopeGrantsInterface
+    HasPassportScopeGrantsInterface,
+    HasPasskeys
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -52,6 +55,7 @@ class User extends Authenticatable implements
     use LogsActivity;
     use HasApiTokens;
     use HasPassportScopeGrantsTrait;
+    use InteractsWithPasskeys;
 
     /**
      * The attributes that are mass assignable.
