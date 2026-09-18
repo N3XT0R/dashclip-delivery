@@ -72,10 +72,7 @@ class ChannelTeamResource extends Resource
                     ->relationship(
                         'channel',
                         'name',
-                        modifyQueryUsing: fn (Builder $query, ?ChannelTeamPivot $record): Builder => $query->where(
-                            fn (Builder $query): Builder => $query->isActive()
-                                ->when($record?->channel_id, fn (Builder $query, int $channelId): Builder => $query->orWhereKey($channelId))
-                        ),
+                        modifyQueryUsing: fn (Builder $query): Builder => $query->isActive(),
                     )
                     ->required(),
                 Forms\Components\TextInput::make('quota')
@@ -149,6 +146,7 @@ class ChannelTeamResource extends Resource
         $tenant = Filament::getTenant();
 
         return parent::getEloquentQuery()
-            ->where('team_id', $tenant?->getKey());
+            ->where('team_id', $tenant?->getKey())
+            ->whereHas('channel', fn (Builder $query): Builder => $query->isActive());
     }
 }

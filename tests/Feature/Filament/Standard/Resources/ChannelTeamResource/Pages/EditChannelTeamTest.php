@@ -63,23 +63,4 @@ final class EditChannelTeamTest extends DatabaseTestCase
 
         $this->assertSame(11, $channelTeam->quota);
     }
-
-    public function testExistingAssignmentToPausedChannelStaysEditable(): void
-    {
-        $channel = Channel::factory()->create(['is_video_reception_paused' => true]);
-
-        $channelTeam = ChannelTeamPivot::query()->create([
-            'team_id' => $this->tenant->getKey(),
-            'channel_id' => $channel->getKey(),
-            'quota' => 6,
-        ]);
-
-        Livewire::test(EditChannelTeam::class, ['record' => $channelTeam->getKey()])
-            ->assertFormSet(['channel_id' => $channel->getKey()])
-            ->fillForm(['quota' => 3])
-            ->call('save')
-            ->assertHasNoFormErrors();
-
-        $this->assertSame(3, (int) $channelTeam->refresh()->quota);
-    }
 }
