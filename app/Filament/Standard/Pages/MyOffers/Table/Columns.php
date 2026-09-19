@@ -8,6 +8,7 @@ use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
+use Illuminate\Database\Eloquent\Builder;
 
 final class Columns
 {
@@ -119,17 +120,11 @@ final class Columns
 
     public function downloadedAt(MyOffers $page): TextColumn
     {
-        return TextColumn::make('downloads.downloaded_at')
+        return TextColumn::make('latestDownload.downloaded_at')
             ->label(__('my_offers.table.columns.downloaded_at'))
-            ->formatStateUsing(
-                fn (Assignment $record): string => $record->downloads
-                    ->sortByDesc('downloaded_at')
-                    ->first()
-                    ?->downloaded_at
-                    ?->format('d.m.Y H:i')
-                    ?? '—'
-            )
-            ->sortable()
+            ->dateTime('d.m.Y H:i')
+            ->placeholder('-')
+            ->sortable(query: fn (Builder $query, string $direction): Builder => $query->reorder()->orderByLatestDownload($direction))
             ->visible(
                 fn (): bool => $page->activeTab === 'downloaded'
             );

@@ -12,6 +12,7 @@ use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Models\Download;
 use App\Models\User;
 use App\Repository\TeamRepository;
 use App\Services\AssignmentService;
@@ -179,6 +180,41 @@ final class MyOffersTest extends DatabaseTestCase
             ->assertDispatched('zip-download', function (string $name, array $params) use ($assignment): bool {
                 return ($params[0]['assignmentIds'] ?? null) === [$assignment->getKey()];
             });
+    }
+
+    public function testDownloadedTabShowsEachOfferOnceWithItsLatestDownload(): void
+    {
+        $user = User::factory()->create();
+        Role::findOrCreate(RoleEnum::CHANNEL_OPERATOR->value, GuardEnum::STANDARD->value);
+        $user->syncRoles([RoleEnum::CHANNEL_OPERATOR->value]);
+        $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
+        $channel = Channel::factory()->create();
+        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
+        $older = Assignment::factory()->withBatch()->create([
+            'channel_id' => $channel->getKey(), 'status' => StatusEnum::PICKEDUP->value,
+        ]);
+        $newer = Assignment::factory()->withBatch()->create([
+            'channel_id' => $channel->getKey(), 'status' => StatusEnum::PICKEDUP->value,
+        ]);
+        foreach (['2026-09-10 08:15:00', '2026-09-12 09:30:00', '2026-09-11 10:45:00'] as $downloadedAt) {
+            Download::factory()->create(['assignment_id' => $older->getKey(), 'downloaded_at' => $downloadedAt]);
+        }
+        Download::factory()->create(['assignment_id' => $newer->getKey(), 'downloaded_at' => '2026-09-15 12:00:00']);
+        Filament::setTenant($team, true);
+        Filament::auth()->login($user);
+        $this->actingAs($user, GuardEnum::STANDARD->value);
+
+        $page = Livewire::test(MyOffers::class, ['activeTab' => 'downloaded'])->loadTable();
+
+        $this->assertSame([$newer->getKey(), $older->getKey()], $page->instance()->getTableRecords()->modelKeys());
+        $html = $page->html();
+        $this->assertSame(1, substr_count($html, '12.09.2026 09:30'));
+        $this->assertSame(0, substr_count($html, '10.09.2026 08:15'));
+        $this->assertSame(0, substr_count($html, '11.09.2026 10:45'));
+        $this->assertSame(1, substr_count($html, '15.09.2026 12:00'));
+
+        $page->sortTable('latestDownload.downloaded_at', 'asc');
+        $this->assertSame([$older->getKey(), $newer->getKey()], $page->instance()->getTableRecords()->modelKeys());
     }
 
     public function testAssignmentTabsRejectNonAssignmentQueries(): void
