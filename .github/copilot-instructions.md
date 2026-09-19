@@ -4,10 +4,10 @@
 
 ### PHP & Required Extensions
 
-- **PHP 8.4+** minimum (Laravel 12 requirement)
+- **PHP 8.5+** minimum
 - **Required Extensions**: `ext-intl`, `ext-zip`, `ext-dom`, `ext-curl`, `ext-xml`, `ext-mbstring`, `ext-sqlite3`
-- **Verify Installation**: `php --version` (should show 8.4.x)
-- **Note**: Some systems have multiple PHP versions; ensure `php8.4` binary is used
+- **Verify Installation**: `php --version` (should show 8.5.x)
+- **Note**: Some systems have multiple PHP versions; ensure `php8.5` binary is used
 
 ### System Dependencies
 
@@ -278,10 +278,10 @@ Filament Shield auto-discovers pages. Custom pages need:
 
 ### PHP & Extensions (Required)
 
-- **PHP 8.4** minimum (Laravel 12 requirement)
+- **PHP 8.5** minimum
 - **Extensions**: `ext-intl`, `ext-zip`, `ext-dom`, `ext-curl`, `ext-xml`, `ext-mbstring`, `ext-sqlite3`
-- **Setup**: Use `php8.4` binary explicitly; some systems have multiple PHP versions installed
-- **Example**: `export PATH="/usr/bin:$PATH" && php --version` (should show 8.4.x)
+- **Setup**: Use `php8.5` binary explicitly; some systems have multiple PHP versions installed
+- **Example**: `export PATH="/usr/bin:$PATH" && php --version` (should show 8.5.x)
 
 ### Composer & Dependencies
 
