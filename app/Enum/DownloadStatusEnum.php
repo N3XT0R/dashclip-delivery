@@ -21,4 +21,6 @@ enum DownloadStatusEnum: string
     case UNKNOWN = 'unknown';
 
     case FAILED = 'failed';
+
+    case SKIPPED = 'skipped';
 }
