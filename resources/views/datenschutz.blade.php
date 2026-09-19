@@ -152,8 +152,10 @@
         @php
             $storageProvider = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'default', ''));
             $storageDpaUrl = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_DPA_URL, 'default', ''));
-            $hasStorageDpa = filter_var($storageDpaUrl, FILTER_VALIDATE_URL) !== false
-                && in_array(parse_url($storageDpaUrl, PHP_URL_SCHEME), ['http', 'https'], true);
+            // an absolute http(s) link, or a file hosted by the platform such as /legal/avv.pdf
+            $hasStorageDpa = (filter_var($storageDpaUrl, FILTER_VALIDATE_URL) !== false
+                    && in_array(parse_url($storageDpaUrl, PHP_URL_SCHEME), ['http', 'https'], true))
+                || preg_match('#^/(?!/)[A-Za-z0-9._~/%-]+$#', $storageDpaUrl) === 1;
         @endphp
         @if ($hasStorageDpa)
             <section class="mb-6">

@@ -50,12 +50,23 @@ final class PrivacyStorageProcessorTest extends DatabaseTestCase
             ->assertSee('href="https://example.com/avv.pdf"', false);
     }
 
-    public function testUnsafeAgreementLinksAreNotRendered(): void
+    public function testAgreementCanBeAFileHostedByThePlatform(): void
     {
-        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, 'javascript:alert(1)', 'default');
+        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, '/legal/avv-hetzner.pdf', 'default');
 
         $this->get('/datenschutz')->assertOk()
-            ->assertDontSee('Speicherung bei einem Auftragsverarbeiter')
-            ->assertDontSee('javascript:alert(1)', false);
+            ->assertSee('Speicherung bei einem Auftragsverarbeiter')
+            ->assertSee('href="/legal/avv-hetzner.pdf"', false);
+    }
+
+    public function testUnsafeAgreementLinksAreNotRendered(): void
+    {
+        foreach (['javascript:alert(1)', '//evil.example/avv.pdf', 'legal/avv.pdf'] as $link) {
+            Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, $link, 'default');
+
+            $this->get('/datenschutz')->assertOk()
+                ->assertDontSee('Speicherung bei einem Auftragsverarbeiter')
+                ->assertDontSee('href="'.$link.'"', false);
+        }
     }
 }
