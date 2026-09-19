@@ -21,6 +21,8 @@
 /tmp/refine-public.cjs
 /public/hot
 /public/storage
+/public/legal/*
+!/public/legal/.gitkeep
 /storage/*.key
 /storage/pail
 /vendor

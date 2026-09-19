@@ -83,3 +83,18 @@ Auch hier verhindert `blog_seed_runs` eine doppelte Veröffentlichung (`release-
 Gibt es noch keinen Benutzer mit der Rolle `super_admin` im Guard `web`, überspringt die
 Migration den Artikel, ohne das Deployment abzubrechen; ein späterer Aufruf von
 `ReleaseNewsSeeder` mit derselben Version holt ihn nach.
+
+### Rechtliche Dokumente
+
+Öffentliche Dokumente können unter `public/legal/` abgelegt werden und sind dann unter
+`/legal/<datei>` erreichbar. Das Verzeichnis ist in `deploy_laravel_config.php` als
+`shared_dirs`-Eintrag hinterlegt: Die Dateien liegen auf dem Server unter `shared/public/legal/`
+und bleiben bei jedem Release erhalten. Im Repository enthält das Verzeichnis nur `.gitkeep`;
+abgelegte Dateien werden nicht versioniert. Vertrauliche Dokumente wie ein unterschriebener
+Auftragsverarbeitungsvertrag gehören nicht dorthin.
+
+Die Datenschutzseite nennt den Speicher-Anbieter, sobald im Adminbereich
+`privacy_storage_provider_name` gesetzt ist, etwa mit Serverstandort, und weist auf den
+Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO hin. Optional verlinkt
+`privacy_storage_dpa_url` öffentliche Datenschutzhinweise des Anbieters, als vollständige
+`https://`-Adresse oder als Pfad einer Datei in `public/legal/`.

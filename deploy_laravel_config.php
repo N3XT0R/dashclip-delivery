@@ -7,7 +7,8 @@ require 'contrib/npm.php';
 
 add('recipes', ['laravel']);
 
-set('shared_dirs', ['storage']);
+// public/legal keeps documents such as data processing agreements across releases
+set('shared_dirs', ['storage', 'public/legal']);
 set('shared_files', ['.env']);
 set('writable_dirs', [
     'bootstrap/cache',

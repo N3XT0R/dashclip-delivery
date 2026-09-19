@@ -6,12 +6,15 @@ declare(strict_types=1);
 use App\Constants\Config\DefaultConfigEntry;
 use App\Constants\Config\EmailConfigEntry;
 use App\Constants\Config\FFMPEGConfigEntry;
+use App\Constants\Config\PrivacyConfigEntry;
 
 return [
     'labels' => [
         'description' => 'Beschreibung',
     ],
     'keys' => [
+        PrivacyConfigEntry::STORAGE_PROVIDER_NAME => "Datenschutz: Name des Speicher-Anbieters (Auftragsverarbeiter), z. B. mit Serverstandort; blendet den Abschnitt zur Auftragsverarbeitung ein",
+        PrivacyConfigEntry::STORAGE_DPA_URL => "Datenschutz: optionaler Link zu öffentlichen Datenschutzhinweisen des Speicher-Anbieters (https://… oder Pfad einer Datei in public/legal)",
         EmailConfigEntry::ADMIN_EMAIL => 'Admin-Mail-Adresse',
         EmailConfigEntry::YOUR_NAME => 'Dein angezeigter Name',
         EmailConfigEntry::GET_BCC_NOTIFICATIONS => 'Channel-Notification Emails als BCC empfangen',
