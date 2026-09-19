@@ -26,6 +26,8 @@ class ZipServiceTest extends DatabaseTestCase
 
         // Use the real local filesystem so Storage::path() works with ZipArchive
         Config::set('filesystems.default', 'local');
+        // A disk that behaves like remote storage (not the local driver) but writes to a local directory
+        Storage::extend('remote-test', static fn ($app, array $config) => Storage::createLocalDriver($config));
 
         Storage::makeDirectory('videos');
         Storage::makeDirectory('zips');
@@ -105,13 +107,43 @@ class ZipServiceTest extends DatabaseTestCase
         $zip->close();
     }
 
+    public function testVideosOnAnyRemoteDiskAreTransferredInChunks(): void
+    {
+        $root = storage_path('app/hetzner-sim');
+        Config::set('filesystems.disks.hetzner', ['driver' => 'remote-test', 'root' => $root]);
+        Storage::forgetDisk('hetzner');
+        $bytes = (int) (ZipService::TRANSFER_CHUNK_BYTES * 2.5);
+        Storage::disk('hetzner')->put('remote/large.mp4', str_repeat('H', $bytes));
+
+        $channel = Channel::factory()->create();
+        $video = Video::factory()->create([
+            'disk' => 'hetzner', 'path' => 'remote/large.mp4', 'bytes' => $bytes, 'original_name' => 'large.mp4',
+        ]);
+        $assignment = Assignment::factory()->for($channel, 'channel')->for($video, 'video')->create();
+
+        $progress = [];
+        $cache = Mockery::mock(DownloadCacheService::class)->shouldIgnoreMissing();
+        $cache->shouldReceive('setProgress')->andReturnUsing(function (string $jobId, int $value) use (&$progress): void {
+            $progress[] = $value;
+        });
+
+        $zipRel = (new ZipService($cache, $this->app->make(CsvService::class)))
+            ->build(null, $channel, collect([$assignment]), '198.51.100.7', 'UA/2.0', 'hetzner-job');
+
+        $this->assertGreaterThanOrEqual(2, count(array_unique(array_filter($progress, static fn (int $value): bool => $value > 0 && $value < 100))));
+        $zip = $this->openZip($zipRel);
+        $this->assertSame($bytes, $zip->statName('large.mp4')['size']);
+        $zip->close();
+        Storage::disk('hetzner')->deleteDirectory('remote');
+    }
+
     public function testDropboxTransferReportsProgressWhileALargeVideoIsCopied(): void
     {
         $root = storage_path('app/dropbox-progress-sim');
         if (!is_dir($root)) {
             mkdir($root, 0777, true);
         }
-        Config::set('filesystems.disks.dropbox', ['driver' => 'local', 'root' => $root]);
+        Config::set('filesystems.disks.dropbox', ['driver' => 'remote-test', 'root' => $root]);
         Storage::forgetDisk('dropbox');
         $bytes = (int) (ZipService::TRANSFER_CHUNK_BYTES * 2.5);
         Storage::disk('dropbox')->put('remote/large.mp4', str_repeat('L', $bytes));
@@ -152,7 +184,7 @@ class ZipServiceTest extends DatabaseTestCase
             mkdir($root, 0777, true);
         }
         Config::set('filesystems.disks.dropbox', [
-            'driver' => 'local',
+            'driver' => 'remote-test',
             'root' => $root,
         ]);
 
