@@ -10,9 +10,11 @@ use App\Models\Assignment;
 use App\Services\AssignmentService;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
+use Illuminate\Database\Eloquent\Builder;
 
 final readonly class Actions
 {
@@ -56,34 +58,28 @@ final readonly class Actions
             ->modalCancelActionLabel(__('common.close'));
     }
 
-    public function downloadAgain(MyOffers $page): Action
+    public function downloadAgain(MyOffers $page): ExportAction
     {
-        return Action::make('download_again')
+        return $this->exportRecord(ExportAction::make('download_again'))
             ->label(__('my_offers.table.actions.download_again'))
             ->icon('heroicon-m-arrow-path')
             ->color('gray')
-            ->action(
-                fn(Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
-            )
-            ->openUrlInNewTab()
-            ->visible(
-                fn(): bool => $page->activeTab === 'downloaded'
-            );
+            ->visible(fn (): bool => $page->activeTab === 'downloaded');
     }
 
-    public function download(MyOffers $page): Action
+    public function download(MyOffers $page): ExportAction
     {
-        return Action::make('download')
+        return $this->exportRecord(ExportAction::make('download'))
             ->label(__('my_offers.table.actions.download'))
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
-            ->action(
-                fn(Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
-            )
-            ->openUrlInNewTab()
-            ->visible(
-                fn(): bool => $page->activeTab === 'available'
-            );
+            ->visible(fn (): bool => $page->activeTab === 'available');
+    }
+
+    private function exportRecord(ExportAction $action): ExportAction
+    {
+        return app(OfferExportActionConfigurator::class)->configure($action)
+            ->modifyQueryUsing(fn (Builder $query, Assignment $record): Builder => $query->whereKey($record->getKey()));
     }
 
     public function returnOffer(MyOffers $page): Action

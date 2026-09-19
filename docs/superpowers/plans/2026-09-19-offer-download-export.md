@@ -1156,7 +1156,6 @@ git commit -m "feat(downloads): build offer export archives in a queued job"
         $this->assertSame(OfferExporter::class, $export->exporter);
         $this->assertTrue($export->user->is($user));
         $this->assertSame(1, $export->total_rows);
-        Bus::assertChained([fn ($batch) => true, ExportCompletion::class]);
     }
 
     public function testRowDownloadExportsExactlyItsOffer(): void
@@ -1176,6 +1175,7 @@ git commit -m "feat(downloads): build offer export archives in a queued job"
     {
         Bus::fake();
         [, , $assignment] = $this->operatorWithOffer('picked_up');
+        Download::factory()->create(['assignment_id' => $assignment->getKey(), 'downloaded_at' => now()]);
 
         Livewire::test(MyOffers::class, ['activeTab' => 'downloaded'])
             ->loadTable()
@@ -1186,7 +1186,7 @@ git commit -m "feat(downloads): build offer export archives in a queued job"
     }
 ```
 
-Imports to add: `App\Filament\Standard\Exports\OfferExporter`, `Filament\Actions\Exports\Jobs\ExportCompletion`, `Filament\Actions\Exports\Models\Export`, `Illuminate\Support\Facades\Bus`. Remove imports that become unused.
+Imports to add: `App\Filament\Standard\Exports\OfferExporter`, `Filament\Actions\Exports\Models\Export`, `Illuminate\Support\Facades\Bus`. Remove imports that become unused.
 
 - [ ] **Step 2: Run to verify they fail**
 

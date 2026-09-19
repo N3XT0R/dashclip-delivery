@@ -66,7 +66,6 @@ Route::middleware(SetPublicLocale::class)->group(function (): void {
     Route::get('/dropbox/connect', [DropboxController::class, 'connect'])->name('dropbox.connect');
     Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('dropbox.callback');
     Route::get('/offers/{assignment}/download', [ZipController::class, 'video'])->middleware('signed')->name('offers.video.download');
-    Route::post('/zips/channel/{channel}', [ZipController::class, 'startForChannel'])->middleware('signed')->name('zips.channel.start');
     /**
      * @deprecated Use /zips/channel/{channel} instead
      */

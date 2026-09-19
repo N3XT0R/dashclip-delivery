@@ -47,12 +47,4 @@ class LinkService
         );
     }
 
-    public function getZipSelectedUrlForChannel(Channel $channel, CarbonInterface $expireDate): string
-    {
-        return URL::temporarySignedRoute(
-            'zips.channel.start',
-            $expireDate,
-            ['channel' => $channel->getKey()]
-        );
-    }
 }
