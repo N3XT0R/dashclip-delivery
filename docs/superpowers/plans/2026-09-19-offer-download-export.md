@@ -826,7 +826,7 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
     }
 
     /** @param list<Assignment> $offers */
-    private function run(Export $export, array $offers): void
+    private function runJob(Export $export, array $offers): void
     {
         $job = new BuildOfferExportZipJob(
             export: $export,
@@ -845,7 +845,7 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
         $second = $this->offer('second.mp4');
         $export = $this->export(2);
 
-        $this->run($export, [$first, $second]);
+        $this->runJob($export, [$first, $second]);
 
         $files = $this->app->make(OfferExportFileService::class);
         $zip = new ZipArchive();
@@ -869,7 +869,7 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
         $expired = $this->offer('expired.mp4', attributes: ['expires_at' => now()->subMinute()]);
         $export = $this->export(3);
 
-        $this->run($export, [$good, $missing, $expired]);
+        $this->runJob($export, [$good, $missing, $expired]);
 
         $this->assertSame([3, 1], [$export->total_rows, $export->successful_rows]);
         $this->assertSame([$good->id], $this->app->make(OfferExportFileService::class)->packedIds($export));
@@ -888,7 +888,7 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
         $missing = $this->offer('missing.mp4', withFile: false);
         $export = $this->export(1);
 
-        $this->run($export, [$missing]);
+        $this->runJob($export, [$missing]);
 
         $this->assertSame(0, $export->successful_rows);
         $this->assertFalse($this->app->make(OfferExportFileService::class)->hasZip($export));
@@ -896,15 +896,17 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
 
     public function testCompletionNotificationCarriesTheDownloadButtonAndSkippedCount(): void
     {
+        config()->set('broadcasting.default', 'null');
         $good = $this->offer('good.mp4');
         $missing = $this->offer('missing.mp4', withFile: false);
         $export = $this->export(2);
-        $this->run($export, [$good, $missing]);
+        $this->runJob($export, [$good, $missing]);
 
         $completion = app(ExportCompletion::class, [
             'export' => $export,
             'columnMap' => ['id' => 'ID'],
             'formats' => (new OfferExporter($export, ['id' => 'ID'], []))->getFormats(),
+            'options' => [],
             'authGuard' => 'standard',
         ]);
         $completion->connection = 'redis';
@@ -919,10 +921,12 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
     public function testFailedBuildLogsEveryOfferOnce(): void
     {
         Log::spy();
+        $first = $this->offer('first.mp4');
+        $second = $this->offer('second.mp4');
         $export = $this->export(2);
         $job = new BuildOfferExportZipJob(
             export: $export,
-            query: EloquentSerializeFacade::serialize(Assignment::query()->whereKey([11, 12])),
+            query: EloquentSerializeFacade::serialize(Assignment::query()->whereKey([$first->id, $second->id])),
             columnMap: ['id' => 'ID'],
             options: ['channel_id' => $this->channel->id],
             records: null,
@@ -936,7 +940,7 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
             return true;
         });
         $this->assertSame(['zip_failed', 'zip_failed'], array_column($contexts, 'reason'));
-        $this->assertSame([11, 12], array_column($contexts, 'assignment_id'));
+        $this->assertSame([$first->id, $second->id], array_column($contexts, 'assignment_id'));
     }
 
     /** @param array<int, string> $values @return array<int, string> */
