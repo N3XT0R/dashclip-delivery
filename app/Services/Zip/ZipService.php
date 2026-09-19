@@ -11,12 +11,12 @@ use App\Exceptions\Zip\ZipEntrySkippedException;
 use App\Models\{Assignment, Batch, Channel, Video};
 use App\Services\CsvService;
 use App\Services\DownloadCacheService;
+use App\Services\Storage\StorageDiskService;
 use Illuminate\Support\Collection;
 use League\Flysystem\FilesystemException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Log;
-use Spatie\FlysystemDropbox\DropboxAdapter;
 use ZipArchive;
 
 class ZipService
@@ -88,7 +88,7 @@ class ZipService
             Storage::delete($tmpPath);
             throw $e;
         } finally {
-            // always wipe any Dropbox tmp copies regardless of success or failure
+            // always wipe temporary copies of remote videos regardless of success or failure
             foreach ($tmpFiles as $file) {
                 Storage::delete($file);
             }
@@ -263,7 +263,7 @@ class ZipService
         int $processed,
         int $total
     ): ?string {
-        if ($video->getAttribute('disk') !== 'dropbox') {
+        if (app(StorageDiskService::class)->isLocal((string) $video->getAttribute('disk'))) {
             $this->cache->setStatus($jobId, DownloadStatusEnum::DOWNLOADED->value);
             $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::DOWNLOADED->value);
             return $localDiskPath;
@@ -271,15 +271,12 @@ class ZipService
 
         $this->cache->setStatus($jobId, DownloadStatusEnum::DOWNLOADING->value);
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::DOWNLOADING->value);
-        /**
-         * @var DropboxAdapter $disk
-         */
         $disk = $video->getDisk();
         $path = $video->getAttribute('path');
         $stream = $disk->readStream($path);
 
         if (!is_resource($stream)) {
-            Log::warning('Dropbox readStream failed', [
+            Log::warning('Remote readStream failed', [
                 'path' => $video->getAttribute('path'),
             ]);
             return null;
