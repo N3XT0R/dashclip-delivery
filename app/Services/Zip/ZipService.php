@@ -18,6 +18,9 @@ use ZipArchive;
 
 class ZipService
 {
+    /** Bytes copied from remote storage between two progress updates. */
+    public const TRANSFER_CHUNK_BYTES = 8 * 1024 * 1024;
+
     public function __construct(
         private DownloadCacheService $cache,
         private CsvService $csvService
@@ -145,7 +148,7 @@ class ZipService
         $processed = 0;
 
         foreach ($items as $assignment) {
-            $this->processAssignment($zip, $jobId, $assignment, $ip, $userAgent, $tmpFiles);
+            $this->processAssignment($zip, $jobId, $assignment, $tmpFiles, $processed, $total);
 
             $processed++;
             $this->updateProgress($jobId, $processed, $total);
@@ -155,14 +158,16 @@ class ZipService
 
     /**
      * @param array<int, string> $tmpFiles
+     * @param int $processed Number of assignments already packed, used for progress reporting.
+     * @param int $total Number of assignments in this archive.
      */
     private function processAssignment(
         ZipArchive $zip,
         string $jobId,
         Assignment $assignment,
-        string $ip,
-        ?string $userAgent,
-        array &$tmpFiles
+        array &$tmpFiles,
+        int $processed,
+        int $total
     ): void {
         /** @var Video $video */
         $video = $assignment->video;
@@ -186,7 +191,7 @@ class ZipService
             $nameInZip = $assignment->getKey() . '_' . $nameInZip;
         }
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::QUEUED->value);
-        $localPath = $this->localVideoPath($video, $disk->path($path), $jobId, $nameInZip, $tmpFiles);
+        $localPath = $this->localVideoPath($video, $disk->path($path), $jobId, $nameInZip, $tmpFiles, $processed, $total);
 
         if ($localPath === null) {
             Log::channel('single')->warning('local path broken', [
@@ -216,6 +221,7 @@ class ZipService
     }
 
     /**
+     * Resolve a readable local file, copying remote videos in chunks so progress keeps moving.
      * @param array<int, string> $tmpFiles
      */
     private function localVideoPath(
@@ -223,7 +229,9 @@ class ZipService
         string $localDiskPath,
         string $jobId,
         string $nameInZip,
-        array &$tmpFiles
+        array &$tmpFiles,
+        int $processed,
+        int $total
     ): ?string {
         if ($video->getAttribute('disk') !== 'dropbox') {
             $this->cache->setStatus($jobId, DownloadStatusEnum::DOWNLOADED->value);
@@ -265,8 +273,13 @@ class ZipService
             }
 
             try {
-                $bytes = stream_copy_to_stream($stream, $localHandle);
-                if ($bytes === false || $bytes !== $disk->size($path)) {
+                $size = (int) $disk->size($path);
+                $bytes = 0;
+                while (($copied = stream_copy_to_stream($stream, $localHandle, self::TRANSFER_CHUNK_BYTES)) > 0) {
+                    $bytes += $copied;
+                    $this->updateProgress($jobId, $processed, $total, $size > 0 ? min($bytes / $size, 1.0) : 0.0);
+                }
+                if ($copied === false || $bytes !== $size) {
                     throw new ZipBuildException('The remote video transfer was incomplete.');
                 }
             } finally {
@@ -290,9 +303,12 @@ class ZipService
         return preg_replace('/[\\\\\/:*?"<>|]+/', '_', $name);
     }
 
-    private function updateProgress(string $jobId, int $processed, int $total): void
+    /**
+     * @param float $currentFileShare Transferred share of the file currently being processed, from 0 to 1.
+     */
+    private function updateProgress(string $jobId, int $processed, int $total, float $currentFileShare = 0.0): void
     {
-        $pct = (int)floor($processed * 100 / max($total, 1));
+        $pct = (int)floor(($processed + $currentFileShare) * 100 / max($total, 1));
         $this->cache->setProgress($jobId, $pct);
     }
 

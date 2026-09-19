@@ -59,7 +59,6 @@ export default class ZipDownloader {
         try {
             const {data} = await axios.post(this.form.dataset.zipPostUrl, {
                 assignment_ids: this.selected,
-                direct_if_single: true,
             }, {
                 timeout: 30000,
                 headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content},
@@ -67,13 +66,7 @@ export default class ZipDownloader {
             if (generation !== this.generation) return;
             this.save(data);
             this.modal.setDownloads(data.downloads);
-            if (!data.jobId) {
-                this.deliver(data.downloads[0].url);
-                this.modal.update(100, 'Der Download wurde an den Browser übergeben. Bei Bedarf den Video-Link erneut anklicken.');
-                this.running = false;
-            } else {
-                await this.poll(data, generation);
-            }
+            await this.poll(data, generation);
         } catch (error) {
             if (generation !== this.generation) return;
             this.running = false;

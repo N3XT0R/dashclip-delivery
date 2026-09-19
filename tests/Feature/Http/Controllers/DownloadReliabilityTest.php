@@ -50,15 +50,39 @@ class DownloadReliabilityTest extends DatabaseTestCase
         return URL::temporarySignedRoute('zips.channel.start', now()->addHour(), ['channel' => $channel->id]);
     }
 
-    public function testSingleVideoDownloadsWithoutQueueOrBroadcastingAndCanBeRetried(): void
+    public function testSingleVideoIsDeliveredAsZipWithInfoCsv(): void
+    {
+        $channel = Channel::factory()->create();
+        $offer = $this->offer($channel);
+        $data = $this->postJson($this->startUrl($channel), [
+            'assignment_ids' => [$offer->id],
+        ])->assertOk()->json();
+
+        $this->assertNotNull($data['jobId']);
+        $this->assertCount(1, $data['downloads']);
+        $this->getJson($data['progressUrl'])->assertOk()->assertJsonPath('status', 'ready');
+        $response = $this->get($data['downloadUrl'])->assertOk();
+        $archive = new ZipArchive();
+        $this->assertTrue($archive->open($response->baseResponse->getFile()->getPathname()));
+        $this->assertSame(2, $archive->numFiles);
+        $this->assertSame('video-content', $archive->getFromName('video.mp4'));
+        $csv = (string) $archive->getFromName('info.csv');
+        $archive->close();
+        $this->assertStringStartsWith('filename', ltrim($csv, "\xEF\xBB\xBF"));
+        $this->assertStringContainsString('video.mp4', $csv);
+        $this->assertDatabaseHas('assignments', ['id' => $offer->id, 'status' => 'picked_up']);
+    }
+
+    public function testSingleVideoStaysDownloadableWhenZipCannotBeQueued(): void
     {
         config()->set('queue.default', 'nonexistent');
         $channel = Channel::factory()->create();
         $offer = $this->offer($channel);
-        $response = $this->postJson($this->startUrl($channel), [
-            'assignment_ids' => [$offer->id], 'direct_if_single' => true,
-        ])->assertOk()->assertJsonPath('jobId', null);
-        $url = $response->json('downloads.0.url');
+        $data = $this->postJson($this->startUrl($channel), [
+            'assignment_ids' => [$offer->id],
+        ])->assertOk()->assertJsonPath('status', 'failed')->json();
+
+        $url = $data['downloads'][0]['url'];
         $first = $this->get($url)->assertOk()->assertHeader('content-length', '13');
         $this->assertSame('video-content', $first->streamedContent());
         $this->assertSame('video-content', $this->get($url)->assertOk()->streamedContent());
@@ -71,7 +95,7 @@ class DownloadReliabilityTest extends DatabaseTestCase
         $first = $this->offer($channel);
         $second = $this->offer($channel);
         $data = $this->postJson($this->startUrl($channel), [
-            'assignment_ids' => [$first->id, $second->id], 'direct_if_single' => true,
+            'assignment_ids' => [$first->id, $second->id],
         ])->assertOk()->json();
         $this->getJson($data['progressUrl'])->assertOk()->assertJsonPath('status', 'ready');
         $response = $this->get($data['downloadUrl'])->assertOk();
@@ -145,7 +169,7 @@ class DownloadReliabilityTest extends DatabaseTestCase
         $offer = $this->offer($channel);
         $other = $this->offer(Channel::factory()->create());
         $data = $this->postJson($this->startUrl($channel), [
-            'assignment_ids' => [$offer->id, $other->id], 'direct_if_single' => true,
+            'assignment_ids' => [$offer->id, $other->id],
         ])->assertOk()->json();
         $this->assertCount(1, $data['downloads']);
         $url = $data['downloads'][0]['url'];

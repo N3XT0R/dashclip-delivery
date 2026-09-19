@@ -25,11 +25,11 @@ class OfferDownloadPreparationService
     }
 
     /**
-     * Prepare signed direct links and optionally enqueue an isolated ZIP build.
+     * Prepare signed direct links as a fallback and enqueue an isolated ZIP build including info.csv.
      * The caller must validate the signature granting access to this channel and batch.
      *
      * @param list<int> $ids
-     * @return array{jobId: ?string, status: string, downloads: list<array{name: string, url: string}>, progressUrl?: string, downloadUrl?: string}
+     * @return array{jobId: string, status: string, downloads: list<array{name: string, url: string}>, progressUrl: string, downloadUrl: string}
      */
     public function prepare(Request $request, Channel $channel, array $ids, ?Batch $batch = null): array
     {
@@ -41,10 +41,6 @@ class OfferDownloadPreparationService
             'name' => $assignment->video->original_name ?: basename($assignment->video->path),
             'url' => URL::temporarySignedRoute('offers.video.download', $expires, ['assignment' => $assignment->getKey()]),
         ])->values()->all();
-
-        if ($items->count() === 1 && $request->boolean('direct_if_single')) {
-            return ['jobId' => null, 'status' => 'ready', 'downloads' => $downloads];
-        }
 
         $jobId = (string) Str::uuid();
         $status = DownloadStatusEnum::QUEUED->value;

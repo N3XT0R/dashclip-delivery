@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for
   search engines.
+- **Offer downloads**: Deliver a single selected video as a ZIP again, including its `info.csv` with
+  the clip details; the direct video link remains available as a fallback. The download progress now
+  advances while a large video is transferred instead of staying at 0% until it is complete.
 
 ## [4.9.0] - 2026-09-18
 
