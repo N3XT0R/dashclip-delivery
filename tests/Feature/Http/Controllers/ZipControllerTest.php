@@ -31,29 +31,10 @@ class ZipControllerTest extends DatabaseTestCase
         $this->assertCount(1, $response->json('downloads'));
     }
 
-    public function testStartForChannelDispatchesZipJobAndInitializesCache(): void
-    {
-        $assignment = Assignment::factory()->create();
-        $response = $this->postJson(URL::temporarySignedRoute('zips.channel.start', now()->addHour(), [
-            'channel' => $assignment->channel_id,
-        ]), ['assignment_ids' => [$assignment->id]])->assertOk();
-
-        $this->assertSame('queued', app(DownloadCacheService::class)->getStatus($response->json('jobId')));
-        $this->assertDatabaseCount('jobs', 1);
-    }
-
     public function testStartReturnsErrorWhenAssignmentsAreMissing(): void
     {
         $this->postJson(URL::temporarySignedRoute('zips.start', now()->addHour(), [
             'batch' => Batch::factory()->create()->id, 'channel' => Channel::factory()->create()->id,
-        ]), ['assignment_ids' => [123]])->assertUnprocessable();
-        $this->assertDatabaseCount('jobs', 0);
-    }
-
-    public function testStartForChannelReturnsErrorWhenAssignmentsAreMissing(): void
-    {
-        $this->postJson(URL::temporarySignedRoute('zips.channel.start', now()->addHour(), [
-            'channel' => Channel::factory()->create()->id,
         ]), ['assignment_ids' => [123]])->assertUnprocessable();
         $this->assertDatabaseCount('jobs', 0);
     }

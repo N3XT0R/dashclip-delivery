@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cancels the whole ZIP. It is skipped and shown as skipped in the download dialog, left out of
   `info.csv`, not marked as downloaded, and recorded with its reason in the application log. The
   download only fails when none of the selected videos can be delivered.
+- **Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered
+  through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP
+  still contains the selected videos and their `info.csv`; unavailable videos are skipped and named
+  in the notification. Prepared downloads are kept for one day.
 
 ### Fixed
 - **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for

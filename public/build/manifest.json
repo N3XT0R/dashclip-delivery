@@ -1,10 +1,10 @@
 {
-  "_ZipDownloader-DZtznQXw.js": {
-    "file": "assets/ZipDownloader-DZtznQXw.js",
-    "name": "ZipDownloader"
+  "_bootstrap-DDCnxzVf.js": {
+    "file": "assets/bootstrap-DDCnxzVf.js",
+    "name": "bootstrap"
   },
   "resources/css/app.css": {
-    "file": "assets/app-QOJi_bXF.css",
+    "file": "assets/app-D7wo6Z0W.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -29,12 +29,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BjkAHAhD.js",
+    "file": "assets/app-BtkE5U77.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_ZipDownloader-DZtznQXw.js"
+      "_bootstrap-DDCnxzVf.js"
     ],
     "css": [
       "assets/app-Bv9XE-cB.css"
@@ -47,12 +47,12 @@
     "isEntry": true
   },
   "resources/js/offers.js": {
-    "file": "assets/offers-C-MInU1A.js",
+    "file": "assets/offers-D5fWp9er.js",
     "name": "offers",
     "src": "resources/js/offers.js",
     "isEntry": true,
     "imports": [
-      "_ZipDownloader-DZtznQXw.js"
+      "_bootstrap-DDCnxzVf.js"
     ]
   },
   "resources/js/public.js": {

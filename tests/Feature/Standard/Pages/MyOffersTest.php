@@ -9,6 +9,7 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
+use App\Filament\Standard\Exports\OfferExporter;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Models\Channel;
@@ -16,8 +17,9 @@ use App\Models\Download;
 use App\Models\User;
 use App\Repository\TeamRepository;
 use App\Services\AssignmentService;
-use App\Services\LinkService;
+use Filament\Actions\Exports\Models\Export;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -137,49 +139,66 @@ final class MyOffersTest extends DatabaseTestCase
         self::assertSame('2', MyOffers::getNavigationBadge());
     }
 
-    public function testZipFormAnchorIsRenderedWhenChannelExists(): void
+    private function operatorWithOffer(string $status = 'notified'): array
     {
         $user = User::factory()->create();
         Role::findOrCreate(RoleEnum::CHANNEL_OPERATOR->value, GuardEnum::STANDARD->value);
         $user->syncRoles([RoleEnum::CHANNEL_OPERATOR->value]);
-
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
-
         $channel = Channel::factory()->create();
         $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
-
+        $assignment = Assignment::factory()->withBatch()->create([
+            'channel_id' => $channel->getKey(), 'status' => $status, 'expires_at' => now()->addDays(3),
+        ]);
         Filament::setTenant($team, true);
         Filament::auth()->login($user);
+        $this->actingAs($user, GuardEnum::STANDARD->value);
 
-        Livewire::test(MyOffers::class)
-            ->assertSee('zipForm'); // ID from blade view filament.standard.components.zip-form-anchor
+        return [$user, $channel, $assignment];
     }
 
-    public function testBulkDownloadDispatchesZipEvent(): void
+    public function testBulkDownloadStartsAnOfferExportForTheSelection(): void
     {
-        $user = User::factory()->create();
-        Role::findOrCreate(RoleEnum::CHANNEL_OPERATOR->value, GuardEnum::STANDARD->value);
-        $user->syncRoles([RoleEnum::CHANNEL_OPERATOR->value]);
+        Bus::fake();
+        [$user, $channel, $assignment] = $this->operatorWithOffer();
 
-        $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
+        Livewire::test(MyOffers::class, ['activeTab' => 'available'])
+            ->loadTable()
+            ->assertTableBulkActionVisible('download_selected')
+            ->callTableBulkAction('download_selected', [$assignment])
+            ->assertHasNoTableBulkActionErrors();
 
-        $channel = Channel::factory()->create();
-        $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
+        $export = Export::query()->sole();
+        $this->assertSame(OfferExporter::class, $export->exporter);
+        $this->assertTrue($export->user->is($user));
+        $this->assertSame(1, $export->total_rows);
+    }
 
-        $assignment = Assignment::factory()
-            ->withBatch()
-            ->create([
-                'channel_id' => $channel->getKey(),
-            ]);
+    public function testRowDownloadExportsExactlyItsOffer(): void
+    {
+        Bus::fake();
+        [, , $assignment] = $this->operatorWithOffer();
+        Assignment::factory()->withBatch()->create(['channel_id' => $assignment->channel_id, 'status' => 'notified']);
 
-        Filament::setTenant($team, true);
-        Filament::auth()->login($user);
+        Livewire::test(MyOffers::class, ['activeTab' => 'available'])
+            ->loadTable()
+            ->callTableAction('download', $assignment);
 
-        Livewire::test(MyOffers::class)
-            ->call('dispatchZipDownload', [$assignment->getKey()])
-            ->assertDispatched('zip-download', function (string $name, array $params) use ($assignment): bool {
-                return ($params[0]['assignmentIds'] ?? null) === [$assignment->getKey()];
-            });
+        $this->assertSame(1, Export::query()->sole()->total_rows);
+    }
+
+    public function testDownloadAgainIsAvailableForDownloadedOffers(): void
+    {
+        Bus::fake();
+        [, , $assignment] = $this->operatorWithOffer('picked_up');
+        Download::factory()->create(['assignment_id' => $assignment->getKey(), 'downloaded_at' => now()]);
+
+        Livewire::test(MyOffers::class, ['activeTab' => 'downloaded'])
+            ->loadTable()
+            ->assertTableActionVisible('download_again', $assignment)
+            ->callTableAction('download_again', $assignment);
+
+        $this->assertSame(1, Export::query()->sole()->total_rows);
     }
 
     public function testDownloadedTabShowsEachOfferOnceWithItsLatestDownload(): void
@@ -281,41 +300,6 @@ final class MyOffersTest extends DatabaseTestCase
         Filament::auth()->login($user);
 
         self::assertTrue(MyOffers::canAccess());
-    }
-
-    public function testMergeComponentsAddsZipAnchorWhenChannelExists(): void
-    {
-        $channel = Channel::factory()->create();
-
-        $this->app->bind(LinkService::class, static fn () => new class () {
-            public function getZipSelectedUrlForChannel(Channel $channel, $expires): string
-            {
-                return 'zip-url-' . $channel->getKey();
-            }
-        });
-
-        $page = new MyOffersTestPage($channel);
-
-        $components = $page->callMergeComponentsIfChannelExists(['original']);
-
-        self::assertCount(2, $components);
-        self::assertSame('filament.standard.components.zip-form-anchor', $components[0]->getView());
-    }
-
-    public function testMergeComponentsKeepsComponentsWhenChannelMissing(): void
-    {
-        $this->app->bind(LinkService::class, static fn () => new class () {
-            public function getZipSelectedUrlForChannel(Channel $channel, $expires): string
-            {
-                return 'zip-url';
-            }
-        });
-
-        $page = new MyOffersTestPage(null);
-
-        $components = $page->callMergeComponentsIfChannelExists(['original']);
-
-        self::assertSame(['original'], $components);
     }
 
     public function testBaseQueryFiltersAssignmentsByChannel(): void

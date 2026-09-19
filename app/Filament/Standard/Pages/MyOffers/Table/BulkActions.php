@@ -7,7 +7,7 @@ namespace App\Filament\Standard\Pages\MyOffers\Table;
 use App\Application\Offer\ReturnAssignment;
 use App\Filament\Standard\Pages\MyOffers;
 use Filament\Actions\BulkAction;
-use Illuminate\Database\Eloquent\Collection;
+use Filament\Actions\ExportBulkAction;
 use Illuminate\Support\Collection as SupportCollection;
 
 final readonly class BulkActions
@@ -28,32 +28,19 @@ final readonly class BulkActions
      | -----------------------------------------------------------------
      */
 
-    public function downloadSelected(MyOffers $page): BulkAction
+    public function downloadSelected(MyOffers $page): ExportBulkAction
     {
-        return BulkAction::make('download_selected')
-            ->label(
-                fn(Collection $records): string => __(
-                    'my_offers.table.bulk_actions.download_selected'
-                )
-            )
+        return app(OfferExportActionConfigurator::class)->configure(ExportBulkAction::make('download_selected'))
+            ->label(__('my_offers.table.bulk_actions.download_selected'))
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
-            ->action(function (SupportCollection $records) use ($page): void {
-                $page->dispatchZipDownload($records->pluck('id')->values()->all());
-            })
-            ->visible(
-                fn(): bool => $page->activeTab === 'available'
-            );
+            ->visible(fn (): bool => $page->activeTab === 'available');
     }
 
     public function returnSelected(MyOffers $page): BulkAction
     {
         return BulkAction::make('return_selected')
-            ->label(
-                fn(Collection $records): string => __(
-                    'my_offers.table.bulk_actions.return_selected',
-                )
-            )
+            ->label(__('my_offers.table.bulk_actions.return_selected'))
             ->icon('heroicon-m-arrow-uturn-left')
             ->color('danger')
             ->action(
