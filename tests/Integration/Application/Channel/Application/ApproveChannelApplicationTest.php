@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use RuntimeException;
+use Spatie\Activitylog\Models\Activity;
 use Tests\DatabaseTestCase;
 
 final class ApproveChannelApplicationTest extends DatabaseTestCase
@@ -42,6 +43,29 @@ final class ApproveChannelApplicationTest extends DatabaseTestCase
             ChannelAccessRequested::class,
             static fn(ChannelAccessRequested $event) => $event->channelApplication->is($application)
         );
+    }
+
+    public function testApprovalIsRecordedInTheActivityLog(): void
+    {
+        Event::fake([ChannelAccessRequested::class]);
+        Queue::fake();
+        Mail::fake();
+
+        $channel = Channel::factory()->create();
+        $approver = User::factory()->create();
+        $application = ChannelApplication::factory()
+            ->forExistingChannel($channel)
+            ->create();
+
+        $this->app->make(ApproveChannelApplication::class)->handle($application, $approver);
+
+        $activity = Activity::query()->where('log_name', 'channel_applications')->sole();
+        $this->assertSame('approved_channel_application', $activity->event);
+        $this->assertTrue($activity->causer->is($approver));
+        $this->assertTrue($activity->subject->is($application));
+        $this->assertSame($channel->getKey(), $activity->properties['channel_id']);
+        $this->assertFalse($activity->properties['is_new_channel']);
+        $this->assertSame($application->user->getKey(), $activity->properties['applicant_user_id']);
     }
 
     public function testApprovingNewChannelApplicationCreatesChannelAndAssignsUser(): void
