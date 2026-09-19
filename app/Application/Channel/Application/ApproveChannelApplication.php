@@ -63,7 +63,8 @@ final readonly class ApproveChannelApplication
                         'channel_id' => $channel->getKey(),
                         'is_new_channel' => $isNewChannel,
                         'applicant_user_id' => $applicant->getKey(),
-                    ]);
+                    ])
+                    ->log('Channel application approved');
             }
 
             DB::commit();
