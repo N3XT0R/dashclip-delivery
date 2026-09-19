@@ -13,8 +13,8 @@ return [
         'description' => 'Beschreibung',
     ],
     'keys' => [
-        PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Datenschutz: Name des Speicher-Anbieters (Auftragsverarbeiter)',
-        PrivacyConfigEntry::STORAGE_DPA_URL => 'Datenschutz: Link zum Auftragsverarbeitungsvertrag des Speicher-Anbieters (https://… oder Pfad einer Datei in public/legal, z. B. /legal/avv.pdf)',
+        PrivacyConfigEntry::STORAGE_PROVIDER_NAME => "Datenschutz: Name des Speicher-Anbieters (Auftragsverarbeiter), z. B. mit Serverstandort; blendet den Abschnitt zur Auftragsverarbeitung ein",
+        PrivacyConfigEntry::STORAGE_DPA_URL => "Datenschutz: optionaler Link zu öffentlichen Datenschutzhinweisen des Speicher-Anbieters (https://… oder Pfad einer Datei in public/legal)",
         EmailConfigEntry::ADMIN_EMAIL => 'Admin-Mail-Adresse',
         EmailConfigEntry::YOUR_NAME => 'Dein angezeigter Name',
         EmailConfigEntry::GET_BCC_NOTIFICATIONS => 'Channel-Notification Emails als BCC empfangen',

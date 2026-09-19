@@ -12,8 +12,8 @@ return [
         'description' => 'Description',
     ],
     'keys' => [
-        PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Privacy: name of the storage provider (processor)',
-        PrivacyConfigEntry::STORAGE_DPA_URL => 'Privacy: link to the data processing agreement of the storage provider (https://… or path of a file in public/legal, e.g. /legal/avv.pdf)',
+        PrivacyConfigEntry::STORAGE_PROVIDER_NAME => "Privacy: name of the storage provider (processor), e.g. with server location; shows the processing section",
+        PrivacyConfigEntry::STORAGE_DPA_URL => "Privacy: optional link to the storage provider's public privacy information (https://… or path of a file in public/legal)",
         EmailConfigEntry::ADMIN_EMAIL => 'Admin email address',
         EmailConfigEntry::YOUR_NAME => 'Your display name',
         EmailConfigEntry::GET_BCC_NOTIFICATIONS => 'Receive channel notification emails as BCC',

@@ -151,27 +151,28 @@
         {{-- AUFTRAGSVERARBEITUNG SPEICHER --}}
         @php
             $storageProvider = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'default', ''));
-            $storageDpaUrl = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_DPA_URL, 'default', ''));
-            // an absolute http(s) link, or a file hosted by the platform such as /legal/avv.pdf
-            $hasStorageDpa = (filter_var($storageDpaUrl, FILTER_VALIDATE_URL) !== false
-                    && in_array(parse_url($storageDpaUrl, PHP_URL_SCHEME), ['http', 'https'], true))
-                || preg_match('#^/(?!/)[A-Za-z0-9._~/%-]+$#', $storageDpaUrl) === 1;
+            $storageInfoUrl = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_DPA_URL, 'default', ''));
+            // an absolute http(s) link, or a file hosted by the platform such as /legal/info.pdf
+            $hasStorageInfoUrl = (filter_var($storageInfoUrl, FILTER_VALIDATE_URL) !== false
+                    && in_array(parse_url($storageInfoUrl, PHP_URL_SCHEME), ['http', 'https'], true))
+                || preg_match('#^/(?!/)[A-Za-z0-9._~/%-]+$#', $storageInfoUrl) === 1;
         @endphp
-        @if ($hasStorageDpa)
+        @if ($storageProvider !== '')
             <section class="mb-6">
                 <h2 class="text-xl font-semibold mb-2">Speicherung bei einem Auftragsverarbeiter</h2>
                 <p>
-                    Videoinhalte und die zugehörigen Daten werden
-                    {{ $storageProvider !== '' ? 'bei '.$storageProvider : 'bei unserem Speicher-Anbieter' }}
-                    gespeichert. Mit dem Anbieter besteht ein Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO.
+                    Videoinhalte und die zugehörigen Daten werden bei {{ $storageProvider }} gespeichert.
+                    Mit dem Anbieter besteht ein Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO.
                     Er verarbeitet die Daten ausschließlich nach unseren Weisungen und schützt sie durch
                     angemessene technische und organisatorische Maßnahmen.
                 </p>
-                <p>
-                    <a href="{{ $storageDpaUrl }}" target="_blank" rel="noopener noreferrer" class="underline">
-                        Auftragsverarbeitungsvertrag ansehen
-                    </a>
-                </p>
+                @if ($hasStorageInfoUrl)
+                    <p>
+                        <a href="{{ $storageInfoUrl }}" target="_blank" rel="noopener noreferrer" class="underline">
+                            Datenschutzhinweise des Anbieters
+                        </a>
+                    </p>
+                @endif
             </section>
         @endif
 

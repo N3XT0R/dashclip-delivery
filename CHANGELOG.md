@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Privacy policy**: Name the storage provider and link its data processing agreement in a new
-  section of the privacy policy. Both are set in the administration settings; the section only
-  appears once the agreement link is set. The agreement can also be hosted by the platform itself
-  under `/legal/`, a directory that is kept across deployments.
+- **Privacy policy**: Name the storage provider as processor and state the data processing
+  agreement in a new section of the privacy policy, optionally linking the provider's public privacy
+  information. Both are set in the administration settings; the section appears once the provider
+  name is set. Public documents can be hosted under `/legal/`, a directory kept across deployments.
 
 ### Changed
 - **Search engines and link previews**: Describe the organization, website and articles with

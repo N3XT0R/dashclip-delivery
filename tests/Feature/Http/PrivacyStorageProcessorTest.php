@@ -19,53 +19,55 @@ final class PrivacyStorageProcessorTest extends DatabaseTestCase
         $this->withoutVite();
     }
 
-    public function testSectionIsHiddenWithoutAgreementLink(): void
+    public function testSectionIsHiddenWithoutProviderName(): void
     {
-        Cfg::set(PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'Hetzner Online GmbH', 'default');
+        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, 'https://example.com/datenschutz', 'default');
 
         $this->get('/datenschutz')->assertOk()
             ->assertDontSee('Speicherung bei einem Auftragsverarbeiter')
-            ->assertDontSee('Hetzner Online GmbH');
+            ->assertDontSee('https://example.com/datenschutz', false);
     }
 
-    public function testSectionNamesTheProviderAndLinksTheAgreement(): void
+    public function testSectionNamesTheProviderAndTheAgreementWithoutALink(): void
     {
         Cfg::set(PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'Hetzner Online GmbH', 'default');
-        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, 'https://example.com/avv.pdf', 'default');
 
         $this->get('/datenschutz')->assertOk()
             ->assertSee('Speicherung bei einem Auftragsverarbeiter')
-            ->assertSee('Hetzner Online GmbH')
+            ->assertSee('bei Hetzner Online GmbH')
             ->assertSee('Art. 28 DSGVO')
-            ->assertSee('href="https://example.com/avv.pdf"', false)
+            ->assertDontSee('Datenschutzhinweise des Anbieters');
+    }
+
+    public function testOptionalLinkPointsToTheProvidersInformation(): void
+    {
+        Cfg::set(PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'Hetzner Online GmbH', 'default');
+        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, 'https://example.com/datenschutz', 'default');
+
+        $this->get('/datenschutz')->assertOk()
+            ->assertSee('Datenschutzhinweise des Anbieters')
+            ->assertSee('href="https://example.com/datenschutz"', false)
             ->assertSee('rel="noopener noreferrer"', false);
     }
 
-    public function testSectionFallsBackToAGenericProviderWithoutName(): void
+    public function testLinkCanBeAFileHostedByThePlatform(): void
     {
-        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, 'https://example.com/avv.pdf', 'default');
+        Cfg::set(PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'Hetzner Online GmbH', 'default');
+        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, '/legal/hosting-info.pdf', 'default');
 
         $this->get('/datenschutz')->assertOk()
-            ->assertSee('bei unserem Speicher-Anbieter')
-            ->assertSee('href="https://example.com/avv.pdf"', false);
+            ->assertSee('href="/legal/hosting-info.pdf"', false);
     }
 
-    public function testAgreementCanBeAFileHostedByThePlatform(): void
+    public function testUnsafeLinksAreDroppedWhileTheSectionStays(): void
     {
-        Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, '/legal/avv-hetzner.pdf', 'default');
-
-        $this->get('/datenschutz')->assertOk()
-            ->assertSee('Speicherung bei einem Auftragsverarbeiter')
-            ->assertSee('href="/legal/avv-hetzner.pdf"', false);
-    }
-
-    public function testUnsafeAgreementLinksAreNotRendered(): void
-    {
-        foreach (['javascript:alert(1)', '//evil.example/avv.pdf', 'legal/avv.pdf'] as $link) {
+        Cfg::set(PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'Hetzner Online GmbH', 'default');
+        foreach (['javascript:alert(1)', '//evil.example/info', 'legal/info.pdf'] as $link) {
             Cfg::set(PrivacyConfigEntry::STORAGE_DPA_URL, $link, 'default');
 
             $this->get('/datenschutz')->assertOk()
-                ->assertDontSee('Speicherung bei einem Auftragsverarbeiter')
+                ->assertSee('Speicherung bei einem Auftragsverarbeiter')
+                ->assertDontSee('Datenschutzhinweise des Anbieters')
                 ->assertDontSee('href="'.$link.'"', false);
         }
     }
