@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Storage at Hetzner**: A new SFTP storage target and the `storage:migrate-videos` command, which
+  copies videos to another storage, verifies each copy and only then switches the video over. Runs
+  can be repeated, support a dry run, single videos and a limit, and keep the original files.
+
 ### Changed
 - **Search engines and link previews**: Describe the organization, website and articles with
   structured data, link the German and English versions of the blog overview, categories and tags,
@@ -18,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cancels the whole ZIP. It is skipped and shown as skipped in the download dialog, left out of
   `info.csv`, not marked as downloaded, and recorded with its reason in the application log. The
   download only fails when none of the selected videos can be delivered.
+- **Storage setting**: The default storage setting can name any configured remote storage, so new
+  uploads can be moved there instead of only to Dropbox. Local values still keep uploads in place.
+- **Dependencies**: The OAuth library is held on its 13.7 release line so that the SFTP storage can be
+  used; that line has no known security advisories.
 
 ### Fixed
 - **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for
@@ -31,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Offer downloads**: The "Heruntergeladen" tab lists every offer once and shows only its latest
   download time, instead of one row and one time per download. Sorting by download time works in
   both directions.
+- **Offer downloads**: Videos on storage other than Dropbox or the local disk are transferred before
+  packing, so ZIP downloads no longer skip them.
 
 ## [4.9.0] - 2026-09-18
 
