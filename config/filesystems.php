@@ -144,6 +144,22 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        // Hetzner Storage Box over SFTP (port 23 on Storage Boxes)
+        'hetzner' => [
+            'driver' => 'sftp',
+            'host' => (string) env('HETZNER_SFTP_HOST', ''),
+            'port' => (int) env('HETZNER_SFTP_PORT', 23),
+            'username' => (string) env('HETZNER_SFTP_USERNAME', ''),
+            'password' => env('HETZNER_SFTP_PASSWORD'),
+            'privateKey' => env('HETZNER_SFTP_PRIVATE_KEY'),
+            'passphrase' => env('HETZNER_SFTP_PASSPHRASE'),
+            'hostFingerprint' => env('HETZNER_SFTP_HOST_FINGERPRINT'),
+            'root' => env('HETZNER_SFTP_ROOT', ''),
+            'timeout' => (int) env('HETZNER_SFTP_TIMEOUT', 30),
+            'maxTries' => 4,
+            'throw' => false,
+        ],
+
         'dropbox' => [
             'driver' => 'dropbox',
             'authorization_token' => env('DROPBOX_TOKEN'),
