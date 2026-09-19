@@ -109,4 +109,17 @@ return [
         'no_expired_offers' => 'You have no expired offers.',
         'no_returned_offers' => 'You have no rejected offers.',
     ],
+    'export' => [
+        'column_video' => 'Video',
+        'download' => 'Download ZIP',
+        'completed' => [
+            'title' => 'Download ready',
+            'ready' => ':ready video is ready.|:ready of :total videos are ready.',
+            'skipped' => ':count video was not available and was skipped.|:count videos were not available and were skipped.',
+        ],
+        'failed' => [
+            'title' => 'Download not possible',
+            'body' => 'None of the selected videos was available. Please try again later.',
+        ],
+    ],
 ];

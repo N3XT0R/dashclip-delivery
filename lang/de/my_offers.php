@@ -108,4 +108,17 @@ return [
         'no_expired_offers' => 'Sie haben keine abgelaufenen Angebote.',
         'no_returned_offers' => 'Sie haben keine zurückgewiesenen Angebote.',
     ],
+    'export' => [
+        'column_video' => 'Video',
+        'download' => 'ZIP herunterladen',
+        'completed' => [
+            'title' => 'Download bereit',
+            'ready' => ':ready Video ist bereit.|:ready von :total Videos sind bereit.',
+            'skipped' => ':count Video war nicht verfügbar und wurde übersprungen.|:count Videos waren nicht verfügbar und wurden übersprungen.',
+        ],
+        'failed' => [
+            'title' => 'Download nicht möglich',
+            'body' => 'Keines der ausgewählten Videos war verfügbar. Bitte versuchen Sie es später erneut.',
+        ],
+    ],
 ];
