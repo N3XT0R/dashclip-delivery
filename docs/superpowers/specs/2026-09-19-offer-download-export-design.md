@@ -13,7 +13,8 @@ custom download dialog to the standard Filament export action
 The result must stay functionally identical for the channel operator:
 
 - one or several selected offers are delivered as **one ZIP** containing the video file(s) and an
-  `info.csv` with one row per packed video, with the same columns and content as today;
+  `info.csv` with exactly today's content: one row per clip of each packed video, one row for a packed
+  video without clips, same columns, separator and BOM;
 - videos that cannot be delivered are skipped instead of cancelling the archive, and are logged.
 
 In scope: only "Meine Angebote" in the standard panel.
@@ -57,24 +58,29 @@ Verified in `vendor/filament/actions` (Filament 5):
 
 ## Components
 
-### 1. Bulk action on "Meine Angebote"
+### 1. Export actions on "Meine Angebote"
 
 `ExportBulkAction` replaces the current `download_selected` bulk action in
-`App\Filament\Standard\Pages\MyOffers\Table\BulkActions`:
+`App\Filament\Standard\Pages\MyOffers\Table\BulkActions`, and `ExportAction` replaces the row
+actions `download` (tab "available") and `download_again` (tab "downloaded") in
+`App\Filament\Standard\Pages\MyOffers\Table\Actions`. A row action exports exactly its record
+(`modifyQueryUsing(fn (Builder $query, Assignment $record) => $query->whereKey($record))`).
+Shared configuration for all three:
 
-- label "Ausgewählte herunterladen" / "Download selected", visible only on the `available` tab;
+- labels and visibility as today (bulk action and `download` on "available", `download_again` on
+  "downloaded");
 - `exporter(OfferExporter::class)`, `job(BuildOfferExportZipJob::class)`,
   `formats([OfferExportFormatEnum::Zip])`, `columnMapping(false)`, `maxRows(500)`;
-- `modifyQueryUsing()` restricts the query to the current channel of the user
-  (`GetCurrentChannel`) and to downloadable offers, so tampered selections cannot export offers of
-  another channel.
+- `options(['channel_id' => <current channel>])` hands the channel to the job;
+- the table query is already scoped to the current channel, so selected records of other channels
+  cannot be resolved; the job re-filters by channel and downloadability as defense in depth.
 
 ### 2. `App\Filament\Standard\Exports\OfferExporter`
 
-- `getColumns()`: `ExportColumn`s for `filename`, `hash`, `size_mb`, `start`, `end`, `note`,
-  `bundle`, `role`, `submitted_by`, `preferred_channel`. Values come from the existing `CsvService`
-  logic (extracted into a reusable per-assignment row method), so `info.csv` keeps its exact
-  columns, order, separator and BOM.
+- `getColumns()`: offer-level `ExportColumn`s (`id`, `video.original_name`). Filament requires at
+  least one visible column; they are not used to build the archive. `info.csv` is produced by the
+  existing `CsvService::buildInfoCsv()` unchanged, because it writes one row per clip, which
+  per-record export columns cannot express.
 - `getFormats()`: `[OfferExportFormatEnum::Zip]`.
 - `getFileName()`: `videos_<channel>_<date>` (same pattern as today's archive name).
 - `getCompletedNotificationTitle()` / `getCompletedNotificationBody()`: translated texts stating
@@ -91,8 +97,9 @@ Replaces Filament's `PrepareCsvExport` for this exporter (same constructor signa
 2. Re-apply the downloadability filter (`AssignmentRepository::fetchDownloadableForChannel`); offers
    that are no longer downloadable are skipped and logged with reason `offer_unavailable`.
 3. Build the archive with `ZipService` (chunked remote transfer, per-video skipping and logging stay
-   as they are). `ZipService` gets an entry point that writes the archive to a given path on the
-   export disk and takes the `info.csv` content from the exporter columns for the packed offers.
+   as they are). `ZipService` gets an entry point `buildArchive()` that writes the archive to a given
+   absolute path, adds `info.csv` from `CsvService` for the packed offers and returns them; the old
+   `build()` delegates to it.
 4. Write `packed.json` (IDs of the packed offers) next to the ZIP in the export directory.
 5. Update the export: `total_rows` = selected offers, `processed_rows` = `total_rows`,
    `successful_rows` = packed offers.
