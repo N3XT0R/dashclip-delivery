@@ -11,6 +11,8 @@ export default class ZipDownloader {
         this.modal.onClose(() => {
             this.generation++;
             this.running = false;
+            // a closed dialog is done with, so a reload must not bring it back
+            this.forget();
         });
         this.modal.onRetry(() => this.startDownload(this.selected));
         this.init();
@@ -144,6 +146,12 @@ export default class ZipDownloader {
         try {
             sessionStorage.setItem(this.storageKey, JSON.stringify({data, selected: this.selected, savedAt: Date.now()}));
         } catch { /* Downloads also work when browser storage is unavailable. */ }
+    }
+
+    forget() {
+        try {
+            sessionStorage.removeItem(this.storageKey);
+        } catch { /* Nothing to forget when browser storage is unavailable. */ }
     }
 
     restore() {

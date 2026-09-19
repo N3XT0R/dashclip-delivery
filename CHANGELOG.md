@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Offer downloads**: Deliver a single selected video as a ZIP again, including its `info.csv` with
   the clip details; the direct video link remains available as a fallback. The download progress now
   advances while a large video is transferred instead of staying at 0% until it is complete.
+- **Offer downloads**: A closed download dialog no longer reappears when the offers page is reloaded.
 
 ## [4.9.0] - 2026-09-18
 
