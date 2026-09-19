@@ -105,6 +105,45 @@ class ZipServiceTest extends DatabaseTestCase
         $zip->close();
     }
 
+    public function testDropboxTransferReportsProgressWhileALargeVideoIsCopied(): void
+    {
+        $root = storage_path('app/dropbox-progress-sim');
+        if (!is_dir($root)) {
+            mkdir($root, 0777, true);
+        }
+        Config::set('filesystems.disks.dropbox', ['driver' => 'local', 'root' => $root]);
+        Storage::forgetDisk('dropbox');
+        $bytes = (int) (ZipService::TRANSFER_CHUNK_BYTES * 2.5);
+        Storage::disk('dropbox')->put('remote/large.mp4', str_repeat('L', $bytes));
+
+        $channel = Channel::factory()->create();
+        $video = Video::factory()->create([
+            'disk' => 'dropbox', 'path' => 'remote/large.mp4', 'bytes' => $bytes, 'original_name' => 'large.mp4',
+        ]);
+        $assignment = Assignment::factory()->for($channel, 'channel')->for($video, 'video')->create();
+
+        $progress = [];
+        $cache = Mockery::mock(DownloadCacheService::class)->shouldIgnoreMissing();
+        $cache->shouldReceive('setProgress')->andReturnUsing(function (string $jobId, int $value) use (&$progress): void {
+            $progress[] = $value;
+        });
+
+        $zipRel = (new ZipService($cache, $this->app->make(CsvService::class)))
+            ->build(null, $channel, collect([$assignment]), '198.51.100.7', 'UA/2.0', 'progress-job');
+
+        $intermediate = array_filter($progress, static fn (int $value): bool => $value > 0 && $value < 100);
+        $this->assertGreaterThanOrEqual(2, count(array_unique($intermediate)), 'Progress: '.implode(',', $progress));
+        $sorted = $progress;
+        sort($sorted);
+        $this->assertSame($sorted, $progress, 'Progress never moves backwards.');
+        $this->assertSame(100, end($progress));
+
+        $zip = $this->openZip($zipRel);
+        $this->assertSame($bytes, $zip->statName('large.mp4')['size']);
+        $zip->close();
+        Storage::disk('dropbox')->deleteDirectory('remote');
+    }
+
     public function testBuildDownloadsFromDropboxViaReadStreamAndPacksIntoZip(): void
     {
         // Simulate a "dropbox" disk with a local driver so readStream() works without network

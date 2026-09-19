@@ -79,7 +79,6 @@ class ZipController extends Controller
         $validated = $request->validate([
             'assignment_ids' => ['required', 'array', 'min:1', 'max:500'],
             'assignment_ids.*' => ['required', 'integer', 'min:1'],
-            'direct_if_single' => ['sometimes', 'boolean'],
         ]);
 
         return array_values(array_unique(array_map(intval(...), $validated['assignment_ids'])));

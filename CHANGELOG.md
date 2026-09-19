@@ -14,10 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   page now leads to the same category or tag in the other language.
 - **PHP 8.5**: Require PHP 8.5. The development container, the automated checks and the deployment
   template now use PHP 8.5; servers must provide PHP 8.5 before deploying this version.
+- **Offer downloads**: A video that is missing, cannot be read or is no longer offered no longer
+  cancels the whole ZIP. It is skipped and shown as skipped in the download dialog, left out of
+  `info.csv`, not marked as downloaded, and recorded with its reason in the application log. The
+  download only fails when none of the selected videos can be delivered.
 
 ### Fixed
 - **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for
   search engines.
+- **Offer downloads**: Deliver a single selected video as a ZIP again, including its `info.csv` with
+  the clip details; the direct video link remains available as a fallback. The download progress now
+  advances while a large video is transferred instead of staying at 0% until it is complete.
 
 ## [4.9.0] - 2026-09-18
 

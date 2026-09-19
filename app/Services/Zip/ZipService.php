@@ -6,10 +6,13 @@ namespace App\Services\Zip;
 
 use App\Enum\DownloadStatusEnum;
 use App\Exceptions\Zip\ZipBuildException;
+use App\Exceptions\Zip\ZipEmptyException;
+use App\Exceptions\Zip\ZipEntrySkippedException;
 use App\Models\{Assignment, Batch, Channel, Video};
 use App\Services\CsvService;
 use App\Services\DownloadCacheService;
 use Illuminate\Support\Collection;
+use League\Flysystem\FilesystemException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Log;
@@ -18,6 +21,9 @@ use ZipArchive;
 
 class ZipService
 {
+    /** Bytes copied from remote storage between two progress updates. */
+    public const TRANSFER_CHUNK_BYTES = 8 * 1024 * 1024;
+
     public function __construct(
         private DownloadCacheService $cache,
         private CsvService $csvService
@@ -54,17 +60,22 @@ class ZipService
 
         $this->prepareDirectories();
 
-        // remember assignments for later download tracking
-        $this->cache->setAssignments($jobId, $items->pluck('id')->all());
-
-        $zip = $this->createZipArchive($tmpPath, $items);
+        $zip = $this->createZipArchive($tmpPath);
         $tmpFiles = [];
 
         try {
             $this->cache->setStatus($jobId, DownloadStatusEnum::PREPARING->value);
             $this->cache->setProgress($jobId, 0);
 
-            $this->addAssignmentsToZip($zip, $jobId, $items, $ip, $userAgent, $tmpFiles);
+            $packed = $this->addAssignmentsToZip($zip, $jobId, $channel, $items, $tmpFiles);
+            if ($packed->isEmpty()) {
+                throw ZipEmptyException::allSkipped();
+            }
+            if (!$zip->addFromString('info.csv', $this->csvService->buildInfoCsv($packed))) {
+                throw new ZipBuildException('Cannot add metadata to the ZIP archive.');
+            }
+            // only packed offers are marked as downloaded once the archive is fetched
+            $this->cache->setAssignments($jobId, $packed->pluck('id')->all());
 
             $this->finalizeZip($zip, $tmpFiles, $jobId, $tmpPath, $downloadName);
         } catch (\Throwable $e) {
@@ -113,109 +124,134 @@ class ZipService
         Storage::makeDirectory('zips/tmp');
     }
 
-    /**
-     * @param Collection<Assignment> $items
-     */
-    private function createZipArchive(string $tmpPath, Collection $items): ZipArchive
+    private function createZipArchive(string $tmpPath): ZipArchive
     {
         $zip = new ZipArchive();
         if ($zip->open(Storage::path($tmpPath), ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             throw new ZipBuildException('Cannot create the ZIP archive.');
-        }
-        if (!$zip->addFromString('info.csv', $this->csvService->buildInfoCsv($items))) {
-            throw new ZipBuildException('Cannot add metadata to the ZIP archive.');
         }
 
         return $zip;
     }
 
     /**
+     * Pack every readable video and skip the others, so one broken video never blocks the rest.
      * @param Collection<Assignment> $items
      * @param array<int, string> $tmpFiles Temporary files to clean up even if processing fails.
+     * @return Collection<int, Assignment> The assignments whose videos are in the archive.
      */
     private function addAssignmentsToZip(
         ZipArchive $zip,
         string $jobId,
+        Channel $channel,
         Collection $items,
-        string $ip,
-        ?string $userAgent,
         array &$tmpFiles
-    ): void {
+    ): Collection {
         $total = max($items->count(), 1);
         $processed = 0;
+        $packed = collect();
 
         foreach ($items as $assignment) {
-            $this->processAssignment($zip, $jobId, $assignment, $ip, $userAgent, $tmpFiles);
+            $nameInZip = $this->entryName($zip, $assignment);
+            try {
+                $this->processAssignment($zip, $jobId, $assignment, $nameInZip, $tmpFiles, $processed, $total);
+                $packed->push($assignment);
+            } catch (ZipEntrySkippedException|FilesystemException $exception) {
+                $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::SKIPPED->value);
+                Log::warning('Offered video skipped in ZIP download', [
+                    'reason' => $exception instanceof ZipEntrySkippedException ? $exception->reason : 'storage_error',
+                    'message' => $exception->getMessage(),
+                    'job_id' => $jobId,
+                    'assignment_id' => $assignment->getKey(),
+                    'video_id' => $assignment->getAttribute('video_id'),
+                    'channel_id' => $channel->getKey(),
+                    'file' => $nameInZip,
+                ]);
+            }
 
             $processed++;
             $this->updateProgress($jobId, $processed, $total);
         }
 
+        return $packed;
+    }
+
+    /** Name the archive entry after the video and keep it unique inside the archive. */
+    private function entryName(ZipArchive $zip, Assignment $assignment): string
+    {
+        $video = $assignment->video;
+        $nameInZip = $video !== null ? $this->sanitizeName($video) : 'offer_'.$assignment->getKey();
+        while ($zip->locateName($nameInZip) !== false) {
+            $nameInZip = $assignment->getKey() . '_' . $nameInZip;
+        }
+
+        return $nameInZip;
     }
 
     /**
      * @param array<int, string> $tmpFiles
+     * @throws ZipEntrySkippedException When this video cannot be packed.
+     * @param int $processed Number of assignments already packed, used for progress reporting.
+     * @param int $total Number of assignments in this archive.
      */
     private function processAssignment(
         ZipArchive $zip,
         string $jobId,
         Assignment $assignment,
-        string $ip,
-        ?string $userAgent,
-        array &$tmpFiles
+        string $nameInZip,
+        array &$tmpFiles,
+        int $processed,
+        int $total
     ): void {
-        /** @var Video $video */
+        /** @var Video|null $video */
         $video = $assignment->video;
         if ($video === null) {
-            throw new ZipBuildException('An offered video is no longer available.');
+            throw ZipEntrySkippedException::videoDeleted();
         }
         $disk = $video->getDisk();
         $path = $video->getAttribute('path');
 
         if (!$disk->exists($path)) {
-            Log::channel('single')->warning('remote path not exists', [
+            Log::warning('remote path not exists', [
                 'path' => $path,
                 'video_id' => $video->getKey(),
                 'disk' => $video->getAttribute('disk'),
             ]);
-            throw new ZipBuildException('An offered video file is missing.');
+            throw ZipEntrySkippedException::fileMissing();
         }
 
-        $nameInZip = $this->sanitizeName($video);
-        while ($zip->locateName($nameInZip) !== false) {
-            $nameInZip = $assignment->getKey() . '_' . $nameInZip;
-        }
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::QUEUED->value);
-        $localPath = $this->localVideoPath($video, $disk->path($path), $jobId, $nameInZip, $tmpFiles);
+        $localPath = $this->localVideoPath($video, $disk->path($path), $jobId, $nameInZip, $tmpFiles, $processed, $total);
 
         if ($localPath === null) {
-            Log::channel('single')->warning('local path broken', [
+            Log::warning('local path broken', [
                 'localPath' => $localPath,
                 'nameInZip' => $nameInZip,
                 'video_id' => $video->getKey(),
                 'disk' => $video->getAttribute('disk'),
             ]);
-            throw new ZipBuildException('An offered video could not be read.');
+            throw ZipEntrySkippedException::unreadable();
         }
 
         $this->cache->setStatus($jobId, DownloadStatusEnum::PACKING->value);
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::PACKING->value);
         $isOk = $zip->addFile($localPath, $nameInZip);
         if (!$isOk) {
-            Log::channel('single')->warning('ZIP add failed', [
+            Log::warning('ZIP add failed', [
                 'localPath' => $localPath,
                 'nameInZip' => $nameInZip,
                 'video_id' => $video->getKey(),
                 'disk' => $video->getAttribute('disk'),
                 'exists' => file_exists($localPath),
             ]);
-            throw new ZipBuildException('An offered video could not be added to the ZIP archive.');
+            throw ZipEntrySkippedException::notAdded();
         }
 
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::READY->value);
     }
 
     /**
+     * Resolve a readable local file, copying remote videos in chunks so progress keeps moving.
      * @param array<int, string> $tmpFiles
      */
     private function localVideoPath(
@@ -223,7 +259,9 @@ class ZipService
         string $localDiskPath,
         string $jobId,
         string $nameInZip,
-        array &$tmpFiles
+        array &$tmpFiles,
+        int $processed,
+        int $total
     ): ?string {
         if ($video->getAttribute('disk') !== 'dropbox') {
             $this->cache->setStatus($jobId, DownloadStatusEnum::DOWNLOADED->value);
@@ -241,7 +279,7 @@ class ZipService
         $stream = $disk->readStream($path);
 
         if (!is_resource($stream)) {
-            Log::channel('single')->warning('Dropbox readStream failed', [
+            Log::warning('Dropbox readStream failed', [
                 'path' => $video->getAttribute('path'),
             ]);
             return null;
@@ -255,7 +293,7 @@ class ZipService
             $localHandle = fopen($localPath, 'w+b');
 
             if ($localHandle === false) {
-                Log::channel('single')->warning('local handler failed', [
+                Log::warning('local handler failed', [
                     'localPath' => $localPath,
                     'video_id' => $video->getKey(),
                     'disk' => $video->getAttribute('disk'),
@@ -265,9 +303,14 @@ class ZipService
             }
 
             try {
-                $bytes = stream_copy_to_stream($stream, $localHandle);
-                if ($bytes === false || $bytes !== $disk->size($path)) {
-                    throw new ZipBuildException('The remote video transfer was incomplete.');
+                $size = (int) $disk->size($path);
+                $bytes = 0;
+                while (($copied = stream_copy_to_stream($stream, $localHandle, self::TRANSFER_CHUNK_BYTES)) > 0) {
+                    $bytes += $copied;
+                    $this->updateProgress($jobId, $processed, $total, $size > 0 ? min($bytes / $size, 1.0) : 0.0);
+                }
+                if ($copied === false || $bytes !== $size) {
+                    throw ZipEntrySkippedException::incompleteTransfer();
                 }
             } finally {
                 fclose($localHandle);
@@ -290,9 +333,12 @@ class ZipService
         return preg_replace('/[\\\\\/:*?"<>|]+/', '_', $name);
     }
 
-    private function updateProgress(string $jobId, int $processed, int $total): void
+    /**
+     * @param float $currentFileShare Transferred share of the file currently being processed, from 0 to 1.
+     */
+    private function updateProgress(string $jobId, int $processed, int $total, float $currentFileShare = 0.0): void
     {
-        $pct = (int)floor($processed * 100 / max($total, 1));
+        $pct = (int)floor(($processed + $currentFileShare) * 100 / max($total, 1));
         $this->cache->setProgress($jobId, $pct);
     }
 

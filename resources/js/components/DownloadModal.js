@@ -67,7 +67,8 @@ export default class DownloadModal {
             downloading: 'Wird heruntergeladen...',
             downloaded: 'Heruntergeladen',
             packing: 'Wird gepackt...',
-            ready: 'Fertig'
+            ready: 'Fertig',
+            skipped: 'Übersprungen (nicht verfügbar)'
         };
     }
 
