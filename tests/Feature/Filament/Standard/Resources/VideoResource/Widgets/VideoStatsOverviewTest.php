@@ -82,7 +82,6 @@ final class VideoStatsOverviewTest extends DatabaseTestCase
 
         $reflection = new \ReflectionClass($component->instance());
         $method = $reflection->getMethod('getCachedStats');
-        $method->setAccessible(true);
 
         $stats = $method->invoke($component->instance());
 

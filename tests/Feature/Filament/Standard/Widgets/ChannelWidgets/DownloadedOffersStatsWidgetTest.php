@@ -109,7 +109,6 @@ final class DownloadedOffersStatsWidgetTest extends DatabaseTestCase
     {
         $reflection = new \ReflectionClass($object);
         $reflectionMethod = $reflection->getMethod($method);
-        $reflectionMethod->setAccessible(true);
 
         return $reflectionMethod->invokeArgs($object, $parameters);
     }

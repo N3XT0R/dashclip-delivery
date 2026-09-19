@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   structured data, link the German and English versions of the blog overview, categories and tags,
   and name the site and language in link previews. The blog language switcher on a category or tag
   page now leads to the same category or tag in the other language.
+- **PHP 8.5**: Require PHP 8.5. The development container, the automated checks and the deployment
+  template now use PHP 8.5; servers must provide PHP 8.5 before deploying this version.
 
 ### Fixed
 - **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for

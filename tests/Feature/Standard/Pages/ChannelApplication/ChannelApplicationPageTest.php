@@ -139,7 +139,6 @@ final class ChannelApplicationPageTest extends TestCase
 
         $statusColumn = $capturedColumns[1];
         $formatProperty = new ReflectionProperty($statusColumn, 'formatStateUsing');
-        $formatProperty->setAccessible(true);
         $formatter = $formatProperty->getValue($statusColumn);
 
         self::assertIsCallable($formatter);

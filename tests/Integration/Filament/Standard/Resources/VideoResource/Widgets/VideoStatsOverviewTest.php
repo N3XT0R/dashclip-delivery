@@ -81,7 +81,6 @@ final class VideoStatsOverviewTest extends DatabaseTestCase
 
         $reflection = new \ReflectionClass($widget);
         $method = $reflection->getMethod('getStats');
-        $method->setAccessible(true);
 
         $stats = $method->invoke($widget);
 

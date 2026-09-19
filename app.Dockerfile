@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.5-fpm
 RUN apt-get update \
     && apt-get install -y curl zip npm libzip-dev zlib1g-dev unzip libpng-dev \
     libjpeg-dev libfreetype6-dev git mariadb-client libmagickwand-dev openssh-client \
@@ -23,7 +23,6 @@ RUN docker-php-ext-install pdo_mysql zip \
     && docker-php-ext-install intl \
     && docker-php-ext-install ftp \
     && docker-php-ext-enable redis \
-    && docker-php-ext-install opcache \
     && curl -sS https://getcomposer.org/installer \
                  | php -- --install-dir=/usr/local/bin --filename=composer \
 COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
