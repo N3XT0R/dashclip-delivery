@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   advances while a large video is transferred instead of staying at 0% until it is complete.
 - **Channel applications**: Record the approval of a channel application in the activity log.
   The entry was prepared but never saved.
+- **Offer downloads**: A closed download dialog no longer reappears when the offers page is reloaded.
 
 ## [4.9.0] - 2026-09-18
 
