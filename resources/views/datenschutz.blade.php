@@ -148,6 +148,31 @@
             <p>Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG i.&nbsp;V.&nbsp;m. Art. 6 Abs. 1 lit. f DSGVO.</p>
         </section>
 
+        {{-- AUFTRAGSVERARBEITUNG SPEICHER --}}
+        @php
+            $storageProvider = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'default', ''));
+            $storageDpaUrl = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_DPA_URL, 'default', ''));
+            $hasStorageDpa = filter_var($storageDpaUrl, FILTER_VALIDATE_URL) !== false
+                && in_array(parse_url($storageDpaUrl, PHP_URL_SCHEME), ['http', 'https'], true);
+        @endphp
+        @if ($hasStorageDpa)
+            <section class="mb-6">
+                <h2 class="text-xl font-semibold mb-2">Speicherung bei einem Auftragsverarbeiter</h2>
+                <p>
+                    Videoinhalte und die zugehörigen Daten werden
+                    {{ $storageProvider !== '' ? 'bei '.$storageProvider : 'bei unserem Speicher-Anbieter' }}
+                    gespeichert. Mit dem Anbieter besteht ein Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO.
+                    Er verarbeitet die Daten ausschließlich nach unseren Weisungen und schützt sie durch
+                    angemessene technische und organisatorische Maßnahmen.
+                </p>
+                <p>
+                    <a href="{{ $storageDpaUrl }}" target="_blank" rel="noopener noreferrer" class="underline">
+                        Auftragsverarbeitungsvertrag ansehen
+                    </a>
+                </p>
+            </section>
+        @endif
+
         {{-- DROPBOX --}}
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Dropbox-Integration</h2>

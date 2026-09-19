@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Privacy policy**: Name the storage provider and link its data processing agreement in a new
+  section of the privacy policy. Both are set in the administration settings; the section only
+  appears once the agreement link is set.
+
 ### Changed
 - **Search engines and link previews**: Describe the organization, website and articles with
   structured data, link the German and English versions of the blog overview, categories and tags,
