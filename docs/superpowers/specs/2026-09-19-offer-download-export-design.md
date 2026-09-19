@@ -2,7 +2,7 @@
 
 Date: 2026-09-19
 Branch: `feature/offer-download-export`
-Status: design approved section by section by the user on 2026-09-19; written specification awaiting review.
+Status: approved by the user and implemented on 2026-09-19.
 
 ## Objective and boundaries
 
