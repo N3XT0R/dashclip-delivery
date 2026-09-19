@@ -24,7 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `info.csv`, not marked as downloaded, and recorded with its reason in the application log. The
   download only fails when none of the selected videos can be delivered.
 - **Storage setting**: The default storage setting can name any configured remote storage, so new
-  uploads can be moved there instead of only to Dropbox. Local values still keep uploads in place.
+  uploads can be moved there instead of only to Dropbox. Local values still keep uploads in place,
+  and videos already on remote storage are only moved by the migration command, never deleted.
 - **Dependencies**: The OAuth library is held on its 13.7 release line so that the SFTP storage can be
   used; that line has no known security advisories.
 

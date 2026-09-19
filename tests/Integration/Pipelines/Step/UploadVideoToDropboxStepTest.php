@@ -114,6 +114,20 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
         self::assertFalse($this->step->isApplicable($this->createContext()));
     }
 
+    public function testVideosAlreadyOnRemoteStorageAreNeverMovedOrDeleted(): void
+    {
+        $this->target('hetzner');
+        $sourceDisk = Mockery::mock(Filesystem::class);
+        $context = $this->createContext(disk: 'dropbox', sourceDisk: $sourceDisk);
+
+        $this->uploadService->shouldNotReceive('uploadFile');
+        $this->videoRepository->shouldNotReceive('save');
+        $sourceDisk->shouldNotReceive('delete');
+
+        self::assertFalse($this->step->isApplicable($context));
+        self::assertSame('dropbox', $this->step->handle($context)->video->disk);
+    }
+
     public function testItReturnsContextUnchangedWhenDuplicate(): void
     {
         $context = $this->createContext(isDuplicate: true);

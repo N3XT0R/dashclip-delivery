@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Storage;
  *
  * The class and step name still say Dropbox because the step name is stored in every video's
  * ingest state; renaming it would mark the step as missing for all existing videos.
- * Only configured remote disks are targets, so a local value keeps the video where it was uploaded.
+ * Only configured remote disks are targets, so a local value keeps the video where it was uploaded,
+ * and only freshly uploaded videos on a local disk are moved, so remote copies are never deleted.
  */
 readonly class UploadVideoToDropboxStep implements IngestStepInterface
 {
@@ -45,7 +46,7 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
     public function isApplicable(IngestContext $context): bool
     {
         $target = $this->targetDisk();
-        if ($target === null || $context->video->disk === $target) {
+        if ($target === null || !$this->isFreshUpload($context)) {
             return false;
         }
 
@@ -56,7 +57,7 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
 
     public function handle(IngestContext $context): IngestContext
     {
-        if ($context->isDuplicate) {
+        if ($context->isDuplicate || !$this->isFreshUpload($context)) {
             return $context;
         }
         $target = $this->targetDisk();
@@ -81,6 +82,15 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
         }
 
         return $context;
+    }
+
+    /**
+     * Only videos still on a local upload disk are moved. Videos already on remote storage are left
+     * alone, because moving deletes the source; they are moved with storage:migrate-videos instead.
+     */
+    private function isFreshUpload(IngestContext $context): bool
+    {
+        return $this->disks->isLocal((string)$context->video->disk);
     }
 
     /** The configured remote disk new videos belong on, or null to keep them where they were uploaded. */
