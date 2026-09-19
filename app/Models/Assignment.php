@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -109,9 +110,25 @@ class Assignment extends Model
         return $query
             ->where('status', StatusEnum::PICKEDUP->value)
             ->whereHas('downloads')
-            ->join('downloads', 'assignments.id', '=', 'downloads.assignment_id')
-            ->orderByDesc('downloads.downloaded_at')
-            ->select('assignments.*');
+            ->orderByLatestDownload();
+    }
+
+    /**
+     * Order assignments by their most recent download without duplicating rows per download.
+     * @param Builder $query
+     * @param string $direction
+     * @return Builder
+     */
+    public function scopeOrderByLatestDownload(Builder $query, string $direction = 'desc'): Builder
+    {
+        return $query->orderBy(
+            Download::query()
+                ->select('downloaded_at')
+                ->whereColumn('downloads.assignment_id', 'assignments.id')
+                ->latest('downloaded_at')
+                ->limit(1),
+            $direction
+        );
     }
 
     /**
@@ -157,6 +174,15 @@ class Assignment extends Model
     public function downloads(): HasMany
     {
         return $this->hasMany(Download::class);
+    }
+
+    /**
+     * The most recent download of this assignment.
+     * @return HasOne<Download, $this>
+     */
+    public function latestDownload(): HasOne
+    {
+        return $this->hasOne(Download::class)->latestOfMany('downloaded_at');
     }
 
     /**

@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Channel applications**: Record the approval of a channel application in the activity log.
   The entry was prepared but never saved.
 - **Offer downloads**: A closed download dialog no longer reappears when the offers page is reloaded.
+- **Offer downloads**: The "Heruntergeladen" tab lists every offer once and shows only its latest
+  download time, instead of one row and one time per download. Sorting by download time works in
+  both directions.
 
 ## [4.9.0] - 2026-09-18
 
