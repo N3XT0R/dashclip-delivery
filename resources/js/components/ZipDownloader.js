@@ -96,7 +96,10 @@ export default class ZipDownloader {
                     this.modal.setDownloads([{name: state.name || 'ZIP herunterladen', url: data.downloadUrl}, ...data.downloads]);
                     this.save({...data, status: 'ready', name: state.name});
                     this.deliver(data.downloadUrl);
-                    this.modal.update(100, 'ZIP bereit. Der Download wurde an den Browser übergeben. Der Link bleibt für einen erneuten Versuch verfügbar.');
+                    const skipped = Object.values(state.files || {}).filter(status => status === 'skipped').length;
+                    this.modal.update(100, skipped
+                        ? `ZIP bereit. ${skipped} nicht verfügbare${skipped === 1 ? 's Video wurde' : ' Videos wurden'} übersprungen. Der Link bleibt für einen erneuten Versuch verfügbar.`
+                        : 'ZIP bereit. Der Download wurde an den Browser übergeben. Der Link bleibt für einen erneuten Versuch verfügbar.');
                     this.running = false;
                     return;
                 }

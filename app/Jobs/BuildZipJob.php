@@ -5,8 +5,10 @@ namespace App\Jobs;
 use App\DTO\Zip\AssignmentZipDto;
 use App\Enum\DownloadStatusEnum;
 use App\Services\DownloadCacheService;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use App\Exceptions\Zip\ZipBuildException;
+use App\Exceptions\Zip\ZipEmptyException;
 use App\Repository\AssignmentRepository;
 use App\Repository\BatchRepository;
 use App\Repository\ChannelRepository;
@@ -78,8 +80,17 @@ class BuildZipJob implements ShouldQueue
 
         if ($jobId !== null) {
             $items = app(AssignmentRepository::class)->fetchDownloadableForChannel($channel, $assignmentIds, $batch);
-            if ($items->count() !== $assignmentIds->count()) {
-                throw new ZipBuildException('Some selected offers are no longer available.');
+            foreach ($assignmentIds->diff($items->modelKeys()) as $unavailableId) {
+                app(DownloadCacheService::class)->setFileStatus($jobId, 'offer_'.$unavailableId, DownloadStatusEnum::SKIPPED->value);
+                Log::warning('Offered video skipped in ZIP download', [
+                    'reason' => 'offer_unavailable',
+                    'job_id' => $jobId,
+                    'assignment_id' => $unavailableId,
+                    'channel_id' => $channel->getKey(),
+                ]);
+            }
+            if ($items->isEmpty()) {
+                throw ZipEmptyException::allSkipped();
             }
         } elseif ($batch) {
             $items = $assignments->fetchForZip($batch, $channel, $assignmentIds);
@@ -124,6 +135,21 @@ class BuildZipJob implements ShouldQueue
     {
         if ($this->assignmentZipDto->jobId !== null) {
             app(DownloadCacheService::class)->setStatus($this->assignmentZipDto->jobId, DownloadStatusEnum::FAILED->value);
+        }
+
+        // skipped videos were already logged one by one
+        if ($exception instanceof ZipEmptyException) {
+            return;
+        }
+
+        foreach ($this->assignmentZipDto->assignmentIds as $assignmentId) {
+            Log::warning('Offered video not delivered because the ZIP download failed', [
+                'reason' => 'zip_failed',
+                'message' => $exception?->getMessage(),
+                'job_id' => $this->assignmentZipDto->jobId,
+                'assignment_id' => $assignmentId,
+                'channel_id' => $this->assignmentZipDto->channelId,
+            ]);
         }
     }
 }

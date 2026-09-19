@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\DTO\Zip\AssignmentZipDto;
+use App\Exceptions\Zip\ZipBuildException;
+use App\Exceptions\Zip\ZipEmptyException;
+use App\Jobs\BuildZipJob;
+use Illuminate\Support\Facades\Log;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\Video;
@@ -43,6 +48,25 @@ class DownloadReliabilityTest extends DatabaseTestCase
         return Assignment::factory()->forChannel($channel)->forVideo(Video::factory()->create([
             'disk' => 'local', 'path' => $path, 'original_name' => $name, 'bytes' => 13,
         ]))->create();
+    }
+
+    private function spyOnLogs(): void
+    {
+        Log::spy();
+    }
+
+    /** @return list<array<string, mixed>> Context of every skipped or undelivered video warning. */
+    private function undeliveredWarnings(): array
+    {
+        $warnings = [];
+        Log::shouldHaveReceived('warning')->withArgs(function (string $message, array $context = []) use (&$warnings): bool {
+            if (str_starts_with($message, 'Offered video')) {
+                $warnings[] = $context;
+            }
+            return true;
+        });
+
+        return $warnings;
     }
 
     private function startUrl(Channel $channel): string
@@ -111,19 +135,106 @@ class DownloadReliabilityTest extends DatabaseTestCase
         $this->get($data['downloadUrl'], ['Range' => 'bytes=0-9'])->assertStatus(206);
     }
 
-    public function testFailedZipKeepsWorkingIndividualDownloads(): void
+    public function testMissingVideoIsSkippedAndTheRestIsDelivered(): void
     {
+        $this->spyOnLogs();
         $channel = Channel::factory()->create();
-        $good = $this->offer($channel);
-        $missing = $this->offer($channel);
+        $good = $this->offer($channel, 'good.mp4');
+        $missing = $this->offer($channel, 'missing.mp4');
         Storage::delete($missing->video->path);
         $data = $this->postJson($this->startUrl($channel), [
             'assignment_ids' => [$good->id, $missing->id],
         ])->assertOk()->json();
+
+        $progress = $this->getJson($data['progressUrl'])->assertOk()
+            ->assertJsonPath('status', 'ready')
+            ->assertJsonPath('progress', 100);
+        $this->assertEquals(['good.mp4' => 'ready', 'missing.mp4' => 'skipped'], $progress->json('files'));
+        $response = $this->get($data['downloadUrl'])->assertOk();
+        $archive = new ZipArchive();
+        $this->assertTrue($archive->open($response->baseResponse->getFile()->getPathname()));
+        $this->assertSame(2, $archive->numFiles);
+        $this->assertSame('video-content', $archive->getFromName('good.mp4'));
+        $this->assertFalse($archive->getFromName('missing.mp4'));
+        $csv = (string) $archive->getFromName('info.csv');
+        $archive->close();
+        $this->assertStringContainsString('good.mp4', $csv);
+        $this->assertStringNotContainsString('missing.mp4', $csv);
+        $this->assertDatabaseHas('assignments', ['id' => $good->id, 'status' => 'picked_up']);
+        $this->assertDatabaseMissing('assignments', ['id' => $missing->id, 'status' => 'picked_up']);
+        $this->get($data['downloads'][1]['url'])->assertNotFound();
+        $warnings = $this->undeliveredWarnings();
+        $this->assertCount(1, $warnings);
+        $this->assertSame('file_missing', $warnings[0]['reason']);
+        $this->assertSame($missing->id, $warnings[0]['assignment_id']);
+        $this->assertSame('missing.mp4', $warnings[0]['file']);
+    }
+
+    public function testZipFailsOnlyWhenEveryVideoIsMissing(): void
+    {
+        $this->spyOnLogs();
+        $channel = Channel::factory()->create();
+        $first = $this->offer($channel);
+        $second = $this->offer($channel);
+        Storage::delete([$first->video->path, $second->video->path]);
+        $data = $this->postJson($this->startUrl($channel), [
+            'assignment_ids' => [$first->id, $second->id],
+        ])->assertOk()->json();
+
         $this->getJson($data['progressUrl'])->assertOk()->assertJsonPath('status', 'failed');
         $this->get($data['downloadUrl'])->assertNotFound();
-        $this->assertSame('video-content', $this->get($data['downloads'][0]['url'])->assertOk()->streamedContent());
-        $this->get($data['downloads'][1]['url'])->assertNotFound();
+        $this->assertCount(2, $data['downloads']);
+        $warnings = $this->undeliveredWarnings();
+        $this->assertSame(['file_missing', 'file_missing'], array_column($warnings, 'reason'));
+        $this->assertEqualsCanonicalizing([$first->id, $second->id], array_column($warnings, 'assignment_id'));
+    }
+
+    public function testOfferThatExpiredBeforeTheBuildIsSkippedAndLogged(): void
+    {
+        $this->spyOnLogs();
+        $channel = Channel::factory()->create();
+        $good = $this->offer($channel, 'good.mp4');
+        $expired = $this->offer($channel, 'expired.mp4');
+        $expired->update(['expires_at' => now()->subMinute()]);
+        $cache = $this->app->make(DownloadCacheService::class);
+        $cache->init('expired-job');
+
+        BuildZipJob::dispatchSync(new AssignmentZipDto(
+            batchId: null,
+            channelId: $channel->id,
+            assignmentIds: [$good->id, $expired->id],
+            ip: '127.0.0.1',
+            userAgent: 'test',
+            jobId: 'expired-job',
+        ));
+
+        $this->assertSame('ready', $cache->getStatus('expired-job'));
+        $this->assertSame([$good->id], $cache->getAssignments('expired-job'));
+        $warnings = $this->undeliveredWarnings();
+        $this->assertCount(1, $warnings);
+        $this->assertSame('offer_unavailable', $warnings[0]['reason']);
+        $this->assertSame($expired->id, $warnings[0]['assignment_id']);
+    }
+
+    public function testFailedBuildLogsEveryUndeliveredVideoOnce(): void
+    {
+        $this->spyOnLogs();
+        $job = new BuildZipJob(new AssignmentZipDto(
+            batchId: null,
+            channelId: 7,
+            assignmentIds: [11, 12],
+            ip: '127.0.0.1',
+            userAgent: 'test',
+            jobId: 'failed-job',
+        ));
+
+        $job->failed(new ZipBuildException('The ZIP archive could not be finalized.'));
+        $job->failed(ZipEmptyException::allSkipped());
+
+        $warnings = $this->undeliveredWarnings();
+        $this->assertSame(['zip_failed', 'zip_failed'], array_column($warnings, 'reason'));
+        $this->assertSame([11, 12], array_column($warnings, 'assignment_id'));
+        $this->assertSame('The ZIP archive could not be finalized.', $warnings[0]['message']);
     }
 
     public function testQueueFailureStillReturnsIndividualLinks(): void
