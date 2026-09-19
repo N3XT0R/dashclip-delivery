@@ -24,7 +24,6 @@ final class ChannelApplicationTest extends TestCase
         restore_exception_handler();
 
         $property = new ReflectionProperty(ChannelApplication::class, 'pagePermissionKey');
-        $property->setAccessible(true);
         $property->setValue(null, null);
 
         parent::tearDown();

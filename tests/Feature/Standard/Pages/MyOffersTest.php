@@ -357,7 +357,6 @@ class MyOffersTestPage extends MyOffers
 
         $reflection = new \ReflectionClass($assignmentTable);
         $method = $reflection->getMethod('emptyStateDescription');
-        $method->setAccessible(true);
 
         return (string)$method->invoke($assignmentTable, $this);
     }
