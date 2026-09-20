@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Preferred channel when uploading**: The upload form offers an optional channel choice, so the
+  wish no longer has to be set through the eighth column of `info.csv`. Only channels the upload can
+  actually reach are listed, paused channels are left out, and the chosen channel is shown in the
+  video details.
+
 
 ## [4.10.0] - 2026-09-20
 
