@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Privacy policy**: Name the storage provider as processor in a new section, set in the
+  administration settings. The section about the previous storage provider disappears once no videos
+  are stored there any more and new uploads go elsewhere.
 - **Storage at Hetzner**: A new SFTP storage target and the `storage:migrate-videos` command, which
   copies videos to another storage, verifies each copy and only then switches the video over. Runs
   can be repeated, support a dry run, single videos and a limit, and keep the original files.
