@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Console;
 
 use App\Models\Video;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use League\Flysystem\UnableToCheckFileExistence;
+use Mockery;
+use RuntimeException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -90,6 +94,44 @@ final class MigrateVideoStorageCommandTest extends DatabaseTestCase
         $this->assertSame(['dropbox', 'hetzner'], [$broken->refresh()->disk, $good->refresh()->disk]);
         Log::shouldHaveReceived('warning')->withArgs(
             fn (string $message, array $context = []): bool => $message === 'Video storage migration failed' && $context['video_id'] === $broken->id,
+        )->once();
+    }
+
+    public function testUnreachableTargetStopsBeforeTheFirstVideoAndNamesTheCause(): void
+    {
+        $video = $this->video();
+        $target = Mockery::mock(Filesystem::class);
+        $target->shouldReceive('exists')->andThrow(
+            UnableToCheckFileExistence::forLocation('.connectivity-check', new RuntimeException('Permission denied (publickey)')),
+        );
+        Storage::set('hetzner', $target);
+
+        $this->artisan('storage:migrate-videos', ['from' => 'dropbox', 'to' => 'hetzner'])
+            ->expectsOutputToContain('Disk "hetzner" is not reachable')
+            ->expectsOutputToContain('Permission denied (publickey)')
+            ->assertFailed();
+
+        $this->assertSame('dropbox', $video->refresh()->disk);
+    }
+
+    public function testFailedVideoReportsTheUnderlyingCause(): void
+    {
+        Log::spy();
+        $video = $this->video();
+        $target = Mockery::mock(Filesystem::class);
+        $target->shouldReceive('exists')->with(Mockery::pattern('/connectivity/'))->andReturn(false);
+        $target->shouldReceive('exists')->with($video->path)->andThrow(
+            UnableToCheckFileExistence::forLocation($video->path, new RuntimeException('Connection closed by server')),
+        );
+        Storage::set('hetzner', $target);
+
+        $this->artisan('storage:migrate-videos', ['from' => 'dropbox', 'to' => 'hetzner'])
+            ->expectsOutputToContain('Connection closed by server')
+            ->assertFailed();
+
+        Log::shouldHaveReceived('warning')->withArgs(
+            fn (string $message, array $context = []): bool => $message === 'Video storage migration failed'
+                && str_contains($context['cause'], 'Connection closed by server'),
         )->once();
     }
 

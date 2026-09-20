@@ -8,6 +8,7 @@ use App\Enum\VideoStorageMigrationResultEnum;
 use App\Exceptions\Storage\VideoStorageMigrationException;
 use App\Models\Video;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Moves a video file to another storage disk and switches the video over once the copy is complete.
@@ -15,6 +16,20 @@ use Illuminate\Support\Facades\Storage;
  */
 final readonly class VideoStorageMigrationService
 {
+    /**
+     * Check that a disk answers before any video is touched, so wrong credentials fail once
+     * instead of once per video.
+     * @throws VideoStorageMigrationException When the disk cannot be reached.
+     */
+    public function assertReachable(string $disk): void
+    {
+        try {
+            Storage::disk($disk)->exists('.connectivity-check');
+        } catch (Throwable $exception) {
+            throw VideoStorageMigrationException::unreachable($disk, $exception);
+        }
+    }
+
     /**
      * @throws VideoStorageMigrationException When the source is missing or the copy is incomplete.
      */
