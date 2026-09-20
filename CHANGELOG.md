@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered
+  through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP
+  still contains the selected videos and their `info.csv`; unavailable videos are skipped and named
+  in the notification. Prepared downloads are kept for one day.
+
+## [4.10.0] - 2026-09-20
+
+### Added
+- **Privacy policy**: Name the storage provider as processor in a new section, set in the
+  administration settings. The section about the previous storage provider disappears once no videos
+  are stored there any more and new uploads go elsewhere.
+- **Storage at Hetzner**: A new SFTP storage target and the `storage:migrate-videos` command, which
+  copies videos to another storage, verifies each copy and only then switches the video over. Runs
+  can be repeated, support a dry run, single videos and a limit, and keep the original files.
+
+### Changed
 - **Search engines and link previews**: Describe the organization, website and articles with
   structured data, link the German and English versions of the blog overview, categories and tags,
   and name the site and language in link previews. The blog language switcher on a category or tag
@@ -18,10 +34,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cancels the whole ZIP. It is skipped and shown as skipped in the download dialog, left out of
   `info.csv`, not marked as downloaded, and recorded with its reason in the application log. The
   download only fails when none of the selected videos can be delivered.
-- **Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered
-  through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP
-  still contains the selected videos and their `info.csv`; unavailable videos are skipped and named
-  in the notification. Prepared downloads are kept for one day.
+- **Storage setting**: The default storage setting can name any configured remote storage, so new
+  uploads can be moved there instead of only to Dropbox. Local values still keep uploads in place.
+- **Dependencies**: The OAuth library is held on its 13.7 release line so that the SFTP storage can be
+  used; that line has no known security advisories.
+- **Video migration**: The migration command checks both storages before the first video and stops
+  with the real cause, for example a rejected login, instead of failing once per video. Failures now
+  name the underlying cause in the output and in the log.
 
 ### Fixed
 - **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for
@@ -35,6 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Offer downloads**: The "Heruntergeladen" tab lists every offer once and shows only its latest
   download time, instead of one row and one time per download. Sorting by download time works in
   both directions.
+- **Offer downloads**: Videos on storage other than Dropbox or the local disk are transferred before
+  packing, so ZIP downloads no longer skip them.
 
 ## [4.9.0] - 2026-09-18
 

@@ -5,12 +5,14 @@ declare(strict_types=1);
 use App\Constants\Config\DefaultConfigEntry;
 use App\Constants\Config\EmailConfigEntry;
 use App\Constants\Config\FFMPEGConfigEntry;
+use App\Constants\Config\PrivacyConfigEntry;
 
 return [
     'labels' => [
         'description' => 'Description',
     ],
     'keys' => [
+        PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Privacy: name of the storage provider (processor), e.g. with server location',
         EmailConfigEntry::ADMIN_EMAIL => 'Admin email address',
         EmailConfigEntry::YOUR_NAME => 'Your display name',
         EmailConfigEntry::GET_BCC_NOTIFICATIONS => 'Receive channel notification emails as BCC',

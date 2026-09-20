@@ -103,6 +103,26 @@ final class BuildOfferExportZipJobTest extends DatabaseTestCase
         $this->assertEqualsCanonicalizing([$first->id, $second->id], $files->packedIds($export));
     }
 
+    public function testOffersOnRemoteStorageArePackedAsWell(): void
+    {
+        Storage::extend('remote-test', static fn ($app, array $config) => Storage::createLocalDriver($config));
+        config()->set('filesystems.disks.hetzner', ['driver' => 'remote-test', 'root' => $this->root.'/hetzner']);
+        Storage::forgetDisk('hetzner');
+        Storage::disk('hetzner')->put('videos/remote.mp4', 'remote-content');
+        $offer = Assignment::factory()->forChannel($this->channel)->forVideo(Video::factory()->create([
+            'disk' => 'hetzner', 'path' => 'videos/remote.mp4', 'original_name' => 'remote.mp4', 'bytes' => 14,
+        ]))->create(['status' => 'notified']);
+        $export = $this->export(1);
+
+        $this->runJob($export, [$offer]);
+
+        $this->assertSame(1, $export->successful_rows);
+        $zip = new ZipArchive();
+        $this->assertTrue($zip->open($this->app->make(OfferExportFileService::class)->absoluteZipPath($export)) === true);
+        $this->assertSame('remote-content', $zip->getFromName('remote.mp4'));
+        $zip->close();
+    }
+
     public function testMissingAndExpiredOffersAreSkippedAndLogged(): void
     {
         Log::spy();

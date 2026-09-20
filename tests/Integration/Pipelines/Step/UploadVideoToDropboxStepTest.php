@@ -11,27 +11,42 @@ use App\Pipelines\Ingest\Context\IngestContext;
 use App\Pipelines\Ingest\Step\UploadVideoToDropboxStep;
 use App\Repository\VideoRepository;
 use App\Services\Contracts\ConfigServiceInterface;
-use App\Services\Upload\DropboxUploadService;
+use App\Services\Storage\StorageDiskService;
+use App\Services\Upload\UploadService;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\DatabaseTestCase;
 
+/**
+ * The step moves new videos to the storage disk set in default_file_system.
+ */
 final class UploadVideoToDropboxStepTest extends DatabaseTestCase
 {
     private UploadVideoToDropboxStep $step;
 
-    private DropboxUploadService|MockInterface $uploadService;
+    private UploadService|MockInterface $uploadService;
 
     private ConfigServiceInterface|MockInterface $configService;
 
     private VideoRepository|MockInterface $videoRepository;
 
+    private string $root;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->uploadService = Mockery::mock(DropboxUploadService::class);
+        $this->root = storage_path('framework/testing/ingest-target-'.Str::uuid());
+        Storage::extend('remote-test', static fn ($app, array $config) => Storage::createLocalDriver($config));
+        foreach (['dropbox', 'hetzner'] as $disk) {
+            config()->set("filesystems.disks.$disk", ['driver' => 'remote-test', 'root' => $this->root.'/'.$disk]);
+            Storage::forgetDisk($disk);
+        }
+
+        $this->uploadService = Mockery::mock(UploadService::class);
         $this->configService = Mockery::mock(ConfigServiceInterface::class);
         $this->videoRepository = Mockery::mock(VideoRepository::class);
 
@@ -39,201 +54,109 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
             $this->uploadService,
             $this->configService,
             $this->videoRepository,
+            new StorageDiskService(),
         );
     }
 
     protected function tearDown(): void
     {
+        Storage::build(['driver' => 'local', 'root' => $this->root])->deleteDirectory('');
         Mockery::close();
 
         parent::tearDown();
     }
 
-    public function testItReturnsStepName(): void
+    private function target(string $disk): void
     {
-        self::assertSame(
-            IngestStepEnum::UploadVideoToDropbox,
-            $this->step->name(),
-        );
-    }
-
-    public function testItReturnsDependencies(): void
-    {
-        self::assertSame(
-            [IngestStepEnum::LookupAndUpdateVideoHash],
-            $this->step->dependsOn(),
-        );
-    }
-
-    public function testItIsNotApplicableWhenDefaultFilesystemIsNotDropbox(): void
-    {
-        $context = $this->createContext();
-
         $this->configService
             ->shouldReceive('get')
-            ->once()
             ->with(DefaultConfigEntry::DEFAULT_FILE_SYSTEM, 'default', 'local')
-            ->andReturn('local');
-
-        $this->uploadService
-            ->shouldNotReceive('exists');
-
-        self::assertFalse($this->step->isApplicable($context));
+            ->andReturn($disk);
     }
 
-    public function testItIsApplicableWhenDefaultFilesystemIsDropboxAndFileDoesNotExistThere(): void
+    public function testItKeepsItsStepNameAndDependencies(): void
     {
-        $context = $this->createContext(
-            path: 'videos/test-video.mp4',
-            isDuplicate: false,
-        );
-
-        $this->configService
-            ->shouldReceive('get')
-            ->once()
-            ->with(DefaultConfigEntry::DEFAULT_FILE_SYSTEM, 'default', 'local')
-            ->andReturn('dropbox');
-
-        $this->uploadService
-            ->shouldReceive('exists')
-            ->once()
-            ->with('videos/test-video.mp4')
-            ->andReturn(false);
-
-        self::assertTrue($this->step->isApplicable($context));
+        self::assertSame(IngestStepEnum::UploadVideoToDropbox, $this->step->name());
+        self::assertSame([IngestStepEnum::LookupAndUpdateVideoHash], $this->step->dependsOn());
     }
 
-    public function testItIsNotApplicableWhenContextIsDuplicate(): void
+    public function testItIsApplicableForAnyConfiguredRemoteTarget(): void
     {
-        $context = $this->createContext(
-            path: 'videos/test-video.mp4',
-            isDuplicate: true,
-        );
+        foreach (['dropbox', 'hetzner'] as $disk) {
+            $this->configService = Mockery::mock(ConfigServiceInterface::class);
+            $step = new UploadVideoToDropboxStep($this->uploadService, $this->configService, $this->videoRepository, new StorageDiskService());
+            $this->target($disk);
 
-        $this->configService
-            ->shouldReceive('get')
-            ->once()
-            ->with(DefaultConfigEntry::DEFAULT_FILE_SYSTEM, 'default', 'local')
-            ->andReturn('dropbox');
-
-        $this->uploadService
-            ->shouldNotReceive('exists');
-
-        self::assertFalse($this->step->isApplicable($context));
+            self::assertTrue($step->isApplicable($this->createContext()), $disk.' is a valid target.');
+        }
     }
 
-    public function testItIsNotApplicableWhenFileAlreadyExistsInDropbox(): void
+    public function testLocalOrUnknownTargetsLeaveTheVideoWhereItIs(): void
     {
-        $context = $this->createContext(
-            path: 'videos/test-video.mp4',
-            isDuplicate: false,
-        );
+        foreach (['local', 'videos', 'unknown'] as $disk) {
+            $this->configService = Mockery::mock(ConfigServiceInterface::class);
+            $step = new UploadVideoToDropboxStep($this->uploadService, $this->configService, $this->videoRepository, new StorageDiskService());
+            $this->target($disk);
 
-        $this->configService
-            ->shouldReceive('get')
-            ->once()
-            ->with(DefaultConfigEntry::DEFAULT_FILE_SYSTEM, 'default', 'local')
-            ->andReturn('dropbox');
+            self::assertFalse($step->isApplicable($this->createContext()), $disk.' must not move the video.');
+        }
+    }
 
-        $this->uploadService
-            ->shouldReceive('exists')
-            ->once()
-            ->with('videos/test-video.mp4')
-            ->andReturn(true);
+    public function testItIsNotApplicableForDuplicatesInvalidFilesOrExistingCopies(): void
+    {
+        $this->target('hetzner');
 
-        self::assertFalse($this->step->isApplicable($context));
+        self::assertFalse($this->step->isApplicable($this->createContext(isDuplicate: true)));
+        self::assertFalse($this->step->isApplicable($this->createContext(isInvalid: true)));
+        self::assertFalse($this->step->isApplicable($this->createContext(disk: 'hetzner')));
+
+        Storage::disk('hetzner')->put('videos/test-video.mp4', 'content');
+        self::assertFalse($this->step->isApplicable($this->createContext()));
     }
 
     public function testItReturnsContextUnchangedWhenDuplicate(): void
     {
         $context = $this->createContext(isDuplicate: true);
+        $this->uploadService->shouldNotReceive('uploadFile');
 
-        $this->uploadService
-            ->shouldNotReceive('uploadFile');
-
-        $this->videoRepository
-            ->shouldNotReceive('save');
-
-        $result = $this->step->handle($context);
-
-        self::assertSame($context, $result);
-        self::assertTrue($result->isDuplicate);
+        self::assertSame($context, $this->step->handle($context));
     }
 
-    public function testItUploadsVideoUpdatesDiskAndDeletesSourceWhenSaveSucceeds(): void
+    public function testItMovesTheVideoToTheTargetAndDeletesTheSourceWhenSaved(): void
     {
+        $this->target('hetzner');
         $sourceDisk = Mockery::mock(Filesystem::class);
+        $context = $this->createContext(sourceDisk: $sourceDisk);
 
-        $context = $this->createContext(
-            path: 'videos/test-video.mp4',
-            disk: 'local',
-            isDuplicate: false,
-            sourceDisk: $sourceDisk,
-        );
-
-        $this->uploadService
-            ->shouldReceive('uploadFile')
-            ->once()
-            ->withArgs(function (Filesystem $passedSourceDisk, string $relativePath, string $targetPath): bool {
-                return $relativePath === 'videos/test-video.mp4'
-                    && $targetPath === 'videos/test-video.mp4';
-            });
-
-        $this->videoRepository
-            ->shouldReceive('save')
-            ->once()
-            ->with($context->video)
-            ->andReturn(true);
-
-        $sourceDisk
-            ->shouldReceive('delete')
-            ->once()
-            ->with('videos/test-video.mp4');
+        $this->uploadService->shouldReceive('uploadFile')->once()
+            ->with(Mockery::type(Filesystem::class), 'videos/test-video.mp4', 'hetzner', 'videos/test-video.mp4');
+        $this->videoRepository->shouldReceive('save')->once()->with($context->video)->andReturn(true);
+        $sourceDisk->shouldReceive('delete')->once()->with('videos/test-video.mp4');
 
         $result = $this->step->handle($context);
 
-        self::assertSame($context, $result);
-        self::assertSame('dropbox', $result->video->disk);
+        self::assertSame('hetzner', $result->video->disk);
     }
 
-    public function testItUploadsVideoUpdatesDiskAndDoesNotDeleteSourceWhenSaveFails(): void
+    public function testItKeepsTheSourceWhenSavingFails(): void
     {
+        $this->target('dropbox');
         $sourceDisk = Mockery::mock(Filesystem::class);
+        $context = $this->createContext(sourceDisk: $sourceDisk);
 
-        $context = $this->createContext(
-            path: 'videos/test-video.mp4',
-            disk: 'local',
-            isDuplicate: false,
-            sourceDisk: $sourceDisk,
-        );
+        $this->uploadService->shouldReceive('uploadFile')->once()
+            ->with(Mockery::type(Filesystem::class), 'videos/test-video.mp4', 'dropbox', 'videos/test-video.mp4');
+        $this->videoRepository->shouldReceive('save')->once()->andReturn(false);
+        $sourceDisk->shouldNotReceive('delete');
 
-        $this->uploadService
-            ->shouldReceive('uploadFile')
-            ->once()
-            ->withArgs(function (Filesystem $passedSourceDisk, string $relativePath, string $targetPath): bool {
-                return $relativePath === 'videos/test-video.mp4'
-                    && $targetPath === 'videos/test-video.mp4';
-            });
-
-        $this->videoRepository
-            ->shouldReceive('save')
-            ->once()
-            ->with($context->video)
-            ->andReturn(false);
-
-        $sourceDisk
-            ->shouldNotReceive('delete');
-
-        $result = $this->step->handle($context);
-
-        self::assertSame($context, $result);
-        self::assertSame('dropbox', $result->video->disk);
+        self::assertSame('dropbox', $this->step->handle($context)->video->disk);
     }
 
     private function createContext(
-        string $path = 'videos/default.mp4',
-        string $disk = 'local',
+        string $path = 'videos/test-video.mp4',
+        string $disk = 'videos',
         bool $isDuplicate = false,
+        bool $isInvalid = false,
         ?Filesystem $sourceDisk = null,
     ): IngestContext {
         $video = Mockery::mock(Video::class)->makePartial();
@@ -242,14 +165,8 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
         $video->clips = collect();
 
         $sourceDisk ??= Mockery::mock(Filesystem::class);
+        $video->shouldReceive('getDisk')->andReturn($sourceDisk);
 
-        $video
-            ->shouldReceive('getDisk')
-            ->andReturn($sourceDisk);
-
-        return new IngestContext(
-            video: $video,
-            isDuplicate: $isDuplicate,
-        );
+        return new IngestContext(video: $video, isDuplicate: $isDuplicate, isInvalid: $isInvalid);
     }
 }

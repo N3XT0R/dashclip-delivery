@@ -83,3 +83,38 @@ Auch hier verhindert `blog_seed_runs` eine doppelte Veröffentlichung (`release-
 Gibt es noch keinen Benutzer mit der Rolle `super_admin` im Guard `web`, überspringt die
 Migration den Artikel, ohne das Deployment abzubrechen; ein späterer Aufruf von
 `ReleaseNewsSeeder` mit derselben Version holt ihn nach.
+
+### Speicher bei Hetzner (SFTP)
+
+Die Disk `hetzner` spricht eine Hetzner Storage Box über SFTP an. Die Zugangsdaten kommen aus der
+`.env` (siehe `.env.example`): `HETZNER_SFTP_HOST`, `HETZNER_SFTP_PORT` (bei Storage Boxen `23`),
+`HETZNER_SFTP_USERNAME` sowie entweder `HETZNER_SFTP_PASSWORD` oder `HETZNER_SFTP_PRIVATE_KEY`
+(Pfad oder Inhalt, optional mit `HETZNER_SFTP_PASSPHRASE`). `HETZNER_SFTP_ROOT` legt das
+Basisverzeichnis fest. `HETZNER_SFTP_HOST_FINGERPRINT` sollte gesetzt werden, damit die Verbindung
+nur zum echten Server aufgebaut wird; der Wert kann im OpenSSH-Format übernommen werden:
+
+```bash
+ssh-keyscan -p 23 <host> 2>/dev/null | ssh-keygen -lf -
+# Ausgabe z. B.: 256 SHA256:AbCd... <host> (ED25519) -> Wert: SHA256:AbCd...
+```
+
+Umzug bestehender Videos von Dropbox:
+
+1. Zugangsdaten setzen und deployen.
+2. `php artisan storage:migrate-videos dropbox hetzner --dry-run` zeigt, was kopiert würde.
+3. `php artisan storage:migrate-videos dropbox hetzner` kopiert jedes Video an denselben Pfad,
+   prüft die Dateigröße und stellt das Video erst danach auf `hetzner` um. Der Lauf kann bei vielen
+   Daten lange dauern (in `screen` oder `tmux` starten), lässt sich abbrechen und erneut starten:
+   vollständige Kopien werden wiederverwendet. Mit `--video=<id>` und `--limit=<n>` lassen sich
+   einzelne Videos oder Teilmengen migrieren. Fehlgeschlagene Videos bleiben auf Dropbox und stehen
+   im Log.
+4. Die Einstellung `default_file_system` im Adminbereich auf `hetzner` setzen, damit neue Uploads
+   dort landen. Nur konfigurierte, nicht lokale Disks werden als Ziel verwendet; ein lokaler Wert
+   lässt neue Videos dort, wo sie hochgeladen wurden.
+
+Die Dateien auf Dropbox werden nicht gelöscht; das ist ein eigener Schritt, sobald der neue Speicher
+sich bewährt hat.
+
+Hinweis zu den Abhängigkeiten: Der SFTP-Adapter benötigt phpseclib 3. Die OAuth-Bibliothek ist
+deshalb auf die Versionsreihe 13.7 festgelegt (`~13.7.3`), deren bekannte Sicherheitslücke ab
+13.7.1 behoben ist. Sobald der SFTP-Adapter phpseclib 4 unterstützt, kann die Festlegung entfallen.
