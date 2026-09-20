@@ -72,7 +72,7 @@ Route::middleware(SetPublicLocale::class)->group(function (): void {
     Route::post('/zips/{batch}/{channel}', [ZipController::class, 'start'])->middleware('signed')->name('zips.start');
     Route::get('/zips/{id}/progress', [ZipController::class, 'progress'])->middleware('signed')->name('zips.progress');
     Route::get('/zips/{id}/download', [ZipController::class, 'download'])->middleware('signed')->name('zips.download');
-    Route::get('/offers/exports/{export}/download', OfferExportDownloadController::class)
+    Route::get('/offers/exports/{exportId}/download', OfferExportDownloadController::class)
         ->middleware('signed:relative')
         ->name('offers.exports.download');
 

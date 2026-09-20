@@ -109,7 +109,15 @@ return [
         'no_expired_offers' => 'You have no expired offers.',
         'no_returned_offers' => 'You have no rejected offers.',
     ],
+    'offer' => 'offer',
+    'offers' => 'offers',
     'export' => [
+        'gone' => [
+            'title' => 'Download expired',
+            'body' => 'This download is no longer available. Prepared downloads are removed after one day. Just start the download again in your offers.',
+            'back' => 'Go to my offers',
+        ],
+        'submit' => 'Prepare download',
         'column_video' => 'Video',
         'download' => 'Download ZIP',
         'completed' => [

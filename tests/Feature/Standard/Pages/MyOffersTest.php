@@ -174,6 +174,20 @@ final class MyOffersTest extends DatabaseTestCase
         $this->assertSame(1, $export->total_rows);
     }
 
+    public function testExportDialogUsesOfferWordingInsteadOfModelNames(): void
+    {
+        Bus::fake();
+        [, , $assignment] = $this->operatorWithOffer();
+
+        $page = Livewire::test(MyOffers::class, ['activeTab' => 'available'])->loadTable();
+        $table = $page->instance()->getTable();
+
+        $this->assertSame(__('my_offers.offer'), $table->getModelLabel());
+        $this->assertSame(__('my_offers.offers'), $table->getPluralModelLabel());
+        $this->assertStringContainsString(__('my_offers.offers'), (string) $table->getBulkAction('download_selected')->getModalHeading());
+        $this->assertStringNotContainsString('Assignment', (string) $table->getBulkAction('download_selected')->getModalHeading());
+    }
+
     public function testRowDownloadExportsExactlyItsOffer(): void
     {
         Bus::fake();

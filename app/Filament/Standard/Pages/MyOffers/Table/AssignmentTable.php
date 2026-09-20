@@ -26,6 +26,8 @@ final readonly class AssignmentTable
     ): Table {
         return $table
             ->query($this->baseQuery($channel))
+            ->modelLabel(__('my_offers.offer'))
+            ->pluralModelLabel(__('my_offers.offers'))
             ->columns($this->columns->make($page))
             ->recordActions($this->actions->make($page))
             ->toolbarActions($this->bulkActions->make($page))

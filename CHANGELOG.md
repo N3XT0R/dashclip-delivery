@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered
   through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP
   still contains the selected videos and their `info.csv`; unavailable videos are skipped and named
-  in the notification. Prepared downloads are kept for one day.
+  in the notification. Prepared downloads are kept for one day; opening an expired link afterwards
+  explains that instead of showing an error page. The dialog speaks of offers instead of internal
+  record names.
 
 ## [4.10.0] - 2026-09-20
 

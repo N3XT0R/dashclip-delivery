@@ -47,7 +47,7 @@ final class OfferExportDownloadControllerTest extends DatabaseTestCase
 
     private function url(Export $export): string
     {
-        return URL::signedRoute('offers.exports.download', ['export' => $export, 'authGuard' => GuardEnum::STANDARD->value], absolute: false);
+        return URL::signedRoute('offers.exports.download', ['exportId' => $export->getKey(), 'authGuard' => GuardEnum::STANDARD->value], absolute: false);
     }
 
     public function testOwnerReceivesTheZipAndOnlyPackedOffersAreMarkedDownloaded(): void
@@ -79,16 +79,36 @@ final class OfferExportDownloadControllerTest extends DatabaseTestCase
             ->get('/offers/exports/'.$export->id.'/download?authGuard=standard')->assertForbidden();
     }
 
+    public function testExpiredDownloadsExplainThemselvesInsteadOfShowingAnError(): void
+    {
+        $export = $this->export();
+
+        $this->actingAs($this->owner, GuardEnum::STANDARD->value)->get($this->url($export))
+            ->assertStatus(410)
+            ->assertSee(__('my_offers.export.gone.title'))
+            ->assertSee(__('my_offers.export.gone.body'));
+    }
+
+    public function testDeletedExportsExplainThemselvesAsWell(): void
+    {
+        $export = $this->export();
+        $url = $this->url($export);
+        $export->delete();
+
+        $this->actingAs($this->owner, GuardEnum::STANDARD->value)->get($url)
+            ->assertStatus(410)
+            ->assertSee(__('my_offers.export.gone.title'));
+    }
+
     public function testForeignUnfinishedOrMissingExportsAreNotFound(): void
     {
         $foreign = $this->export(['exporter' => 'App\\Other\\Exporter']);
         $unfinished = $this->export(['completed_at' => null]);
-        $withoutFile = $this->export();
         $files = $this->app->make(OfferExportFileService::class);
         Storage::disk('local')->put($files->zipPath($foreign), 'zip-bytes');
         Storage::disk('local')->put($files->zipPath($unfinished), 'zip-bytes');
 
-        foreach ([$foreign, $unfinished, $withoutFile] as $export) {
+        foreach ([$foreign, $unfinished] as $export) {
             $this->actingAs($this->owner, GuardEnum::STANDARD->value)->get($this->url($export))->assertNotFound();
         }
     }

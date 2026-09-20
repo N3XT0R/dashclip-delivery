@@ -28,6 +28,7 @@ final readonly class OfferExportActionConfigurator
             ->formats([OfferExportFormatEnum::Zip])
             ->columnMapping(false)
             ->maxRows(500)
+            ->modalSubmitActionLabel(__('my_offers.export.submit'))
             ->options(fn (): array => ['channel_id' => $this->currentChannel->handle()?->getKey()]);
     }
 }
