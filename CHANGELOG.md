@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [4.10.0] - 2026-09-20
+
 ### Added
 - **Privacy policy**: Name the storage provider as processor in a new section, set in the
   administration settings. The section about the previous storage provider disappears once no videos
