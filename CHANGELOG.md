@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   uploads can be moved there instead of only to Dropbox. Local values still keep uploads in place.
 - **Dependencies**: The OAuth library is held on its 13.7 release line so that the SFTP storage can be
   used; that line has no known security advisories.
+- **Video migration**: The migration command checks both storages before the first video and stops
+  with the real cause, for example a rejected login, instead of failing once per video. Failures now
+  name the underlying cause in the output and in the log.
 
 ### Fixed
 - **Blog pagination**: Later overview pages are no longer marked as duplicates of the first page for

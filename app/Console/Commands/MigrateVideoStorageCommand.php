@@ -36,6 +36,18 @@ class MigrateVideoStorageCommand extends Command
             return self::FAILURE;
         }
 
+        try {
+            $migration->assertReachable($from);
+            $migration->assertReachable($to);
+        } catch (Throwable $exception) {
+            $this->error($exception->getMessage());
+            foreach ($this->causes($exception) as $cause) {
+                $this->line('  caused by: '.$cause);
+            }
+
+            return self::FAILURE;
+        }
+
         $videos = Video::query()
             ->where('disk', $from)
             ->when($this->option('video') !== [], fn ($query) => $query->whereKey($this->option('video')))
@@ -54,12 +66,13 @@ class MigrateVideoStorageCommand extends Command
                 $this->line(sprintf('#%d %s: %s', $video->getKey(), $video->path, $result->value));
             } catch (Throwable $exception) {
                 $failed++;
-                $this->warn(sprintf('#%d %s: failed (%s)', $video->getKey(), $video->path, $exception->getMessage()));
+                $this->warn(sprintf('#%d %s: failed (%s)', $video->getKey(), $video->path, $this->describe($exception)));
                 Log::warning('Video storage migration failed', [
                     'video_id' => $video->getKey(),
                     'from' => $from,
                     'to' => $to,
                     'message' => $exception->getMessage(),
+                    'cause' => $this->describe($exception),
                 ]);
             }
         }
@@ -69,5 +82,24 @@ class MigrateVideoStorageCommand extends Command
             : sprintf('%d copied, %d switched, %d failed.', $counts['copied'], $counts['switched'], $failed));
 
         return $failed === 0 ? self::SUCCESS : self::FAILURE;
+    }
+
+    /** Name the whole exception chain, because storage adapters wrap the real cause, e.g. a rejected login. */
+    private function describe(Throwable $exception): string
+    {
+        return implode(' <- ', [$exception->getMessage(), ...$this->causes($exception)]);
+    }
+
+    /**
+     * @return list<string> The messages of the wrapped exceptions, outermost first.
+     */
+    private function causes(Throwable $exception): array
+    {
+        $messages = [];
+        for ($current = $exception->getPrevious(); $current !== null; $current = $current->getPrevious()) {
+            $messages[] = $current->getMessage();
+        }
+
+        return array_values(array_unique($messages));
     }
 }
