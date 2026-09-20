@@ -148,20 +148,39 @@
             <p>Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG i.&nbsp;V.&nbsp;m. Art. 6 Abs. 1 lit. f DSGVO.</p>
         </section>
 
+        {{-- AUFTRAGSVERARBEITUNG SPEICHER --}}
+        @php
+            $storageProvider = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'default', ''));
+            $usesDropbox = app(\App\Services\Storage\StorageUsageService::class)->usesDropbox();
+        @endphp
+        @if ($storageProvider !== '')
+            <section class="mb-6">
+                <h2 class="text-xl font-semibold mb-2">Speicherung bei einem Auftragsverarbeiter</h2>
+                <p>
+                    Videoinhalte und die zugehörigen Daten werden bei {{ $storageProvider }} gespeichert.
+                    Mit dem Anbieter besteht ein Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO.
+                    Er verarbeitet die Daten ausschließlich nach unseren Weisungen und schützt sie durch
+                    angemessene technische und organisatorische Maßnahmen.
+                </p>
+            </section>
+        @endif
+
         {{-- DROPBOX --}}
-        <section class="mb-6">
-            <h2 class="text-xl font-semibold mb-2">Dropbox-Integration</h2>
-            <p>
-                Bei Aktivierung werden OAuth-Tokens gespeichert und zur Authentifizierung verwendet.
-                Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO.
-            </p>
-            <p>
-                Dropbox ist ein US-Anbieter. Die Datenübertragung in die USA erfolgt auf Grundlage des
-                EU-US-Datenschutzrahmens (Angemessenheitsbeschluss der EU-Kommission vom 10.&nbsp;Juli 2023),
-                unter dem Dropbox Inc. zertifiziert ist. Ergänzend stützt sich die Übertragung auf
-                EU-Standardvertragsklauseln. Die Integration kann jederzeit deaktiviert werden.
-            </p>
-        </section>
+        @if ($usesDropbox)
+            <section class="mb-6">
+                <h2 class="text-xl font-semibold mb-2">Dropbox-Integration</h2>
+                <p>
+                    Bei Aktivierung werden OAuth-Tokens gespeichert und zur Authentifizierung verwendet.
+                    Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO.
+                </p>
+                <p>
+                    Dropbox ist ein US-Anbieter. Die Datenübertragung in die USA erfolgt auf Grundlage des
+                    EU-US-Datenschutzrahmens (Angemessenheitsbeschluss der EU-Kommission vom 10.&nbsp;Juli 2023),
+                    unter dem Dropbox Inc. zertifiziert ist. Ergänzend stützt sich die Übertragung auf
+                    EU-Standardvertragsklauseln. Die Integration kann jederzeit deaktiviert werden.
+                </p>
+            </section>
+        @endif
 
         {{-- DOWNLOAD TRACKING --}}
         <section class="mb-6">
@@ -243,13 +262,22 @@
         {{-- WIDERRUF --}}
         <section class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Widerruf der Einwilligung</h2>
-            <p>
-                Die Einwilligung zur Nutzung der Dropbox-Integration ist zwingend erforderlich,
-                da die Plattform technisch auf der Speicherung und Verarbeitung der Inhalte über Dropbox basiert.
-                Sie können Ihre Einwilligung jederzeit widerrufen; ein Widerruf führt jedoch dazu,
-                dass Ihr Benutzerkonto deaktiviert wird und die Plattform nicht weiter genutzt werden kann.
-                Die bis zum Widerruf erfolgte Verarbeitung bleibt rechtmäßig.
-            </p>
+            @if ($usesDropbox)
+                <p>
+                    Die Einwilligung zur Nutzung der Dropbox-Integration ist zwingend erforderlich,
+                    da die Plattform technisch auf der Speicherung und Verarbeitung der Inhalte über Dropbox basiert.
+                    Sie können Ihre Einwilligung jederzeit widerrufen; ein Widerruf führt jedoch dazu,
+                    dass Ihr Benutzerkonto deaktiviert wird und die Plattform nicht weiter genutzt werden kann.
+                    Die bis zum Widerruf erfolgte Verarbeitung bleibt rechtmäßig.
+                </p>
+            @else
+                <p>
+                    Die Verarbeitung Ihrer Inhalte ist für die Nutzung der Plattform erforderlich.
+                    Sie können eine erteilte Einwilligung jederzeit widerrufen; ein Widerruf führt jedoch dazu,
+                    dass Ihr Benutzerkonto deaktiviert wird und die Plattform nicht weiter genutzt werden kann.
+                    Die bis zum Widerruf erfolgte Verarbeitung bleibt rechtmäßig.
+                </p>
+            @endif
         </section>
 
         {{-- KI --}}
