@@ -5,13 +5,16 @@ namespace App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Events\Video\VideoQueuedForIngest;
 use App\Filament\Standard\Resources\VideoResource;
 use App\Models\Clip;
+use App\Models\Team;
 use App\Models\Video;
 use App\Repository\ClipRepository;
 use App\Repository\TeamRepository;
+use App\Services\Channel\UploadTargetChannelService;
 use Carbon\CarbonInterval;
 use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -104,7 +107,8 @@ class CreateVideo extends CreateRecord
                             ->helperText(
                                 __('filament.video_upload.form.fields.role_helper_text')
                             )
-                            ->trim()
+                            ->trim(),
+                        $this->getPreferredChannelComponent(),
                     ])
                     ->columnSpanFull()
             ]);
@@ -223,6 +227,35 @@ class CreateVideo extends CreateRecord
             ]);
     }
 
+    /**
+     * Optional wish for the channel the video should be offered to first.
+     *
+     * @return Select
+     */
+    protected function getPreferredChannelComponent(): Select
+    {
+        $channels = app(UploadTargetChannelService::class)
+            ->getSelectableChannels($this->getUploadTeam());
+
+        return Select::make('clip.preferred_channel_id')
+            ->label(__('filament.video_upload.form.fields.preferred_channel'))
+            ->helperText(__('filament.video_upload.form.fields.preferred_channel_helper_text'))
+            ->options($channels->pluck('name', 'id')->all())
+            ->searchable()
+            ->native(false)
+            ->visible($channels->isNotEmpty());
+    }
+
+    /**
+     * The team the uploaded video belongs to, which also scopes the selectable channels.
+     *
+     * @return Team|null
+     */
+    protected function getUploadTeam(): ?Team
+    {
+        return app(TeamRepository::class)->getDefaultTeamForUser(auth()->user());
+    }
+
     protected function getClipSelectorComponent(): View
     {
         return View::make('filament.forms.components.clip-selector')
@@ -252,13 +285,32 @@ class CreateVideo extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $user = auth()->user();
-        $data['team_id'] = app(TeamRepository::class)->getDefaultTeamForUser($user)?->getKey();
+        $team = $this->getUploadTeam();
+        $data['team_id'] = $team?->getKey();
         $model = parent::handleRecordCreation($data);
         $data['clip']['video_id'] = $model->getKey();
         $data['clip']['user_id'] = auth()->id();
         $data['clip']['submitted_by'] = $user->display_name;
-        app(ClipRepository::class)->create($data['clip']);
+        app(ClipRepository::class)->create($this->applyPreferredChannel($data['clip'], $team));
         return $model;
+    }
+
+    /**
+     * Keep only a preferred channel the uploader may actually target and note its name.
+     *
+     * @param array<string, mixed> $clipData
+     * @param Team|null $team
+     * @return array<string, mixed>
+     */
+    protected function applyPreferredChannel(array $clipData, ?Team $team): array
+    {
+        $channel = app(UploadTargetChannelService::class)
+            ->resolveSelection($team, $clipData['preferred_channel_id'] ?? null);
+
+        $clipData['preferred_channel_id'] = $channel?->getKey();
+        $clipData['preferred_channel'] = $channel?->getAttribute('name');
+
+        return $clipData;
     }
 
     protected function afterCreate(): void

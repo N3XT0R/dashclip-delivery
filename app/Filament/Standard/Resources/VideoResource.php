@@ -95,6 +95,12 @@ class VideoResource extends Resource
                                     })
                                     ->extraAttributes(['class' => 'text-lg font-semibold']),
 
+                                TextEntry::make('preferred_channel')
+                                    ->label(__('filament.video_resource.view.fields.preferred_channel'))
+                                    ->translateLabel()
+                                    ->state(fn (Video $record) => self::preferredChannelName($record))
+                                    ->visible(fn (Video $record) => filled(self::preferredChannelName($record))),
+
                                 TextEntry::make('created_at')
                                     ->label(__('filament.video_resource.view.fields.created_at'))
                                     ->translateLabel()
@@ -318,6 +324,21 @@ class VideoResource extends Resource
                 ),
                 'assignments as assignments_count',
             ]);
+    }
+
+    /**
+     * Name of the channel the submitter asked this video to be offered to.
+     *
+     * @param Video $record
+     * @return string|null
+     */
+    private static function preferredChannelName(Video $record): ?string
+    {
+        return $record->clips()
+            ->with('preferredChannel')
+            ->first()
+            ?->preferredChannel
+            ?->getAttribute('name');
     }
 
     private static function formatDuration(?int $duration): string
