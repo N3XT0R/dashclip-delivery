@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Enum\PanelEnum;
 use App\Http\Middleware\Api\EnsureStandardPermission;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'scopes' => CheckToken::class,
             'standard.permission' => EnsureStandardPermission::class,
         ]);
+        // Pages outside the panels that need a signed-in user (e.g. the OAuth consent) use the
+        // sign-in of the user area; the panels redirect to their own sign-in themselves.
+        $middleware->redirectGuestsTo(
+            static fn (): string => Filament::getPanel(PanelEnum::STANDARD->value)->getLoginUrl()
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

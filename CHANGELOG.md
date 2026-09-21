@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   editorial permission seeder creates and grants its permissions in one pass instead of reloading
   all permissions for each one, which saves about a second in every database test.
 
+### Fixed
+- **Signing in to applications**: The pages where you allow an application to access your account
+  and where you connect a device with a code now work instead of failing with a server error. They
+  name the application and its requested permissions and use the sign-in of the user area; signed-out
+  visitors are sent to the sign-in and brought back afterwards.
+
 ### Security
 - **Packages**
     - upgraded packages to newest version (e.g. laravel or npm dependencies)
