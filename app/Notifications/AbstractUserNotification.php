@@ -16,6 +16,16 @@ abstract class AbstractUserNotification extends Notification implements ShouldQu
 
     protected bool $isConfigurable = true;
 
+    /**
+     * Whether the mail preference for this notification is offered to the given user.
+     * @param User $user
+     * @return bool
+     */
+    public static function isVisibleFor(User $user): bool
+    {
+        return true;
+    }
+
     protected function notificationKey(): string
     {
         return static::class;

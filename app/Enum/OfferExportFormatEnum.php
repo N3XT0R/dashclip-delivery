@@ -27,7 +27,22 @@ enum OfferExportFormatEnum: string implements ExportFormat
     {
         return Action::make('download_zip')
             ->label(__('my_offers.export.download'))
-            ->url(URL::signedRoute('offers.exports.download', ['exportId' => $export->getKey(), 'authGuard' => $authGuard], absolute: false), shouldOpenInNewTab: true)
+            ->url(self::downloadPath($export, $authGuard), shouldOpenInNewTab: true)
             ->markAsRead();
+    }
+
+    /**
+     * Signed, host-independent path to the prepared ZIP of an offer export.
+     * @param Export $export
+     * @param string $authGuard guard the export's creator signs in with
+     * @return string
+     */
+    public static function downloadPath(Export $export, string $authGuard): string
+    {
+        return URL::signedRoute(
+            'offers.exports.download',
+            ['exportId' => $export->getKey(), 'authGuard' => $authGuard],
+            absolute: false,
+        );
     }
 }

@@ -10,6 +10,9 @@ use App\Repository\AssignmentRepository;
 use App\Services\AssignmentService;
 use App\Services\OfferExportFileService;
 use Filament\Actions\Exports\Models\Export;
+use Filament\Facades\Filament;
+use Filament\Panel;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -27,10 +30,18 @@ final class OfferExportDownloadController extends Controller
     ) {
     }
 
-    public function __invoke(Request $request, int $exportId): BinaryFileResponse|Response
+    public function __invoke(Request $request, int $exportId): BinaryFileResponse|Response|RedirectResponse
     {
         $guard = (string) $request->query('authGuard');
-        abort_unless(array_key_exists($guard, config('auth.guards')) && auth($guard)->check(), 401);
+        abort_unless(array_key_exists($guard, config('auth.guards')), 401);
+
+        if (!auth($guard)->check()) {
+            // links from the mail are often opened signed out: sign in, then continue to the download
+            $panel = $this->panelFor($guard);
+            abort_if($panel === null, 401);
+
+            return redirect()->guest($panel->getLoginUrl());
+        }
 
         $export = Export::query()->find($exportId);
         if ($export === null) {
@@ -50,6 +61,17 @@ final class OfferExportDownloadController extends Controller
         }
 
         return ($this->downloader)($export);
+    }
+
+    private function panelFor(string $guard): ?Panel
+    {
+        foreach (Filament::getPanels() as $panel) {
+            if ($panel->getAuthGuard() === $guard && $panel->hasLogin()) {
+                return $panel;
+            }
+        }
+
+        return null;
     }
 
     /** Explain that the prepared download is gone instead of showing a bare error page. */

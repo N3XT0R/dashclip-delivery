@@ -6,11 +6,13 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\OfferExportFormatEnum;
+use App\Enum\PanelEnum;
 use App\Filament\Standard\Exports\OfferExporter;
 use App\Models\Assignment;
 use App\Models\User;
 use App\Services\OfferExportFileService;
 use Filament\Actions\Exports\Models\Export;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Tests\DatabaseTestCase;
@@ -72,7 +74,9 @@ final class OfferExportDownloadControllerTest extends DatabaseTestCase
         $export = $this->export();
         Storage::disk('local')->put($this->app->make(OfferExportFileService::class)->zipPath($export), 'zip-bytes');
 
-        $this->get($this->url($export))->assertUnauthorized();
+        $this->get($this->url($export))
+            ->assertRedirect(Filament::getPanel(PanelEnum::STANDARD->value)->getLoginUrl());
+        $this->assertSame(url($this->url($export)), session('url.intended'));
         $this->actingAs(User::factory()->standard()->create(), GuardEnum::STANDARD->value)
             ->get($this->url($export))->assertForbidden();
         $this->actingAs($this->owner, GuardEnum::STANDARD->value)
