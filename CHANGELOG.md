@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   actually reach are listed, paused channels are left out, and the chosen channel is shown in the
   video details.
 
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
 
 ## [4.10.0] - 2026-09-20
 
