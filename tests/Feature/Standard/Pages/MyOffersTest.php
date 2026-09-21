@@ -63,7 +63,46 @@ final class MyOffersTest extends DatabaseTestCase
             ->assertForbidden();
     }
 
-    public function testOffersWithDeletedVideosRenderWithoutAPreview(): void
+    public function testDownloadedOffersOfDeletedVideosRenderWithoutAPreview(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4');
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->assertCanSeeTableRecords([$assignment])
+            ->assertSee('Removed Clip.mp4')
+            ->assertSee(__('my_offers.table.no_longer_available'))
+            ->assertTableActionHidden('download_again', $assignment);
+    }
+
+    public function testDetailsOfADeletedVideoOpenWithoutAPreview(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4');
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->mountTableAction('view_details', $assignment)
+            ->assertSee('Removed Clip.mp4')
+            ->assertDontSee(__('my_offers.modal.preview.heading'));
+    }
+
+    public function testAvailableOffersOfDeletedVideosAreNotListed(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = Assignment::factory()->forChannel($channel)
+            ->create(['status' => StatusEnum::QUEUED->value, 'expires_at' => now()->addDay()]);
+        $assignment->video->delete();
+
+        Livewire::test(MyOffers::class)
+            ->assertCanNotSeeTableRecords([$assignment]);
+    }
+
+    /**
+     * @return array{0: Channel, 1: User}
+     */
+    private function actingOperator(): array
     {
         $user = User::factory()->create();
         Role::findOrCreate(RoleEnum::CHANNEL_OPERATOR->value, GuardEnum::STANDARD->value);
@@ -71,15 +110,21 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
         $channel = Channel::factory()->create();
         $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
-        $assignment = Assignment::factory()->forChannel($channel)->create();
-        $assignment->video->delete();
-
         Filament::setTenant($team, true);
+        Filament::auth()->login($user);
         $this->actingAs($user, GuardEnum::STANDARD->value);
 
-        $this->get(MyOffers::getUrl())
-            ->assertOk()
-            ->assertSee('images/status/no_preview.jpg');
+        return [$channel, $user];
+    }
+
+    private function downloadedOfferOfDeletedVideo(Channel $channel, string $name): Assignment
+    {
+        $assignment = Assignment::factory()->forChannel($channel)->create(['status' => StatusEnum::PICKEDUP->value]);
+        $assignment->video->update(['original_name' => $name]);
+        Download::factory()->forAssignment($assignment)->create();
+        $assignment->video->delete();
+
+        return $assignment;
     }
 
     public function testTabsAreRendered(): void

@@ -6,6 +6,7 @@ namespace App\Filament\Standard\Pages\MyOffers\Table;
 
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
+use App\Models\Video;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -46,19 +47,30 @@ final class Columns
 
     public function videoTitle(): TextColumn
     {
-        return TextColumn::make('video.original_name')
+        return TextColumn::make('videoWithTrashed.original_name')
             ->label(__('my_offers.table.columns.video_title'))
-            ->searchable()
-            ->sortable()
+            ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereHas(
+                'videoWithTrashed',
+                fn (Builder $video): Builder => $video->where('original_name', 'like', "%{$search}%")
+            ))
+            ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy(
+                Video::withTrashed()->select('original_name')->whereColumn('videos.id', 'assignments.video_id'),
+                $direction
+            ))
             ->limit(40)
+            ->description(
+                fn (Assignment $record): ?string => $record->videoWithTrashed?->trashed()
+                    ? __('my_offers.table.no_longer_available')
+                    : null
+            )
             ->tooltip(
-                fn (Assignment $record): string => $record->video->original_name ?? ''
+                fn (Assignment $record): string => $record->videoWithTrashed->original_name ?? ''
             );
     }
 
     public function uploaders(MyOffers $page): TextColumn
     {
-        return TextColumn::make('video.clips.user.display_name')
+        return TextColumn::make('videoWithTrashed.clipsWithTrashed.user.display_name')
             ->label(__('my_offers.table.columns.uploader'))
             ->formatStateUsing(
                 fn (Assignment $record): string => $this->resolveUploaders($record, $page)
@@ -148,12 +160,12 @@ final class Columns
 
     private function resolveUploaders(Assignment $record, MyOffers $page): string
     {
-        return $record->video->clips
+        return ($record->videoWithTrashed?->clipsWithTrashed ?? collect())
             ->pluck('user.display_name')
             ->unique()
             ->filter()
             ->implode(', ')
-            ?: '—';
+            ?: '-';
     }
 
     private function expiresDescription(Assignment $record, MyOffers $page): string

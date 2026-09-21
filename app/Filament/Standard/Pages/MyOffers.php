@@ -149,11 +149,15 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
 
     public function getDetailsInfolist(Assignment $assignment): Schema
     {
+        $video = $assignment->videoWithTrashed;
+        $clips = $video?->clipsWithTrashed()->orderBy('start_sec')->get() ?? collect();
+        $isDeleted = $video?->trashed() ?? true;
+
         return Schema::make()
             ->livewire($this)
             ->state([
-                'video' => $assignment->video,
-                'clips' => $assignment->video->clips,
+                'video' => $video,
+                'clips' => $clips,
                 'note' => $assignment->note,
             ])
             ->schema([
@@ -162,10 +166,11 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                         ViewField::make('preview')
                             ->view('filament.standard.components.video-preview')
                             ->viewData([
-                                'video' => $assignment->video,
+                                'video' => $video,
                             ]),
                     ])
-                    ->collapsible(),
+                    ->collapsible()
+                    ->visible(!$isDeleted),
 
                 Section::make(__('my_offers.modal.metadata.heading'))
                     ->schema([
@@ -194,11 +199,11 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                         ViewField::make('clips')
                             ->view('filament.standard.components.clips-table')
                             ->viewData([
-                                'clips' => $assignment->video->clips()->orderBy('start_sec')->get(),
+                                'clips' => $clips,
                             ]),
                     ])
                     ->collapsible()
-                    ->hidden(fn (): bool => $assignment->video->clips->isEmpty()),
+                    ->hidden(fn (): bool => $clips->isEmpty()),
             ]);
     }
 

@@ -51,6 +51,7 @@ return [
             'returned_at' => 'Rejected on',
             'was_downloaded' => 'Downloaded?',
             'return_reason' => 'Reason',
+            'no_longer_available' => 'no longer available',
         ],
         'status_badges' => [
             'available' => 'Available',
@@ -100,7 +101,7 @@ return [
             'no_clips' => 'No clips available',
         ],
         'preview' => [
-            'heading' => 'Preview',
+            'heading' => 'Video preview',
             'not_available' => 'No preview available',
         ],
     ],
