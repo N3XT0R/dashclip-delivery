@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and unique. `POST /api/v1/channels/{channel}/logo` uploads a logo (PNG, JPEG or WebP, up to
   512 KB, shrunk to fit 256 x 256 pixels) and `DELETE` removes it. Channel responses include
   `show_on_homepage` and `logo_url`. The Channel Operator API documentation is now version 1.1.0.
+- **Removing deleted videos for good**: A daily job (`videos:purge-deleted`, with `--dry-run`)
+  removes videos together with their files once they have been deleted for longer than the retention
+  period set in the administration settings, now labelled "Aufbewahrungsfrist gelöschter Videos (in
+  Wochen)". A video whose file cannot be removed stays deleted and is retried on the next run.
 
 ### Changed
 - **Development container**: The image library now supports WebP.
