@@ -44,6 +44,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   longer overlap. Both now wait for each other, and the deletion rule is checked again at the moment
   of deletion, so a deleted video never ends up with an active offer and a video that was just
   offered is not deleted. The weekly distribution skips a video that was deleted during its run.
+- **Removing deleted videos keeps their history**: The daily removal of deleted videos now deletes only
+  their files and previews. The video entry, its offers and downloads stay, so download histories and
+  "Meine Angebote" keep showing them as no longer available. Views that crashed on a deleted video (download
+  history, downloaded offers and their details, administration lists) render it now, and offers of
+  deleted videos no longer show as available. The privacy policy describes the retention accordingly.
 
 ### Security
 - **Packages**

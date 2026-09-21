@@ -61,7 +61,9 @@
             </ul>
             <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
                 Die Daten dienen der Verwaltung, Distribution und Deduplizierung der Inhalte.
-                Gelöschte Videos und Vorschauen werden vollständig entfernt.
+                Videodateien und Vorschauen gelöschter Videos werden nach Ablauf einer Aufbewahrungsfrist
+                entfernt. Angaben zur Verteilung (Titel, Kanal, Zeitpunkte von Angeboten und Downloads)
+                bleiben zur Nachvollziehbarkeit erhalten.
             </p>
         </section>
 
@@ -196,7 +198,8 @@
             <h2 class="text-xl font-semibold mb-2">Speicherdauer – Übersicht</h2>
             <ul class="list-disc list-inside mb-4">
                 <li><strong>Benutzerkonten:</strong> bis zur Löschung</li>
-                <li><strong>Videoinhalte:</strong> bis zur Entfernung</li>
+                <li><strong>Videodateien:</strong> bis zur Löschung zuzüglich Aufbewahrungsfrist</li>
+                <li><strong>Angaben zur Verteilung gelöschter Videos:</strong> gemäß Audit-Erfordernissen</li>
                 <li><strong>Angebots- und Verteilungsdaten:</strong> gemäß Audit-Erfordernissen, pseudonymisiert</li>
                 <li><strong>E-Mail-Logs:</strong> 24 Monate</li>
                 <li><strong>Activity Logs:</strong> 36 Monate</li>
