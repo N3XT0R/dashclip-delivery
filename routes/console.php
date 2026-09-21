@@ -36,6 +36,7 @@ Schedule::command(Commands\PublishScheduledPostsCommand::class)->everyMinute()->
 Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
 Schedule::command(Commands\CleanFfmpegTmpCommand::class)->hourly();
 Schedule::command(Commands\CleanExpiredZipsCommand::class)->hourly()->withoutOverlapping();
+Schedule::command(Commands\PurgeDeletedVideosCommand::class)->dailyAt('04:00')->withoutOverlapping();
 
 # WebDAV ingest
 Schedule::command(Commands\IngestWebDavCommand::class)->everyFifteenMinutes();

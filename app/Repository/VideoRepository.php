@@ -12,6 +12,7 @@ use App\Models\Clip;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
+use Carbon\CarbonInterface;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -314,6 +315,19 @@ class VideoRepository
     public function lockForUpdate(int $videoId): ?Video
     {
         return Video::query()->whereKey($videoId)->lockForUpdate()->first();
+    }
+
+    /**
+     * Videos that were deleted at or before the given moment, in chunks, for removing them for good.
+     * @param CarbonInterface $deletedBefore
+     * @param int $chunkSize
+     * @return LazyCollection<int, Video>
+     */
+    public function lazyDeletedBefore(CarbonInterface $deletedBefore, int $chunkSize = 100): LazyCollection
+    {
+        return Video::onlyTrashed()
+            ->where('deleted_at', '<=', $deletedBefore)
+            ->lazyById($chunkSize);
     }
 
     /**
