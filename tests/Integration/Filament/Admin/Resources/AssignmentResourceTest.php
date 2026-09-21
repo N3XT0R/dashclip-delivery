@@ -6,6 +6,7 @@ namespace Tests\Integration\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\Assignments\AssignmentResource;
 use App\Filament\Admin\Resources\Assignments\Pages\ListAssignments;
+use App\Filament\Admin\Resources\Videos\VideoResource;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -60,5 +61,28 @@ class AssignmentResourceTest extends DatabaseTestCase
             ->assertCanSeeTableRecords([$assignment])
             ->assertSee('Removed Admin Offer.mp4')
             ->assertSee(__('filament.admin.labels.deleted'));
+    }
+
+    public function testVideoColumnLinksNonDeletedVideoAndHidesLinkForDeletedVideo(): void
+    {
+        $video = Video::factory()->create();
+        $assignment = Assignment::factory()->forVideo($video)->withBatch(Batch::factory()->type('assign')->create())
+            ->create();
+
+        $deletedVideo = Video::factory()->create();
+        $deletedAssignment = Assignment::factory()->forVideo($deletedVideo)
+            ->withBatch(Batch::factory()->type('assign')->create())
+            ->create();
+        $deletedVideo->delete();
+
+        $page = app(ListAssignments::class);
+        $table = AssignmentResource::table(Table::make($page));
+        $column = $table->getColumn('videoWithTrashed.original_name');
+
+        $column->record($assignment->fresh());
+        $this->assertSame(VideoResource::getUrl('view', ['record' => $video]), $column->getUrl());
+
+        $column->record($deletedAssignment->fresh());
+        $this->assertNull($column->getUrl());
     }
 }

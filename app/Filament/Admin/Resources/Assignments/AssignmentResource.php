@@ -69,8 +69,10 @@ class AssignmentResource extends Resource
                             : null
                     )
                     ->url(function (Assignment $assignment) {
-                        $video = $assignment->video;
-                        return $video ? VideoResource::getUrl('view', ['record' => $video]) : null;
+                        $video = $assignment->videoWithTrashed;
+                        return ($video && ! $video->trashed())
+                            ? VideoResource::getUrl('view', ['record' => $video])
+                            : null;
                     })
                     ->openUrlInNewTab(),
                 TextColumn::make('created_at')

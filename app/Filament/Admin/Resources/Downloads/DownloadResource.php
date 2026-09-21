@@ -61,7 +61,10 @@ class DownloadResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('assignment.videoWithTrashed.original_name')
-                    ->url(fn (Download $download): ?string => $download->assignment?->video?->preview_url, true)
+                    ->url(function (Download $download): ?string {
+                        $video = $download->assignment?->videoWithTrashed;
+                        return ($video && ! $video->trashed()) ? $video->preview_url : null;
+                    }, true)
                     ->description(
                         fn (Download $download): ?string => $download->assignment?->videoWithTrashed?->trashed()
                             ? __('filament.admin.labels.deleted')
