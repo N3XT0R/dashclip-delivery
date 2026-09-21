@@ -49,4 +49,19 @@ final class DownloadResourceTest extends DatabaseTestCase
             ->assertSee($channel->name)
             ->assertSee((string)$assignment->getAttribute('video')->getAttribute('original_name'));
     }
+
+    public function testListShowsDownloadsOfDeletedVideos(): void
+    {
+        $video = Video::factory()->create(['original_name' => 'Removed Admin Clip.mp4']);
+        $assignment = Assignment::factory()->forVideo($video)->withBatch(Batch::factory()->type('assign')->create())
+            ->create(['status' => 'picked_up']);
+        $download = Download::factory()->forAssignment($assignment)->create();
+        $video->delete();
+
+        Livewire::test(ListDownloads::class)
+            ->assertStatus(200)
+            ->assertCanSeeTableRecords([$download])
+            ->assertSee('Removed Admin Clip.mp4')
+            ->assertSee(__('filament.admin.labels.deleted'));
+    }
 }

@@ -9,9 +9,12 @@ use App\Filament\Admin\Resources\Assignments\Pages\ListAssignments;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Models\User;
+use App\Models\Video;
 use Carbon\Carbon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\URL;
+use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
 class AssignmentResourceTest extends DatabaseTestCase
@@ -43,5 +46,19 @@ class AssignmentResourceTest extends DatabaseTestCase
         $this->assertSame($expected, $url);
 
         Carbon::setTestNow();
+    }
+
+    public function testListShowsOffersOfDeletedVideos(): void
+    {
+        $this->actingAs(User::factory()->admin()->create());
+        $video = Video::factory()->create(['original_name' => 'Removed Admin Offer.mp4']);
+        $assignment = Assignment::factory()->forVideo($video)->withBatch(Batch::factory()->type('assign')->create())->create();
+        $video->delete();
+
+        Livewire::test(ListAssignments::class)
+            ->assertStatus(200)
+            ->assertCanSeeTableRecords([$assignment])
+            ->assertSee('Removed Admin Offer.mp4')
+            ->assertSee(__('filament.admin.labels.deleted'));
     }
 }
