@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   name, paused video reception and the homepage listing, each optional; name and email must stay set
   and unique. `POST /api/v1/channels/{channel}/logo` uploads a logo (PNG, JPEG or WebP, up to
   512 KB, shrunk to fit 256 x 256 pixels) and `DELETE` removes it. Channel responses include
-  `show_on_homepage` and `logo_url`.
+  `show_on_homepage` and `logo_url`. The Channel Operator API documentation is now version 1.1.0.
 
 ### Changed
 - **Development container**: The image library now supports WebP.
