@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Development container**: The image library now supports WebP.
+- **Faster automated checks**: The coverage run on the core branches measures with PCOV instead
+  of Xdebug, which is several times faster; the nightly coverage run keeps Xdebug as reference. The
+  editorial permission seeder creates and grants its permissions in one pass instead of reloading
+  all permissions for each one, which saves about a second in every database test.
 
 ### Security
 - **Packages**

@@ -22,12 +22,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up PHP
+      # PCOV collects line coverage several times faster than Xdebug. The nightly coverage
+      # workflow keeps Xdebug as the reference measurement.
+      - name: Set up PHP with PCOV
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.5'
-          tools: composer, phpunit, xdebug
-          coverage: xdebug
+          tools: composer, phpunit
+          coverage: pcov
+          ini-values: pcov.directory=${{ github.workspace }}/app
       # Install system dependencies (optional but ensures codecs are available)
       - name: Ensure ffmpeg is installed and expose binary paths
         run: |
