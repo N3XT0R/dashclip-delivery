@@ -3,8 +3,10 @@
 namespace App\Filament\Standard\Resources;
 
 use App\Application\Ingest\GetVideoIngestStatusUseCase;
+use App\Application\Video\DeleteVideoUseCase;
 use App\Application\Video\IsDeletableUseCase;
 use App\Enum\StatusEnum;
+use App\Exceptions\Video\VideoNotDeletableException;
 use App\Filament\Standard\Resources\VideoResource\Pages;
 use App\Filament\Standard\Resources\VideoResource\RelationManagers\AssignmentsRelationManager;
 use App\Models\Video;
@@ -271,6 +273,16 @@ class VideoResource extends Resource
                     ->button()
                     ->requiresConfirmation()
                     ->hidden(fn (Video $record) => false === app(IsDeletableUseCase::class)->handle($record))
+                    ->using(static function (Video $record): bool {
+                        try {
+                            app(DeleteVideoUseCase::class)->handle($record);
+                        } catch (VideoNotDeletableException) {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    ->failureNotificationTitle(__('filament.video_resource.view.messages.not_deletable'))
                     ->color('danger'),
             ])
             ->toolbarActions([])

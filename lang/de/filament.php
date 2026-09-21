@@ -146,6 +146,7 @@ return [
             'messages' => [
                 'no_videos' => 'Es sind keine Videos verfügbar.',
                 'table_description' => 'Hier siehst du alle Videos, die du selbst für andere Kanäle hochgeladen hast.',
+                'not_deletable' => 'Das Video kann nicht mehr gelöscht werden, weil es inzwischen einem Kanal angeboten wurde.',
             ],
         ],
     ],

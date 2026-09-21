@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\Video;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Tests\DatabaseTestCase;
@@ -40,6 +41,34 @@ final class VideoResourceTest extends DatabaseTestCase
         Filament::auth()->login($this->user);
         $this->actingAs($this->user, GuardEnum::STANDARD->value);
         $this->grantVideoPermissions();
+    }
+
+    public function testDeleteActionSoftDeletesTheVideoAndKeepsItsFile(): void
+    {
+        Storage::fake('local');
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
+        Storage::disk('local')->put($video->path, 'video-bytes');
+
+        Livewire::test(ListVideos::class)
+            ->callTableAction('delete', $video)
+            ->assertHasNoTableActionErrors();
+
+        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
+        Storage::disk('local')->assertExists($video->path);
+    }
+
+    public function testDeleteIsRefusedWhenAnOfferAppearedWhileTheDialogWasOpen(): void
+    {
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
+
+        $component = Livewire::test(ListVideos::class)->mountTableAction('delete', $video);
+        Assignment::factory()->forVideo($video)->create([
+            'status' => StatusEnum::QUEUED->value,
+            'expires_at' => now()->addWeek(),
+        ]);
+        $component->callMountedTableAction();
+
+        $this->assertDatabaseHas('videos', ['id' => $video->getKey(), 'deleted_at' => null]);
     }
 
     public function testListVideosShowsOnlyAuthenticatedUsersRecords(): void

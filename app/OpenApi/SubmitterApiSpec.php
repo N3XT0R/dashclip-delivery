@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
  * Root document for the Submitter API: the endpoints a clip submitter uses to
  * manage their own videos and teams.
  */
-#[OA\Info(version: '1.0.0', title: 'Submitter API')]
+#[OA\Info(version: '1.0.1', title: 'Submitter API')]
 #[OA\Server(url: '/', description: 'Application root')]
 #[OA\SecurityScheme(
     securityScheme: 'oauth2',
