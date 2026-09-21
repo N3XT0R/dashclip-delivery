@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   wish no longer has to be set through the eighth column of `info.csv`. Only channels the upload can
   actually reach are listed, paused channels are left out, and the chosen channel is shown in the
   video details.
+- **Channel Operator API**: Channel settings can be changed through the API like on the channel
+  settings page. `PATCH /api/v1/channels/{channel}` now accepts name, creator name, email, YouTube
+  name, paused video reception and the homepage listing, each optional; name and email must stay set
+  and unique. `POST /api/v1/channels/{channel}/logo` uploads a logo (PNG, JPEG or WebP, up to
+  512 KB, shrunk to fit 256 x 256 pixels) and `DELETE` removes it. Channel responses include
+  `show_on_homepage` and `logo_url`.
+
+### Changed
+- **Development container**: The image library now supports WebP.
 
 ### Security
 - **Packages**
