@@ -108,4 +108,25 @@ return [
         'no_expired_offers' => 'Sie haben keine abgelaufenen Angebote.',
         'no_returned_offers' => 'Sie haben keine zurückgewiesenen Angebote.',
     ],
+    'offer' => 'Angebot',
+    'offers' => 'Angebote',
+    'export' => [
+        'gone' => [
+            'title' => 'Download abgelaufen',
+            'body' => 'Dieser Download steht nicht mehr bereit. Vorbereitete Downloads werden nach einem Tag entfernt. Starten Sie den Download unter „Meine Angebote“ einfach neu.',
+            'back' => 'Zu meinen Angeboten',
+        ],
+        'submit' => 'Download vorbereiten',
+        'column_video' => 'Video',
+        'download' => 'ZIP herunterladen',
+        'completed' => [
+            'title' => 'Download bereit',
+            'ready' => ':ready Video ist bereit.|:ready von :total Videos sind bereit.',
+            'skipped' => ':count Video war nicht verfügbar und wurde übersprungen.|:count Videos waren nicht verfügbar und wurden übersprungen.',
+        ],
+        'failed' => [
+            'title' => 'Download nicht möglich',
+            'body' => 'Keines der ausgewählten Videos war verfügbar. Bitte versuchen Sie es später erneut.',
+        ],
+    ],
 ];

@@ -8,6 +8,7 @@ use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\Video;
+use App\Exceptions\Zip\ZipEmptyException;
 use App\Services\CsvService;
 use App\Services\DownloadCacheService;
 use App\Services\Zip\ZipService;
@@ -215,5 +216,50 @@ class ZipServiceTest extends DatabaseTestCase
         $this->assertNotFalse($zip->locateName('info.csv'));
         $this->assertNotFalse($zip->locateName('clipC.mp4'));
         $zip->close();
+    }
+
+    public function testBuildArchiveWritesPackedOffersAndTheirInfoCsvToTheGivenPath(): void
+    {
+        $channel = Channel::factory()->create();
+        Storage::put('videos/good.mp4', 'good-video');
+        $good = Assignment::factory()->for($channel, 'channel')->for(Video::factory()->create([
+            'disk' => 'local', 'path' => 'videos/good.mp4', 'bytes' => 10, 'original_name' => 'good.mp4',
+        ]), 'video')->create();
+        $missing = Assignment::factory()->for($channel, 'channel')->for(Video::factory()->create([
+            'disk' => 'local', 'path' => 'videos/missing.mp4', 'bytes' => 10, 'original_name' => 'missing.mp4',
+        ]), 'video')->create();
+        $target = Storage::path('zips/archive-test/offers.zip');
+
+        $cache = Mockery::mock(DownloadCacheService::class)->shouldIgnoreMissing();
+        $csv = $this->app->make(CsvService::class);
+        $packed = (new ZipService($cache, $csv))->buildArchive($target, $channel, collect([$good, $missing]), 'export-1');
+
+        $this->assertSame([$good->id], $packed->modelKeys());
+        $zip = new ZipArchive();
+        $this->assertTrue($zip->open($target) === true);
+        $this->assertSame(2, $zip->numFiles);
+        $this->assertSame('good-video', $zip->getFromName('good.mp4'));
+        $this->assertSame($csv->buildInfoCsv(collect([$good])), $zip->getFromName('info.csv'));
+        $zip->close();
+        Storage::deleteDirectory('zips/archive-test');
+    }
+
+    public function testBuildArchiveLeavesNoFileWhenNothingCanBePacked(): void
+    {
+        $channel = Channel::factory()->create();
+        $missing = Assignment::factory()->for($channel, 'channel')->for(Video::factory()->create([
+            'disk' => 'local', 'path' => 'videos/missing.mp4', 'bytes' => 10,
+        ]), 'video')->create();
+        $target = Storage::path('zips/archive-test/empty.zip');
+
+        $cache = Mockery::mock(DownloadCacheService::class)->shouldIgnoreMissing();
+        try {
+            (new ZipService($cache, $this->app->make(CsvService::class)))
+                ->buildArchive($target, $channel, collect([$missing]), 'export-2');
+            $this->fail('An archive without videos must not be built.');
+        } catch (ZipEmptyException) {
+            $this->assertFileDoesNotExist($target);
+        }
+        Storage::deleteDirectory('zips/archive-test');
     }
 }

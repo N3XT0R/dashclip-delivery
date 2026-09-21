@@ -12,6 +12,7 @@ use App\Http\Controllers\PublicDocumentController;
 use App\Http\Controllers\PublicLocaleController;
 use App\Http\Middleware\SetPublicLocale;
 use App\Http\Controllers\TokenApprovalController;
+use App\Http\Controllers\OfferExportDownloadController;
 use App\Http\Controllers\ZipController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,13 +66,15 @@ Route::middleware(SetPublicLocale::class)->group(function (): void {
     Route::get('/dropbox/connect', [DropboxController::class, 'connect'])->name('dropbox.connect');
     Route::get('/dropbox/callback', [DropboxController::class, 'callback'])->name('dropbox.callback');
     Route::get('/offers/{assignment}/download', [ZipController::class, 'video'])->middleware('signed')->name('offers.video.download');
-    Route::post('/zips/channel/{channel}', [ZipController::class, 'startForChannel'])->middleware('signed')->name('zips.channel.start');
     /**
      * @deprecated Use /zips/channel/{channel} instead
      */
     Route::post('/zips/{batch}/{channel}', [ZipController::class, 'start'])->middleware('signed')->name('zips.start');
     Route::get('/zips/{id}/progress', [ZipController::class, 'progress'])->middleware('signed')->name('zips.progress');
     Route::get('/zips/{id}/download', [ZipController::class, 'download'])->middleware('signed')->name('zips.download');
+    Route::get('/offers/exports/{exportId}/download', OfferExportDownloadController::class)
+        ->middleware('signed:relative')
+        ->name('offers.exports.download');
 
     Route::get('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'update'])
         ->name('tokens.update');

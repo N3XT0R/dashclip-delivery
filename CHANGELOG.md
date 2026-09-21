@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and unique. `POST /api/v1/channels/{channel}/logo` uploads a logo (PNG, JPEG or WebP, up to
   512 KB, shrunk to fit 256 x 256 pixels) and `DELETE` removes it. Channel responses include
   `show_on_homepage` and `logo_url`. The Channel Operator API documentation is now version 1.1.0.
+- **Download link by email**: Once an offer download is ready, channel operators also get its link
+  by email, with the number of ready and skipped videos, because the in-app notification is easily
+  missed. It can be turned off under "Benachrichtigungen per E-Mail" in the profile; the switch is
+  only shown to channel operators. Opening the link while signed out leads to the sign-in and then
+  straight to the download.
 
 ### Changed
 - **Development container**: The image library now supports WebP.
@@ -25,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of Xdebug, which is several times faster; the nightly coverage run keeps Xdebug as reference. The
   editorial permission seeder creates and grants its permissions in one pass instead of reloading
   all permissions for each one, which saves about a second in every database test.
+- **Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered
+  through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP
+  still contains the selected videos and their `info.csv`; unavailable videos are skipped and named
+  in the notification. Prepared downloads are kept for one day; opening an expired link afterwards
+  explains that instead of showing an error page. The dialog speaks of offers instead of internal
+  record names.
 
 ### Security
 - **Packages**

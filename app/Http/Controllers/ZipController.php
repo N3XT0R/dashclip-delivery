@@ -35,12 +35,6 @@ class ZipController extends Controller
         return response()->json($this->preparation->prepare($request, $channel, $this->selectedIds($request), $batch));
     }
 
-    /** Prepare downloads authorized by the signed channel URL. */
-    public function startForChannel(Request $request, Channel $channel): JsonResponse
-    {
-        return response()->json($this->preparation->prepare($request, $channel, $this->selectedIds($request)));
-    }
-
     /** Return a snapshot that remains available even if a client misses updates. */
     public function progress(string $id): JsonResponse
     {

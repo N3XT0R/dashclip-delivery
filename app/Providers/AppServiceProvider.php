@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Jobs\OfferExportCompletionJob;
+use Filament\Actions\Exports\Jobs\ExportCompletion;
 use App\Facades\Cfg;
 use App\Models\Permission;
 use App\Models\Role;
@@ -53,6 +55,15 @@ class AppServiceProvider extends ServiceProvider
         $this->registerRefreshTokenProvider();
         $this->registerZip();
         $this->registerMail();
+        $this->registerExports();
+    }
+
+    /**
+     * Mail the link of a ready offer download in addition to Filament's in-app notification.
+     */
+    protected function registerExports(): void
+    {
+        $this->app->bind(ExportCompletion::class, OfferExportCompletionJob::class);
     }
 
     protected function registerConfig(): void

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Notifications\ChannelAccessApprovedNotification;
+use App\Notifications\OfferDownloadReadyNotification;
 use App\Notifications\UserInactivityReminderNotification;
 use App\Notifications\UserUploadDuplicatedNotification;
 use App\Notifications\UserUploadProceedNotification;
@@ -15,6 +16,7 @@ return [
             UserUploadProceedNotification::class => 'Notify when user upload is processed',
             ChannelAccessApprovedNotification::class => 'Notify when channel access is approved',
             UserInactivityReminderNotification::class => 'Remind me when I haven\'t logged in for a while',
+            OfferDownloadReadyNotification::class => 'Email me the download link once it is ready',
         ],
     ],
     'channel_access_approved' => [

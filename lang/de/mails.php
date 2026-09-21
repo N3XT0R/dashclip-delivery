@@ -76,4 +76,16 @@ return [
         'opt_out_hint' => 'Diese Erinnerung kannst du jederzeit in deinem Profil unter "Benachrichtigungen per E-Mail" abstellen.',
         'signature' => 'Viele Grüße<br>Dein :app-Team',
     ],
+    'offer_download_ready' => [
+        'subject' => 'Dein Download ist bereit',
+        'headline' => 'Dein Download ist bereit',
+        'greeting' => 'Hallo :name,',
+        'ready' => '{1} ein Video aus „:channel“ liegt als ZIP für dich bereit.|[2,*] :count Videos aus „:channel“ liegen als ZIP für dich bereit.',
+        'ready_without_channel' => '{1} ein Video liegt als ZIP für dich bereit.|[2,*] :count Videos liegen als ZIP für dich bereit.',
+        'skipped' => '{1} Ein Video konnte nicht eingepackt werden und fehlt im ZIP.|[2,*] :count Videos konnten nicht eingepackt werden und fehlen im ZIP.',
+        'button' => 'ZIP herunterladen',
+        'validity' => 'Der Download liegt einen Tag für dich bereit. Danach kannst du ihn unter „Meine Angebote“ einfach neu vorbereiten.',
+        'opt_out_hint' => 'Diese Mail kannst du jederzeit in deinem Profil unter „Benachrichtigungen per E-Mail“ abstellen.',
+        'signature' => 'Viele Grüße<br>Dein :app-Team',
+    ],
 ];
