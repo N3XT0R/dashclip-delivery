@@ -59,7 +59,7 @@ they had been downloaded.
 
 - `Assignment::videoWithTrashed(): BelongsTo` = `belongsTo(Video::class, 'video_id')->withTrashed()`.
 - `Video::clipsWithTrashed(): HasMany` = `hasMany(Clip::class)->withTrashed()`.
-- `Video::isRemoved(): bool` = `trashed()`; used by views to switch to the history presentation.
+- Views check `trashed()` on the loaded video to switch to the history presentation.
 
 ## 3. Views
 
