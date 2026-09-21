@@ -21,8 +21,9 @@ final class TokenEndpoints
               and `code_verifier` when PKCE was used). Returns an access token and a
               refresh token.
             - **client_credentials**: machine-to-machine (`client_id`, `client_secret`,
-              optional `scope`). No user context, so the resource APIs return 403 or empty
-              lists for these tokens, so this grant is documented but not useful here.
+              optional `scope`). The token has no user context, and the resource APIs act on
+              behalf of a user, so they answer 401 for these tokens. The grant is documented
+              but not useful here.
             - **refresh_token**: exchange a previous `refresh_token` (`client_id`,
               `client_secret`, optional `scope`) for a new access token.
 

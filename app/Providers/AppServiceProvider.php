@@ -114,6 +114,8 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(ChannelVideoReceptionPaused::class, SendChannelVideoReceptionPausedMail::class);
         Event::listen(Login::class, RecordUserLastLoginListener::class);
 
+        // Consent and device pages of the OAuth flows: resources/views/oauth/...
+        Passport::viewPrefix('oauth');
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::personalAccessTokensExpireIn(now()->addMonths(6));

@@ -11,7 +11,7 @@ use OpenApi\Attributes as OA;
  * access tokens the Submitter and Channel Operator APIs expect.
  */
 #[OA\Info(
-    version: '1.0.0',
+    version: '1.0.1',
     description: <<<'TXT'
         This interface follows the **OAuth 2.0** standard. If you have not worked with it
         before, [oauth.net/2](https://oauth.net/2/) is a good introduction.
