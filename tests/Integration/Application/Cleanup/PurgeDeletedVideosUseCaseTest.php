@@ -6,7 +6,11 @@ namespace Tests\Integration\Application\Cleanup;
 
 use App\Application\Cleanup\PurgeDeletedVideosUseCase;
 use App\Constants\Config\DefaultConfigEntry;
+use App\Enum\ProcessingStatusEnum;
+use App\Enum\StatusEnum;
 use App\Facades\Cfg;
+use App\Models\Assignment;
+use App\Models\Download;
 use App\Models\Video;
 use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
@@ -20,16 +24,21 @@ final class PurgeDeletedVideosUseCaseTest extends DatabaseTestCase
         Cfg::set(DefaultConfigEntry::POST_EXPIRY_RETENTION_WEEKS, 2, 'default', 'int');
     }
 
-    public function testRemovesVideosDeletedLongerAgoThanTheRetentionPeriodWithTheirFile(): void
+    public function testRemovesTheFilesButKeepsTheVideoWithItsHistory(): void
     {
         $video = $this->deletedVideo(weeksAgo: 3);
+        $assignment = Assignment::factory()->forVideo($video)->create(['status' => StatusEnum::PICKEDUP->value]);
+        $download = Download::factory()->forAssignment($assignment)->create();
 
         $result = app(PurgeDeletedVideosUseCase::class)->handle();
 
         self::assertSame(1, $result->purged);
         self::assertSame(0, $result->failed);
-        $this->assertDatabaseMissing('videos', ['id' => $video->getKey()]);
         Storage::disk('local')->assertMissing($video->path);
+        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
+        self::assertSame(ProcessingStatusEnum::Deleted, Video::withTrashed()->find($video->getKey())->processing_status);
+        $this->assertDatabaseHas('assignments', ['id' => $assignment->getKey()]);
+        $this->assertDatabaseHas('downloads', ['id' => $download->getKey()]);
     }
 
     public function testKeepsVideosStillWithinTheRetentionPeriod(): void
@@ -38,17 +47,30 @@ final class PurgeDeletedVideosUseCaseTest extends DatabaseTestCase
 
         self::assertSame(0, app(PurgeDeletedVideosUseCase::class)->handle()->purged);
 
-        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
         Storage::disk('local')->assertExists($video->path);
+        self::assertNotSame(ProcessingStatusEnum::Deleted, Video::withTrashed()->find($video->getKey())->processing_status);
     }
 
     public function testNeverTouchesVideosThatAreNotDeleted(): void
     {
-        $video = Video::factory()->create(['created_at' => now()->subYear()]);
+        $video = Video::factory()->create(['disk' => 'local', 'created_at' => now()->subYear()]);
+        Storage::disk('local')->put($video->path, 'video-bytes');
 
         app(PurgeDeletedVideosUseCase::class)->handle();
 
+        Storage::disk('local')->assertExists($video->path);
         $this->assertDatabaseHas('videos', ['id' => $video->getKey(), 'deleted_at' => null]);
+    }
+
+    public function testAPurgedVideoIsNotPickedUpAgain(): void
+    {
+        $this->deletedVideo(weeksAgo: 3);
+        app(PurgeDeletedVideosUseCase::class)->handle();
+
+        $second = app(PurgeDeletedVideosUseCase::class)->handle();
+
+        self::assertSame(0, $second->purged);
+        self::assertSame(0, $second->failed);
     }
 
     public function testFollowsTheConfiguredRetentionPeriod(): void
@@ -59,11 +81,11 @@ final class PurgeDeletedVideosUseCaseTest extends DatabaseTestCase
 
         app(PurgeDeletedVideosUseCase::class)->handle();
 
-        $this->assertSoftDeleted('videos', ['id' => $kept->getKey()]);
-        $this->assertDatabaseMissing('videos', ['id' => $purged->getKey()]);
+        Storage::disk('local')->assertExists($kept->path);
+        Storage::disk('local')->assertMissing($purged->path);
     }
 
-    public function testAVideoWhoseFileCannotBeRemovedStaysAndTheOthersAreStillPurged(): void
+    public function testAVideoWhoseFileCannotBeRemovedIsRetriedWhileTheOthersArePurged(): void
     {
         $stuck = $this->deletedVideo(weeksAgo: 3, disk: 'broken');
         $purged = $this->deletedVideo(weeksAgo: 3);
@@ -72,19 +94,20 @@ final class PurgeDeletedVideosUseCaseTest extends DatabaseTestCase
 
         self::assertSame(1, $result->purged);
         self::assertSame(1, $result->failed);
-        $this->assertSoftDeleted('videos', ['id' => $stuck->getKey()]);
-        $this->assertDatabaseMissing('videos', ['id' => $purged->getKey()]);
+        self::assertNotSame(ProcessingStatusEnum::Deleted, Video::withTrashed()->find($stuck->getKey())->processing_status);
+        Storage::disk('local')->assertMissing($purged->path);
+        self::assertSame(1, app(PurgeDeletedVideosUseCase::class)->handle()->failed);
     }
 
-    public function testDryRunRemovesNothing(): void
+    public function testDryRunChangesNothing(): void
     {
         $video = $this->deletedVideo(weeksAgo: 3);
 
         $result = app(PurgeDeletedVideosUseCase::class)->handle(dryRun: true);
 
         self::assertSame(1, $result->purged);
-        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
         Storage::disk('local')->assertExists($video->path);
+        self::assertNotSame(ProcessingStatusEnum::Deleted, Video::withTrashed()->find($video->getKey())->processing_status);
     }
 
     private function deletedVideo(int $weeksAgo, string $disk = 'local'): Video

@@ -25,10 +25,11 @@ final class PurgeDeletedVideosCommandTest extends DatabaseTestCase
         $video = $this->deletedVideo();
 
         $this->artisan('videos:purge-deleted')
-            ->expectsOutputToContain('Removed 1 deleted video(s), 0 failed.')
+            ->expectsOutputToContain('Removed the files of 1 deleted video(s), 0 failed.')
             ->assertExitCode(0);
 
-        $this->assertDatabaseMissing('videos', ['id' => $video->getKey()]);
+        Storage::disk('local')->assertMissing($video->path);
+        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
     }
 
     public function testDryRunOnlyReports(): void
@@ -36,7 +37,7 @@ final class PurgeDeletedVideosCommandTest extends DatabaseTestCase
         $video = $this->deletedVideo();
 
         $this->artisan('videos:purge-deleted', ['--dry-run' => true])
-            ->expectsOutputToContain('Would remove 1 deleted video(s).')
+            ->expectsOutputToContain('Would remove the files of 1 deleted video(s).')
             ->assertExitCode(0);
 
         $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);

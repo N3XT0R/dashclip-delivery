@@ -5,24 +5,26 @@ declare(strict_types=1);
 namespace App\Application\Cleanup;
 
 use App\Constants\Config\DefaultConfigEntry;
+use App\Enum\ProcessingStatusEnum;
 use App\Facades\Cfg;
 use App\Repository\VideoRepository;
+use App\Services\VideoService;
 use App\ValueObjects\VideoPurgeResult;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
- * Removes videos for good once they have been deleted for longer than the retention period.
+ * Removes the stored files of videos that have been deleted for longer than the retention period.
  *
- * Deleting a video only marks it as deleted; its file is removed together with the record by the
- * video observer. A video whose file cannot be removed stays marked as deleted and is retried on
- * the next run.
+ * The video row, its clips, offers and downloads stay as history; processing_status "deleted" marks
+ * that the files are gone, so every video is handled once. A video whose files cannot be removed
+ * keeps its status and is retried on the next run.
  */
 readonly class PurgeDeletedVideosUseCase
 {
     private const int DEFAULT_RETENTION_WEEKS = 1;
 
-    public function __construct(private VideoRepository $videoRepository)
+    public function __construct(private VideoRepository $videoRepository, private VideoService $videoService)
     {
     }
 
@@ -42,16 +44,16 @@ readonly class PurgeDeletedVideosUseCase
             }
 
             try {
-                $removed = $this->videoRepository->forceDelete($video);
+                $this->videoService->removeStoredFiles($video);
+                $this->videoRepository->updateProcessingStatus($video, ProcessingStatusEnum::Deleted);
+                $purged++;
             } catch (Throwable $exception) {
-                Log::error('Deleted video could not be removed for good', [
+                Log::error('Files of a deleted video could not be removed', [
                     'video_id' => $video->getKey(),
                     'exception' => $exception,
                 ]);
-                $removed = false;
+                $failed++;
             }
-
-            $removed ? $purged++ : $failed++;
         }
 
         return new VideoPurgeResult($purged, $failed);

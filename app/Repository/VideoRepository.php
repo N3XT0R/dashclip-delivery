@@ -318,7 +318,7 @@ class VideoRepository
     }
 
     /**
-     * Videos that were deleted at or before the given moment, in chunks, for removing them for good.
+     * Deleted videos whose files are still stored and whose deletion is at or before the given moment.
      * @param CarbonInterface $deletedBefore
      * @param int $chunkSize
      * @return LazyCollection<int, Video>
@@ -327,6 +327,10 @@ class VideoRepository
     {
         return Video::onlyTrashed()
             ->where('deleted_at', '<=', $deletedBefore)
+            ->where(static function (Builder $query): void {
+                $query->whereNull('processing_status')
+                    ->orWhere('processing_status', '!=', ProcessingStatusEnum::Deleted->value);
+            })
             ->lazyById($chunkSize);
     }
 
