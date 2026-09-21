@@ -23,6 +23,12 @@ Route::prefix('v1')->name('api.v1.')->middleware('auth:api')->group(function ():
         Route::patch('/channels/{channel}', [ChannelController::class, 'update'])
             ->name('channels.update')
             ->whereNumber('channel');
+        Route::post('/channels/{channel}/logo', [ChannelController::class, 'uploadLogo'])
+            ->name('channels.logo.store')
+            ->whereNumber('channel');
+        Route::delete('/channels/{channel}/logo', [ChannelController::class, 'removeLogo'])
+            ->name('channels.logo.destroy')
+            ->whereNumber('channel');
     });
 
     Route::middleware(['scope:videos:read', 'standard.permission:ViewAny:Video'])->group(function (): void {

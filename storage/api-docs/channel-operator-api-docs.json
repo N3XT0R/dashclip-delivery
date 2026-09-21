@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Channel Operator API",
-        "version": "1.0.0"
+        "version": "1.1.0"
     },
     "servers": [
         {
@@ -136,8 +136,8 @@
                 "tags": [
                     "Channels"
                 ],
-                "summary": "Pause or resume video reception for a channel",
-                "description": "Toggles whether the channel currently accepts new video offers by setting is_video_reception_paused. This is the only channel field writable through the API; any other field in the body is rejected with 422. Responds with 404 for channels not visible to the user.",
+                "summary": "Update channel settings",
+                "description": "Changes the settings of a channel the user operates: the same settings the channel settings page offers. Every field is optional, send only what should change; fields that are left out keep their value. `name` and `email` cannot be cleared and must not be used by another channel, `creator_name` and `youtube_name` can be cleared with `null`. Setting `is_video_reception_paused` to `true` stops new offers for the channel, `show_on_homepage` controls whether the channel is listed on the public homepage. The logo has its own endpoints. Any other field, an empty body or a taken name or email is rejected with 422. Responds with 404 for channels not visible to the user.",
                 "operationId": "35fa1d163213d971c753955720105498",
                 "parameters": [
                     {
@@ -154,11 +154,31 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "is_video_reception_paused"
-                                ],
+                                "minProperties": 1,
                                 "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "creator_name": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "youtube_name": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "maxLength": 255
+                                    },
                                     "is_video_reception_paused": {
+                                        "type": "boolean"
+                                    },
+                                    "show_on_homepage": {
                                         "type": "boolean"
                                     }
                                 },
@@ -189,6 +209,128 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "channels:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/channels/{channel}/logo": {
+            "post": {
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Upload a channel logo",
+                "description": "Uploads a new logo for a channel the user operates and replaces the current one, which is deleted. Accepts PNG, JPEG or WebP up to 512 KB as multipart form field `logo`. Larger images are shrunk to fit into 256 x 256 pixels, keeping their aspect ratio and format; smaller images are stored as sent. The response contains the new `logo_url`. Responds with 422 for other file types, files over 512 KB or images that cannot be read, and with 404 for channels not visible to the user.",
+                "operationId": "2d91e79b2b4b5d0f885e4bd919440bd2",
+                "parameters": [
+                    {
+                        "name": "channel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "logo"
+                                ],
+                                "properties": {
+                                    "logo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The channel with its new logo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Channel"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Channel not found or not visible to the user"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationFailed"
+                    }
+                },
+                "security": [
+                    {
+                        "oauth2": [
+                            "channels:write"
+                        ]
+                    },
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "Remove a channel logo",
+                "description": "Removes the logo of a channel the user operates and deletes the file. The channel is then shown without a logo and `logo_url` is `null`. Calling it for a channel without a logo succeeds as well. Responds with 404 for channels not visible to the user.",
+                "operationId": "f04bd3ae412a3813ba29ec4d8b861444",
+                "parameters": [
+                    {
+                        "name": "channel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The channel without logo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Channel"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Forbidden"
+                    },
+                    "404": {
+                        "description": "Channel not found or not visible to the user"
                     }
                 },
                 "security": [
@@ -547,17 +689,27 @@
                         "type": "string"
                     },
                     "creator_name": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "email": {
                         "type": "string",
                         "format": "email"
                     },
                     "youtube_name": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "is_video_reception_paused": {
                         "type": "boolean"
+                    },
+                    "show_on_homepage": {
+                        "type": "boolean"
+                    },
+                    "logo_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
                     },
                     "created_at": {
                         "type": "string",

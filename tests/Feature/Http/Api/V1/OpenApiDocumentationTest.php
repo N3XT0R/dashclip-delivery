@@ -28,6 +28,7 @@ final class OpenApiDocumentationTest extends DatabaseTestCase
                 [
                     '/api/v1/channels',
                     '/api/v1/channels/{channel}',
+                    '/api/v1/channels/{channel}/logo',
                     '/api/v1/offers',
                     '/api/v1/offers/{offer}',
                     '/api/v1/offers/{offer}/comment',

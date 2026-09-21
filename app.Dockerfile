@@ -1,7 +1,7 @@
 FROM php:8.5-fpm
 RUN apt-get update \
     && apt-get install -y curl zip npm libzip-dev zlib1g-dev unzip libpng-dev \
-    libjpeg-dev libfreetype6-dev git mariadb-client libmagickwand-dev openssh-client \
+    libjpeg-dev libwebp-dev libfreetype6-dev git mariadb-client libmagickwand-dev openssh-client \
     ffmpeg \
     --no-install-recommends
 # --- GPG + Git-Support für signierte Commits ---
@@ -17,7 +17,7 @@ RUN docker-php-ext-install pdo_mysql zip \
     && pecl install redis \
     && docker-php-ext-enable xdebug \
     && docker-php-ext-enable imagick \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install gd \
     && docker-php-ext-install pcntl \
     && docker-php-ext-install intl \
