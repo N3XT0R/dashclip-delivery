@@ -14,14 +14,20 @@ use Illuminate\Support\Collection;
 class DownloadRepository
 {
     /**
-     * Downloads of videos that contain at least one clip created by the given user, with the
-     * owning assignment's video and channel eager-loaded.
+     * Downloads of videos that contain at least one clip created by the given user, including
+     * downloads of deleted videos, with the owning assignment's video and channel eager-loaded.
      */
     public function forUser(User $user): Builder
     {
         return Download::query()
-            ->whereHas('assignment', fn (Builder $query) => $query->hasUsersClips($user))
-            ->with(['assignment.video', 'assignment.channel']);
+            ->whereHas('assignment', fn (Builder $query) => $query->whereHas(
+                'videoWithTrashed',
+                fn (Builder $video) => $video->whereHas(
+                    'clipsWithTrashed',
+                    fn (Builder $clip) => $clip->where('user_id', $user->getKey())
+                )
+            ))
+            ->with(['assignment.videoWithTrashed', 'assignment.channel']);
     }
 
     public function latestPerVideo(): Builder

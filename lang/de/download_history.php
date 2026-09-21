@@ -6,6 +6,7 @@ return [
     'title' => 'Download-Verlauf',
     'navigation_label' => 'Download-Verlauf',
     'table' => [
+        'deleted' => 'gelöscht',
         'columns' => [
             'video' => 'Video',
             'channel' => 'Kanal',
