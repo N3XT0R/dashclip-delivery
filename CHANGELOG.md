@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and where you connect a device with a code now work instead of failing with a server error. They
   name the application and its requested permissions and use the sign-in of the user area; signed-out
   visitors are sent to the sign-in and brought back afterwards.
+- **Authentication API documentation**: Client credentials tokens are documented as answered with
+  401 by the resource APIs, as they are. The documentation is now version 1.0.1.
 
 ### Security
 - **Packages**
