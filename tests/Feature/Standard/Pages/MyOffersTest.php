@@ -18,6 +18,7 @@ use App\Repository\TeamRepository;
 use App\Services\AssignmentService;
 use App\Services\LinkService;
 use Filament\Facades\Filament;
+use Filament\Schemas\Components\Section;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -73,6 +74,7 @@ final class MyOffersTest extends DatabaseTestCase
             ->assertCanSeeTableRecords([$assignment])
             ->assertSee('Removed Clip.mp4')
             ->assertSee(__('my_offers.table.no_longer_available'))
+            ->assertSee('images/status/no_preview.jpg')
             ->assertTableActionHidden('download_again', $assignment);
     }
 
@@ -81,11 +83,15 @@ final class MyOffersTest extends DatabaseTestCase
         [$channel] = $this->actingOperator();
         $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4');
 
-        Livewire::test(MyOffers::class)
-            ->set('activeTab', 'downloaded')
-            ->mountTableAction('view_details', $assignment)
-            ->assertSee('Removed Clip.mp4')
-            ->assertDontSee(__('my_offers.modal.preview.heading'));
+        $schema = (new MyOffers())->getDetailsInfolist($assignment);
+        $previewSection = collect($schema->getComponents(withHidden: true))
+            ->first(
+                fn (mixed $component): bool => $component instanceof Section
+                    && $component->getHeading() === __('my_offers.modal.preview.heading')
+            );
+
+        self::assertInstanceOf(Section::class, $previewSection);
+        self::assertFalse($previewSection->isVisible());
     }
 
     public function testAvailableOffersOfDeletedVideosAreNotListed(): void

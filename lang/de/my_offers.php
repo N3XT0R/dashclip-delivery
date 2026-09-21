@@ -100,7 +100,7 @@ return [
             'no_clips' => 'Keine Clips vorhanden',
         ],
         'preview' => [
-            'heading' => 'Videovorschau',
+            'heading' => 'Vorschau',
             'not_available' => 'Keine Vorschau verfügbar',
         ],
     ],

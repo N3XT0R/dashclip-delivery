@@ -64,7 +64,7 @@ final class Columns
                     : null
             )
             ->tooltip(
-                fn (Assignment $record): string => $record->videoWithTrashed->original_name ?? ''
+                fn (Assignment $record): string => $record->videoWithTrashed?->original_name ?? ''
             );
     }
 

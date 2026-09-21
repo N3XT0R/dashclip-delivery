@@ -44,7 +44,7 @@ final readonly class AssignmentTable
 
         return Assignment::query()
             ->where('channel_id', $channel->getKey())
-            ->with(['videoWithTrashed.clipsWithTrashed.user', 'downloads', 'latestDownload']);
+            ->with(['video', 'videoWithTrashed.clipsWithTrashed.user', 'downloads', 'latestDownload']);
     }
 
     private function emptyStateDescription(MyOffers $page): string
