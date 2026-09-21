@@ -130,6 +130,7 @@ return [
                 'original_name' => 'Video Title',
                 'original_name_description' => 'My uploaded Clips',
                 'bundle_key' => 'Bundle',
+                'preferred_channel' => 'Preferred channel',
                 'created_at' => 'Uploaded on',
                 'available_assignments_count' => 'Available Offers',
                 'expired_assignments_count' => 'Expired Offers',
@@ -166,6 +167,8 @@ return [
                 'bundle_key_helper_text' => 'Optional: Use the same bundle ID for videos that belong together. They will be sent to the same channel as a group, so multiple perspectives or parts of one connected story can be combined.',
                 'role' => 'Role',
                 'role_helper_text' => 'Optional: Specifies the camera position or perspective of the video, e.g., Front (F) or Rear (R).',
+                'preferred_channel' => 'Preferred channel',
+                'preferred_channel_helper_text' => 'Optional: pick the channel we should offer your video to first. If that does not work out, because the channel is not accepting videos or has reached its weekly limit, the regular distribution takes over.',
             ],
             'messages' => [
                 'success' => [

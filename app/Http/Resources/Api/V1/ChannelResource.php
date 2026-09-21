@@ -7,6 +7,7 @@ namespace App\Http\Resources\Api\V1;
 use App\Models\Channel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @mixin Channel
@@ -22,6 +23,8 @@ class ChannelResource extends JsonResource
             'email' => $this->email,
             'youtube_name' => $this->youtube_name,
             'is_video_reception_paused' => $this->is_video_reception_paused,
+            'show_on_homepage' => $this->show_on_homepage,
+            'logo_url' => $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
  * Root document for the Channel Operator API: the endpoints a channel operator
  * uses to manage their channels and the offers made to them.
  */
-#[OA\Info(version: '1.0.0', title: 'Channel Operator API')]
+#[OA\Info(version: '1.1.0', title: 'Channel Operator API')]
 #[OA\Server(url: '/', description: 'Application root')]
 #[OA\SecurityScheme(
     securityScheme: 'oauth2',

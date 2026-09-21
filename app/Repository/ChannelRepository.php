@@ -289,6 +289,19 @@ class ChannelRepository
         return Channel::create($attributes);
     }
 
+    /**
+     * Persist the given attributes on the channel and return the fresh model.
+     * @param Channel $channel
+     * @param array<string, mixed> $attributes
+     * @return Channel
+     */
+    public function update(Channel $channel, array $attributes): Channel
+    {
+        $channel->update($attributes);
+
+        return $channel->refresh();
+    }
+
     public function getChannelsForUser(User $user): SupportCollection
     {
         return $user->channels()->get();

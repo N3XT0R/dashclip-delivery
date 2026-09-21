@@ -7,13 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Preferred channel when uploading**: The upload form offers an optional channel choice, so the
+  wish no longer has to be set through the eighth column of `info.csv`. Only channels the upload can
+  actually reach are listed, paused channels are left out, and the chosen channel is shown in the
+  video details.
+- **Channel Operator API**: Channel settings can be changed through the API like on the channel
+  settings page. `PATCH /api/v1/channels/{channel}` now accepts name, creator name, email, YouTube
+  name, paused video reception and the homepage listing, each optional; name and email must stay set
+  and unique. `POST /api/v1/channels/{channel}/logo` uploads a logo (PNG, JPEG or WebP, up to
+  512 KB, shrunk to fit 256 x 256 pixels) and `DELETE` removes it. Channel responses include
+  `show_on_homepage` and `logo_url`. The Channel Operator API documentation is now version 1.1.0.
+
 ### Changed
+- **Development container**: The image library now supports WebP.
+- **Faster automated checks**: The coverage run on the core branches measures with PCOV instead
+  of Xdebug, which is several times faster; the nightly coverage run keeps Xdebug as reference. The
+  editorial permission seeder creates and grants its permissions in one pass instead of reloading
+  all permissions for each one, which saves about a second in every database test.
 - **Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered
   through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP
   still contains the selected videos and their `info.csv`; unavailable videos are skipped and named
   in the notification. Prepared downloads are kept for one day; opening an expired link afterwards
   explains that instead of showing an error page. The dialog speaks of offers instead of internal
   record names.
+
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
 
 ## [4.10.0] - 2026-09-20
 

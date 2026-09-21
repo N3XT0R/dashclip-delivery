@@ -9,6 +9,7 @@ use App\Enum\PanelEnum;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages\ViewVideo;
 use App\Models\Assignment;
+use App\Models\Channel;
 use App\Models\Clip;
 use App\Models\Team;
 use App\Models\User;
@@ -69,6 +70,45 @@ final class ViewVideoTest extends DatabaseTestCase
             ->assertSeeText('Awesome Clip.mp4')
             ->assertSeeText('1:05')
             ->assertSeeText('Verfügbar');
+    }
+
+    public function testViewVideoShowsThePreferredChannelWhenTheSubmitterPickedOne(): void
+    {
+        $channel = Channel::factory()->create(['name' => 'Wish Channel']);
+        $video = Video::factory()
+            ->for($this->tenant, 'team')
+            ->create(['original_name' => 'Wished Clip.mp4']);
+
+        Clip::factory()
+            ->for($video)
+            ->forUser($this->user)
+            ->range(0, 20)
+            ->create([
+                'preferred_channel' => $channel->name,
+                'preferred_channel_id' => $channel->getKey(),
+            ]);
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertSeeText('Wunschkanal')
+            ->assertSeeText('Wish Channel');
+    }
+
+    public function testViewVideoHidesThePreferredChannelWhenNoneWasPicked(): void
+    {
+        $video = Video::factory()
+            ->for($this->tenant, 'team')
+            ->create(['original_name' => 'Plain Clip.mp4']);
+
+        Clip::factory()
+            ->for($video)
+            ->forUser($this->user)
+            ->range(0, 20)
+            ->create();
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertDontSeeText('Wunschkanal');
     }
 
     private function grantVideoPermissions(): void

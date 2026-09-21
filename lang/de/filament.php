@@ -130,6 +130,7 @@ return [
                 'original_name' => 'Video-Titel',
                 'original_name_description' => 'Meine hochgeladenen Clips',
                 'bundle_key' => 'Bundle',
+                'preferred_channel' => 'Wunschkanal',
                 'created_at' => 'Upload am',
                 'available_assignments_count' => 'Verfügbare Angebote',
                 'expired_assignments_count' => 'Abgelaufene Angebote',
@@ -166,6 +167,8 @@ return [
                 'bundle_key_helper_text' => 'Optional: Verwende dieselbe Bundle-ID für Videos, die zusammengehören. Sie werden gemeinsam an denselben Kanal gesendet, damit z. B. mehrere Perspektiven oder Teile einer zusammenhängenden Story kombiniert werden können.',
                 'role' => 'Rolle',
                 'role_helper_text' => 'Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R)',
+                'preferred_channel' => 'Wunschkanal',
+                'preferred_channel_helper_text' => 'Optional: Wähle den Kanal, dem wir dein Video zuerst anbieten sollen. Klappt das nicht, weil der Kanal gerade keine Videos annimmt oder sein Wochenlimit erreicht hat, läuft die normale Verteilung.',
             ],
             'messages' => [
                 'success' => [

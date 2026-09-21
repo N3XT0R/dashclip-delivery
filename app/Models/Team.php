@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Pivots\ChannelTeamPivot;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 
 class Team extends Model
@@ -52,5 +54,14 @@ class Team extends Model
             ->withPivot(['quota'])
             ->isActive()
             ->withTimestamps();
+    }
+
+    /**
+     * The channel assignments of this team, including channels that are currently paused.
+     * @return HasMany<ChannelTeamPivot>
+     */
+    public function channelAssignments(): HasMany
+    {
+        return $this->hasMany(ChannelTeamPivot::class);
     }
 }
