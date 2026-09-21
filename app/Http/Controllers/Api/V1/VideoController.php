@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Application\Video\IsDeletableUseCase;
+use App\Application\Video\DeleteVideoUseCase;
 use App\Application\Video\UploadVideoUseCase;
+use App\Exceptions\Video\VideoNotDeletableException;
 use App\Http\Requests\Api\V1\StoreVideoRequest;
 use App\Http\Requests\Api\V1\UpdateVideoRequest;
 use App\Http\Resources\Api\V1\VideoResource;
 use App\Repository\VideoRepository;
-use App\Services\VideoService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -271,11 +271,13 @@ class VideoController extends ApiController
 
     #[OA\Delete(
         path: self::PATH_VIDEO_SHOW,
-        description: 'Permanently deletes a video the user owns, including its stored file. '
-            . 'Only allowed while the video has no active (ready, non-expired) offers and no '
-            . 'offer that was already picked up. This is the same rule the Standard-panel delete '
-            . 'action enforces. Responds with 404 for videos not visible to the user, 409 when '
-            . 'the video still has active or picked-up offers, and 204 on success.',
+        description: 'Deletes a video the user owns. Only allowed while the video has no active '
+            . '(ready, non-expired) offers and no offer that was already picked up, the same rule '
+            . 'as deleting it in the user area. The rule is checked again at the moment of '
+            . 'deletion, so an offer created in between still blocks it. The video disappears '
+            . 'from all lists and can no longer be offered; its stored file is kept until the '
+            . 'video is removed for good. Responds with 404 for videos not visible to the user, '
+            . '409 when the video still has active or picked-up offers, and 204 on success.',
         summary: 'Delete a video',
         security: [['oauth2' => ['videos:delete']], ['bearerAuth' => []]],
         tags: ['Videos'],
@@ -298,17 +300,15 @@ class VideoController extends ApiController
             ),
         ],
     )]
-    public function destroy(Request $request, int $video, IsDeletableUseCase $isDeletable): Response
+    public function destroy(Request $request, int $video, DeleteVideoUseCase $deleteVideo): Response
     {
         $model = $this->visibleVideos($request)->findOrFail($video);
 
-        abort_unless(
-            $isDeletable->handle($model),
-            Response::HTTP_CONFLICT,
-            'The video still has active or picked-up offers and cannot be deleted.',
-        );
-
-        app(VideoService::class)->delete($model);
+        try {
+            $deleteVideo->handle($model);
+        } catch (VideoNotDeletableException) {
+            abort(Response::HTTP_CONFLICT, 'The video still has active or picked-up offers and cannot be deleted.');
+        }
 
         return $this->noContent();
     }

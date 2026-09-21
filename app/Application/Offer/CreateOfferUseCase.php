@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Offer;
 
 use App\Enum\BatchTypeEnum;
+use App\Exceptions\Video\VideoUnavailableForOfferException;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\Video;
@@ -32,7 +33,7 @@ readonly class CreateOfferUseCase
      * same 422 the StoreOfferRequest returns when the duplicate is caught up
      * front, instead of surfacing a database error.
      *
-     * @throws ValidationException when an offer for this pair already exists
+     * @throws ValidationException when an offer for this pair already exists or the video was deleted
      */
     public function handle(Video $video, Channel $channel): Assignment
     {
@@ -49,6 +50,11 @@ readonly class CreateOfferUseCase
         } catch (UniqueConstraintViolationException) {
             throw ValidationException::withMessages([
                 'video_id' => 'An offer for this video and channel already exists.',
+            ]);
+        } catch (VideoUnavailableForOfferException) {
+            // deleted between the request validation and the locked insert; the batch is rolled back
+            throw ValidationException::withMessages([
+                'video_id' => 'The selected video is not accessible.',
             ]);
         }
     }

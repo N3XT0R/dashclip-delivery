@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Enum\StatusEnum;
+use App\Exceptions\Video\VideoUnavailableForOfferException;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -16,9 +17,14 @@ use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AssignmentRepository
 {
+    public function __construct(private readonly VideoRepository $videoRepository)
+    {
+    }
+
     /**
      * @param list<int> $ids
      * @return EloquentCollection<int, Assignment>
@@ -60,11 +66,15 @@ class AssignmentRepository
 
     /**
      * Create a new assignment linking a video to a channel within a batch.
+     *
+     * The video row is locked first, the same lock deleting a video takes, so no offer can be
+     * created for a video that is being deleted.
      * @param Video $video
      * @param Channel $channel
      * @param Batch $batch
      * @param bool $viaPreferred
      * @return Assignment
+     * @throws VideoUnavailableForOfferException when the video was deleted in the meantime
      */
     public function createAssignment(
         Video $video,
@@ -72,13 +82,19 @@ class AssignmentRepository
         Batch $batch,
         bool $viaPreferred = false
     ): Assignment {
-        return Assignment::query()->create([
-            'video_id' => $video->getKey(),
-            'channel_id' => $channel->getKey(),
-            'batch_id' => $batch->getKey(),
-            'status' => StatusEnum::QUEUED->value,
-            'via_preferred_channel' => $viaPreferred,
-        ]);
+        return DB::transaction(function () use ($video, $channel, $batch, $viaPreferred): Assignment {
+            if ($this->videoRepository->lockForUpdate((int)$video->getKey()) === null) {
+                throw new VideoUnavailableForOfferException('The video was deleted and cannot be offered.');
+            }
+
+            return Assignment::query()->create([
+                'video_id' => $video->getKey(),
+                'channel_id' => $channel->getKey(),
+                'batch_id' => $batch->getKey(),
+                'status' => StatusEnum::QUEUED->value,
+                'via_preferred_channel' => $viaPreferred,
+            ]);
+        });
     }
 
     /**

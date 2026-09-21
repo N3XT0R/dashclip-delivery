@@ -304,6 +304,19 @@ class VideoRepository
     }
 
     /**
+     * Load the video row again and lock it for the rest of the current transaction.
+     *
+     * Deleting a video and creating an offer for it both lock this row first, so the two can
+     * never interleave. Deleted videos are not returned.
+     * @param int $videoId
+     * @return Video|null null when the video does not exist or was deleted
+     */
+    public function lockForUpdate(int $videoId): ?Video
+    {
+        return Video::query()->whereKey($videoId)->lockForUpdate()->first();
+    }
+
+    /**
      * Permanently deletes a video from the database, bypassing soft deletes, which is useful for cleanup operations.
      * @param Video $video
      * @return bool

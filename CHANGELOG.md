@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of Xdebug, which is several times faster; the nightly coverage run keeps Xdebug as reference. The
   editorial permission seeder creates and grants its permissions in one pass instead of reloading
   all permissions for each one, which saves about a second in every database test.
+- **Deleting videos through the API**: A deleted video keeps its stored file until it is removed for
+  good, like a video deleted in the user area; before, the API removed the file right away. The
+  Submitter API documentation is now version 1.0.1.
 
 ### Fixed
 - **Signing in to applications**: The pages where you allow an application to access your account
@@ -33,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   visitors are sent to the sign-in and brought back afterwards.
 - **Authentication API documentation**: Client credentials tokens are documented as answered with
   401 by the resource APIs, as they are. The documentation is now version 1.0.1.
+- **Deleting a video while it is being offered**: Deleting a video and offering it to a channel can no
+  longer overlap. Both now wait for each other, and the deletion rule is checked again at the moment
+  of deletion, so a deleted video never ends up with an active offer and a video that was just
+  offered is not deleted. The weekly distribution skips a video that was deleted during its run.
 
 ### Security
 - **Packages**

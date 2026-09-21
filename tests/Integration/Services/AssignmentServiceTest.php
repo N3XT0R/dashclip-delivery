@@ -505,4 +505,33 @@ class AssignmentServiceTest extends DatabaseTestCase
         ]);
     }
 
+    public function testAssignGroupToChannelSkipsAVideoDeletedSinceTheRunLoadedIt(): void
+    {
+        $channel = Channel::factory()->create();
+        $kept = Video::factory()->create();
+        $deleted = Video::factory()->create();
+        $batch = Batch::factory()->create();
+        $run = new AssignmentRun(
+            groups: collect([collect([$kept, $deleted])]),
+            channelPool: new ChannelPoolDto(
+                channels: collect([$channel]),
+                rotationPool: collect([$channel]),
+                quota: [$channel->getKey() => 5],
+            ),
+            videoContext: new VideoAssignmentContext(
+                blockedByVideo: [],
+                assignedChannelsByVideo: [],
+                preferredChannelIdByVideo: [],
+            ),
+            batch: $batch,
+        );
+        Video::query()->whereKey($deleted->getKey())->first()->delete();
+
+        $count = $this->service->assignGroupToChannel(collect([$kept, $deleted]), $channel, $run);
+
+        $this->assertSame(1, $count);
+        $this->assertSame(4, $run->channelPool->quota[$channel->getKey()]);
+        $this->assertDatabaseHas('assignments', ['video_id' => $kept->getKey(), 'channel_id' => $channel->getKey()]);
+        $this->assertDatabaseMissing('assignments', ['video_id' => $deleted->getKey()]);
+    }
 }

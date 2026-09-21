@@ -146,6 +146,7 @@ return [
             'messages' => [
                 'no_videos' => 'No videos available.',
                 'table_description' => 'This table shows all videos that have been uploaded and assigned to you.',
+                'not_deletable' => 'The video can no longer be deleted because it has meanwhile been offered to a channel.',
             ],
         ],
     ],
