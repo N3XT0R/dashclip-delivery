@@ -187,7 +187,7 @@ readonly class AssignmentService
                 ->withProperties([
                     'assignment_id' => $assignment->getKey(),
                     'channel_id' => $assignment->channel_id,
-                    'video_name' => $assignment->video->original_name,
+                    'video_name' => $assignment->videoWithTrashed?->original_name,
                     'returned_at' => now()->toDateTimeString(),
                 ])
                 ->log('Assignment rejected by channel');
@@ -215,7 +215,7 @@ readonly class AssignmentService
                 ->withProperties([
                     'assignment_id' => $assignment->getKey(),
                     'channel_id' => $assignment->channel_id,
-                    'video_name' => $assignment->video->original_name,
+                    'video_name' => $assignment->videoWithTrashed?->original_name,
                     'note_updated_at' => now()->toDateTimeString(),
                 ])
                 ->log('Assignment note updated by channel');

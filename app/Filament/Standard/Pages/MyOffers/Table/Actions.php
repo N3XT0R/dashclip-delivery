@@ -100,6 +100,10 @@ final readonly class Actions
                     return false;
                 }
 
+                if ($record->videoWithTrashed?->trashed()) {
+                    return false;
+                }
+
                 if (!in_array($page->activeTab, $tabs, true)) {
                     return false;
                 }
