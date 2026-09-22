@@ -65,6 +65,25 @@ final class AvailableOffersStatsWidgetTest extends DatabaseTestCase
         Carbon::setTestNow();
     }
 
+    public function testOfferOfADeletedVideoIsNotCountedAsAvailable(): void
+    {
+        $channel = Channel::factory()->create();
+
+        $assignment = Assignment::factory()->create([
+            'channel_id' => $channel->getKey(),
+            'status' => StatusEnum::QUEUED->value,
+            'expires_at' => null,
+        ]);
+        $assignment->video->delete();
+
+        $widget = new AvailableOffersStatsWidget();
+        $widget->channelId = $channel->getKey();
+
+        $stats = $this->callProtectedMethod($widget, 'getStats');
+
+        $this->assertSame('0', $stats[0]->getValue());
+    }
+
     private function callProtectedMethod(object $object, string $method, array $parameters = []): mixed
     {
         $reflection = new \ReflectionClass($object);
