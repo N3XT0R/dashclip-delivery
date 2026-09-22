@@ -45,7 +45,13 @@ readonly class PurgeDeletedVideosUseCase
 
             try {
                 $this->videoService->removeStoredFiles($video);
-                $this->videoRepository->updateProcessingStatus($video, ProcessingStatusEnum::Deleted);
+                if (!$this->videoRepository->updateProcessingStatus($video, ProcessingStatusEnum::Deleted)) {
+                    Log::error('Processing status of a deleted video could not be updated', [
+                        'video_id' => $video->getKey(),
+                    ]);
+                    $failed++;
+                    continue;
+                }
                 $purged++;
             } catch (Throwable $exception) {
                 Log::error('Files of a deleted video could not be removed', [

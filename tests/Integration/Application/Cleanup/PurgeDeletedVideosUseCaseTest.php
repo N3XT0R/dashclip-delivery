@@ -99,6 +99,20 @@ final class PurgeDeletedVideosUseCaseTest extends DatabaseTestCase
         self::assertSame(1, app(PurgeDeletedVideosUseCase::class)->handle()->failed);
     }
 
+    public function testAFailedStatusUpdateCountsAsFailedNotPurged(): void
+    {
+        $video = $this->deletedVideo(weeksAgo: 3);
+        $this->mock(\App\Repository\VideoRepository::class, function ($mock) use ($video) {
+            $mock->shouldReceive('lazyDeletedBefore')->once()->andReturn(\Illuminate\Support\LazyCollection::make([$video]));
+            $mock->shouldReceive('updateProcessingStatus')->once()->andReturn(false);
+        });
+
+        $result = app(PurgeDeletedVideosUseCase::class)->handle();
+
+        self::assertSame(0, $result->purged);
+        self::assertSame(1, $result->failed);
+    }
+
     public function testDryRunChangesNothing(): void
     {
         $video = $this->deletedVideo(weeksAgo: 3);
