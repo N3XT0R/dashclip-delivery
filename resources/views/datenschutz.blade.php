@@ -62,8 +62,9 @@
             <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
                 Die Daten dienen der Verwaltung, Distribution und Deduplizierung der Inhalte.
                 Videodateien und Vorschauen gelöschter Videos werden nach Ablauf einer Aufbewahrungsfrist
-                entfernt. Angaben zur Verteilung (Titel, Kanal, Zeitpunkte von Angeboten und Downloads)
-                bleiben zur Nachvollziehbarkeit erhalten.
+                entfernt. Angaben zur Verteilung bleiben zur Nachvollziehbarkeit erhalten: Titel, Kanal,
+                Zeitpunkte von Angeboten und Downloads, bei Downloads die IP-Adresse und die
+                Browser-Kennung sowie die Zuordnung zum einsendenden Konto.
             </p>
         </section>
 
