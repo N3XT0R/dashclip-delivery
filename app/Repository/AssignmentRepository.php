@@ -87,6 +87,11 @@ class AssignmentRepository
                 throw new VideoUnavailableForOfferException('The video was deleted and cannot be offered.');
             }
 
+            $expired = $this->findExpiredAssignment($video, $channel);
+            if ($expired instanceof Assignment) {
+                return $this->openNextRound($expired, $batch, $viaPreferred);
+            }
+
             return Assignment::query()->create([
                 'video_id' => $video->getKey(),
                 'channel_id' => $channel->getKey(),
@@ -95,6 +100,72 @@ class AssignmentRepository
                 'via_preferred_channel' => $viaPreferred,
             ]);
         });
+    }
+
+    /**
+     * Channels a video must not be offered to right now, per video.
+     *
+     * A channel is blocked while its offer is still open, was returned or picked up, and while its
+     * expired offer has used up the configured rounds. As long as a video can still reach a channel
+     * that never had it, channels with an expired offer stay blocked as well, so every channel gets
+     * the video once before any channel gets it again.
+     *
+     * @param Collection<int, Video> $poolVideos
+     * @param Collection<int, int> $poolChannelIds channels the videos can reach in this run
+     * @param int $rounds configured number of offer rounds per channel
+     * @return array<int, Collection<int, int>> video_id => blocked channel ids
+     */
+    public function preloadBlockedChannels(Collection $poolVideos, Collection $poolChannelIds, int $rounds): array
+    {
+        $reachable = $poolChannelIds->map(fn ($id): int => (int)$id)->unique();
+
+        return Assignment::query()
+            ->whereIn('video_id', $poolVideos->pluck('id'))
+            ->get()
+            ->groupBy('video_id')
+            ->map(function (Collection $rows) use ($reachable, $rounds): Collection {
+                $repeatable = $rows->filter(
+                    fn (Assignment $row): bool => $row->status === StatusEnum::EXPIRED->value
+                        && (int)$row->offer_round < $rounds
+                );
+                $blocked = $rows->reject(
+                    fn (Assignment $row): bool => $repeatable->contains('id', $row->getKey())
+                )->pluck('channel_id');
+
+                $hasUntouchedChannel = $reachable->diff($rows->pluck('channel_id'))->isNotEmpty();
+
+                return $hasUntouchedChannel
+                    ? $blocked->concat($repeatable->pluck('channel_id'))->unique()->values()
+                    : $blocked->unique()->values();
+            })
+            ->all();
+    }
+
+    private function findExpiredAssignment(Video $video, Channel $channel): ?Assignment
+    {
+        return Assignment::query()
+            ->where('video_id', $video->getKey())
+            ->where('channel_id', $channel->getKey())
+            ->where('status', StatusEnum::EXPIRED->value)
+            ->first();
+    }
+
+    /**
+     * Offer an expired assignment again: the row is reused, so the unique pair stays intact.
+     */
+    private function openNextRound(Assignment $assignment, Batch $batch, bool $viaPreferred): Assignment
+    {
+        $assignment->forceFill([
+            'batch_id' => $batch->getKey(),
+            'status' => StatusEnum::QUEUED->value,
+            'offer_round' => (int)$assignment->offer_round + 1,
+            'via_preferred_channel' => $viaPreferred,
+            'expires_at' => null,
+            'last_notified_at' => null,
+            'download_token' => null,
+        ])->save();
+
+        return $assignment;
     }
 
     /**
@@ -127,22 +198,6 @@ class AssignmentRepository
             ->map(fn (int|string $count): int => (int)$count);
     }
 
-
-    /**
-     * Lade alle bereits (irgendwann) zugewiesenen Kanäle je Video vor,
-     * damit wir nicht doppelt an denselben Kanal verteilen.
-     *
-     * @return array<int, Collection<int,int>> video_id => collection(channel_id)
-     */
-    public function preloadAssignedChannels(Collection $poolVideos): array
-    {
-        return Assignment::query()
-            ->whereIn('video_id', $poolVideos->pluck('id'))
-            ->get()
-            ->groupBy('video_id')
-            ->map(fn (Collection $rows) => $rows->pluck('channel_id')->unique())
-            ->all();
-    }
 
     /**
      * Mark assignments as unused (rejected) for a given batch and channel.

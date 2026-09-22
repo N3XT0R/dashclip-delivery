@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   period set in the administration settings, "Aufbewahrungsfrist gelöschter Videos (in Wochen)".
   The video entry, its offers and downloads stay as history. A video whose files cannot be removed
   is retried on the next run.
+- **Offer rounds per video**: A new setting in the administration ("Angebotsrunden je Video", default 1) decides how
+  often a channel may be offered the same video. Channels that never had the video still come first; only once every
+  reachable channel had it do channels whose offer expired get it again, up to the configured number of rounds.
+  Returned and downloaded offers are never repeated. The offer list in the administration shows the round.
 
 ### Changed
 - **Development container**: The image library now supports WebP.

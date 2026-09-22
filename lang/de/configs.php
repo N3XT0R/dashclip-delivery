@@ -24,6 +24,7 @@ return [
         DefaultConfigEntry::ASSIGN_EXPIRE_COOLDOWN_DAYS => 'Cooldown-Tage je (channel, video)',
         DefaultConfigEntry::INGEST_INBOX_ABSOLUTE_PATH => 'Inbox-Pfad für Videos (absolut)',
         DefaultConfigEntry::POST_EXPIRY_RETENTION_WEEKS => 'Aufbewahrungsfrist gelöschter Videos (in Wochen)',
+        DefaultConfigEntry::DISTRIBUTION_ROUNDS => 'Angebotsrunden je Video',
         FFMPEGConfigEntry::BINARY => 'Pfad zur FFmpeg-Binärdatei (z.B. /usr/bin/ffmpeg)',
         FFMPEGConfigEntry::VIDEO_CODEC => 'Video-Codec für Previews (z.B. libx264)',
         FFMPEGConfigEntry::AUDIO_CODEC => 'Audio-Codec für Previews (z.B. aac)',

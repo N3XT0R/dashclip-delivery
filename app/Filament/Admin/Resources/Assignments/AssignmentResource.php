@@ -101,6 +101,12 @@ class AssignmentResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
+                TextColumn::make('offer_round')
+                    ->label(__('filament.admin.labels.offer_round'))
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(),
+
                 TextColumn::make('attempts')
                     ->label(__('filament.admin.labels.attempts'))
                     ->numeric()
