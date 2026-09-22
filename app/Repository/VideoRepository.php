@@ -305,6 +305,26 @@ class VideoRepository
     }
 
     /**
+     * Videos that were offered at least once and have no open offer left, in chunks.
+     *
+     * An offer counts as open while it is queued or notified and has not expired yet.
+     * @param int $chunkSize
+     * @return LazyCollection<int, Video>
+     */
+    public function lazyWithoutOpenOffers(int $chunkSize = 100): LazyCollection
+    {
+        return Video::query()
+            ->whereHas('assignments')
+            ->whereDoesntHave('assignments', static function (Builder $query): void {
+                $query->whereIn('status', StatusEnum::getReadyStatus())
+                    ->where(static function (Builder $expiry): void {
+                        $expiry->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                    });
+            })
+            ->lazyById($chunkSize);
+    }
+
+    /**
      * Load the video row again and lock it for the rest of the current transaction.
      *
      * Deleting a video and creating an offer for it both lock this row first, so the two can

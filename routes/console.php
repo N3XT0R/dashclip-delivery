@@ -12,6 +12,9 @@ Schedule::command(Commands\WeeklyRun::class)
 Schedule::command(Commands\AssignExpire::class)
     ->dailyAt('03:00');
 
+Schedule::command(Commands\MarkDistributedVideosCommand::class)
+    ->dailyAt('03:30');
+
 # Inactivity
 Schedule::command(Commands\NotifyInactiveUsersCommand::class)->dailyAt('09:00');
 
