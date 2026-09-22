@@ -55,7 +55,7 @@ class AssignmentRepository
      */
     public function visibleForUser(User $user): Builder
     {
-        return Assignment::query()->where(function (Builder $query) use ($user): void {
+        return Assignment::query()->whereHas('video')->where(function (Builder $query) use ($user): void {
             $query->whereHas('channel', static function (Builder $channel) use ($user): void {
                 $channel->userHasAccess($user);
             })->orWhere(static function (Builder $inner) use ($user): void {
@@ -250,6 +250,7 @@ class AssignmentRepository
     public function fetchPickedUp(Batch $batch, Channel $channel): EloquentCollection
     {
         return Assignment::with('video.clips')
+            ->whereHas('video')
             ->where('batch_id', $batch->getKey())
             ->where('channel_id', $channel->getKey())
             ->where('status', StatusEnum::PICKEDUP->value)
@@ -313,6 +314,7 @@ class AssignmentRepository
     public function fetchPending(Batch $batch, Channel $channel): EloquentCollection
     {
         return Assignment::with(['video.clips'])
+            ->whereHas('video')
             ->where('batch_id', $batch->getKey())
             ->where('channel_id', $channel->getKey())
             ->whereIn('status', StatusEnum::getReadyStatus())

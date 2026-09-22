@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   often a channel may be offered the same video. Channels that never had the video still come first; only once every
   reachable channel had it do channels whose offer expired get it again, up to the configured number of rounds.
   Returned and downloaded offers are never repeated. The offer list in the administration shows the round.
+- **Videos leave the platform on their own**: Once a video has no open offer left and the distribution will never
+  offer it again, because a channel downloaded it or every reachable channel had it without a round left, it is
+  marked as deleted by the daily `videos:mark-distributed` run (also part of the weekly run, with `--dry-run`).
+  Its files follow after the retention period; offers and downloads stay as history. Offers of deleted videos no
+  longer show on the offer pages or in the interface for other systems.
 
 ### Changed
 - **Development container**: The image library now supports WebP.
