@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Constants\Config\DefaultConfigEntry;
 use App\DTO\ChannelPoolDto;
 use App\DTO\UploaderPoolInfo;
 use App\Enum\BatchTypeEnum;
+use App\Facades\Cfg;
 use App\Models\Batch;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
@@ -88,7 +90,11 @@ readonly class AssignmentDistributor
                 // 5) Preloads zur Minimierung von N+1
                 $videoContext = new VideoAssignmentContext(
                     blockedByVideo: $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader),
-                    assignedChannelsByVideo: $assignmentRepo->preloadAssignedChannels($videosOfUploader),
+                    assignedChannelsByVideo: $assignmentRepo->preloadBlockedChannels(
+                        $videosOfUploader,
+                        $channelPoolDto->channels->pluck('id'),
+                        $this->configuredRounds(),
+                    ),
                     preferredChannelIdByVideo: app(PreferredChannelService::class)
                         ->preloadForVideos($videosOfUploader),
                 );
@@ -123,6 +129,15 @@ readonly class AssignmentDistributor
         return ['assigned' => $totalAssigned, 'skipped' => $totalSkipped, 'deferred' => $totalDeferred];
     }
 
+
+    /**
+     * How often a channel may be offered the same video, from the administration settings.
+     * @return int
+     */
+    private function configuredRounds(): int
+    {
+        return max(1, (int)Cfg::get(DefaultConfigEntry::DISTRIBUTION_ROUNDS, 'default', 1, true));
+    }
 
     public function calculateBlockedChannels(Collection $group, $blockedByVideo): array
     {

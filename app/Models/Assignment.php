@@ -26,6 +26,7 @@ class Assignment extends Model
         'channel_id',
         'batch_id',
         'status',
+        'offer_round',
         'expires_at',
         'attempts',
         'last_notified_at',
@@ -34,6 +35,7 @@ class Assignment extends Model
         'via_preferred_channel',
     ];
     protected $casts = [
+        'offer_round' => 'integer',
         'expires_at' => 'datetime',
         'last_notified_at' => 'datetime',
         'via_preferred_channel' => 'boolean',
@@ -48,6 +50,7 @@ class Assignment extends Model
                 'channel_id',
                 'batch_id',
                 'status',
+                'offer_round',
                 'expires_at',
                 'attempts',
                 'via_preferred_channel',
