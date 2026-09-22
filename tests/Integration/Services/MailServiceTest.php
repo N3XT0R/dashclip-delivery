@@ -9,19 +9,15 @@ use App\Mail\ChannelAccessApprovalRequestedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Mail\NewOfferMail;
 use App\Mail\NoReplyFAQMail;
-use App\Mail\ReminderMail;
 use App\Mail\UserWelcomeMail;
 use App\Models\ActionToken;
-use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
 use App\Models\User;
-use App\Services\ActionTokenService;
 use App\Services\LinkService;
 use App\Services\MailService;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use Mockery\MockInterface;
 use Tests\DatabaseTestCase;
@@ -156,43 +152,6 @@ class MailServiceTest extends DatabaseTestCase
                 && $mail->user->is($user)
                 && $mail->fromBackend === true
                 && $mail->plainPassword === $plainPassword;
-        });
-    }
-
-    public function test_it_sends_reminder_mail_using_first_assignment_details(): void
-    {
-        Mail::fake();
-
-        $channel = Channel::factory()->create();
-        $batch = Batch::factory()->type('assign')->create();
-        $assignments = Assignment::factory()
-            ->count(2)
-            ->forChannel($channel)
-            ->withBatch($batch)
-            ->create();
-
-        $firstAssignment = $assignments->first();
-        $expireAt = $firstAssignment->expires_at;
-
-        $this->mock(LinkService::class, function (MockInterface $mock) use ($batch, $channel, $expireAt) {
-            $mock->shouldReceive('getOfferUrl')
-                ->once()
-                ->withArgs(function (Batch $batchArg, Channel $channelArg, Carbon $expiresAtArg) use ($batch, $channel, $expireAt) {
-                    return $batchArg->is($batch)
-                        && $channelArg->is($channel)
-                        && $expiresAtArg->equalTo($expireAt);
-                })
-                ->andReturn('https://example.test/offers/reminder');
-        });
-
-        (new MailService())->sendReminderMail($channel, new Collection($assignments));
-
-        Mail::assertQueued(ReminderMail::class, function (ReminderMail $mail) use ($channel, $expireAt, $assignments) {
-            return $mail->hasTo($channel->email)
-                && $mail->channel->is($channel)
-                && $mail->offerUrl === 'https://example.test/offers/reminder'
-                && $mail->expiresAt->equalTo($expireAt)
-                && $mail->assignments->count() === $assignments->count();
         });
     }
 

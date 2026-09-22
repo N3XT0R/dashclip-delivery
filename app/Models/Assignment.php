@@ -28,7 +28,6 @@ class Assignment extends Model
         'status',
         'offer_round',
         'expires_at',
-        'attempts',
         'last_notified_at',
         'download_token',
         'note',
@@ -52,7 +51,6 @@ class Assignment extends Model
                 'status',
                 'offer_round',
                 'expires_at',
-                'attempts',
                 'via_preferred_channel',
             ]);
     }

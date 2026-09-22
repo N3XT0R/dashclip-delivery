@@ -38,6 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   good, like a video deleted in the user area; before, the API removed the file right away. The
   Submitter API documentation is now version 1.0.1.
 
+### Removed
+- **Dead code**: The offer reminder mail had no sender left and is gone, together with its template. The `attempts`
+  column of the offers, which was shown in the administration but never written, is dropped; the round of an offer
+  took its place.
+
 ### Fixed
 - **Signing in to applications**: The pages where you allow an application to access your account
   and where you connect a device with a code now work instead of failing with a server error. They
