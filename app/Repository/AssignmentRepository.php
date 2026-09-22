@@ -318,12 +318,8 @@ class AssignmentRepository
     private function getAvailableOfferQueryForChannel(Channel $channel): Builder
     {
         return Assignment::query()
-            ->where('channel_id', $channel->getKey())
-            ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
-            ->where(function (Builder $query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>=', now());
-            });
+            ->available()
+            ->where('channel_id', $channel->getKey());
     }
 
     /**

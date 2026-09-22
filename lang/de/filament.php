@@ -209,6 +209,7 @@ return [
             'content' => 'Inhalt',
             'created' => 'Erstellt',
             'creator' => 'Creator',
+            'deleted' => 'gelöscht',
             'direction' => 'Richtung',
             'disk' => 'Disk',
             'download' => 'Download',

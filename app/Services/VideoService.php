@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\FileInfoDto;
 use App\Enum\ProcessingStatusEnum;
+use App\Exceptions\Video\VideoFileRemovalException;
 use App\Facades\DynamicStorage;
 use App\Models\Clip;
 use App\Models\Video;
@@ -14,10 +15,10 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\LazyCollection;
+use Throwable;
 
 readonly class VideoService
 {
-
     public function __construct(private VideoRepository $videoRepository)
     {
     }
@@ -150,6 +151,38 @@ readonly class VideoService
         }
 
         return $video->delete();
+    }
+
+    /**
+     * Remove the stored video file and the preview files of all clips; the database rows stay.
+     * @param Video $video
+     * @return void
+     * @throws VideoFileRemovalException when a file exists but cannot be removed
+     */
+    public function removeStoredFiles(Video $video): void
+    {
+        try {
+            $disk = $video->getDisk();
+            if ($disk->exists($video->path) && !$disk->delete($video->path)) {
+                throw new VideoFileRemovalException('The video file could not be removed.');
+            }
+
+            foreach ($video->clipsWithTrashed()->get() as $clip) {
+                $previewPath = $clip->getAttribute('preview_path');
+                if (!$previewPath || !$clip->getAttribute('preview_disk')) {
+                    continue;
+                }
+
+                $previewDisk = $clip->getDisk();
+                if ($previewDisk->exists($previewPath) && !$previewDisk->delete($previewPath)) {
+                    throw new VideoFileRemovalException('A clip preview could not be removed.');
+                }
+            }
+        } catch (VideoFileRemovalException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            throw new VideoFileRemovalException($exception->getMessage(), previous: $exception);
+        }
     }
 
 }

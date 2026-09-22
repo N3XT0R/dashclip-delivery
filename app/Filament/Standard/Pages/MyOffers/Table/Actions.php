@@ -67,7 +67,8 @@ final readonly class Actions
             )
             ->openUrlInNewTab()
             ->visible(
-                fn(): bool => $page->activeTab === 'downloaded'
+                fn (?Assignment $record): bool => $page->activeTab === 'downloaded'
+                    && !($record?->videoWithTrashed?->trashed() ?? false)
             );
     }
 
@@ -82,7 +83,8 @@ final readonly class Actions
             )
             ->openUrlInNewTab()
             ->visible(
-                fn(): bool => $page->activeTab === 'available'
+                fn (?Assignment $record): bool => $page->activeTab === 'available'
+                    && !($record?->videoWithTrashed?->trashed() ?? false)
             );
     }
 
@@ -95,6 +97,10 @@ final readonly class Actions
             ->visible(function (?Assignment $record) use ($page): bool {
                 $tabs = ['available', 'downloaded'];
                 if ($record === null) {
+                    return false;
+                }
+
+                if ($record->videoWithTrashed?->trashed()) {
                     return false;
                 }
 
@@ -118,6 +124,10 @@ final readonly class Actions
             ->visible(function (?Assignment $record) use ($page): bool {
                 $tabs = ['available', 'downloaded'];
                 if ($record === null) {
+                    return false;
+                }
+
+                if ($record->videoWithTrashed?->trashed()) {
                     return false;
                 }
 

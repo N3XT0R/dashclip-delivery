@@ -50,6 +50,7 @@ return [
             'returned_at' => 'Zurückgewiesen am',
             'was_downloaded' => 'Heruntergeladen?',
             'return_reason' => 'Grund',
+            'no_longer_available' => 'nicht mehr verfügbar',
         ],
         'status_badges' => [
             'available' => 'Verfügbar',

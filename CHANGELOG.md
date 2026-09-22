@@ -19,9 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   512 KB, shrunk to fit 256 x 256 pixels) and `DELETE` removes it. Channel responses include
   `show_on_homepage` and `logo_url`. The Channel Operator API documentation is now version 1.1.0.
 - **Removing deleted videos for good**: A daily job (`videos:purge-deleted`, with `--dry-run`)
-  removes videos together with their files once they have been deleted for longer than the retention
-  period set in the administration settings, now labelled "Aufbewahrungsfrist gelöschter Videos (in
-  Wochen)". A video whose file cannot be removed stays deleted and is retried on the next run.
+  removes the files and previews of videos that have been deleted for longer than the retention
+  period set in the administration settings, "Aufbewahrungsfrist gelöschter Videos (in Wochen)".
+  The video entry, its offers and downloads stay as history. A video whose files cannot be removed
+  is retried on the next run.
 
 ### Changed
 - **Development container**: The image library now supports WebP.
@@ -44,6 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   longer overlap. Both now wait for each other, and the deletion rule is checked again at the moment
   of deletion, so a deleted video never ends up with an active offer and a video that was just
   offered is not deleted. The weekly distribution skips a video that was deleted during its run.
+- **Removing deleted videos keeps their history**: Views that crashed on a deleted video (download
+  history, downloaded offers and their details, administration lists) now render it, and offers of
+  deleted videos no longer show as available. The privacy policy describes the retention accordingly.
 
 ### Security
 - **Packages**

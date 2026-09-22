@@ -75,6 +75,14 @@ class Video extends Model
         return $this->hasMany(Clip::class);
     }
 
+    /**
+     * Clips including the ones soft-deleted together with the video, for history views.
+     * @return HasMany<Clip, $this>
+     */
+    public function clipsWithTrashed(): HasMany
+    {
+        return $this->hasMany(Clip::class)->withTrashed();
+    }
 
     public function team(): BelongsTo
     {

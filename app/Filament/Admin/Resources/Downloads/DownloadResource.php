@@ -60,12 +60,16 @@ class DownloadResource extends Resource
                     ->label(__('filament.admin.labels.channel'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('assignment.video.original_name')
-                    ->url(function (Download $download) {
-                        return $download->getAttribute('assignment')->getAttribute('video')->getAttribute(
-                            'preview_url'
-                        );
+                TextColumn::make('assignment.videoWithTrashed.original_name')
+                    ->url(function (Download $download): ?string {
+                        $video = $download->assignment?->videoWithTrashed;
+                        return ($video && ! $video->trashed()) ? $video->preview_url : null;
                     }, true)
+                    ->description(
+                        fn (Download $download): ?string => $download->assignment?->videoWithTrashed?->trashed()
+                            ? __('filament.admin.labels.deleted')
+                            : null
+                    )
                     ->label(__('filament.admin.labels.video'))
                     ->sortable(),
                 TextColumn::make('downloaded_at')

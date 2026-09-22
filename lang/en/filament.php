@@ -209,6 +209,7 @@ return [
             'content' => 'Content',
             'created' => 'Created',
             'creator' => 'Creator',
+            'deleted' => 'deleted',
             'direction' => 'Direction',
             'disk' => 'Disk',
             'download' => 'Download',

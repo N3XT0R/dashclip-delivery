@@ -109,4 +109,20 @@ final class DownloadHistoryTest extends DatabaseTestCase
             DownloadHistory::getNavigationGroup()
         );
     }
+
+    public function testDownloadsOfDeletedVideosStayVisibleWithoutALink(): void
+    {
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)
+            ->create(['original_name' => 'Removed Clip.mp4']);
+        $assignment = Assignment::factory()->forVideo($video)->create(['status' => 'picked_up']);
+        $download = Download::factory()->forAssignment($assignment)->create();
+        $video->delete();
+
+        Livewire::test(DownloadHistory::class)
+            ->assertStatus(200)
+            ->assertCanSeeTableRecords([$download])
+            ->assertSee('Removed Clip.mp4')
+            ->assertSee(__('download_history.table.deleted'))
+            ->assertTableActionHidden('view-video', $download);
+    }
 }

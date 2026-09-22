@@ -474,6 +474,25 @@ class AssignmentServiceTest extends DatabaseTestCase
         ]);
     }
 
+    public function testReturnAssignmentOnAnOfferOfADeletedVideoDoesNotThrow(): void
+    {
+        $video = Video::factory()->create();
+        $assignment = Assignment::factory()
+            ->for(Batch::factory()->type('assign')->finished(), 'batch')
+            ->for(Channel::factory(), 'channel')
+            ->for($video, 'video')
+            ->create([
+                'status' => StatusEnum::PICKEDUP->value,
+                'expires_at' => now()->addHour(),
+            ]);
+        $video->delete();
+
+        $result = $this->service->returnAssignment($assignment, \App\Models\User::factory()->create());
+
+        $this->assertTrue($result);
+        $this->assertSame(StatusEnum::REJECTED->value, $assignment->fresh()->status);
+    }
+
     public function testAssignGroupToChannelFlagsViaPreferredChannel(): void
     {
         $channel = Channel::factory()->create();
