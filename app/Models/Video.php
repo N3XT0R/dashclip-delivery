@@ -77,7 +77,7 @@ class Video extends Model
 
     /**
      * Clips including the ones soft-deleted together with the video, for history views.
-     * @return HasMany<Clip>
+     * @return HasMany<Clip, $this>
      */
     public function clipsWithTrashed(): HasMany
     {
