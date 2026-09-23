@@ -15,7 +15,7 @@ return new class () extends Migration {
 
         DB::table('configs')->insert([
             'key' => DefaultConfigEntry::DISTRIBUTION_ROUNDS,
-            'value' => 1,
+            'value' => 2,
             'cast_type' => 'int',
             'config_category_id' => $categoryId,
             'created_at' => $timestamp,

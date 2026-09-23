@@ -151,7 +151,9 @@ class VideoResource extends Resource
     {
         return $table
             ->defaultSort('created_at', 'desc')
-            ->recordUrl(fn (Video $record) => static::getUrl('view', ['record' => $record]))
+            ->recordUrl(fn (Video $record) => $record->trashed()
+                ? null
+                : static::getUrl('view', ['record' => $record]))
             ->columns([
                 ViewColumn::make('video_preview')
                     ->label(__('filament.video_resource.view.fields.preview'))
@@ -272,7 +274,8 @@ class VideoResource extends Resource
                     ->icon('heroicon-m-trash')
                     ->button()
                     ->requiresConfirmation()
-                    ->hidden(fn (Video $record) => false === app(IsDeletableUseCase::class)->handle($record))
+                    ->hidden(fn (Video $record) => $record->trashed()
+                        || false === app(IsDeletableUseCase::class)->handle($record))
                     ->using(static function (Video $record): bool {
                         try {
                             app(DeleteVideoUseCase::class)->handle($record);
@@ -309,7 +312,9 @@ class VideoResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('clips', function (Builder $query) {
+            // videos whose distribution is finished are deleted; the submitter still sees them as such
+            ->withTrashed()
+            ->whereHas('clipsWithTrashed', function (Builder $query) {
                 $query->where('clips.user_id', Filament::auth()->id());
             })
             ->withCount([
@@ -373,6 +378,7 @@ class VideoResource extends Resource
         $downloaded = (int)$video->getAttribute('downloaded_assignments_count');
 
         return match (true) {
+            $video->trashed() => __('status.distribution_status.finished'),
             $downloaded > 0 => __('status.distribution_status.downloaded'),
             $available > 0 => __('status.distribution_status.available'),
             $expired > 0 => __('status.distribution_status.expired'),
@@ -384,6 +390,7 @@ class VideoResource extends Resource
     private static function statusColor(string $label): string
     {
         return match ($label) {
+            __('status.distribution_status.finished') => 'gray',
             __('status.distribution_status.available') => 'success',
             __('status.distribution_status.all_distributed') => 'primary',
             __('status.distribution_status.expired') => 'gray',

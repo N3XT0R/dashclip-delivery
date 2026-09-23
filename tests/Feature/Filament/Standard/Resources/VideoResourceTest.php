@@ -212,4 +212,26 @@ final class VideoResourceTest extends DatabaseTestCase
 
         $this->user->givePermissionTo($permissions);
     }
+
+    public function testAVideoWhoseDistributionIsFinishedStaysVisibleWithItsState(): void
+    {
+        $finished = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)
+            ->create(['original_name' => 'Finished Clip.mp4']);
+        $finished->delete();
+
+        Livewire::test(ListVideos::class)
+            ->assertStatus(200)
+            ->assertCanSeeTableRecords([$finished])
+            ->assertSee('Finished Clip.mp4')
+            ->assertSee(__('status.distribution_status.finished'));
+    }
+
+    public function testAFinishedVideoOffersNoDeleteAction(): void
+    {
+        $finished = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
+        $finished->delete();
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionHidden('delete', $finished);
+    }
 }

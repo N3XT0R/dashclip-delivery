@@ -89,6 +89,19 @@ class Video extends Model
         return $this->belongsTo(Team::class);
     }
 
+    /**
+     * Only videos whose files are still stored; a deleted video keeps them until the purge run.
+     * @param Builder<Video> $query
+     * @return Builder<Video>
+     */
+    public function scopeWhereStoresItsFiles(Builder $query): Builder
+    {
+        return $query->where(static function (Builder $inner): void {
+            $inner->whereNull('processing_status')
+                ->orWhere('processing_status', '!=', ProcessingStatusEnum::Deleted->value);
+        });
+    }
+
     public function getDisk(): Filesystem
     {
         return Storage::disk($this->getAttribute('disk'));

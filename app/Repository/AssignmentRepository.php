@@ -298,13 +298,13 @@ class AssignmentRepository
      */
     public function fetchDownloadableForChannel(Channel $channel, Collection $ids, ?Batch $batch = null): EloquentCollection
     {
-        return Assignment::with('video.clips.preferredChannel')
+        return Assignment::with('videoWithTrashed.clipsWithTrashed.preferredChannel')
             ->where('channel_id', $channel->getKey())
             ->when($batch, fn (Builder $query) => $query->where('batch_id', $batch->getKey()))
             ->whereIn('id', $ids)
             ->whereIn('status', StatusEnum::getReturnableStatuses())
             ->where(fn (Builder $query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))
-            ->whereHas('video')
+            ->whereHas('videoWithTrashed', static fn (Builder $video): Builder => $video->whereStoresItsFiles())
             ->get();
     }
 

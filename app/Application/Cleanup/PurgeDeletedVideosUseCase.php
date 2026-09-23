@@ -22,7 +22,7 @@ use Throwable;
  */
 readonly class PurgeDeletedVideosUseCase
 {
-    private const int DEFAULT_RETENTION_WEEKS = 1;
+    private const int DEFAULT_RETENTION_WEEKS = 4;
 
     public function __construct(private VideoRepository $videoRepository, private VideoService $videoService)
     {

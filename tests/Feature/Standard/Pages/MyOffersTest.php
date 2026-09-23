@@ -7,6 +7,7 @@ namespace Tests\Feature\Standard\Pages;
 use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
+use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Pages\MyOffers;
@@ -15,6 +16,7 @@ use App\Models\Channel;
 use App\Models\Clip;
 use App\Models\Download;
 use App\Models\User;
+use App\Models\Video;
 use App\Repository\TeamRepository;
 use App\Services\AssignmentService;
 use App\Services\LinkService;
@@ -75,10 +77,10 @@ final class MyOffersTest extends DatabaseTestCase
             ->set('activeTab', 'downloaded')
             ->assertCanSeeTableRecords([$assignment])
             ->assertSee('Removed Clip.mp4')
-            ->assertSee(__('my_offers.table.no_longer_available'))
             ->assertSee('images/status/no_preview.jpg')
             ->assertSee($uploader->display_name)
-            ->assertTableActionHidden('download_again', $assignment);
+            // its files are still stored, so it can be fetched again until the purge run
+            ->assertTableActionVisible('download_again', $assignment);
     }
 
     public function testReturnActionIsHiddenForADownloadedOfferOfADeletedVideoThatIsStillReturnable(): void
@@ -446,6 +448,29 @@ final class MyOffersTest extends DatabaseTestCase
 
         self::assertSame(['channelId' => $channel->getKey()], $page->instance()->getWidgetData());
     }
+
+    public function testADeletedVideoCanStillBeFetchedAgainWhileItsFilesExist(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Still Stored.mp4');
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->assertTableActionVisible('download_again', $assignment);
+    }
+
+    public function testOnceTheFilesAreGoneItCannotBeFetchedAgain(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Files Gone.mp4');
+        Video::withTrashed()->whereKey($assignment->video_id)
+            ->update(['processing_status' => ProcessingStatusEnum::Deleted->value]);
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->assertSee(__('my_offers.table.no_longer_available'))
+            ->assertTableActionHidden('download_again', $assignment);
+    }
 }
 
 class MyOffersTestPage extends MyOffers
@@ -506,4 +531,5 @@ final readonly class RecordingAssignmentService extends AssignmentService
 
         return true;
     }
+
 }
