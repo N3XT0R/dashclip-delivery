@@ -4,7 +4,7 @@ use App\Constants\Config\DefaultConfigEntry;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,7 +15,7 @@ return new class extends Migration {
         DB::table('configs')
             ->insert([
                 'key' => DefaultConfigEntry::POST_EXPIRY_RETENTION_WEEKS,
-                'value' => 1,
+                'value' => 4,
                 'cast_type' => 'int',
                 'config_category_id' => $id,
                 'created_at' => $timestamp,

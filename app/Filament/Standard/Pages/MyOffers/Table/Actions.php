@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
 use App\Application\Assignment\UpdateAssignmentNote;
+use App\Enum\ProcessingStatusEnum;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Services\AssignmentService;
@@ -46,7 +47,7 @@ final readonly class Actions
             ->modalHeading(__('my_offers.modal.title'))
             ->modalWidth(Width::FourExtraLarge)
             ->schema(
-                fn(?Assignment $record): ?Schema => $record !== null ? $page->getDetailsInfolist($record) : null
+                fn (?Assignment $record): ?Schema => $record !== null ? $page->getDetailsInfolist($record) : null
             )
             ->modalFooterActions([
                 $this->submit($page),
@@ -63,13 +64,26 @@ final readonly class Actions
             ->icon('heroicon-m-arrow-path')
             ->color('gray')
             ->action(
-                fn(Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
+                fn (Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
             )
             ->openUrlInNewTab()
             ->visible(
                 fn (?Assignment $record): bool => $page->activeTab === 'downloaded'
-                    && !($record?->videoWithTrashed?->trashed() ?? false)
+                    && $this->videoStillStoresItsFiles($record)
             );
+    }
+
+    /**
+     * Whether the video of an offer can still be delivered: a deleted video keeps its files until
+     * the purge run removes them.
+     * @param Assignment|null $record
+     * @return bool
+     */
+    private function videoStillStoresItsFiles(?Assignment $record): bool
+    {
+        $video = $record?->videoWithTrashed;
+
+        return $video !== null && $video->processing_status !== ProcessingStatusEnum::Deleted;
     }
 
     public function download(MyOffers $page): Action
@@ -79,7 +93,7 @@ final readonly class Actions
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
             ->action(
-                fn(Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
+                fn (Assignment $record) => $page->dispatchZipDownload([$record->getKey()])
             )
             ->openUrlInNewTab()
             ->visible(

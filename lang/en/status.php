@@ -22,6 +22,7 @@ return [
         'downloaded' => 'Downloaded',
         'expired' => 'Expired',
         'all_distributed' => 'All Distributed',
+        'finished' => 'Distribution finished',
         'preparing' => 'Preparing',
     ],
 ];

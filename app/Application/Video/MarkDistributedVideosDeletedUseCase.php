@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\DB;
  */
 readonly class MarkDistributedVideosDeletedUseCase
 {
-    private const int DEFAULT_ROUNDS = 1;
+    private const int DEFAULT_ROUNDS = 2;
 
     public function __construct(
         private VideoRepository $videoRepository,

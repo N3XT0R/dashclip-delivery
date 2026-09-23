@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   period set in the administration settings, "Aufbewahrungsfrist gelöschter Videos (in Wochen)".
   The video entry, its offers and downloads stay as history. A video whose files cannot be removed
   is retried on the next run.
-- **Offer rounds per video**: A new setting in the administration ("Angebotsrunden je Video", default 1) decides how
+- **Offer rounds per video**: A new setting in the administration ("Angebotsrunden je Video", default 2) decides how
   often a channel may be offered the same video. Channels that never had the video still come first; only once every
   reachable channel had it do channels whose offer expired get it again, up to the configured number of rounds.
   Returned and downloaded offers are never repeated. The offer list in the administration shows the round.
@@ -39,6 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   way. Every column of the user list can be hidden now.
 
 ### Changed
+- **More generous default settings**: A video is offered in two rounds instead of one, and a deleted video keeps its
+  files for four weeks instead of one before they are removed for good. Installations that already set their own
+  value keep it.
 - **Development container**: The image library now supports WebP.
 - **Faster automated checks**: The coverage run on the core branches measures with PCOV instead
   of Xdebug, which is several times faster; the nightly coverage run keeps Xdebug as reference. The
@@ -54,6 +57,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   took its place.
 
 ### Fixed
+- **Fetching a video again after it was deleted**: An offer in "Heruntergeladen" can be fetched again as long as the
+  file is still there, even once the video was deleted. Only when the file has been removed for good does the offer
+  say that the video is no longer available.
+- **Videos of submitters stay visible**: A video whose distribution is finished no longer disappears from the video
+  list. It is shown with the state "Verteilung beendet", without details and without a delete action.
 - **Signing in to applications**: The pages where you allow an application to access your account
   and where you connect a device with a code now work instead of failing with a server error. They
   name the application and its requested permissions and use the sign-in of the user area; signed-out

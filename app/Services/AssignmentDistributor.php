@@ -27,6 +27,8 @@ use RuntimeException;
  */
 readonly class AssignmentDistributor
 {
+    private const int DEFAULT_ROUNDS = 2;
+
     public function __construct(
         private AssignmentRepository $assignmentRepository,
         private AssignmentService $assignmentService,
@@ -136,7 +138,7 @@ readonly class AssignmentDistributor
      */
     private function configuredRounds(): int
     {
-        return max(1, (int)Cfg::get(DefaultConfigEntry::DISTRIBUTION_ROUNDS, 'default', 1, true));
+        return max(1, (int)Cfg::get(DefaultConfigEntry::DISTRIBUTION_ROUNDS, 'default', self::DEFAULT_ROUNDS, true));
     }
 
     public function calculateBlockedChannels(Collection $group, $blockedByVideo): array

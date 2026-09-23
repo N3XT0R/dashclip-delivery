@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
 use App\Filament\Standard\Pages\MyOffers;
+use App\Enum\ProcessingStatusEnum;
 use App\Models\Assignment;
 use App\Models\Video;
 use Filament\Tables\Columns\TextColumn;
@@ -59,7 +60,8 @@ final class Columns
             ))
             ->limit(40)
             ->description(
-                fn (Assignment $record): ?string => $record->videoWithTrashed?->trashed()
+                fn (Assignment $record): ?string => $record->videoWithTrashed?->processing_status
+                    === ProcessingStatusEnum::Deleted
                     ? __('my_offers.table.no_longer_available')
                     : null
             )
