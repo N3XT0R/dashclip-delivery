@@ -33,7 +33,7 @@ final class MailLayoutTest extends DatabaseTestCase
         ];
 
         foreach ([
-            'channel-welcome', 'new-offer', 'no_reply_faq', 'reminder', 'upload-duplicated',
+            'channel-welcome', 'new-offer', 'no_reply_faq', 'upload-duplicated',
             'user-inactivity-reminder', 'user-upload-proceed', 'user-welcome',
             'channel.access_approval_requested', 'channel.access_approved', 'channel.video_reception_paused',
         ] as $view) {

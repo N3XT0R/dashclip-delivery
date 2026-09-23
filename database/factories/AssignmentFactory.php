@@ -24,7 +24,6 @@ class AssignmentFactory extends Factory
             'batch_id' => Batch::factory(),
             'status' => StatusEnum::QUEUED->value,
             'expires_at' => now()->addDays($this->faker->numberBetween(3, 14)),
-            'attempts' => 0,
             'last_notified_at' => null,
             'download_token' => null, // set via state when needed
         ];
@@ -32,35 +31,35 @@ class AssignmentFactory extends Factory
 
     public function queued(): static
     {
-        return $this->state(fn() => ['status' => StatusEnum::QUEUED->value]);
+        return $this->state(fn () => ['status' => StatusEnum::QUEUED->value]);
     }
 
     public function withBatch(?Batch $batch = null): static
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'batch_id' => $batch?->getKey() ?? Batch::factory(),
         ]);
     }
 
     public function expired(): static
     {
-        return $this->state(fn() => ['expires_at' => now()->subDay()]);
+        return $this->state(fn () => ['expires_at' => now()->subDay()]);
     }
 
     public function withDownloadToken(?string $token = null): static
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'download_token' => $token ?? Str::random(40),
         ]);
     }
 
     public function forChannel(Channel $channel): static
     {
-        return $this->state(fn() => ['channel_id' => $channel->getKey()]);
+        return $this->state(fn () => ['channel_id' => $channel->getKey()]);
     }
 
     public function forVideo(Video $video): static
     {
-        return $this->state(fn() => ['video_id' => $video->getKey()]);
+        return $this->state(fn () => ['video_id' => $video->getKey()]);
     }
 }

@@ -193,7 +193,6 @@ return [
             'assignment' => 'Zuweisung',
             'assignment_id' => 'Zuweisungs-ID',
             'assignments' => 'Zuweisungen',
-            'attempts' => 'Versuche',
             'offer_round' => 'Runde',
             'batch' => 'Batch',
             'batches' => 'Batches',

@@ -107,11 +107,6 @@ class AssignmentResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('attempts')
-                    ->label(__('filament.admin.labels.attempts'))
-                    ->numeric()
-                    ->sortable(),
-
                 TextColumn::make('last_notified_at')
                     ->dateTime()
                     ->since()

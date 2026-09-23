@@ -193,7 +193,6 @@ return [
             'assignment' => 'Assignment',
             'assignment_id' => 'Assignment ID',
             'assignments' => 'Assignments',
-            'attempts' => 'Attempts',
             'offer_round' => 'Round',
             'batch' => 'Batch',
             'batches' => 'Batches',
