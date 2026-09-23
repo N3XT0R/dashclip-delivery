@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.11.0] - 2026-09-23
+
 ### Added
 - **Preferred channel when uploading**: The upload form offers an optional channel choice, so the
   wish no longer has to be set through the eighth column of `info.csv`. Only channels the upload can
