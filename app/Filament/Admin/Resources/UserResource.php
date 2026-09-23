@@ -2,11 +2,15 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enum\PanelEnum;
 use App\Enum\Users\RoleEnum;
+use App\Exceptions\Auth\ImpersonationNotAllowedException;
 use App\Filament\Admin\Resources\UserResource\RelationManagers\ChannelsRelationManager;
 use App\Models\User;
+use App\Services\Auth\ImpersonationService;
 use BackedEnum;
 use Filament\Actions;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -143,6 +147,29 @@ class UserResource extends Resource
                         ['record' => $record]
                     )
                 ),
+                Actions\Action::make('impersonate')
+                    ->label(__('impersonation.action'))
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->visible(fn (User $record): bool => app(ImpersonationService::class)->canImpersonate(
+                        auth()->user(),
+                        $record
+                    ))
+                    ->action(function (User $record) {
+                        try {
+                            app(ImpersonationService::class)->start(auth()->user(), $record);
+                        } catch (ImpersonationNotAllowedException) {
+                            Notification::make()
+                                ->title(__('impersonation.not_allowed'))
+                                ->danger()
+                                ->send();
+
+                            return null;
+                        }
+
+                        return redirect(Filament::getPanel(PanelEnum::STANDARD->value)->getUrl());
+                    }),
+
                 Actions\Action::make('resetPassword')
                     ->label(__('filament.admin.labels.reset_password'))
                     ->icon('heroicon-o-key')

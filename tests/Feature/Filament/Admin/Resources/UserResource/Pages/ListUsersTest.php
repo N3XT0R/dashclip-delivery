@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament\Admin\Resources\UserResource\Pages;
 
+use App\Enum\Guard\GuardEnum;
+use App\Enum\PanelEnum;
 use App\Filament\Admin\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
+use App\Services\Auth\ImpersonationService;
+use Filament\Facades\Filament;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
 
@@ -36,5 +40,27 @@ final class ListUsersTest extends DatabaseTestCase
             ->assertStatus(200)
             ->assertTableActionVisible('edit', $user)
             ->assertTableActionVisible('resetPassword', $user);
+    }
+
+    public function testTheViewOfAnotherUserCanBeOpenedFromTheList(): void
+    {
+        $operator = User::factory()->standard()->create();
+
+        Livewire::test(ListUsers::class)
+            ->assertTableActionVisible('impersonate', $operator)
+            ->callTableAction('impersonate', $operator)
+            ->assertRedirect(Filament::getPanel(PanelEnum::STANDARD->value)->getUrl());
+
+        self::assertTrue(app(ImpersonationService::class)->isActive());
+        self::assertTrue(auth(GuardEnum::STANDARD->value)->user()->is($operator));
+    }
+
+    public function testTheViewIsNotOfferedForAdministratorsOrForOneself(): void
+    {
+        $otherAdmin = User::factory()->admin()->create();
+
+        Livewire::test(ListUsers::class)
+            ->assertTableActionHidden('impersonate', $otherAdmin)
+            ->assertTableActionHidden('impersonate', $this->admin);
     }
 }

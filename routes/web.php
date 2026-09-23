@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Enum\Guard\GuardEnum;
+use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\ApiDocsController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PublicSitemapController;
@@ -78,4 +80,13 @@ Route::middleware(SetPublicLocale::class)->group(function (): void {
 
     Route::post('/action-tokens/approve/{purpose}/{token}', [TokenApprovalController::class, 'store'])
         ->name('tokens.store');
+});
+
+Route::middleware('web')->group(function (): void {
+    Route::post('/impersonation/{user}', [ImpersonationController::class, 'start'])
+        ->middleware('auth:' . GuardEnum::DEFAULT->value)
+        ->whereNumber('user')
+        ->name('impersonation.start');
+    Route::post('/impersonation/stop', [ImpersonationController::class, 'stop'])
+        ->name('impersonation.stop');
 });

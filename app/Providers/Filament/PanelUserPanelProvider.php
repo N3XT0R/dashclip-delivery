@@ -130,7 +130,11 @@ class PanelUserPanelProvider extends PanelProvider
 
     protected function addRenderHooks(Panel $panel): Panel
     {
-        return $panel->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.components.support'))
+        return $panel->renderHook(
+            PanelsRenderHook::BODY_START,
+            fn () => view('filament.components.impersonation-banner')
+        )
+            ->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.components.support'))
             ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn () => view('filament.components.login-register'), scopes: [Login::class])
             ->renderHook(
                 PanelsRenderHook::CONTENT_END,
