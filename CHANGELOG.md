@@ -32,6 +32,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   marked as deleted by the daily `videos:mark-distributed` run (also part of the weekly run, with `--dry-run`).
   Its files follow after the retention period; offers and downloads stay as history. Offers of deleted videos no
   longer show on the offer pages or in the interface for other systems.
+- **Look at the user area as someone else**: Administrators can open the view of a user from the user list and see
+  exactly what that person sees, including their channel and their offers. A banner names whose view it is and ends
+  it again and returns to the user list. Downloads are not recorded meanwhile, so the channel keeps its own history,
+  and the start and the end of every such view are written to the activity log. Administrators cannot be opened this
+  way. Every column of the user list can be hidden now.
 
 ### Changed
 - **Development container**: The image library now supports WebP.

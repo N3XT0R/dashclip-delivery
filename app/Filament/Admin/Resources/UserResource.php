@@ -2,11 +2,15 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enum\PanelEnum;
 use App\Enum\Users\RoleEnum;
+use App\Exceptions\Auth\ImpersonationNotAllowedException;
 use App\Filament\Admin\Resources\UserResource\RelationManagers\ChannelsRelationManager;
 use App\Models\User;
+use App\Services\Auth\ImpersonationService;
 use BackedEnum;
 use Filament\Actions;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -103,24 +107,30 @@ class UserResource extends Resource
             ->recordTitleAttribute('User')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('submitted_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label(__('filament.admin.labels.email_address'))
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('last_login_at')
                     ->label(__('filament.admin.labels.last_login'))
                     ->dateTime()
                     ->placeholder(__('filament.admin.labels.never_logged_in'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->label(__('filament.admin.labels.roles'))
                     ->badge()
-                    ->colors(['success']),
+                    ->colors(['success'])
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -130,7 +140,8 @@ class UserResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('has_email_authentication')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(),
             ])
             ->filters([
                 //
@@ -143,6 +154,29 @@ class UserResource extends Resource
                         ['record' => $record]
                     )
                 ),
+                Actions\Action::make('impersonate')
+                    ->label(__('impersonation.action'))
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->visible(fn (User $record): bool => app(ImpersonationService::class)->canImpersonate(
+                        auth()->user(),
+                        $record
+                    ))
+                    ->action(function (User $record) {
+                        try {
+                            app(ImpersonationService::class)->start(auth()->user(), $record);
+                        } catch (ImpersonationNotAllowedException) {
+                            Notification::make()
+                                ->title(__('impersonation.not_allowed'))
+                                ->danger()
+                                ->send();
+
+                            return null;
+                        }
+
+                        return redirect(Filament::getPanel(PanelEnum::STANDARD->value)->getUrl());
+                    }),
+
                 Actions\Action::make('resetPassword')
                     ->label(__('filament.admin.labels.reset_password'))
                     ->icon('heroicon-o-key')

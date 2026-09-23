@@ -6,6 +6,7 @@ use App\Enum\StatusEnum;
 use App\Exceptions\Video\VideoUnavailableForOfferException;
 use App\Models\{Assignment, Batch, Channel, User, Video};
 use App\Repository\AssignmentRepository;
+use App\Services\Auth\ImpersonationService;
 use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
 use App\ValueObjects\AssignmentRun;
@@ -50,8 +51,22 @@ readonly class AssignmentService
         return $this->assignmentRepository->markUnused($batch, $channel, $ids);
     }
 
+    /**
+     * Record that a channel downloaded an offer.
+     *
+     * While an administrator looks at the user area as someone else, nothing is recorded: the
+     * download runs through, but the channel keeps its own history.
+     * @param Assignment $assignment
+     * @param string $ip
+     * @param string|null $userAgent
+     * @return bool false when nothing was recorded
+     */
     public function markDownloaded(Assignment $assignment, string $ip, ?string $userAgent): bool
     {
+        if (app(ImpersonationService::class)->isActive()) {
+            return false;
+        }
+
         return null !== $this->assignmentRepository->markDownloaded($assignment, $ip, $userAgent);
     }
 
