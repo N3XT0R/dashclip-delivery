@@ -7,10 +7,12 @@ namespace Tests\Feature\Http;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Enum\StatusEnum;
+use App\Filament\Admin\Resources\UserResource;
 use App\Enum\Users\RoleEnum;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\User;
+use App\Repository\TeamRepository;
 use App\Services\AssignmentService;
 use App\Services\Auth\ImpersonationService;
 use Filament\Facades\Filament;
@@ -30,7 +32,7 @@ final class ImpersonationTest extends DatabaseTestCase
         self::assertTrue(auth(GuardEnum::STANDARD->value)->user()->is($operator));
 
         $this->post(route('impersonation.stop'))
-            ->assertRedirect(Filament::getPanel(PanelEnum::ADMIN->value)->getUrl());
+            ->assertRedirect(UserResource::getUrl('index', panel: PanelEnum::ADMIN->value));
 
         self::assertNull(auth(GuardEnum::STANDARD->value)->user());
     }
@@ -121,5 +123,36 @@ final class ImpersonationTest extends DatabaseTestCase
             'id' => $assignment->getKey(),
             'status' => StatusEnum::PICKEDUP->value,
         ]);
+    }
+
+    public function testAnotherViewCanBeOpenedRightAfterEndingTheFirstOne(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $first = User::factory()->standard()->create();
+        $second = User::factory()->standard()->create();
+
+        $this->actingAs($admin, GuardEnum::DEFAULT->value)->post(route('impersonation.start', $first));
+        $this->post(route('impersonation.stop'))->assertRedirect();
+
+        $this->post(route('impersonation.start', $second))
+            ->assertRedirect(Filament::getPanel(PanelEnum::STANDARD->value)->getUrl());
+
+        self::assertTrue(auth(GuardEnum::STANDARD->value)->user()->is($second));
+        $this->get(Filament::getPanel(PanelEnum::STANDARD->value)->getUrl())->assertOk();
+    }
+
+    public function testTheViewOpensInTheTeamOfTheOtherUserNotTheAdministrators(): void
+    {
+        $admin = User::factory()->admin()->withOwnTeam()->create();
+        $operator = User::factory()->standard()->withOwnTeam()->create();
+        $operatorTeam = app(TeamRepository::class)->getDefaultTeamForUser($operator);
+        $adminTeam = app(TeamRepository::class)->getDefaultTeamForUser($admin);
+
+        $response = $this->actingAs($admin, GuardEnum::DEFAULT->value)
+            ->post(route('impersonation.start', $operator));
+
+        $target = (string)$response->headers->get('Location');
+        self::assertStringContainsString((string)$operatorTeam->slug, $target);
+        self::assertStringNotContainsString((string)$adminTeam->slug, $target);
     }
 }

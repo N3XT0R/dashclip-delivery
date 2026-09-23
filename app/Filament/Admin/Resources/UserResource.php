@@ -107,24 +107,30 @@ class UserResource extends Resource
             ->recordTitleAttribute('User')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('submitted_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label(__('filament.admin.labels.email_address'))
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('last_login_at')
                     ->label(__('filament.admin.labels.last_login'))
                     ->dateTime()
                     ->placeholder(__('filament.admin.labels.never_logged_in'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->label(__('filament.admin.labels.roles'))
                     ->badge()
-                    ->colors(['success']),
+                    ->colors(['success'])
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -134,7 +140,8 @@ class UserResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('has_email_authentication')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(),
             ])
             ->filters([
                 //

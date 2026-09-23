@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enum\PanelEnum;
+use App\Filament\Admin\Resources\UserResource;
 use App\Exceptions\Auth\ImpersonationNotAllowedException;
 use App\Models\User;
 use App\Services\Auth\ImpersonationService;
@@ -38,6 +39,6 @@ final class ImpersonationController extends Controller
     {
         $this->impersonation->stop();
 
-        return redirect(Filament::getPanel(PanelEnum::ADMIN->value)->getUrl());
+        return redirect(UserResource::getUrl('index', panel: PanelEnum::ADMIN->value));
     }
 }

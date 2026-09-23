@@ -127,4 +127,21 @@ final class ImpersonationServiceTest extends DatabaseTestCase
 
         $this->service->start($operator, $target);
     }
+
+    public function testALeftOverMarkerWithoutASignedInUserDoesNotBlockTheNextView(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $operator = User::factory()->standard()->create();
+        $this->actingAs($admin, GuardEnum::DEFAULT->value);
+        // the browser session kept the marker, but nobody is signed in to the user area any more
+        session()->put('impersonator_id', $admin->getKey());
+        auth(GuardEnum::STANDARD->value)->logout();
+
+        self::assertFalse($this->service->isActive());
+
+        $this->service->start($admin, $operator);
+
+        self::assertTrue($this->service->isActive());
+        self::assertTrue(auth(GuardEnum::STANDARD->value)->user()->is($operator));
+    }
 }

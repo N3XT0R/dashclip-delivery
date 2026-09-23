@@ -72,9 +72,16 @@ readonly class ImpersonationService
         }
     }
 
+    /**
+     * Whether a view of another user is running right now.
+     *
+     * The marker alone is not enough: signing out of the user area by hand leaves it behind, and a
+     * left-over marker must not block the next view.
+     * @return bool
+     */
     public function isActive(): bool
     {
-        return Session::has(self::SESSION_KEY);
+        return Session::has(self::SESSION_KEY) && Auth::guard(GuardEnum::STANDARD->value)->check();
     }
 
     /**
@@ -117,6 +124,8 @@ readonly class ImpersonationService
         if ($this->isActive()) {
             throw new ImpersonationNotAllowedException('Another impersonation is already running.');
         }
+
+        Session::forget(self::SESSION_KEY);
 
         if (!$this->roleRepository->canAccessEverything($administrator)) {
             throw new ImpersonationNotAllowedException('Only administrators may view the user area as someone else.');
