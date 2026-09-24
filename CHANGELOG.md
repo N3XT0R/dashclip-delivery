@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Downloaded videos are not removed right away**: A download ends the offer rounds, as before, but
+  the video now stays until that offer's window closes. Until then the channel can still return it
+  or fetch it again from "Heruntergeladen". Only afterwards is the video marked as deleted, and its
+  files follow after the retention period.
+
 ## [4.11.0] - 2026-09-23
 
 ### Added

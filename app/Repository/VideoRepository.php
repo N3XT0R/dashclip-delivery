@@ -307,7 +307,9 @@ class VideoRepository
     /**
      * Videos that were offered at least once and have no open offer left, in chunks.
      *
-     * An offer counts as open while it is queued or notified and has not expired yet.
+     * An offer counts as open while the channel can still act on it: it is queued, notified or
+     * downloaded and has not expired yet. A downloaded offer therefore keeps its video until its
+     * window closes, because the channel may still return it or fetch it again.
      * @param int $chunkSize
      * @return LazyCollection<int, Video>
      */
@@ -316,7 +318,7 @@ class VideoRepository
         return Video::query()
             ->whereHas('assignments')
             ->whereDoesntHave('assignments', static function (Builder $query): void {
-                $query->whereIn('status', StatusEnum::getReadyStatus())
+                $query->whereIn('status', StatusEnum::getReturnableStatuses())
                     ->where(static function (Builder $expiry): void {
                         $expiry->whereNull('expires_at')->orWhere('expires_at', '>', now());
                     });

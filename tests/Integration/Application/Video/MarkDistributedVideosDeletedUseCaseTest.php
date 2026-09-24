@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration\Application\Video;
 
 use App\Application\Video\MarkDistributedVideosDeletedUseCase;
+use Carbon\CarbonInterface;
 use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\StatusEnum;
 use App\Facades\Cfg;
@@ -44,9 +45,28 @@ final class MarkDistributedVideosDeletedUseCaseTest extends DatabaseTestCase
     public function testMarksAVideoThatWasDownloadedEvenWhenChannelsAreLeft(): void
     {
         $video = Video::factory()->create();
-        Assignment::factory()->forVideo($video)->forChannel($this->channel())
-            ->create(['status' => StatusEnum::PICKEDUP->value]);
+        $this->downloadedOffer($video, $this->channel(), now()->subDay());
         $this->channel();
+
+        self::assertSame(1, $this->useCase->handle()->marked);
+
+        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
+    }
+
+    public function testKeepsADownloadedVideoWhileItsOfferCanStillBeReturned(): void
+    {
+        $video = Video::factory()->create();
+        $this->downloadedOffer($video, $this->channel(), now()->addWeek());
+
+        self::assertSame(0, $this->useCase->handle()->marked);
+
+        $this->assertDatabaseHas('videos', ['id' => $video->getKey(), 'deleted_at' => null]);
+    }
+
+    public function testMarksADownloadedVideoOnceItsOfferWindowClosed(): void
+    {
+        $video = Video::factory()->create();
+        $this->downloadedOffer($video, $this->channel(), now()->subMinute());
 
         self::assertSame(1, $this->useCase->handle()->marked);
 
@@ -139,6 +159,14 @@ final class MarkDistributedVideosDeletedUseCaseTest extends DatabaseTestCase
     private function channel(): Channel
     {
         return Channel::factory()->create(['weekly_quota' => 10]);
+    }
+
+    private function downloadedOffer(Video $video, Channel $channel, CarbonInterface $expiresAt): Assignment
+    {
+        return Assignment::factory()->forVideo($video)->forChannel($channel)->create([
+            'status' => StatusEnum::PICKEDUP->value,
+            'expires_at' => $expiresAt,
+        ]);
     }
 
     private function expiredOffer(Video $video, Channel $channel): Assignment
