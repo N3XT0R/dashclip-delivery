@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.11.1] - 2026-09-24
+
 ### Fixed
 - **Downloaded videos are not removed right away**: A download ends the offer rounds, as before, but
   the video now stays until that offer's window closes. Until then the channel can still return it
