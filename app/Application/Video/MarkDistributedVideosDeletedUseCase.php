@@ -19,8 +19,10 @@ use Illuminate\Support\Facades\DB;
  * Marks videos as deleted once the distribution will never offer them again.
  *
  * That is the case when a video has no open offer left and either a channel downloaded it, or every
- * channel it can reach already had it and no expired offer has a round left. Their files are removed
- * later by the purge run; offers and downloads stay as history.
+ * channel it can reach already had it and no expired offer has a round left. A download ends the
+ * rounds right away, but the video stays until that offer's window closes, because the channel may
+ * still return it or fetch it again. Their files are removed later by the purge run; offers and
+ * downloads stay as history.
  */
 readonly class MarkDistributedVideosDeletedUseCase
 {
@@ -58,6 +60,9 @@ readonly class MarkDistributedVideosDeletedUseCase
     }
 
     /**
+     * Whether the video will never be offered again. Only videos without an open offer get here,
+     * so a downloaded offer has already run out of its window by now.
+     *
      * @param Video $video
      * @param int $rounds
      * @return bool
