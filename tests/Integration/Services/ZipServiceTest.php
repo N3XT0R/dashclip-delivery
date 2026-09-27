@@ -19,7 +19,6 @@ use ZipArchive;
 
 class ZipServiceTest extends DatabaseTestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -86,7 +85,7 @@ class ZipServiceTest extends DatabaseTestCase
         $svc = new ZipService($cacheDouble, $this->app->make(CsvService::class));
 
         // Act
-        $zipRel = $svc->build($batch, $channel, collect([$a1, $a2]), '203.0.113.10', 'UA/1.0');
+        $zipRel = $svc->build($batch, $channel, collect([$a1, $a2]));
 
         // Assert: path and ZIP contents
         $expectedRel = "zips/{$batch->id}_{$channel->id}.zip";
@@ -97,8 +96,10 @@ class ZipServiceTest extends DatabaseTestCase
         // CSV present with header
         $this->assertNotFalse($zip->locateName('info.csv'));
         $csv = (string)$zip->getFromName('info.csv');
-        $this->assertStringContainsString('filename;hash;size_mb;start;end;note;bundle;role;submitted_by',
-            str_replace(',', ';', $csv));
+        $this->assertStringContainsString(
+            'filename;hash;size_mb;start;end;note;bundle;role;submitted_by',
+            str_replace(',', ';', $csv)
+        );
 
         // Files present; sanitized names
         $this->assertNotFalse($zip->locateName('a.mp4'));          // from basename(path)
@@ -128,7 +129,7 @@ class ZipServiceTest extends DatabaseTestCase
         });
 
         $zipRel = (new ZipService($cache, $this->app->make(CsvService::class)))
-            ->build(null, $channel, collect([$assignment]), '198.51.100.7', 'UA/2.0', 'hetzner-job');
+            ->build(null, $channel, collect([$assignment]), 'hetzner-job');
 
         $this->assertGreaterThanOrEqual(2, count(array_unique(array_filter($progress, static fn (int $value): bool => $value > 0 && $value < 100))));
         $zip = $this->openZip($zipRel);
@@ -161,7 +162,7 @@ class ZipServiceTest extends DatabaseTestCase
         });
 
         $zipRel = (new ZipService($cache, $this->app->make(CsvService::class)))
-            ->build(null, $channel, collect([$assignment]), '198.51.100.7', 'UA/2.0', 'progress-job');
+            ->build(null, $channel, collect([$assignment]), 'progress-job');
 
         $intermediate = array_filter($progress, static fn (int $value): bool => $value > 0 && $value < 100);
         $this->assertGreaterThanOrEqual(2, count(array_unique($intermediate)), 'Progress: '.implode(',', $progress));
@@ -208,7 +209,7 @@ class ZipServiceTest extends DatabaseTestCase
         $svc = new ZipService($cacheDouble, $this->app->make(CsvService::class));
 
         // Act
-        $zipRel = $svc->build($batch, $channel, collect([$a]), '198.51.100.7', 'UA/2.0');
+        $zipRel = $svc->build($batch, $channel, collect([$a]));
 
         // Assert: ZIP contains csv and the file with original name
         $zip = $this->openZip($zipRel);
