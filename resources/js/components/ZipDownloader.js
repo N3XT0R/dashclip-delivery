@@ -81,46 +81,85 @@ export default class ZipDownloader {
     }
 
     async poll(data, generation) {
-        const deadline = Date.now() + 25 * 60 * 1000;
-        let failures = 0;
         if (data.status === 'failed') {
-            this.running = false;
-            this.modal.showError('Die ZIP-Erstellung ist fehlgeschlagen. Die Videos können einzeln heruntergeladen werden.');
+            this.fail('Die ZIP-Erstellung ist fehlgeschlagen. Die Videos können einzeln heruntergeladen werden.');
             return;
         }
+
+        const deadline = Date.now() + 25 * 60 * 1000;
+        let failures = 0;
+
         while (generation === this.generation && Date.now() < deadline) {
-            try {
-                const {data: state} = await axios.get(data.progressUrl, {timeout: 15000});
-                if (generation !== this.generation) return;
-                failures = 0;
-                this.modal.update(state.progress, state.status, state.files);
-                if (state.status === 'ready') {
-                    this.modal.setDownloads([{name: state.name || 'ZIP herunterladen', url: data.downloadUrl}, ...data.downloads]);
-                    this.save({...data, status: 'ready', name: state.name});
-                    this.deliver(data.downloadUrl);
-                    const skipped = Object.values(state.files || {}).filter(status => status === 'skipped').length;
-                    this.modal.update(100, skipped
-                        ? `ZIP bereit. ${skipped} nicht verfügbare${skipped === 1 ? 's Video wurde' : ' Videos wurden'} übersprungen. Der Link bleibt für einen erneuten Versuch verfügbar.`
-                        : 'ZIP bereit. Der Download wurde an den Browser übergeben. Der Link bleibt für einen erneuten Versuch verfügbar.');
-                    this.running = false;
-                    return;
-                }
-                if (['failed', 'unknown'].includes(state.status)) {
-                    this.running = false;
-                    this.modal.showError('Die ZIP ist nicht verfügbar. Bitte einzeln herunterladen oder die ZIP erneut erstellen.');
-                    return;
-                }
-            } catch (error) {
-                if (generation !== this.generation) return;
-                if ([403, 404, 410].includes(error.response?.status)) break;
+            const answer = await this.fetchState(data.progressUrl);
+            if (generation !== this.generation) return;
+            if (answer.stop) break;
+
+            if (answer.retry) {
                 failures++;
                 this.modal.update(0, 'Verbindung unterbrochen. Der Status wird erneut abgefragt; Einzel-Downloads bleiben verfügbar.');
+                await this.pause(failures);
+                continue;
             }
-            await new Promise(resolve => setTimeout(resolve, Math.min(2000 * 2 ** failures, 15000)));
+
+            failures = 0;
+            this.modal.update(answer.state.progress, answer.state.status, answer.state.files);
+            if (this.applyState(answer.state, data)) return;
+            await this.pause(failures);
         }
+
         if (generation !== this.generation) return;
+        this.fail('Die ZIP ist noch nicht verfügbar. Bitte einzeln herunterladen oder später erneut versuchen.');
+    }
+
+    /**
+     * Ask for the current status. A gone or forbidden job stops the polling, anything else is
+     * treated as a hiccup worth retrying.
+     */
+    async fetchState(progressUrl) {
+        try {
+            const {data: state} = await axios.get(progressUrl, {timeout: 15000});
+            return {state};
+        } catch (error) {
+            return [403, 404, 410].includes(error.response?.status) ? {stop: true} : {retry: true};
+        }
+    }
+
+    /**
+     * Act on one status answer. Returns true once the download is settled and polling can stop.
+     */
+    applyState(state, data) {
+        if (state.status === 'ready') {
+            this.finish(state, data);
+            return true;
+        }
+
+        if (['failed', 'unknown'].includes(state.status)) {
+            this.fail('Die ZIP ist nicht verfügbar. Bitte einzeln herunterladen oder die ZIP erneut erstellen.');
+            return true;
+        }
+
+        return false;
+    }
+
+    finish(state, data) {
+        this.modal.setDownloads([{name: state.name || 'ZIP herunterladen', url: data.downloadUrl}, ...data.downloads]);
+        this.save({...data, status: 'ready', name: state.name});
+        this.deliver(data.downloadUrl);
+
+        const skipped = Object.values(state.files || {}).filter(status => status === 'skipped').length;
+        this.modal.update(100, skipped
+            ? `ZIP bereit. ${skipped} nicht verfügbare${skipped === 1 ? 's Video wurde' : ' Videos wurden'} übersprungen. Der Link bleibt für einen erneuten Versuch verfügbar.`
+            : 'ZIP bereit. Der Download wurde an den Browser übergeben. Der Link bleibt für einen erneuten Versuch verfügbar.');
         this.running = false;
-        this.modal.showError('Die ZIP ist noch nicht verfügbar. Bitte einzeln herunterladen oder später erneut versuchen.');
+    }
+
+    fail(message) {
+        this.running = false;
+        this.modal.showError(message);
+    }
+
+    pause(failures) {
+        return new Promise(resolve => setTimeout(resolve, Math.min(2000 * 2 ** failures, 15000)));
     }
 
     deliver(url) {
