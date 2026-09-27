@@ -11,7 +11,13 @@ use Illuminate\Console\Command;
 
 class AssignExpire extends Command
 {
-    protected $signature = 'assign:expire {--cooldown-days=}';
+    /**
+     * Offers expire exactly as many days after the run that sent them, so the run that should hand
+     * the video on would otherwise miss them by the seconds it needs to get there.
+     */
+    private const int DEFAULT_GRACE_MINUTES = 5;
+
+    protected $signature = 'assign:expire {--cooldown-days=} {--grace-minutes=}';
     protected $description = 'Marks overdue assignments as expired and sets a cooldown for each (channel, video) pair.';
 
     public function __construct(private AssignmentExpirer $expirer)
@@ -29,7 +35,11 @@ class AssignExpire extends Command
                 14
             );
         }
-        $expiredCount = $this->expirer->expire($cooldownDays);
+        $graceMinutes = $this->option('grace-minutes') === null
+            ? self::DEFAULT_GRACE_MINUTES
+            : max(0, (int)$this->option('grace-minutes'));
+
+        $expiredCount = $this->expirer->expire($cooldownDays, $graceMinutes);
         $this->info("Expired: {$expiredCount}");
         return self::SUCCESS;
     }
