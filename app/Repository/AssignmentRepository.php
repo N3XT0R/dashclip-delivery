@@ -453,15 +453,21 @@ class AssignmentRepository
     }
 
     /**
-     * Expire assignments that have passed their TTL and apply cooldown blocks.
+     * Expire assignments that have reached their TTL and apply cooldown blocks.
+     *
+     * An offer counts as over the moment its expiry is reached. The grace reaches a little into the
+     * future, because an offer expires exactly as many days after the run that sent it, so without
+     * it the weekly run would miss the offers running out while it works and the video would wait a
+     * whole cycle for its next channel.
      * @param int $cooldownDays
+     * @param int $graceMinutes offers running out within this many minutes are expired as well
      * @return int
      */
-    public function expireAssignments(int $cooldownDays): int
+    public function expireAssignments(int $cooldownDays, int $graceMinutes = 0): int
     {
         $count = 0;
         Assignment::query()->whereIn('status', StatusEnum::getReadyStatus())
-            ->where('expires_at', '<', now())
+            ->where('expires_at', '<=', now()->addMinutes(max(0, $graceMinutes)))
             ->chunkById(500, function ($items) use (&$count, $cooldownDays) {
                 foreach ($items as $assignment) {
                     $assignment->update(['status' => StatusEnum::EXPIRED->value]);

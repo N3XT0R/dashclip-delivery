@@ -100,6 +100,45 @@ class AssignmentExpirerTest extends DatabaseTestCase
         $this->assertEquals(['expired' => 3], $createdBatch->stats);
     }
 
+    public function testExpiresAnOfferThatRunsOutWithinTheGrace(): void
+    {
+        Carbon::setTestNow('2025-08-12 12:00:00');
+        $assignment = $this->notifiedOffer(now()->addMinutes(2));
+
+        self::assertSame(1, app(AssignmentExpirer::class)->expire(3, 5));
+
+        self::assertSame('expired', $assignment->fresh()->status);
+    }
+
+    public function testLeavesAnOfferThatRunsOutAfterTheGrace(): void
+    {
+        Carbon::setTestNow('2025-08-12 12:00:00');
+        $assignment = $this->notifiedOffer(now()->addMinutes(20));
+
+        self::assertSame(0, app(AssignmentExpirer::class)->expire(3, 5));
+
+        self::assertSame('notified', $assignment->fresh()->status);
+    }
+
+    public function testExpiresAnOfferAtTheExactMomentItRunsOut(): void
+    {
+        Carbon::setTestNow('2025-08-12 12:00:00');
+        $assignment = $this->notifiedOffer(now());
+
+        self::assertSame(1, app(AssignmentExpirer::class)->expire(3));
+
+        self::assertSame('expired', $assignment->fresh()->status);
+    }
+
+    private function notifiedOffer(Carbon $expiresAt): Assignment
+    {
+        return Assignment::factory()
+            ->for(Channel::factory(), 'channel')
+            ->for(Video::factory(), 'video')
+            ->for(Batch::factory()->type('assign')->create(['started_at' => now()]), 'batch')
+            ->create(['status' => 'notified', 'expires_at' => $expiresAt]);
+    }
+
     public function testExpireWhenNoMatchesCreatesBatchWithZeroStats(): void
     {
         Carbon::setTestNow('2025-08-12 12:00:00');

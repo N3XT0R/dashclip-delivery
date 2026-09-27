@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Videos wait a week too long for their next channel**: An offer runs out exactly as many days
+  after the run that sent it, so the run that should hand the video on missed it by the seconds it
+  needed to get there. The offer was only closed the next morning and the video waited a whole
+  cycle for its next channel. The run now closes the offers that run out while it works, within a
+  few minutes, and hands their videos on in the same pass. `assign:expire` takes `--grace-minutes`
+  for that window.
+
 ### Added
 - **Bringing back videos that were removed too early**: The one-off `videos:restore-early-marked`
   (with `--dry-run` and `--since`) lists and restores the videos that were marked as deleted while
