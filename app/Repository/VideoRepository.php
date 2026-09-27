@@ -340,6 +340,39 @@ class VideoRepository
     }
 
     /**
+     * Videos that were marked as deleted while one of their downloaded offers was still running.
+     *
+     * Until the 4.11.1 fix, a download ended the offer rounds and marked the video on the same
+     * night, although the channel could still return it or fetch it again. Those videos are the
+     * ones to restore; a video marked after its offers ran out does not match.
+     * @param CarbonInterface $since only videos marked at or after this moment
+     * @param int $chunkSize
+     * @return LazyCollection<int, Video>
+     */
+    public function lazyMarkedDuringOpenDownload(CarbonInterface $since, int $chunkSize = 100): LazyCollection
+    {
+        return Video::onlyTrashed()
+            ->where('deleted_at', '>=', $since)
+            ->whereHas('assignments', static function (Builder $query): void {
+                $query->where('status', StatusEnum::PICKEDUP->value)
+                    ->whereColumn('assignments.expires_at', '>', 'videos.deleted_at');
+            })
+            ->lazyById($chunkSize);
+    }
+
+    /**
+     * Take back the deletion of a video, including the clips that were deleted with it.
+     * @param Video $video
+     * @return bool
+     */
+    public function restoreWithClips(Video $video): bool
+    {
+        $video->clipsWithTrashed()->restore();
+
+        return (bool)$video->restore();
+    }
+
+    /**
      * Deleted videos whose files are still stored and whose deletion is at or before the given moment.
      * @param CarbonInterface $deletedBefore
      * @param int $chunkSize
