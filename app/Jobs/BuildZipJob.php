@@ -107,14 +107,7 @@ class BuildZipJob implements ShouldQueue
         }
 
 
-        $svc->build(
-            $batch,
-            $channel,
-            $items,
-            $this->assignmentZipDto->ip,
-            $this->assignmentZipDto->userAgent ?? '',
-            $jobId
-        );
+        $svc->build($batch, $channel, $items, $jobId);
 
         activity()
             ->causedBy($this->user)
