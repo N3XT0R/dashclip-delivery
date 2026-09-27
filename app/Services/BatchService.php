@@ -110,6 +110,11 @@ class BatchService
      *  - or newly added since the last completed assign batch
      *  - plus re-queueable ones (expired / returned / etc.)
      *
+     * The re-queueable ones come in the order of how badly they have come off so far: the videos
+     * that reached the fewest channels first, and among those the ones waiting the longest since
+     * their offer ran out or was given back. Without that order the lowest video ids would take
+     * every free place of every run, and a video that expired later would never get one.
+     *
      * A video a channel still holds, that is one with an offer in status picked up, stays out of
      * the pool. Giving an offer back puts its video back in, even when that channel had already
      * downloaded it, because the channel said it does not use it. The returning channel itself is
@@ -136,14 +141,42 @@ class BatchService
                 'status',
                 StatusEnum::PICKEDUP->value
             ))
-            ->pluck('video_id')
-            ->unique();
+            ->groupBy('video_id')
+            ->select('video_id')
+            ->selectRaw('COUNT(DISTINCT channel_id) as channels_served')
+            ->selectRaw(
+                'MAX(CASE WHEN status = ? THEN updated_at ELSE expires_at END) as waiting_since',
+                [StatusEnum::REJECTED->value]
+            )
+            ->orderBy('channels_served')
+            ->orderBy('waiting_since')
+            ->get()
+            ->pluck('video_id');
 
-        $requeueVideos = $requeueIds->isNotEmpty()
-            ? Video::query()->whereIn('id', $requeueIds)->get()
-            : collect();
+        $requeueVideos = $this->loadInGivenOrder($requeueIds);
 
         return $newOrUnassigned->concat($requeueVideos)->unique('id');
+    }
+
+    /**
+     * Load the given videos and keep the order they were handed over in.
+     *
+     * @param Collection<int, int> $videoIds
+     * @return Collection<int, Video>
+     */
+    private function loadInGivenOrder(Collection $videoIds): Collection
+    {
+        if ($videoIds->isEmpty()) {
+            return collect();
+        }
+
+        $position = $videoIds->values()->flip();
+
+        return Video::query()
+            ->whereIn('id', $videoIds)
+            ->get()
+            ->sortBy(fn (Video $video): int => (int)$position->get($video->getKey(), PHP_INT_MAX))
+            ->values();
     }
 
     public function collectVideosForAssign(): Collection

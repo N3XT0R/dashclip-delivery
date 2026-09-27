@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   whose files were already removed for good is left alone and reported.
 
 ### Changed
+- **Waiting videos take their turn**: When a run has fewer free places than waiting videos, the
+  places now go to the videos that have come off worst so far: the ones that reached the fewest
+  channels, and among those the ones waiting longest since their offer ran out or was given back.
+  Before, the queue was worked through by video number, so the same videos took every place and a
+  video that expired later could wait for months.
 - **A distribution run says what it left behind**: Its record in the administration now also counts
   the videos it had no place left for and the videos of an uploader it could not serve at all, for
   example because every channel of that team is paused. Before, both simply disappeared from the
