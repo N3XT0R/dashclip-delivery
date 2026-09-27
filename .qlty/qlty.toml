@@ -41,6 +41,18 @@ file_patterns = [
   "app/OpenApi/**",
 ]
 
+# Data carriers: DTOs, value objects and mailables exist to carry a set of fields from one place to
+# another. Their constructors list those fields, so the parameter count is the point of the class,
+# not a smell; wrapping them in yet another object only moves the list one level down. The
+# maintainability analyzer is muted for these paths, every external linter still runs.
+[[exclude]]
+plugins = ["qlty"]
+file_patterns = [
+  "app/DTO/**",
+  "app/ValueObjects/**",
+  "app/Mail/**",
+]
+
 [files]
 include = ["app/"]
 exclude = [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\DTO\Dropbox\DropboxCredentials;
 use App\Facades\Cfg;
 use App\Models\Permission;
 use App\Models\Role;
@@ -92,9 +93,11 @@ class AppServiceProvider extends ServiceProvider
             $configService = $app->make(ConfigServiceInterface::class);
 
             return new AutoRefreshTokenProvider(
-                (string)($cfg['client_id'] ?: ''),
-                (string)($cfg['client_secret'] ?: ''),
-                $configService->get(key: 'dropbox_refresh_token', category: 'oauth', withoutCache: true),
+                new DropboxCredentials(
+                    (string)($cfg['client_id'] ?: ''),
+                    (string)($cfg['client_secret'] ?: ''),
+                    $configService->get(key: 'dropbox_refresh_token', category: 'oauth', withoutCache: true),
+                ),
                 Cache::store()
             );
         });

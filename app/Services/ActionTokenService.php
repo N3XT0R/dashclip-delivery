@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enum\TokenPurposeEnum;
 use App\Models\ActionToken;
 use App\Models\User;
+use App\DTO\ActionToken\ActionTokenData;
 use App\Repository\ActionTokenRepository;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -39,14 +40,14 @@ final readonly class ActionTokenService
         $plainToken = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $plainToken);
 
-        $this->repository->create(
+        $this->repository->create(new ActionTokenData(
             purpose: $purpose->value,
             tokenHash: $tokenHash,
             subject: $subject,
             issuedForUserId: $issuedForUser?->getKey(),
             expiresAt: $expiresAt,
-            meta: $meta
-        );
+            meta: $meta,
+        ));
 
         return $plainToken;
     }
