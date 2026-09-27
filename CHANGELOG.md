@@ -7,14 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- **Videos wait a week too long for their next channel**: An offer runs out exactly as many days
-  after the run that sent it, so the run that should hand the video on missed it by the seconds it
-  needed to get there. The offer was only closed the next morning and the video waited a whole
-  cycle for its next channel. The run now closes the offers that run out while it works, within a
-  few minutes, and hands their videos on in the same pass. `assign:expire` takes `--grace-minutes`
-  for that window.
-
 ### Added
 - **Bringing back videos that were removed too early**: The one-off `videos:restore-early-marked`
   (with `--dry-run` and `--since`) lists and restores the videos that were marked as deleted while
@@ -22,12 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   whose files were already removed for good is left alone and reported.
 
 ### Fixed
+- **Videos waited a week for their next channel**: An offer runs out exactly as many days after the
+  run that sent it, so the run that should have handed the video on missed it by the seconds it
+  needed to get there. The offer was closed the next morning and its video waited a whole cycle.
+  The run now closes the offers that run out while it works and hands their videos on in the same
+  pass; `assign:expire` takes `--grace-minutes` for that window.
 - **Returning a video hands it on again**: A channel that gives an offer back releases the video for
   the other channels, even when it had already downloaded it. Before, a download kept the video out
   of the distribution for good, so a returned video was never offered again and never tidied up
   either. A video a channel still holds stays out of the distribution as before, and the returning
   channel does not receive it again.
-
 
 ### Security
 - **Packages**
