@@ -51,6 +51,7 @@ class VideoResource extends Resource
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('clipsWithTrashed.preferredChannel'))
             ->columns([
                 TextColumn::make('original_name')
                     ->label(__('filament.admin.labels.file_name'))
@@ -84,6 +85,13 @@ class VideoResource extends Resource
                         });
                     })
                     ->default('-'),
+
+                TextColumn::make('preferred_channel')
+                    ->label(__('filament.admin.labels.preferred_channel'))
+                    ->toggleable()
+                    ->default('-')
+                    ->getStateUsing(fn (Video $record): ?string => $record->clipsWithTrashed
+                        ->first()?->preferredChannel?->getAttribute('name')),
 
                 TextColumn::make('clips.submitted_by')
                     ->sortable()

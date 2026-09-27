@@ -9,6 +9,7 @@ use App\Enum\PanelEnum;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages\ListVideos;
 use App\Models\Assignment;
+use App\Models\Channel;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
@@ -41,6 +42,17 @@ final class VideoResourceTest extends DatabaseTestCase
         Filament::auth()->login($this->user);
         $this->actingAs($this->user, GuardEnum::STANDARD->value);
         $this->grantVideoPermissions();
+    }
+
+    public function testTheListShowsTheWishedChannelOfAVideo(): void
+    {
+        $channel = Channel::factory()->create(['name' => 'Wunschkanal Einsender']);
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
+        $video->clips()->first()->update(['preferred_channel_id' => $channel->getKey()]);
+
+        Livewire::test(ListVideos::class)
+            ->assertCanSeeTableRecords([$video])
+            ->assertSee('Wunschkanal Einsender');
     }
 
     public function testDeleteActionSoftDeletesTheVideoAndKeepsItsFile(): void

@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   one of their downloads was still running, together with the clips that went with them. A video
   whose files were already removed for good is left alone and reported.
 
+### Changed
+- **The wished channel is visible after the upload**: The channel a submitter picked while uploading
+  now shows in the video list of the user area and, in the administration, in the video list, in the
+  details of a video and in its clips. Before it could only be set and was then seen nowhere but in
+  the details of the user area. The details of a video in the administration also show name, format,
+  size, storage, checksum and the recorded technical data again.
+
 ### Fixed
 - **Videos waited a week for their next channel**: An offer runs out exactly as many days after the
   run that sent it, so the run that should have handed the video on missed it by the seconds it

@@ -37,6 +37,9 @@ class ClipsRelationManager extends RelationManager
                     ->limit(40),
                 TextColumn::make('start_sec')->label(__('filament.admin.labels.start')),
                 TextColumn::make('end_sec')->label(__('filament.admin.labels.end')),
+                TextColumn::make('preferredChannel.name')
+                    ->label(__('filament.admin.labels.preferred_channel'))
+                    ->default('-'),
                 TextColumn::make('submitted_by')->label(__('filament.admin.labels.submitted_by')),
                 TextColumn::make('created_at')->dateTime()->since()->dateTimeTooltip(),
             ])
@@ -73,6 +76,11 @@ class ClipsRelationManager extends RelationManager
                 ->disabled(),
             Textarea::make('note')
                 ->label(__('filament.admin.labels.note'))
+                ->disabled(),
+            TextInput::make('preferred_channel')
+                ->label(__('filament.admin.labels.preferred_channel'))
+                ->formatStateUsing(fn ($record) => $record->preferredChannel?->getAttribute('name'))
+                ->placeholder('-')
                 ->disabled(),
             TextInput::make('submitted_by')
                 ->label(__('filament.admin.labels.submitted_by'))

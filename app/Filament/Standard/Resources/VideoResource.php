@@ -175,6 +175,11 @@ class VideoResource extends Resource
                         }
                         return __('status.processing_status.' . $record->processing_status->value);
                     }),
+                TextColumn::make('preferred_channel')
+                    ->label(__('filament.video_resource.view.fields.preferred_channel'))
+                    ->toggleable()
+                    ->placeholder('–')
+                    ->getStateUsing(fn (Video $record): ?string => self::preferredChannelName($record)),
                 TextColumn::make('bundle')
                     ->label(__('filament.video_resource.view.fields.bundle_key'))
                     ->sortable()
@@ -314,6 +319,7 @@ class VideoResource extends Resource
         return parent::getEloquentQuery()
             // videos whose distribution is finished are deleted; the submitter still sees them as such
             ->withTrashed()
+            ->with('clipsWithTrashed.preferredChannel')
             ->whereHas('clipsWithTrashed', function (Builder $query) {
                 $query->where('clips.user_id', Filament::auth()->id());
             })
@@ -351,8 +357,7 @@ class VideoResource extends Resource
      */
     private static function preferredChannelName(Video $record): ?string
     {
-        return $record->clips()
-            ->with('preferredChannel')
+        return $record->clipsWithTrashed
             ->first()
             ?->preferredChannel
             ?->getAttribute('name');
