@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Returning a video hands it on again**: A channel that gives an offer back releases the video for
+  the other channels, even when it had already downloaded it. Before, a download kept the video out
+  of the distribution for good, so a returned video was never offered again and never tidied up
+  either. A video a channel still holds stays out of the distribution as before, and the returning
+  channel does not receive it again.
+
 
 ### Security
 - **Packages**

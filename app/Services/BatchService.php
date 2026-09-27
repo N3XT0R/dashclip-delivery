@@ -96,6 +96,11 @@ class BatchService
      *  - unassigned videos (ever)
      *  - or newly added since the last completed assign batch
      *  - plus re-queueable ones (expired / returned / etc.)
+     *
+     * A video a channel still holds, that is one with an offer in status picked up, stays out of
+     * the pool. Giving an offer back puts its video back in, even when that channel had already
+     * downloaded it, because the channel said it does not use it. The returning channel itself is
+     * blocked from receiving the video again.
      * @param Batch|null $lastFinished
      * @return Collection<Video>
      */
@@ -114,7 +119,6 @@ class BatchService
         // Requeue-Fälle (z. B. expired)
         $requeueIds = Assignment::query()
             ->whereIn('status', StatusEnum::getRequeueStatuses())
-            ->whereDoesntHave('downloads')
             ->whereDoesntHave('video.assignments', fn (Builder $query): Builder => $query->where(
                 'status',
                 StatusEnum::PICKEDUP->value

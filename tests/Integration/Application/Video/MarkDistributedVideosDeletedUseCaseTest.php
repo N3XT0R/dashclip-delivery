@@ -12,6 +12,7 @@ use App\Facades\Cfg;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\ChannelVideoBlock;
+use App\Models\Download;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
@@ -67,6 +68,20 @@ final class MarkDistributedVideosDeletedUseCaseTest extends DatabaseTestCase
     {
         $video = Video::factory()->create();
         $this->downloadedOffer($video, $this->channel(), now()->subMinute());
+
+        self::assertSame(1, $this->useCase->handle()->marked);
+
+        $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
+    }
+
+    public function testMarksAVideoTheOnlyChannelGaveBackAfterDownloadingIt(): void
+    {
+        $video = Video::factory()->create();
+        $returned = Assignment::factory()->forVideo($video)->forChannel($this->channel())->create([
+            'status' => StatusEnum::REJECTED->value,
+            'expires_at' => now()->subDay(),
+        ]);
+        Download::factory()->forAssignment($returned)->create();
 
         self::assertSame(1, $this->useCase->handle()->marked);
 
