@@ -24,7 +24,10 @@ class AssignDistribute extends Command
         try {
             $quota = $this->option('quota');
             $stats = $this->distributor->distribute($quota !== null ? (int)$quota : null);
-            $this->info("Assigned={$stats['assigned']}, skipped={$stats['skipped']}, deferred={$stats['deferred']}");
+            $this->info(
+                "Assigned={$stats['assigned']}, skipped={$stats['skipped']}, deferred={$stats['deferred']}, "
+                . "waiting={$stats['waiting']}, failed={$stats['failed']}"
+            );
         } catch (RuntimeException $e) {
             $this->warn($e->getMessage());
             $exitCode = self::FAILURE;
