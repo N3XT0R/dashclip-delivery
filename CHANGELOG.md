@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Bringing back videos that were removed too early**: The one-off `videos:restore-early-marked`
+  (with `--dry-run` and `--since`) lists and restores the videos that were marked as deleted while
+  one of their downloads was still running, together with the clips that went with them. A video
+  whose files were already removed for good is left alone and reported.
+
 ### Fixed
 - **Returning a video hands it on again**: A channel that gives an offer back releases the video for
   the other channels, even when it had already downloaded it. Before, a download kept the video out
