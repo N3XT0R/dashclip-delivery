@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\Import\ClipImportSettings;
 use App\Models\Clip;
 use App\Models\Video;
 use App\ValueObjects\ClipImportData;
@@ -31,7 +32,7 @@ class InfoImporter
      */
     public function import(string $csvPath, array $options = [], ?callable $onWarning = null): ClipImportResult
     {
-        [$inferRole, $defaultBundle, $defaultSubmitter] = $this->parseOptions($options);
+        $settings = $this->settingsFrom($options, $onWarning);
 
         $fh = $this->openCsvOrFail($csvPath);
         $result = ClipImportResult::empty();
@@ -43,14 +44,7 @@ class InfoImporter
         }
 
         while (($row = fgetcsv($fh, 0, self::CSV_DELIMITER)) !== false) {
-            $this->processRow(
-                row: $row,
-                inferRole: $inferRole,
-                defaultBundle: (string)$defaultBundle,
-                defaultSubmitter: (string)$defaultSubmitter,
-                onWarning: $onWarning,
-                result: $result
-            );
+            $this->processRow($row, $settings, $result);
         }
 
         fclose($fh);
@@ -83,7 +77,7 @@ class InfoImporter
 
     public function importFromStream($stream, array $options = [], ?callable $onWarning = null): ClipImportResult
     {
-        [$inferRole, $defaultBundle, $defaultSubmitter] = $this->parseOptions($options);
+        $settings = $this->settingsFrom($options, $onWarning);
         $result = ClipImportResult::empty();
 
         if ($this->readHeader($stream) === false) {
@@ -92,14 +86,7 @@ class InfoImporter
         }
 
         while (($row = fgetcsv($stream, 0, self::CSV_DELIMITER)) !== false) {
-            $this->processRow(
-                row: $row,
-                inferRole: $inferRole,
-                defaultBundle: (string)$defaultBundle,
-                defaultSubmitter: (string)$defaultSubmitter,
-                onWarning: $onWarning,
-                result: $result
-            );
+            $this->processRow($row, $settings, $result);
         }
 
         fclose($stream);
@@ -147,23 +134,33 @@ class InfoImporter
     }
 
     /**
+     * @param  array{infer-role?:bool, default-bundle?:string|null, default-submitter?:string|null}  $options
+     * @param  callable(string):void|null  $onWarning
+     * @return ClipImportSettings
+     */
+    private function settingsFrom(array $options, ?callable $onWarning): ClipImportSettings
+    {
+        [$inferRole, $defaultBundle, $defaultSubmitter] = $this->parseOptions($options);
+
+        return new ClipImportSettings(
+            inferRole: $inferRole,
+            defaultBundle: (string)$defaultBundle,
+            defaultSubmitter: (string)$defaultSubmitter,
+            onWarning: $onWarning,
+        );
+    }
+
+    /**
      * Process a single CSV row.
      * @param  array  $row
-     * @param  bool  $inferRole
-     * @param  string  $defaultBundle
-     * @param  string  $defaultSubmitter
-     * @param  callable|null  $onWarning
+     * @param  ClipImportSettings  $settings
      * @param  ClipImportResult  $result
      * @return void
      */
-    private function processRow(
-        array $row,
-        bool $inferRole,
-        string $defaultBundle,
-        string $defaultSubmitter,
-        ?callable $onWarning,
-        ClipImportResult $result
-    ): void {
+    private function processRow(array $row, ClipImportSettings $settings, ClipImportResult $result): void
+    {
+        $inferRole = $settings->inferRole;
+        $onWarning = $settings->onWarning();
         [$filename, $start, $end, $note, $bundle, $role, $submittedBy, $preferredChannel] = $this->sanitizeRow($row);
 
         // Skip empty lines (no filename)
@@ -175,7 +172,12 @@ class InfoImporter
         $endSec = $this->parseTimeToSec($end, $onWarning, $result);
 
         $role = $this->inferRoleIfNeeded($filename, $role, $inferRole);
-        [$bundle, $submittedBy] = $this->applyDefaults($bundle, $submittedBy, $defaultBundle, $defaultSubmitter);
+        [$bundle, $submittedBy] = $this->applyDefaults(
+            $bundle,
+            $submittedBy,
+            $settings->defaultBundle,
+            $settings->defaultSubmitter
+        );
 
         $baseName = basename($filename);
 
