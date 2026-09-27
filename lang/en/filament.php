@@ -246,6 +246,7 @@ return [
             'pause_video_reception' => 'Pause video reception',
             'show_on_homepage' => 'Show on homepage',
             'paused_video_reception' => 'Paused video reception',
+            'preferred_channel' => 'Preferred channel',
             'preview' => 'Preview',
             'recipient' => 'Recipient',
             'replied_at' => 'Replied at',

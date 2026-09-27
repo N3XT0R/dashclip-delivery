@@ -3,10 +3,11 @@
 namespace App\Filament\Admin\Resources\Videos\Pages;
 
 use App\Filament\Admin\Resources\Videos\VideoResource;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\TextInput;
+use App\Models\Video;
+use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Schemas\Components\Group;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Number;
 
 class ViewVideo extends ViewRecord
@@ -19,21 +20,29 @@ class ViewVideo extends ViewRecord
         ];
     }
 
-    protected function getFormSchema(): array
+    public function infolist(Schema $schema): Schema
     {
-        return [
-            Group::make()
-                ->schema([
-                    TextInput::make('original_name')->label(__('filament.admin.labels.file_name'))->disabled(),
-                    TextInput::make('ext')->disabled(),
-                    TextInput::make('bytes')->label(__('filament.admin.labels.size'))->disabled()
-                        ->formatStateUsing(fn (
-                            $state
-                        ) => $state ? Number::fileSize((int)$state) : '–'),
-                    TextInput::make('disk')->disabled(),
-                    TextInput::make('hash')->disabled(),
-                    KeyValue::make('meta')->label(__('filament.admin.labels.meta'))->disabled()->columnSpanFull(),
-                ]),
-        ];
+        return $schema
+            ->schema([
+                TextEntry::make('original_name')->label(__('filament.admin.labels.file_name')),
+                TextEntry::make('ext')->label(__('filament.admin.labels.ext')),
+                TextEntry::make('bytes')
+                    ->label(__('filament.admin.labels.size'))
+                    ->formatStateUsing(fn ($state): string => $state ? Number::fileSize((int)$state) : '-'),
+                TextEntry::make('disk')->label(__('filament.admin.labels.disk')),
+                TextEntry::make('preferred_channel')
+                    ->label(__('filament.admin.labels.preferred_channel'))
+                    ->placeholder('-')
+                    ->getStateUsing(fn (Video $record): ?string => $record->clipsWithTrashed
+                        ->first()?->preferredChannel?->getAttribute('name')),
+                TextEntry::make('hash')->label('Hash')->columnSpanFull(),
+                TextEntry::make('created_at')
+                    ->label(__('filament.admin.labels.created'))
+                    ->dateTime('d.m.Y H:i'),
+                KeyValueEntry::make('meta')
+                    ->label(__('filament.admin.labels.meta'))
+                    ->columnSpanFull(),
+            ])
+            ->columns(2);
     }
 }

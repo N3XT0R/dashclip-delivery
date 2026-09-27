@@ -246,6 +246,7 @@ return [
             'pause_video_reception' => 'Videoempfang pausieren',
             'show_on_homepage' => 'Auf der Startseite anzeigen',
             'paused_video_reception' => 'Videoempfang pausiert',
+            'preferred_channel' => 'Wunschkanal',
             'preview' => 'Vorschau',
             'recipient' => 'Empfänger',
             'replied_at' => 'Antwort am',
