@@ -15,13 +15,17 @@ class BatchRepository
      * @param int $assigned
      * @param int $skipped
      * @param int $deferred
+     * @param int $waiting videos the run had no place left for
+     * @param int $failed videos of an uploader the run could not serve at all
      * @return bool
      */
     public function markAssignedBatchAsFinished(
         Batch $batch,
         int $assigned,
         int $skipped,
-        int $deferred = 0
+        int $deferred = 0,
+        int $waiting = 0,
+        int $failed = 0,
     ): bool {
         return $batch->update([
             'finished_at' => now(),
@@ -29,6 +33,8 @@ class BatchRepository
                 'assigned' => $assigned,
                 'skipped' => $skipped,
                 'deferred' => $deferred,
+                'waiting' => $waiting,
+                'failed' => $failed,
             ],
         ]);
     }

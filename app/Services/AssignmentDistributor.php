@@ -41,7 +41,7 @@ readonly class AssignmentDistributor
      * Distribute new and requeueable videos across channels.
      *
      * @param int|null $quotaOverride optional quota per channel
-     * @return array{assigned:int, skipped:int, deferred:int}
+     * @return array{assigned:int, skipped:int, deferred:int, waiting:int, failed:int}
      */
     public function distribute(?int $quotaOverride = null): array
     {
@@ -61,6 +61,8 @@ readonly class AssignmentDistributor
         $totalAssigned = 0;
         $totalSkipped = 0;
         $totalDeferred = 0;
+        $totalWaiting = 0;
+        $totalFailed = 0;
 
         /** @var UploaderPoolInfo $uploaderPool */
         foreach ($uploaderPools as $uploaderPool) {
@@ -110,11 +112,13 @@ readonly class AssignmentDistributor
                 );
 
                 // 7) Verteilung
-                [$assigned, $skipped, $deferred] = $this->assignGroups($run);
+                [$assigned, $skipped, $deferred, $waiting] = $this->assignGroups($run);
                 $totalAssigned += $assigned;
                 $totalSkipped += $skipped;
                 $totalDeferred += $deferred;
+                $totalWaiting += $waiting;
             } catch (\Throwable $e) {
+                $totalFailed += $videosOfUploader->count();
                 Log::warning(
                     'Error during distribution for uploader {type}#{id}: {message}',
                     [
@@ -126,9 +130,22 @@ readonly class AssignmentDistributor
             }
         }
 
-        $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped, $totalDeferred);
+        $batchService->finishAssignBatch(
+            $batch,
+            $totalAssigned,
+            $totalSkipped,
+            $totalDeferred,
+            $totalWaiting,
+            $totalFailed,
+        );
 
-        return ['assigned' => $totalAssigned, 'skipped' => $totalSkipped, 'deferred' => $totalDeferred];
+        return [
+            'assigned' => $totalAssigned,
+            'skipped' => $totalSkipped,
+            'deferred' => $totalDeferred,
+            'waiting' => $totalWaiting,
+            'failed' => $totalFailed,
+        ];
     }
 
 
@@ -183,17 +200,27 @@ readonly class AssignmentDistributor
     }
 
     /**
-     * Distribute every group of a run, tallying assigned/skipped/deferred videos.
+     * Distribute every group of a run, tallying assigned/skipped/deferred/waiting videos.
      *
-     * @return array{0:int,1:int,2:int} [assigned, skipped, deferred]
+     * Once the last place is taken the run stops. The videos of the groups it did not get to are
+     * counted as waiting, so the size of the backlog is visible instead of silently disappearing.
+     *
+     * @return array{0:int,1:int,2:int,3:int} [assigned, skipped, deferred, waiting]
      */
     public function assignGroups(AssignmentRun $run): array
     {
         $assigned = 0;
         $skipped = 0;
         $deferred = 0;
+        $waiting = 0;
+        $placesLeft = true;
 
         foreach ($run->groups as $group) {
+            if (!$placesLeft) {
+                $waiting += $group->count();
+                continue;
+            }
+
             $blockedChannelIds = $this->calculateBlockedChannels($group, $run->videoContext->blockedByVideo);
 
             $outcome = $this->placeGroup($group, $blockedChannelIds, $run);
@@ -205,11 +232,11 @@ readonly class AssignmentDistributor
             };
 
             if ($outcome === 'assigned' && $run->quotasUsedUp()) {
-                break;
+                $placesLeft = false;
             }
         }
 
-        return [$assigned, $skipped, $deferred];
+        return [$assigned, $skipped, $deferred, $waiting];
     }
 
     /**
