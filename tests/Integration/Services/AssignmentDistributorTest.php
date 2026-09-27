@@ -4,6 +4,8 @@ namespace Tests\Integration\Services;
 
 use App\Enum\ProcessingStatusEnum;
 use App\Models\{Assignment, Channel, Clip, Video};
+use App\ValueObjects\DistributionRunResult;
+use Mockery;
 use App\Services\AssignmentDistributor;
 use Tests\DatabaseTestCase;
 use Tests\Integration\Services\Stubs\FakeDistributorDependencies;
@@ -107,7 +109,9 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->assertSame($stubs->team->slug, $prepareCall['uploaderId']);
 
         $this->assertCount(1, $distributor->assignGroupRuns);
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, Mockery::on(
+            fn (DistributionRunResult $result): bool => $result->toArray() === (new DistributionRunResult())->toArray()
+        ));
     }
 
     public function testDistributorFallsBackToUploaderWhenUserIdIsPresent(): void
@@ -130,7 +134,9 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $prepareCall = $distributor->prepareChannelCalls->first();
         $this->assertSame('user', $prepareCall['uploaderType']);
         $this->assertSame($stubs->user->getKey(), $prepareCall['uploaderId']);
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, Mockery::on(
+            fn (DistributionRunResult $result): bool => $result->toArray() === (new DistributionRunResult())->toArray()
+        ));
     }
 
     public function testDistributorUsesFallbackPoolWhenTeamAndUserAreMissing(): void
@@ -153,6 +159,8 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $prepareCall = $distributor->prepareChannelCalls->first();
         $this->assertSame('user', $prepareCall['uploaderType']);
         $this->assertSame(0, $prepareCall['uploaderId']);
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, Mockery::on(
+            fn (DistributionRunResult $result): bool => $result->toArray() === (new DistributionRunResult())->toArray()
+        ));
     }
 }

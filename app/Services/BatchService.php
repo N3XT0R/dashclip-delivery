@@ -9,6 +9,7 @@ use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Models\Assignment;
 use App\Models\Batch;
+use App\ValueObjects\DistributionRunResult;
 use App\Models\Video;
 use App\Repository\BatchRepository;
 use App\ValueObjects\IngestStats;
@@ -85,22 +86,9 @@ class BatchService
         ]);
     }
 
-    public function finishAssignBatch(
-        Batch $batch,
-        int $assigned,
-        int $skipped,
-        int $deferred = 0,
-        int $waiting = 0,
-        int $failed = 0,
-    ): bool {
-        return $this->batchRepository->markAssignedBatchAsFinished(
-            $batch,
-            $assigned,
-            $skipped,
-            $deferred,
-            $waiting,
-            $failed,
-        );
+    public function finishAssignBatch(Batch $batch, DistributionRunResult $result): bool
+    {
+        return $this->batchRepository->markAssignedBatchAsFinished($batch, $result);
     }
 
 

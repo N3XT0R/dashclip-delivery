@@ -8,6 +8,7 @@ use App\DTO\ChannelPoolDto;
 use App\Models\Batch;
 use App\Services\AssignmentDistributor;
 use App\ValueObjects\AssignmentRun;
+use App\ValueObjects\DistributionRunResult;
 use Illuminate\Support\Collection;
 
 readonly class InstrumentedAssignmentDistributor extends AssignmentDistributor
@@ -41,11 +42,11 @@ readonly class InstrumentedAssignmentDistributor extends AssignmentDistributor
         return FakeChannelPoolDtoFactory::make();
     }
 
-    public function assignGroups(AssignmentRun $run): array
+    public function assignGroups(AssignmentRun $run): DistributionRunResult
     {
         $this->assignGroupRuns->push($run);
 
-        return [0, 0, 0, 0];
+        return new DistributionRunResult();
     }
 
     public function buildGroups(Collection $poolVideos): Collection
