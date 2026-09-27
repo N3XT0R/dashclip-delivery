@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   whose files were already removed for good is left alone and reported.
 
 ### Changed
+- **Waiting videos take their turn**: When a run has fewer free places than waiting videos, the
+  places now go to the videos that have come off worst so far: the ones that reached the fewest
+  channels, and among those the ones waiting longest since their offer ran out or was given back.
+  Before, the queue was worked through by video number, so the same videos took every place and a
+  video that expired later could wait for months.
 - **The wished channel is visible after the upload**: The channel a submitter picked while uploading
   now shows in the video list of the user area and, in the administration, in the video list, in the
   details of a video and in its clips. Before it could only be set and was then seen nowhere but in
