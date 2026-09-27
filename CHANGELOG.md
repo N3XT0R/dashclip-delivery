@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   whose files were already removed for good is left alone and reported.
 
 ### Changed
+- **Maintainability of the download packer**: The ZIP build passes the state of one run (job,
+  progress, temporary copies) as one object instead of handing five values from method to method,
+  and it no longer takes the address and browser of the caller, which it never used. Behaviour is
+  unchanged.
 - **Waiting videos take their turn**: When a run has fewer free places than waiting videos, the
   places now go to the videos that have come off worst so far: the ones that reached the fewest
   channels, and among those the ones waiting longest since their offer ran out or was given back.
