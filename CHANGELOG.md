@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.12.0] - 2026-09-28
+
 ### Added
 - **Bringing back videos that were removed too early**: The one-off `videos:restore-early-marked`
   (with `--dry-run` and `--since`) lists and restores the videos that were marked as deleted while
