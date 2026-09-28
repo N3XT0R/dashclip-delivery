@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Settings a team keeps for itself**: Teams can hold their own settings from now on, stored in the
+  same shape as the settings of a channel. Nothing is offered in the interface yet: a setting only
+  appears once the feature behind it acts on it. The first one will be the automatic blurring of
+  number plates (#400).
+
 ## [4.12.1] - 2026-09-28
 
 ### Fixed

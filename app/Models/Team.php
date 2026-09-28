@@ -48,6 +48,15 @@ class Team extends Model
      * The channels assigned to this team.
      * @return BelongsToMany<Channel>
      */
+    /**
+     * The settings this team keeps for itself.
+     * @return HasMany<TeamSetting>
+     */
+    public function settings(): HasMany
+    {
+        return $this->hasMany(TeamSetting::class);
+    }
+
     public function assignedChannels(): BelongsToMany
     {
         return $this->belongsToMany(Channel::class)
