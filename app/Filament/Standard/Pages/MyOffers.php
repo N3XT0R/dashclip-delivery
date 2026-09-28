@@ -6,6 +6,7 @@ namespace App\Filament\Standard\Pages;
 
 use App\Application\Channel\GetCurrentChannel;
 use App\Application\Offer\DispatchZipDownload;
+use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
@@ -151,7 +152,9 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
     {
         $video = $assignment->videoWithTrashed;
         $clips = $video?->clipsWithTrashed()->orderBy('start_sec')->get() ?? collect();
-        $isDeleted = $video?->trashed() ?? true;
+        // the preview is worth showing as long as the file is there, being marked as deleted is not enough
+        $filesRemoved = $video === null
+            || $video->processing_status === ProcessingStatusEnum::Deleted;
 
         return Schema::make()
             ->livewire($this)
@@ -170,7 +173,7 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                             ]),
                     ])
                     ->collapsible()
-                    ->visible(!$isDeleted),
+                    ->visible(!$filesRemoved),
 
                 Section::make(__('my_offers.modal.metadata.heading'))
                     ->schema([

@@ -9,6 +9,8 @@ use App\Filament\Admin\Resources\Downloads\Pages\ListDownloads;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
+use App\Enum\ProcessingStatusEnum;
+use App\Models\Clip;
 use App\Models\Download;
 use App\Models\User;
 use App\Models\Video;
@@ -67,36 +69,47 @@ final class DownloadResourceTest extends DatabaseTestCase
             ->assertSee(__('filament.admin.labels.deleted'));
     }
 
-    public function testVideoColumnLinksNonDeletedVideoAndHidesLinkForDeletedVideo(): void
+    public function testVideoColumnLinksThePreviewUntilTheFilesAreGone(): void
     {
-        $video = Video::factory()->create();
-        $assignment = Assignment::factory()->forVideo($video)->withBatch(Batch::factory()->type('assign')->create())
-            ->create();
-        $download = Download::factory()->forAssignment($assignment)->create();
-
-        $deletedVideo = Video::factory()->create();
-        $deletedAssignment = Assignment::factory()->forVideo($deletedVideo)
-            ->withBatch(Batch::factory()->type('assign')->create())
-            ->create();
-        $deletedDownload = Download::factory()->forAssignment($deletedAssignment)->create();
-        $deletedVideo->delete();
+        $storedDownload = $this->downloadOfVideoWithPreview('previews/stored.mp4');
+        $markedDownload = $this->downloadOfVideoWithPreview('previews/marked.mp4', deleted: true);
+        $purgedDownload = $this->downloadOfVideoWithPreview('previews/purged.mp4', deleted: true, filesRemoved: true);
 
         $page = app(ListDownloads::class);
         $table = DownloadResource::table(Table::make($page));
         $column = $table->getColumn('assignment.videoWithTrashed.original_name');
 
-        // preview_url has no backing database column since
-        // database/migrations/2026_03_05_214958_remove_preview_from_video_table.php, so it is
-        // set in memory here to verify the url() closure reads it from the non-deleted video.
-        $freshDownload = $download->fresh();
-        $freshDownload->assignment->videoWithTrashed->setAttribute(
-            'preview_url',
-            'https://example.com/preview.mp4'
-        );
-        $column->record($freshDownload);
-        $this->assertSame('https://example.com/preview.mp4', $column->getUrl());
+        $column->record($storedDownload->fresh());
+        self::assertStringContainsString('previews/stored.mp4', (string)$column->getUrl());
 
-        $column->record($deletedDownload->fresh());
-        $this->assertNull($column->getUrl());
+        // a video that is only marked as deleted keeps its preview until the files are removed
+        $column->record($markedDownload->fresh());
+        self::assertStringContainsString('previews/marked.mp4', (string)$column->getUrl());
+
+        $column->record($purgedDownload->fresh());
+        self::assertNull($column->getUrl());
+    }
+
+    private function downloadOfVideoWithPreview(
+        string $previewPath,
+        bool $deleted = false,
+        bool $filesRemoved = false
+    ): Download {
+        $video = Video::factory()->create([
+            'processing_status' => $filesRemoved
+                ? ProcessingStatusEnum::Deleted
+                : ProcessingStatusEnum::Completed,
+        ]);
+        Clip::factory()->forVideo($video)->create(['preview_path' => $previewPath]);
+        $assignment = Assignment::factory()->forVideo($video)
+            ->withBatch(Batch::factory()->type('assign')->create())
+            ->create();
+        $download = Download::factory()->forAssignment($assignment)->create();
+
+        if ($deleted) {
+            $video->delete();
+        }
+
+        return $download;
     }
 }

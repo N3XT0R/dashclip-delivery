@@ -1,13 +1,23 @@
-@php use Illuminate\Support\Number; @endphp
-@php($video = $assignment->video)
+@php
+    use App\Application\Clips\GetPreviewUrl;
+    use App\Enum\ProcessingStatusEnum;
+    use Illuminate\Support\Number;
+
+    // a video that is only marked as deleted keeps its entry and its preview until the files are gone
+    $video = $assignment->videoWithTrashed ?? $assignment->video;
+    $clips = $video?->clipsWithTrashed()->get() ?? collect();
+    $previewUrl = $video?->processing_status === ProcessingStatusEnum::Deleted
+        ? null
+        : app(GetPreviewUrl::class)->handle($clips->first());
+@endphp
 <article class="card min-w-0">
     <div class="mb-4 flex items-start gap-3">
         <input id="assignment-{{ $assignment->id }}" type="checkbox" name="assignment_ids[]" value="{{ $assignment->id }}" class="pickbox mt-1 size-5 shrink-0 accent-orange-700" @disabled($disabled)>
         <label for="assignment-{{ $assignment->id }}" class="file-name min-w-0 cursor-pointer font-semibold break-words">{{ $video->original_name ?: basename($video->path) }}</label>
     </div>
-    <video class="aspect-video w-full rounded-lg bg-ink" src="{{ $video->preview_url ?: $assignment->temp_url }}" width="640" height="360" preload="metadata" controls playsinline aria-label="Vorschau: {{ $video->original_name ?: basename($video->path) }}"></video>
+    <video class="aspect-video w-full rounded-lg bg-ink" src="{{ $previewUrl ?: $assignment->temp_url }}" width="640" height="360" preload="metadata" controls playsinline aria-label="Vorschau: {{ $video->original_name ?: basename($video->path) }}"></video>
     <p class="mt-3 text-sm text-muted">{{ Number::fileSize($video->bytes) }}</p>
-    @foreach ($video->clips as $clip)
+    @foreach ($clips as $clip)
         <div class="mt-4 space-y-2 text-sm text-muted">
             @if ($clip->role)<p class="font-semibold">{{ $clip->role }}</p>@endif
             @if ($clip->start_sec !== null || $clip->end_sec !== null)
