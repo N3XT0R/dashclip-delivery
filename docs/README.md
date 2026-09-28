@@ -10,4 +10,5 @@ Abläufe und Entscheidungen rund um das Projekt.
 - [Workflow](workflow.md)
 - [Deployment](deployment.md)
 - [Filesystem](filesystem.md)
+- [Kennzeichen unkenntlich machen](censoring.md)
 

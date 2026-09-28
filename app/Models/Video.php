@@ -35,9 +35,12 @@ class Video extends Model
         'disk',
         'team_id',
         'processing_status',
+        'censor_requested',
+        'source_path',
     ];
     protected $casts = [
         'meta' => 'array',
+        'censor_requested' => 'boolean',
         'processing_status' => ProcessingStatusEnum::class,
     ];
 

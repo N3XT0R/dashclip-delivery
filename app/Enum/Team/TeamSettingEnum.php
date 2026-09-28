@@ -38,7 +38,9 @@ enum TeamSettingEnum: string
     public function isOffered(): bool
     {
         return match ($this) {
-            self::CENSOR_LICENSE_PLATES, self::CENSOR_FACES => false,
+            self::CENSOR_LICENSE_PLATES => true,
+            // faces are not measured yet, so nothing acts upon this one
+            self::CENSOR_FACES => false,
         };
     }
 

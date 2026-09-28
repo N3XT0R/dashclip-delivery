@@ -6,11 +6,14 @@ namespace App\Providers;
 
 use App\Enum\Ingest\IngestStepEnum;
 use App\Pipelines\Ingest\IngestPipeline;
+use App\Pipelines\Ingest\Step\CensorVideoStep;
 use App\Pipelines\Ingest\Step\GeneratePreviewForVideoClipsStep;
 use App\Pipelines\Ingest\Step\IngestStepInterface;
 use App\Pipelines\Ingest\Step\LookupAndUpdateVideoHashStep;
 use App\Pipelines\Ingest\Step\UploadVideoToDropboxStep;
 use App\Pipelines\Ingest\Step\ValidateInputFileStep;
+use App\Services\Censor\PythonVideoCensor;
+use App\Services\Censor\VideoCensorInterface;
 use App\Services\Ingest\IngestStateService;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,11 +21,14 @@ final class IngestServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(VideoCensorInterface::class, static fn (): VideoCensorInterface
+            => new PythonVideoCensor((array)config('censor')));
+
         $this->app->bind(IngestPipeline::class, function ($app) {
             $steps = collect($app->tagged('ingest.step'))
-                ->sortBy(fn(IngestStepInterface $step) => array_search(
+                ->sortBy(fn (IngestStepInterface $step) => array_search(
                     $step->name()->value,
-                    array_map(fn($s) => $s->value, IngestStepEnum::order()),
+                    array_map(fn ($s) => $s->value, IngestStepEnum::order()),
                     true
                 ))
                 ->values()
@@ -40,6 +46,7 @@ final class IngestServiceProvider extends ServiceProvider
         $this->app->tag([
             ValidateInputFileStep::class,
             LookupAndUpdateVideoHashStep::class,
+            CensorVideoStep::class,
             GeneratePreviewForVideoClipsStep::class,
             UploadVideoToDropboxStep::class,
         ], 'ingest.step');

@@ -29,6 +29,16 @@ COPY docker/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/conf.d/php.ini     /usr/local/etc/php/conf.d/php.ini
 COPY docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 
+# --- Unkenntlichmachung von Kennzeichen: Python, Laufzeitumgebung und Modell ---
+# Ohne diese Schicht bleibt die Funktion aus, die Anwendung läuft davon unberührt weiter.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 python3-venv \
+    && python3 -m venv /opt/censor/venv \
+    && /opt/censor/venv/bin/pip install --no-cache-dir onnxruntime numpy \
+    && curl -sSL -o /opt/censor/plate.onnx \
+        https://huggingface.co/ml-debi/yolov8-license-plate-detection/resolve/main/best.onnx \
+    && rm -rf /var/lib/apt/lists/*
+
 ARG UID=1000
 ARG GID=1000
 
