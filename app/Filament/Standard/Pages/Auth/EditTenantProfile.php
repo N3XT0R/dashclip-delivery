@@ -7,6 +7,7 @@ namespace App\Filament\Standard\Pages\Auth;
 use App\Enum\Team\TeamSettingEnum;
 use App\Models\Team;
 use App\Repository\TeamSettingRepository;
+use App\Services\Censor\VideoCensorInterface;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\Tenancy\EditTenantProfile as BaseProfile;
@@ -46,7 +47,11 @@ class EditTenantProfile extends BaseProfile
      */
     private function settingsSection(): ?Section
     {
-        $offered = TeamSettingEnum::offered();
+        $offered = array_values(array_filter(
+            TeamSettingEnum::offered(),
+            fn (TeamSettingEnum $setting): bool => $this->isSupportedHere($setting),
+        ));
+
         if ($offered === []) {
             return null;
         }
@@ -67,6 +72,18 @@ class EditTenantProfile extends BaseProfile
                     ->default((bool)$repository->get($team, $setting)),
                 $offered,
             ));
+    }
+
+    /**
+     * Whether this installation can act on the setting at all. A team is not offered a switch that
+     * nothing here would carry out, because its videos would get stuck instead of going out.
+     */
+    private function isSupportedHere(TeamSettingEnum $setting): bool
+    {
+        return match ($setting) {
+            TeamSettingEnum::CENSOR_LICENSE_PLATES, TeamSettingEnum::CENSOR_FACES
+                => app(VideoCensorInterface::class)->isAvailable(),
+        };
     }
 
     /**

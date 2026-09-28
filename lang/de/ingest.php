@@ -22,6 +22,7 @@ return [
     'steps' => [
         'validate_input_file' => 'Überprüfung der Dateiintegrität',
         'lookup_and_update_video_hash' => 'Video-Hash berechnen und aktualisieren',
+        'censor_video' => 'Kennzeichen unkenntlich machen',
         'generate_preview_for_clips' => 'Vorschau für Clips erzeugen',
         'upload_video_to_dropbox' => 'Video zum Storage hochladen',
     ],
