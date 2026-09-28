@@ -1,5 +1,12 @@
 @php
-    $previewUrl = $video->preview_url ?: null;
+    use App\Application\Clips\GetPreviewUrl;
+    use App\Enum\ProcessingStatusEnum;
+
+    // the preview stays as long as the file is there, a video that is only marked as deleted keeps it
+    $filesRemoved = $video?->processing_status === ProcessingStatusEnum::Deleted;
+    $previewUrl = $filesRemoved
+        ? null
+        : app(GetPreviewUrl::class)->handle($video?->clipsWithTrashed()->first());
 @endphp
 
 <div class="rounded-lg bg-gray-50 dark:bg-gray-900 p-4">

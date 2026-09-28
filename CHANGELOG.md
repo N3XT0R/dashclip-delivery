@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **The preview stays until the video is really gone**: A video that is only marked as deleted keeps
+  its preview in the offer details, in the offer list and in the administration, as long as its
+  files are there. Only once they have been removed for good does the preview disappear. The offer
+  details and the download list also show a preview again at all: they read it from a field that had
+  been dropped from the database, so they always showed "no preview available".
+
 ## [4.12.0] - 2026-09-28
 
 ### Added

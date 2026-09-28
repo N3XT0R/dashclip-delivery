@@ -54,15 +54,6 @@ readonly class VideoService
         return $video;
     }
 
-    public function finalizeUpload(Video $video, string $dstRel, string $diskName, ?string $previewUrl): void
-    {
-        $video->update([
-            'path' => $dstRel,
-            'disk' => $diskName,
-            'preview_url' => $previewUrl,
-        ]);
-    }
-
     public function createClipForVideo(Video $video, int $startSec, int $endSec): Model&Clip
     {
         return $video->clips()->create([

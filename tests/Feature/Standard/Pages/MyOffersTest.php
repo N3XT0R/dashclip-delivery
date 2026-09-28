@@ -98,20 +98,50 @@ final class MyOffersTest extends DatabaseTestCase
             ->assertTableActionHidden('return', $assignment);
     }
 
-    public function testDetailsOfADeletedVideoOpenWithoutAPreview(): void
+    public function testDetailsOfADeletedVideoStillShowItsPreview(): void
     {
         [$channel] = $this->actingOperator();
         $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4');
 
-        $schema = (new MyOffers())->getDetailsInfolist($assignment);
-        $previewSection = collect($schema->getComponents(withHidden: true))
+        self::assertTrue($this->previewSectionOf($assignment)->isVisible());
+    }
+
+    public function testDetailsOfAVideoWhoseFilesAreGoneOpenWithoutAPreview(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4');
+        Video::withTrashed()->whereKey($assignment->video_id)
+            ->update(['processing_status' => ProcessingStatusEnum::Deleted->value]);
+
+        self::assertFalse($this->previewSectionOf($assignment->refresh())->isVisible());
+    }
+
+    public function testThePreviewOfAStoredVideoPointsAtItsClip(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = Assignment::factory()->forChannel($channel)->create(['status' => StatusEnum::PICKEDUP->value]);
+        Clip::factory()->forVideo($assignment->video)->create(['preview_path' => 'previews/still-there.mp4']);
+        $assignment->video->delete();
+        $assignment->refresh();
+
+        $html = view('filament.standard.components.video-preview', [
+            'video' => $assignment->videoWithTrashed,
+        ])->render();
+
+        self::assertStringContainsString('previews/still-there.mp4', $html);
+    }
+
+    private function previewSectionOf(Assignment $assignment): Section
+    {
+        $section = collect((new MyOffers())->getDetailsInfolist($assignment)->getComponents(withHidden: true))
             ->first(
                 fn (mixed $component): bool => $component instanceof Section
                     && $component->getHeading() === __('my_offers.modal.preview.heading')
             );
 
-        self::assertInstanceOf(Section::class, $previewSection);
-        self::assertFalse($previewSection->isVisible());
+        self::assertInstanceOf(Section::class, $section);
+
+        return $section;
     }
 
     public function testAvailableOffersOfDeletedVideosAreNotListed(): void

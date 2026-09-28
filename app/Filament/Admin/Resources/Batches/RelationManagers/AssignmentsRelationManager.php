@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Batches\RelationManagers;
 
+use App\Enum\ProcessingStatusEnum;
+use App\Application\Clips\GetPreviewUrl;
 use App\Filament\Admin\Resources\Assignments\AssignmentResource;
 use App\Models\Assignment;
 use App\Services\LinkService;
@@ -42,12 +44,17 @@ class AssignmentsRelationManager extends RelationManager
                 TextColumn::make('status')->badge()->sortable(),
                 TextColumn::make('expires_at')->dateTime()->since()->dateTimeTooltip()->sortable(),
                 TextColumn::make('last_notified_at')->dateTime()->since()->dateTimeTooltip()->sortable()->toggleable(),
-                TextColumn::make('video.preview_url')
+                TextColumn::make('preview')
                     ->label(__('filament.admin.labels.preview'))
                     ->formatStateUsing(fn () => __('filament.admin.labels.open'))
-                    ->url(fn (
-                        Assignment $assignment
-                    ) => $assignment->video ? (string)$assignment->video->getAttribute('preview_url') : null)
+                    ->url(function (Assignment $assignment): ?string {
+                        $video = $assignment->videoWithTrashed;
+                        if ($video === null || $video->processing_status === ProcessingStatusEnum::Deleted) {
+                            return null;
+                        }
+
+                        return app(GetPreviewUrl::class)->handle($video->clipsWithTrashed()->first());
+                    })
                     ->openUrlInNewTab(),
                 TextColumn::make('created_at')->dateTime()->since()->dateTimeTooltip()->sortable(),
             ])
