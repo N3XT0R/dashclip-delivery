@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.12.1] - 2026-09-28
+
 ### Fixed
 - **The preview stays until the video is really gone**: A video that is only marked as deleted keeps
   its preview in the offer details, in the offer list and in the administration, as long as its
