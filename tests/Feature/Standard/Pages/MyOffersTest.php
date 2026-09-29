@@ -11,6 +11,7 @@ use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Pages\MyOffers;
+use App\Enum\Video\DeliveredVersionEnum;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\Clip;
@@ -123,7 +124,10 @@ final class MyOffersTest extends DatabaseTestCase
             'status' => StatusEnum::PICKEDUP->value,
             'expires_at' => now()->addWeek(),
         ]);
-        $assignment->video->update(['source_path' => 'videos/original.mp4']);
+        $assignment->video->update([
+            'source_path' => 'videos/original.mp4',
+            'delivered_version' => DeliveredVersionEnum::BLURRED->value,
+        ]);
 
         $schema = (new MyOffers())->getDetailsInfolist($assignment->refresh());
 

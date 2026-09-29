@@ -2,6 +2,14 @@
 
 namespace App\Filament\Standard\Resources;
 
+use App\Application\Video\SwitchDeliveredVersionUseCase;
+use App\Enum\ProcessingStatusEnum;
+use App\Enum\Video\DeliveredVersionEnum;
+use App\Exceptions\Video\VersionNotSwitchableException;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use App\Jobs\BlurVideoNowJob;
+use App\Services\Censor\VideoCensorInterface;
 use App\Application\Ingest\GetVideoIngestStatusUseCase;
 use App\Application\Video\DeleteVideoUseCase;
 use App\Application\Video\IsDeletableUseCase;
@@ -277,6 +285,8 @@ class VideoResource extends Resource
                     }),
             ])
             ->recordActions([
+                self::blurNowAction(),
+                self::switchVersionAction(),
                 ViewAction::make('view-details')
                     ->defaultColor('gray')
                     ->label(__('filament.video_resource.view.fields.view_details'))
@@ -362,6 +372,124 @@ class VideoResource extends Resource
      * @param Video $record
      * @return string|null
      */
+    /**
+     * Lets the submitter have the plates blurred after the upload, for videos that carry only
+     * their original.
+     */
+    private static function blurNowAction(): Action
+    {
+        return Action::make('blur-now')
+            ->defaultColor('gray')
+            ->iconButton()
+            ->icon(Heroicon::OutlinedShieldCheck)
+            ->label(__('video_versions.blur_now.action'))
+            ->tooltip(__('video_versions.blur_now.action'))
+            ->requiresConfirmation()
+            ->modalDescription(__('video_versions.blur_now.confirm'))
+            ->visible(fn (Video $record): bool => self::mayBlurNow($record))
+            ->action(function (Video $record): void {
+                BlurVideoNowJob::dispatch((int)$record->getKey(), (int)Filament::auth()->id());
+
+                Notification::make()
+                    ->title(__('video_versions.blur_now.queued'))
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
+     * Only the submitter asks for this, only while the video is ready, carries one version and
+     * this installation can blur at all.
+     */
+    private static function mayBlurNow(Video $record): bool
+    {
+        if ($record->trashed() || $record->hasBothVersions()) {
+            return false;
+        }
+
+        if ($record->processing_status !== ProcessingStatusEnum::Completed) {
+            return false;
+        }
+
+        return app(VideoCensorInterface::class)->isAvailable() && self::isSubmitter($record);
+    }
+
+    /**
+     * Lets the submitter decide which of the two versions of a video is handed out from now on.
+     */
+    private static function switchVersionAction(): Action
+    {
+        return Action::make('switch-version')
+            ->defaultColor('gray')
+            ->iconButton()
+            // filled shield while the blurred version is the one going out, outlined while it is not
+            ->icon(fn (Video $record): Heroicon => $record->hasBlurredPlates()
+                ? Heroicon::ShieldCheck
+                : Heroicon::OutlinedShieldCheck)
+            ->label(fn (Video $record): string => self::switchVersionLabel($record))
+            ->tooltip(fn (Video $record): string => self::switchVersionLabel($record))
+            ->requiresConfirmation()
+            ->modalDescription(fn (Video $record): string => __(
+                'video_versions.' . ($record->delivered_version?->other()?->value
+                    ?? DeliveredVersionEnum::ORIGINAL->value) . '.confirm'
+            ))
+            ->visible(fn (Video $record): bool => self::mayChooseVersion($record))
+            ->action(function (Video $record): void {
+                try {
+                    $switched = app(SwitchDeliveredVersionUseCase::class)
+                        ->handle($record, Filament::auth()->user());
+                } catch (VersionNotSwitchableException) {
+                    Notification::make()
+                        ->title(__('filament.video_resource.view.messages.version_not_switchable'))
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
+                Notification::make()
+                    ->title(__('filament.video_resource.view.messages.version_switched', [
+                        'version' => $switched->label(),
+                    ]))
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
+     * What the switch would hand out, used as the label and as the hint on the icon.
+     */
+    private static function switchVersionLabel(Video $record): string
+    {
+        return $record->delivered_version?->other()?->action()
+            ?? __('video_versions.original.action');
+    }
+
+    /**
+     * Only the person who submitted the video decides this, and only while both files are there.
+     */
+    private static function mayChooseVersion(Video $record): bool
+    {
+        if ($record->trashed() || !$record->hasBothVersions()) {
+            return false;
+        }
+
+        if ($record->processing_status === ProcessingStatusEnum::Deleted) {
+            return false;
+        }
+
+        return self::isSubmitter($record);
+    }
+
+    /**
+     * Whether the person looking at the list submitted this video themselves.
+     */
+    private static function isSubmitter(Video $record): bool
+    {
+        return $record->clipsWithTrashed
+            ->contains(fn ($clip): bool => (int)$clip->user_id === (int)Filament::auth()->id());
+    }
+
     private static function preferredChannelName(Video $record): ?string
     {
         return $record->clipsWithTrashed

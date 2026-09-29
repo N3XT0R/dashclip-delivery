@@ -3,6 +3,16 @@
 declare(strict_types=1);
 
 return [
+    'video_version_switched' => [
+        'subject' => 'Neue Fassung von :video',
+        'headline' => 'Der Einsender hat die Fassung gewechselt',
+        'greeting' => 'Hallo :channel,',
+        'body' => 'Für das Video :video wird ab jetzt die :version ausgeliefert. '
+            . 'Die Datei, die du bereits heruntergeladen hast, entspricht nicht mehr dem, was der Einsender weitergeben möchte.',
+        'what_to_do' => 'Bitte lade das Video erneut herunter, wenn du es noch verwenden willst, und verwende die alte Datei nicht weiter.',
+        'button' => 'Zu meinen Angeboten',
+        'signature' => 'Viele Grüße, dein :app_name Team',
+    ],
     'common' => [
         'expires_at' => 'Dieser Link ist bis zum :date gültig.',
         'unknown_user' => 'Unbekannter Nutzer',

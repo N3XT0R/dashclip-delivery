@@ -6,17 +6,23 @@ namespace Tests\Feature\Filament\Standard\Resources;
 
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
+use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages\ListVideos;
 use App\Filament\Standard\Resources\VideoResource\Pages\ViewVideo;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Enum\Video\DeliveredVersionEnum;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\BlurVideoNowJob;
+use App\Services\Censor\VideoCensorInterface;
+use App\ValueObjects\CensorResult;
+use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Tests\DatabaseTestCase;
@@ -226,10 +232,87 @@ final class VideoResourceTest extends DatabaseTestCase
         $this->user->givePermissionTo($permissions);
     }
 
+    public function testTheSubmitterCanAskForTheBlurringAfterTheUpload(): void
+    {
+        Queue::fake();
+        $this->app->instance(VideoCensorInterface::class, new class () implements VideoCensorInterface {
+            public function isAvailable(): bool
+            {
+                return true;
+            }
+
+            public function censor(string $sourcePath, string $targetPath): CensorResult
+            {
+                return new CensorResult($targetPath);
+            }
+        });
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)
+            ->create(['processing_status' => ProcessingStatusEnum::Completed]);
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionVisible('blur-now', $video)
+            ->callTableAction('blur-now', $video);
+
+        Queue::assertPushed(BlurVideoNowJob::class);
+    }
+
+    public function testAVideoThatAlreadyCarriesBothVersionsIsNotOfferedTheBlurring(): void
+    {
+        $video = $this->videoWithBothVersions();
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionHidden('blur-now', $video);
+    }
+
+    public function testTheSubmitterCanHandOutTheOtherVersion(): void
+    {
+        $video = $this->videoWithBothVersions();
+        $preview = \Mockery::mock(\App\Services\PreviewService::class);
+        $preview->shouldReceive('generatePreviewForClip')->andReturn('previews/new.mp4');
+        $this->app->instance(\App\Services\PreviewService::class, $preview);
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionVisible('switch-version', $video)
+            ->callTableAction('switch-version', $video);
+
+        self::assertSame(DeliveredVersionEnum::ORIGINAL, $video->refresh()->delivered_version);
+    }
+
+    public function testAVideoWhoseFilesAreGoneIsNotOfferedTheSwitch(): void
+    {
+        $video = $this->videoWithBothVersions();
+        $video->update(['processing_status' => ProcessingStatusEnum::Deleted]);
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionHidden('switch-version', $video->refresh());
+    }
+
+    public function testAVideoWithOneVersionIsNotOfferedTheSwitch(): void
+    {
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionHidden('switch-version', $video);
+    }
+
+    private function videoWithBothVersions(): Video
+    {
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create([
+            'path' => 'videos/blurred.mp4',
+            'source_path' => 'videos/original.mp4',
+            'delivered_version' => DeliveredVersionEnum::BLURRED->value,
+        ]);
+
+        return $video->refresh();
+    }
+
     public function testTheDetailsTellTheSubmitterThatThePlatesWereBlurred(): void
     {
         $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
-        $video->update(['source_path' => 'videos/original.mp4']);
+        $video->update([
+            'source_path' => 'videos/original.mp4',
+            'delivered_version' => DeliveredVersionEnum::BLURRED->value,
+        ]);
 
         Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
             ->assertStatus(200)

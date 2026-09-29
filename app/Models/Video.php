@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enum\ProcessingStatusEnum;
+use App\Enum\Video\DeliveredVersionEnum;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -37,10 +38,14 @@ class Video extends Model
         'processing_status',
         'censor_requested',
         'source_path',
+        'delivered_version',
+        'version_switched_at',
     ];
     protected $casts = [
         'meta' => 'array',
         'censor_requested' => 'boolean',
+        'delivered_version' => DeliveredVersionEnum::class,
+        'version_switched_at' => 'datetime',
         'processing_status' => ProcessingStatusEnum::class,
     ];
 
@@ -98,6 +103,16 @@ class Video extends Model
      * @return bool
      */
     public function hasBlurredPlates(): bool
+    {
+        return $this->getAttribute('delivered_version') === DeliveredVersionEnum::BLURRED;
+    }
+
+    /**
+     * Whether both the untouched original and the blurred copy are there, so the submitter can
+     * choose between them.
+     * @return bool
+     */
+    public function hasBothVersions(): bool
     {
         return $this->getAttribute('source_path') !== null;
     }
