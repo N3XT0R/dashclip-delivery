@@ -1,8 +1,14 @@
 # Kennzeichen unkenntlich machen
 
-Ein Team kann in seinem Profil unter „Einstellungen“ verlangen, dass Kennzeichen in seinen Videos
-verpixelt werden, bevor sie an Kanäle gehen. Die Erkennung läuft auf dem Prozessor, eine Grafikkarte
-ist nicht nötig. Diese Anleitung beschreibt, was dafür auf dem Server vorhanden sein muss.
+Kennzeichen werden in den Videos eines Teams verpixelt, bevor sie an Kanäle gehen. Das ist der
+Standard; wer das Team besitzt, kann es im eigenen Profil unter „Einstellungen“ abschalten. Beim
+Hochladen steht ein Hinweis darauf. Die Erkennung läuft auf dem Prozessor, eine Grafikkarte ist
+nicht nötig. Diese Anleitung beschreibt, was dafür auf dem Server vorhanden sein muss.
+
+Auf einer Installation ohne die unten beschriebenen Werkzeuge greift der Standard nicht: Videos
+laufen unverändert durch, statt in der Aufbereitung hängen zu bleiben. Nur wenn ein Team die
+Unkenntlichmachung ausdrücklich eingeschaltet hat, scheitert die Aufbereitung, statt unbearbeitet
+auszuliefern.
 
 ## Was gebraucht wird
 

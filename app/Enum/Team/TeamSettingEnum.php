@@ -27,7 +27,9 @@ enum TeamSettingEnum: string
     public function default(): bool|int|string|null
     {
         return match ($this) {
-            self::CENSOR_LICENSE_PLATES, self::CENSOR_FACES => false,
+            // on by default: a team that never thought about it is better off with blurred plates
+            self::CENSOR_LICENSE_PLATES => true,
+            self::CENSOR_FACES => false,
         };
     }
 

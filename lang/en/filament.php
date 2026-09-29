@@ -170,6 +170,9 @@ return [
                 'role_helper_text' => 'Optional: Specifies the camera position or perspective of the video, e.g., Front (F) or Rear (R).',
                 'preferred_channel' => 'Preferred channel',
                 'preferred_channel_helper_text' => 'Optional: pick the channel we should offer your video to first. If that does not work out, because the channel is not accepting videos or has reached its weekly limit, the regular distribution takes over.',
+                'censor_hint' => 'Number plates that are found are blurred before the video is passed on. '
+                    . 'The original is kept. Whoever owns the team can switch this off in the profile '
+                    . 'under "Settings".',
             ],
             'messages' => [
                 'success' => [

@@ -28,6 +28,17 @@ class TeamSettingRepository
         return $row === null ? $setting->default() : $row->value;
     }
 
+    /**
+     * Whether the team chose this itself, rather than living with what applies by default.
+     */
+    public function hasChosen(Team $team, TeamSettingEnum $setting): bool
+    {
+        return TeamSetting::query()
+            ->where('team_id', $team->getKey())
+            ->where('key', $setting->value)
+            ->exists();
+    }
+
     public function set(Team $team, TeamSettingEnum $setting, bool|int|string|null $value): TeamSetting
     {
         return TeamSetting::query()->updateOrCreate(

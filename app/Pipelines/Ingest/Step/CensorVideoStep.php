@@ -99,7 +99,11 @@ readonly class CensorVideoStep implements IngestStepInterface
 
         $team = $video->team()->first();
         $wanted = $team !== null
-            && (bool)$this->teamSettings->get($team, TeamSettingEnum::CENSOR_LICENSE_PLATES);
+            && (bool)$this->teamSettings->get($team, TeamSettingEnum::CENSOR_LICENSE_PLATES)
+            // blurring is on by default, but a team that never asked for it does not get its videos
+            // stuck where the tooling is missing; a team that did ask for it does
+            && ($this->censor->isAvailable()
+                || $this->teamSettings->hasChosen($team, TeamSettingEnum::CENSOR_LICENSE_PLATES));
 
         // only decide once the team is known, otherwise a video keeps asking on every run
         if ($team !== null) {
