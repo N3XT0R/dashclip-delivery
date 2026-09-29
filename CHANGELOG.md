@@ -50,6 +50,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   whose files were already removed for good is left alone and reported.
 
 ### Changed
+- **Scheduled commands in the development environment**: The containers now carry a service that
+  runs the scheduled commands the way the crontab does on a server. It stays out of the way until
+  it is asked for, because a development copy usually carries real data.
+
 - **Maintainability**: The ZIP build passes the state of one run (job, progress, temporary copies)
   as one object instead of handing five values from method to method, and it no longer takes the
   address and browser of the caller, which it never used. The clip import carries its settings as

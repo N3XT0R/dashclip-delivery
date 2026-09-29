@@ -223,6 +223,24 @@ Crontab einrichten:
 * * * * * cd /var/www/dashclip/ && php artisan schedule:run >> /dev/null 2>&1
 ```
 
+Ohne diesen Eintrag läuft keiner der geplanten Befehle: weder das wöchentliche Verteilen noch das
+Ablaufen von Angeboten, das Markieren fertig verteilter Videos, das endgültige Entfernen nach der
+Aufbewahrungsfrist oder das Aufräumen von Videos, deren Datei verschwunden ist. Horizon arbeitet
+nur die Warteschlange ab und plant nichts.
+
+### In der Entwicklungsumgebung
+
+Dafür gibt es einen eigenen Dienst, der absichtlich nicht mitstartet, weil eine Entwicklungskopie
+meist echte Daten enthält:
+
+```bash
+docker compose --profile scheduler up -d scheduler
+```
+
+Er führt `php artisan schedule:work` aus, also dasselbe im Minutentakt. Solange er läuft, verteilt
+die Umgebung auch wirklich Angebote, lässt sie ablaufen, markiert Videos als gelöscht und entfernt
+deren Dateien nach der Aufbewahrungsfrist. Mit `docker compose stop scheduler` ist wieder Ruhe.
+
 ## Supervisor für Queue-Worker
 
 Für das dauerhafte Ausführen von `queue:work` kann Supervisor verwendet werden.
