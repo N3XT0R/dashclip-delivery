@@ -8,6 +8,8 @@ use App\Enum\Video\DeliveredVersionEnum;
 use App\Exceptions\Video\VersionNotSwitchableException;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use App\Jobs\BlurVideoNowJob;
+use App\Services\Censor\VideoCensorInterface;
 use App\Application\Ingest\GetVideoIngestStatusUseCase;
 use App\Application\Video\DeleteVideoUseCase;
 use App\Application\Video\IsDeletableUseCase;
@@ -283,6 +285,7 @@ class VideoResource extends Resource
                     }),
             ])
             ->recordActions([
+                self::blurNowAction(),
                 self::switchVersionAction(),
                 ViewAction::make('view-details')
                     ->defaultColor('gray')
@@ -370,6 +373,47 @@ class VideoResource extends Resource
      * @return string|null
      */
     /**
+     * Lets the submitter have the plates blurred after the upload, for videos that carry only
+     * their original.
+     */
+    private static function blurNowAction(): Action
+    {
+        return Action::make('blur-now')
+            ->defaultColor('gray')
+            ->button()
+            ->icon(Heroicon::OutlinedShieldCheck)
+            ->label(__('video_versions.blur_now.action'))
+            ->requiresConfirmation()
+            ->modalDescription(__('video_versions.blur_now.confirm'))
+            ->visible(fn (Video $record): bool => self::mayBlurNow($record))
+            ->action(function (Video $record): void {
+                BlurVideoNowJob::dispatch((int)$record->getKey(), (int)Filament::auth()->id());
+
+                Notification::make()
+                    ->title(__('video_versions.blur_now.queued'))
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
+     * Only the submitter asks for this, only while the video is ready, carries one version and
+     * this installation can blur at all.
+     */
+    private static function mayBlurNow(Video $record): bool
+    {
+        if ($record->trashed() || $record->hasBothVersions()) {
+            return false;
+        }
+
+        if ($record->processing_status !== ProcessingStatusEnum::Completed) {
+            return false;
+        }
+
+        return app(VideoCensorInterface::class)->isAvailable() && self::isSubmitter($record);
+    }
+
+    /**
      * Lets the submitter decide which of the two versions of a video is handed out from now on.
      */
     private static function switchVersionAction(): Action
@@ -421,6 +465,14 @@ class VideoResource extends Resource
             return false;
         }
 
+        return self::isSubmitter($record);
+    }
+
+    /**
+     * Whether the person looking at the list submitted this video themselves.
+     */
+    private static function isSubmitter(Video $record): bool
+    {
         return $record->clipsWithTrashed
             ->contains(fn ($clip): bool => (int)$clip->user_id === (int)Filament::auth()->id());
     }

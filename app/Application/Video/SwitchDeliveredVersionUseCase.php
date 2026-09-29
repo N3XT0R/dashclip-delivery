@@ -9,27 +9,25 @@ use App\Enum\Video\DeliveredVersionEnum;
 use App\Exceptions\Video\VersionNotSwitchableException;
 use App\Models\User;
 use App\Models\Video;
-use App\Notifications\VideoVersionSwitchedNotification;
-use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
-use App\Services\PreviewService;
+use App\Services\Video\DownloadedChannelNotifier;
+use App\Services\Video\PreviewRefresher;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Hands out the other file of a video from now on: the untouched original instead of the blurred
  * copy, or the other way round.
  *
  * The previews are made again, because they are cut from the file that gets handed out and would
- * otherwise still show the plates of the version nobody is supposed to see. Channels that already
- * downloaded the video are told, since what they hold is no longer what the submitter wants out.
+ * otherwise still show the plates that the chosen version hides. Channels that already downloaded
+ * the video are told, since what they hold is no longer what the submitter wants out.
  */
 readonly class SwitchDeliveredVersionUseCase
 {
     public function __construct(
         private VideoRepository $videoRepository,
-        private ClipRepository $clipRepository,
-        private PreviewService $previewService,
+        private PreviewRefresher $previews,
+        private DownloadedChannelNotifier $notifier,
     ) {
     }
 
@@ -58,8 +56,8 @@ readonly class SwitchDeliveredVersionUseCase
         });
 
         $video->refresh();
-        $this->renewPreviews($video);
-        $this->tellChannelsThatHaveIt($video, $switched);
+        $this->previews->refresh($video);
+        $this->notifier->tellAbout($video, $switched);
 
         activity('videos')
             ->causedBy($actor)
@@ -84,33 +82,6 @@ readonly class SwitchDeliveredVersionUseCase
 
         if ($video->getAttribute('processing_status') === ProcessingStatusEnum::Deleted) {
             throw new VersionNotSwitchableException('The files of this video were already removed.');
-        }
-    }
-
-    /**
-     * Cut the previews from the file that is handed out now.
-     */
-    private function renewPreviews(Video $video): void
-    {
-        $diskName = (string)config('preview.default_disk', 'public');
-        $previewDisk = Storage::disk($diskName);
-
-        foreach ($video->clipsWithTrashed()->get() as $clip) {
-            $path = $this->previewService->generatePreviewForClip($clip, $previewDisk, force: true);
-
-            $this->clipRepository->update($clip, [
-                'preview_path' => $path,
-                'preview_disk' => $diskName,
-            ]);
-        }
-    }
-
-    private function tellChannelsThatHaveIt(Video $video, DeliveredVersionEnum $switched): void
-    {
-        foreach ($this->videoRepository->channelsThatDownloaded($video) as $channel) {
-            foreach ($channel->channelUsers as $user) {
-                $user->notify(new VideoVersionSwitchedNotification($video, $channel, $switched));
-            }
         }
     }
 }
