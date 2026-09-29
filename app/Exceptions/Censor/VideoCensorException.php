@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Exceptions\Censor;
 
-use RuntimeException;
+use App\Exceptions\Video\VideoException;
 
 /**
  * A video that was to be blurred could not be blurred.
  */
-class VideoCensorException extends RuntimeException
+class VideoCensorException extends VideoException
 {
 }

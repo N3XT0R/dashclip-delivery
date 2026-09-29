@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Filament\Admin\Resources;
 
+use App\Constants\Config\CensorConfigEntry;
 use App\Filament\Admin\Resources\Configs\Pages\EditConfig;
 use App\Filament\Admin\Resources\Configs\Pages\ListConfigs;
 use App\Models\Config;
@@ -95,5 +96,32 @@ final class ConfigResourceTest extends DatabaseTestCase
         $fresh = $config->fresh();
         $this->assertSame('site.locale', $fresh->getAttribute('key'));
         $this->assertSame('en', $fresh->getAttribute('value'));
+    }
+
+    public function testBlurringCategoryShowsEditableSettings(): void
+    {
+        Livewire::test(ListConfigs::class)
+            ->set('activeTab', 'Kennzeichen-Verpixelung')
+            ->assertStatus(200)
+            ->assertSee(__('configs.keys.' . CensorConfigEntry::FRAME_STEP));
+
+        $config = Config::query()->where('key', CensorConfigEntry::FRAME_STEP)->firstOrFail();
+        Livewire::test(EditConfig::class, ['record' => $config->getKey()])
+            ->fillForm(['value' => 5])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        self::assertSame(5, $config->fresh()->value);
+    }
+
+    public function testBlurringSettingsRejectZeroFrameInterval(): void
+    {
+        $config = Config::query()->where('key', CensorConfigEntry::FRAME_STEP)->firstOrFail();
+        Livewire::test(EditConfig::class, ['record' => $config->getKey()])
+            ->fillForm(['value' => 0])
+            ->call('save')
+            ->assertHasErrors(['value']);
+
+        self::assertSame(3, $config->fresh()->value);
     }
 }

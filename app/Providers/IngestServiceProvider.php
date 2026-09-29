@@ -13,6 +13,7 @@ use App\Pipelines\Ingest\Step\LookupAndUpdateVideoHashStep;
 use App\Pipelines\Ingest\Step\UploadVideoToDropboxStep;
 use App\Pipelines\Ingest\Step\ValidateInputFileStep;
 use App\Services\Censor\PythonVideoCensor;
+use App\Services\Censor\CensorSettingsService;
 use App\Services\Censor\VideoCensorInterface;
 use App\Services\Ingest\IngestStateService;
 use Illuminate\Support\ServiceProvider;
@@ -21,8 +22,8 @@ final class IngestServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(VideoCensorInterface::class, static fn (): VideoCensorInterface
-            => new PythonVideoCensor((array)config('censor')));
+        $this->app->singleton(VideoCensorInterface::class, fn (): VideoCensorInterface
+            => new PythonVideoCensor((array)config('censor'), $this->app->make(CensorSettingsService::class)));
 
         $this->app->bind(IngestPipeline::class, function ($app) {
             $steps = collect($app->tagged('ingest.step'))

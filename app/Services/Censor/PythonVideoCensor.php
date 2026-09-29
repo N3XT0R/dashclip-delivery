@@ -19,10 +19,11 @@ readonly class PythonVideoCensor implements VideoCensorInterface
     /**
      * @param array<string, mixed> $config the censor configuration
      */
-    public function __construct(private array $config)
+    public function __construct(private array $config, private CensorSettingsService $settings)
     {
     }
 
+    /** Whether this server has enabled processing and has readable script and model files. */
     public function isAvailable(): bool
     {
         return (bool)($this->config['enabled'] ?? false)
@@ -30,14 +31,19 @@ readonly class PythonVideoCensor implements VideoCensorInterface
             && is_readable((string)($this->config['model'] ?? ''));
     }
 
+    /**
+     * Process a video using a fresh snapshot of the database settings.
+     * @throws VideoCensorException when settings, processing or output are invalid
+     */
     public function censor(string $sourcePath, string $targetPath): CensorResult
     {
         if (!$this->isAvailable()) {
             throw new VideoCensorException('Blurring is not set up on this installation.');
         }
 
-        $process = new Process($this->command($sourcePath, $targetPath));
-        $process->setTimeout((float)($this->config['timeout_seconds'] ?? 3600));
+        $settings = $this->settings->current();
+        $process = new Process($this->command($sourcePath, $targetPath, $settings));
+        $process->setTimeout($settings['timeout_seconds']);
 
         try {
             $process->run();
@@ -59,23 +65,22 @@ readonly class PythonVideoCensor implements VideoCensorInterface
     }
 
     /**
+     * @param array{columns: int, rows: int, frame_step: int, confidence: float, margin: float, timeout_seconds: int} $settings
      * @return array<int, string>
      */
-    private function command(string $sourcePath, string $targetPath): array
+    private function command(string $sourcePath, string $targetPath, array $settings): array
     {
-        $tiles = $this->config['tiles'] ?? [];
-
         return [
             (string)$this->config['python'],
             (string)$this->config['script'],
             '--input', $sourcePath,
             '--output', $targetPath,
             '--model', (string)$this->config['model'],
-            '--columns', (string)($tiles['columns'] ?? 3),
-            '--rows', (string)($tiles['rows'] ?? 2),
-            '--frame-step', (string)($this->config['frame_step'] ?? 3),
-            '--confidence', (string)($this->config['confidence'] ?? 0.15),
-            '--margin', (string)($this->config['margin'] ?? 0.25),
+            '--columns', (string)$settings['columns'],
+            '--rows', (string)$settings['rows'],
+            '--frame-step', (string)$settings['frame_step'],
+            '--confidence', (string)$settings['confidence'],
+            '--margin', (string)$settings['margin'],
         ];
     }
 
