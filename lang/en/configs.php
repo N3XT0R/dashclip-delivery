@@ -12,6 +12,9 @@ return [
     'labels' => [
         'description' => 'Description',
     ],
+    'censor' => [
+        'not_installed' => 'Blurring is not set up on this server. These values are stored, but they only take effect once the tooling is installed and switched on.',
+    ],
     'keys' => [
         CensorConfigEntry::COLUMNS => 'Detection tile columns (1 to 8)',
         CensorConfigEntry::ROWS => 'Detection tile rows (1 to 8)',

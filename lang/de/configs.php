@@ -13,6 +13,9 @@ return [
     'labels' => [
         'description' => 'Beschreibung',
     ],
+    'censor' => [
+        'not_installed' => 'Die Unkenntlichmachung ist auf diesem Server nicht eingerichtet. Diese Werte werden gespeichert, wirken sich aber erst aus, sobald die Werkzeuge installiert und freigeschaltet sind.',
+    ],
     'keys' => [
         CensorConfigEntry::COLUMNS => 'Spalten der Erkennungskacheln (1 bis 8)',
         CensorConfigEntry::ROWS => 'Zeilen der Erkennungskacheln (1 bis 8)',
