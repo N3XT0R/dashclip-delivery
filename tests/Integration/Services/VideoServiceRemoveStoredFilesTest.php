@@ -57,4 +57,51 @@ final class VideoServiceRemoveStoredFilesTest extends DatabaseTestCase
 
         app(VideoService::class)->removeStoredFiles($video);
     }
+
+    public function testCleanupRemovesBothVersionsAndCanBeRepeated(): void
+    {
+        $video = Video::factory()->create(['disk' => 'local', 'source_path' => 'original.mp4']);
+        Storage::disk('local')->put($video->path, 'blurred');
+        Storage::disk('local')->put('original.mp4', 'original');
+
+        app(VideoService::class)->removeStoredFiles($video);
+        app(VideoService::class)->removeStoredFiles($video);
+
+        Storage::disk('local')->assertMissing([$video->path, 'original.mp4']);
+        self::assertNotNull($video->fresh());
+    }
+
+    public function testCleanupRemovesOriginalEvenWhenTheBlurredFileIsAlreadyMissing(): void
+    {
+        $video = Video::factory()->create(['disk' => 'local', 'source_path' => 'original.mp4']);
+        Storage::disk('local')->put('original.mp4', 'original');
+
+        app(VideoService::class)->removeStoredFiles($video);
+
+        Storage::disk('local')->assertMissing('original.mp4');
+    }
+
+    public function testDirectDeletionRemovesBothVersions(): void
+    {
+        $video = Video::factory()->create(['disk' => 'local', 'source_path' => 'original.mp4']);
+        Storage::disk('local')->put($video->path, 'blurred');
+        Storage::disk('local')->put('original.mp4', 'original');
+
+        self::assertTrue(app(VideoService::class)->delete($video));
+
+        Storage::disk('local')->assertMissing([$video->path, 'original.mp4']);
+        $this->assertSoftDeleted($video);
+    }
+
+    public function testDuplicateDeletionRemovesBothVersions(): void
+    {
+        $video = Video::factory()->create(['disk' => 'local', 'source_path' => 'original.mp4', 'team_id' => null]);
+        Storage::disk('local')->put($video->path, 'blurred');
+        Storage::disk('local')->put('original.mp4', 'original');
+
+        self::assertTrue(app(VideoService::class)->deleteDuplicateVideo($video));
+
+        Storage::disk('local')->assertMissing([$video->path, 'original.mp4']);
+        $this->assertSoftDeleted($video);
+    }
 }

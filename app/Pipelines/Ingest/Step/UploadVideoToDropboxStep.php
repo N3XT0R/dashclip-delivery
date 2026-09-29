@@ -6,12 +6,16 @@ namespace App\Pipelines\Ingest\Step;
 
 use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\Ingest\IngestStepEnum;
+use App\Exceptions\Storage\VideoStorageMigrationException;
+use App\Models\Video;
 use App\Pipelines\Ingest\Context\IngestContext;
 use App\Repository\VideoRepository;
 use App\Services\Contracts\ConfigServiceInterface;
 use App\Services\Storage\StorageDiskService;
 use App\Services\Upload\UploadService;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Moves a newly ingested video to the storage disk set in the default_file_system setting.
@@ -49,38 +53,67 @@ readonly class UploadVideoToDropboxStep implements IngestStepInterface
             return false;
         }
 
-        return false === $context->isDuplicate
-            && false === $context->isInvalid
-            && false === Storage::disk($target)->exists($context->video->path);
+        return false === $context->isDuplicate && false === $context->isInvalid;
     }
 
+    /**
+     * Copy and verify both versions before changing disks and removing the local files.
+     * @throws VideoStorageMigrationException when either version cannot be copied completely
+     */
     public function handle(IngestContext $context): IngestContext
     {
-        if ($context->isDuplicate) {
+        if ($context->isDuplicate || $context->isInvalid) {
             return $context;
         }
         $target = $this->targetDisk();
-        if ($target === null) {
+        if ($target === null || $context->video->disk === $target) {
             return $context;
         }
 
         $video = $context->video;
         $sourceDisk = clone $video->getDisk();
-        $path = $video->path;
-
-        $this->uploadService->uploadFile(
-            sourceDisk: $sourceDisk,
-            relativePath: $path,
-            targetDisk: $target,
-            targetPath: $path
-        );
+        $this->copyVersions($video, $sourceDisk, $target);
 
         $video->disk = $target;
         if ($this->videoRepository->save($video)) {
-            $sourceDisk->delete($path);
+            foreach ($video->storedFilePaths() as $path) {
+                $sourceDisk->delete($path);
+            }
         }
 
         return $context;
+    }
+
+    /** Copy all owned files, translating storage failures before any source is removed. */
+    private function copyVersions(Video $video, Filesystem $sourceDisk, string $target): void
+    {
+        try {
+            $this->uploadVersions($video, $sourceDisk, $target);
+        } catch (VideoStorageMigrationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            throw VideoStorageMigrationException::incompleteCopy($video, $target, $exception);
+        }
+    }
+
+    private function uploadVersions(Video $video, Filesystem $sourceDisk, string $target): void
+    {
+        $targetDisk = Storage::disk($target);
+        foreach ($video->storedFilePaths() as $path) {
+            if (!$sourceDisk->exists($path)) {
+                throw VideoStorageMigrationException::sourceMissing($video);
+            }
+            $this->uploadService->uploadFile(
+                sourceDisk: $sourceDisk,
+                relativePath: $path,
+                targetDisk: $target,
+                targetPath: $path
+            );
+            if (!$targetDisk->exists($path) || $targetDisk->size($path) !== $sourceDisk->size($path)) {
+                throw VideoStorageMigrationException::incompleteCopy($video, $target);
+            }
+        }
+
     }
 
     /** The configured remote disk new videos belong on, or null to keep them where they were uploaded. */

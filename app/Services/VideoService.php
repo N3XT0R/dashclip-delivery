@@ -86,16 +86,14 @@ readonly class VideoService
 
     /**
      * Deletes a video that was identified as a duplicate.
-     * This includes deleting the video file from storage and removing the database record.
+     * Removes both stored versions and soft-deletes the video record.
+     * @throws VideoFileRemovalException when an existing file cannot be removed
      * @param Video $video
      * @return bool
      */
     public function deleteDuplicateVideo(Video $video): bool
     {
-        $disk = $video->getDisk();
-        if ($disk->exists($video->path)) {
-            $disk->delete($video->path);
-        }
+        $this->removeVideoFiles($video);
 
         $user = $this->videoRepository->getUploaderUser($video);
         if (null === $user) {
@@ -129,23 +127,22 @@ readonly class VideoService
     }
 
     /**
-     * Deletes a video and its associated file from storage.
+     * Removes both stored versions and soft-deletes the video.
+     * @throws VideoFileRemovalException when an existing file cannot be removed
      * @param Video $video
      * @return bool
      */
     public function delete(Video $video): bool
     {
-        $disk = $video->getDisk();
-        $path = $video->path;
-        if ($video->exists && $disk->exists($path)) {
-            $disk->delete($path);
+        if ($video->exists) {
+            $this->removeVideoFiles($video);
         }
 
         return $video->delete();
     }
 
     /**
-     * Remove the stored video file and the preview files of all clips; the database rows stay.
+     * Remove both stored video versions and all clip previews; the database rows stay.
      * @param Video $video
      * @return void
      * @throws VideoFileRemovalException when a file exists but cannot be removed
@@ -153,10 +150,7 @@ readonly class VideoService
     public function removeStoredFiles(Video $video): void
     {
         try {
-            $disk = $video->getDisk();
-            if ($disk->exists($video->path) && !$disk->delete($video->path)) {
-                throw new VideoFileRemovalException('The video file could not be removed.');
-            }
+            $this->removeVideoFiles($video);
 
             foreach ($video->clipsWithTrashed()->get() as $clip) {
                 $previewPath = $clip->getAttribute('preview_path');
@@ -176,4 +170,23 @@ readonly class VideoService
         }
     }
 
+    /**
+     * Remove both video versions, allowing a retry after partially completed cleanup.
+     * @throws VideoFileRemovalException when an existing file cannot be removed
+     */
+    private function removeVideoFiles(Video $video): void
+    {
+        try {
+            $disk = $video->getDisk();
+            foreach ($video->storedFilePaths() as $path) {
+                if ($disk->exists($path) && !$disk->delete($path)) {
+                    throw new VideoFileRemovalException('A video file could not be removed.');
+                }
+            }
+        } catch (VideoFileRemovalException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            throw new VideoFileRemovalException($exception->getMessage(), previous: $exception);
+        }
+    }
 }

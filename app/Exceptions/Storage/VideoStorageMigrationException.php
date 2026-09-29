@@ -22,9 +22,10 @@ final class VideoStorageMigrationException extends StorageException
         return new self(sprintf('Video %d could not be read from disk "%s".', $video->getKey(), $video->disk));
     }
 
-    public static function incompleteCopy(Video $video, string $target): self
+    /** Report an incomplete transfer, preserving the storage error when available. */
+    public static function incompleteCopy(Video $video, string $target, ?Throwable $previous = null): self
     {
-        return new self(sprintf('Video %d was not copied completely to disk "%s".', $video->getKey(), $target));
+        return new self(sprintf('Video %d was not copied completely to disk "%s".', $video->getKey(), $target), previous: $previous);
     }
 
     public static function unreachable(string $disk, Throwable $previous): self

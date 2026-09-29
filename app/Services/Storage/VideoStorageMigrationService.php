@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
- * Moves a video file to another storage disk and switches the video over once the copy is complete.
- * The source file is left in place, so a migration can be repeated or rolled back safely.
+ * Copies both video versions and switches disks only once every copy is complete.
+ * Source files stay in place, so a migration can be repeated or rolled back safely.
  */
 final readonly class VideoStorageMigrationService
 {
@@ -35,8 +35,32 @@ final readonly class VideoStorageMigrationService
      */
     public function migrate(Video $video, string $target, bool $dryRun = false): VideoStorageMigrationResultEnum
     {
+        $alreadyCopied = true;
+        try {
+            foreach ($video->storedFilePaths() as $path) {
+                if (!$this->copyFile($video, $path, $target, $dryRun)) {
+                    $alreadyCopied = false;
+                }
+            }
+        } catch (VideoStorageMigrationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            throw VideoStorageMigrationException::incompleteCopy($video, $target, $exception);
+        }
+
+        if ($dryRun) {
+            return $alreadyCopied ? VideoStorageMigrationResultEnum::WouldSwitch : VideoStorageMigrationResultEnum::WouldCopy;
+        }
+
+        $video->forceFill(['disk' => $target])->save();
+
+        return $alreadyCopied ? VideoStorageMigrationResultEnum::Switched : VideoStorageMigrationResultEnum::Copied;
+    }
+
+    /** Return whether this file was already complete at the destination. */
+    private function copyFile(Video $video, string $path, string $target, bool $dryRun): bool
+    {
         $source = $video->getDisk();
-        $path = $video->path;
         if (!$source->exists($path)) {
             throw VideoStorageMigrationException::sourceMissing($video);
         }
@@ -46,7 +70,7 @@ final readonly class VideoStorageMigrationService
         $alreadyCopied = $targetDisk->exists($path) && $targetDisk->size($path) === $size;
 
         if ($dryRun) {
-            return $alreadyCopied ? VideoStorageMigrationResultEnum::WouldSwitch : VideoStorageMigrationResultEnum::WouldCopy;
+            return $alreadyCopied;
         }
 
         if (!$alreadyCopied) {
@@ -66,8 +90,6 @@ final readonly class VideoStorageMigrationService
             }
         }
 
-        $video->forceFill(['disk' => $target])->save();
-
-        return $alreadyCopied ? VideoStorageMigrationResultEnum::Switched : VideoStorageMigrationResultEnum::Copied;
+        return $alreadyCopied;
     }
 }

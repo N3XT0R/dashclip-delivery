@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Settings a team keeps for itself**: Teams can hold their own settings from now on, stored in the
   same shape as the settings of a channel. The blurring above is the first one.
 
+### Fixed
+- **Keeping both video versions together**: Storage transfers now copy and verify the blurred
+  video and its retained original before switching storage. File cleanup removes both versions,
+  including when a previous cleanup already removed one of them.
+
 ## [4.12.1] - 2026-09-28
 
 ### Fixed
