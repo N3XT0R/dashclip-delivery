@@ -89,6 +89,23 @@ services:
       REVERB_SCHEME: http
     restart: unless-stopped
 
+  # Runs the scheduled commands the way the crontab does on a server. Off by default, because a
+  # development copy usually carries real data: start it with `docker compose --profile scheduler up -d`.
+  scheduler:
+    profiles: ["scheduler"]
+    user: "${UID:-1000}:${GID:-1000}"
+    depends_on:
+      - redis
+      - db_sharing
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    working_dir: /var/www/html
+    command: php artisan schedule:work
+    volumes:
+      - .:/var/www/html/
+    restart: unless-stopped
+
   web_sharing:
     image: nginx:latest
     volumes:
