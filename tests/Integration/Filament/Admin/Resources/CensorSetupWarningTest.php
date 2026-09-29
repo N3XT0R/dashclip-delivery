@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\Configs\Pages\ListConfigs;
 use App\Models\Config\Category;
 use App\Models\User;
 use App\Services\Censor\VideoCensorInterface;
+use App\Services\Contracts\ConfigServiceInterface;
 use App\ValueObjects\CensorResult;
 use Livewire\Livewire;
 use Tests\DatabaseTestCase;
@@ -36,10 +37,23 @@ final class CensorSetupWarningTest extends DatabaseTestCase
     public function testTheSettingsWarnWhereTheToolingIsMissing(): void
     {
         $this->app->instance(VideoCensorInterface::class, new NotInstalledCensor());
+        app(ConfigServiceInterface::class)
+            ->set(CensorConfigEntry::ENABLED, true, CensorConfigEntry::CATEGORY, 'bool');
 
         Livewire::test(ListConfigs::class)
             ->set('activeTab', $this->censorTab)
             ->assertSee(__('configs.censor.not_installed'));
+    }
+
+    public function testTheSettingsSayWhenTheBlurringIsSwitchedOff(): void
+    {
+        $this->app->instance(VideoCensorInterface::class, new NotInstalledCensor());
+        app(ConfigServiceInterface::class)
+            ->set(CensorConfigEntry::ENABLED, false, CensorConfigEntry::CATEGORY, 'bool');
+
+        Livewire::test(ListConfigs::class)
+            ->set('activeTab', $this->censorTab)
+            ->assertSee(__('configs.censor.switched_off'));
     }
 
     public function testTheSettingsSayNothingWhereTheToolingIsThere(): void

@@ -14,6 +14,35 @@ use Tests\DatabaseTestCase;
 
 final class PythonVideoCensorTest extends DatabaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // the switch in the settings is off by default, these tests are about the processing itself
+        $this->app->make(ConfigServiceInterface::class)
+            ->set(CensorConfigEntry::ENABLED, true, 'censor', 'bool');
+    }
+
+    public function testNothingRunsWhileTheBlurringIsSwitchedOff(): void
+    {
+        $root = storage_path('framework/testing/censor-off-' . Str::uuid());
+        $disk = Storage::build(['driver' => 'local', 'root' => $root]);
+        $disk->put('model', 'test model');
+        $disk->put('process.php', '<?php');
+        config()->set('censor', [
+            'enabled' => true, 'python' => PHP_BINARY,
+            'script' => $root . '/process.php', 'model' => $root . '/model',
+        ]);
+        $this->app->make(ConfigServiceInterface::class)
+            ->set(CensorConfigEntry::ENABLED, false, 'censor', 'bool');
+        $this->app->forgetInstance(VideoCensorInterface::class);
+
+        try {
+            self::assertFalse($this->app->make(VideoCensorInterface::class)->isAvailable());
+        } finally {
+            $disk->deleteDirectory('');
+        }
+    }
+
     public function testDatabaseTimeoutStopsTheProcessingCommand(): void
     {
         $root = storage_path('framework/testing/censor-timeout-' . Str::uuid());

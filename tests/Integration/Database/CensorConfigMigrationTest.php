@@ -24,7 +24,10 @@ final class CensorConfigMigrationTest extends DatabaseTestCase
         self::assertSame(7, $config->get(CensorConfigEntry::FRAME_STEP, 'censor', withoutCache: true));
         self::assertSame(0.3, $config->get(CensorConfigEntry::CONFIDENCE, 'censor', withoutCache: true));
         $this->assertDatabaseHas('config_categories', ['slug' => 'censor', 'is_visible' => true]);
-        self::assertSame(6, Config::query()->whereIn('key', array_keys(CensorConfigEntry::RULES))->count());
+        self::assertSame(
+            count(CensorConfigEntry::RULES),
+            Config::query()->whereIn('key', array_keys(CensorConfigEntry::RULES))->count()
+        );
 
         $config->set(CensorConfigEntry::FRAME_STEP, 10, 'censor', 'int');
         $this->seed(CensorConfigSeeder::class);

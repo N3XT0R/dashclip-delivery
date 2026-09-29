@@ -7,6 +7,7 @@ namespace App\Constants\Config;
 final readonly class CensorConfigEntry
 {
     public const string CATEGORY = 'censor';
+    public const string ENABLED = 'censor_enabled';
     public const string COLUMNS = 'censor_columns';
     public const string ROWS = 'censor_rows';
     public const string FRAME_STEP = 'censor_frame_step';
@@ -16,6 +17,7 @@ final readonly class CensorConfigEntry
 
     /** @var array<string, list<string>> Accepted operating ranges for editable settings. */
     public const array RULES = [
+        self::ENABLED => ['required', 'boolean'],
         self::COLUMNS => ['required', 'integer', 'between:1,8'],
         self::ROWS => ['required', 'integer', 'between:1,8'],
         self::FRAME_STEP => ['required', 'integer', 'between:1,60'],

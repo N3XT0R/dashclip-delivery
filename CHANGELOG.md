@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Switching the blurring off without a deployment**: The settings carry a switch for the whole
+  processing, which starts off. While it is off, no video is blurred, teams are not offered the
+  choice, and the settings say why.
+
 - **Blurring a video that is already there**: A submitter can ask for the number plates of an
   existing video to be blurred, not only for new uploads. It runs in the background and reports
   back when it is done. The original is kept, so the choice between the two versions is open from

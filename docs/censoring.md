@@ -51,13 +51,21 @@ Der Benutzer, unter dem die Warteschlange läuft, muss `/opt/censor` lesen dürf
 
 ## Einschalten
 
-In der `.env`:
+Es braucht zwei Dinge, absichtlich getrennt: die Werkzeuge auf der Maschine und die Freigabe in der
+Anwendung.
+
+**1. Auf dem Server**, in der `.env`:
 
 ```dotenv
 CENSOR_ENABLED=true
 ```
 
-Ohne diesen Schalter bleibt die Funktion aus. Schaltet ein Team die Unkenntlichmachung trotzdem ein,
+**2. In der Verwaltung**, unter Einstellungen im Bereich der Unkenntlichmachung den Eintrag
+„Kennzeichen unkenntlich machen" auf an stellen. Er steht nach der Installation auf aus, weil die
+Verarbeitung eine Maschine je Video für Minuten beschäftigt. So lässt sie sich ohne Deployment
+anhalten, etwa wenn der Server für anderes gebraucht wird.
+
+Fehlt eines von beidem, bleibt die Funktion aus. Schaltet ein Team die Unkenntlichmachung trotzdem ein,
 scheitert die Aufbereitung des Videos mit einer klaren Meldung, statt es unbearbeitet auszuliefern.
 
 ## Erkennung einstellen

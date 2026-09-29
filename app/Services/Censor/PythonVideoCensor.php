@@ -23,8 +23,19 @@ readonly class PythonVideoCensor implements VideoCensorInterface
     {
     }
 
-    /** Whether this server has enabled processing and has readable script and model files. */
+    /**
+     * Whether blurring can happen here: the machine carries the tooling, and it is switched on.
+     *
+     * The tooling comes from the installation, the switch from the settings, so an administrator
+     * can stop it without a deployment when the machine is needed for something else.
+     */
     public function isAvailable(): bool
+    {
+        return $this->isInstalled() && $this->settings->isEnabled();
+    }
+
+    /** Whether the machine carries the script, the model and the runtime at all. */
+    public function isInstalled(): bool
     {
         return (bool)($this->config['enabled'] ?? false)
             && is_readable((string)($this->config['script'] ?? ''))

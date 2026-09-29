@@ -20,11 +20,8 @@ return new class () extends Migration {
         if ($categoryId === null) {
             return;
         }
-        DB::table('configs')->where('config_category_id', $categoryId)
-            ->whereIn('key', ['censor_columns', 'censor_rows', 'censor_frame_step',
-                'censor_confidence', 'censor_margin', 'censor_timeout_seconds'])->delete();
-        if (!DB::table('configs')->where('config_category_id', $categoryId)->exists()) {
-            DB::table('config_categories')->where('id', $categoryId)->delete();
-        }
+        // everything this category holds belongs to the blurring, later keys included
+        DB::table('configs')->where('config_category_id', $categoryId)->delete();
+        DB::table('config_categories')->where('id', $categoryId)->delete();
     }
 };

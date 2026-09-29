@@ -24,6 +24,14 @@ final class CensorConfigSeeder extends Seeder
                 ['slug' => CensorConfigEntry::CATEGORY],
                 ['name' => 'Kennzeichen-Verpixelung', 'is_visible' => true],
             );
+            Config::query()->firstOrCreate(['key' => CensorConfigEntry::ENABLED], [
+                // off until someone turns it on: it keeps a machine busy for minutes per video
+                'value' => false,
+                'cast_type' => 'bool',
+                'is_visible' => true,
+                'config_category_id' => $category->getKey(),
+            ]);
+
             foreach (['columns' => 3, 'rows' => 2, 'frame_step' => 3, 'confidence' => 0.15,
                 'margin' => 0.25, 'timeout_seconds' => 3600] as $name => $default) {
                 $legacyKey = match ($name) {

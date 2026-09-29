@@ -14,9 +14,11 @@ return [
         'description' => 'Beschreibung',
     ],
     'censor' => [
+        'switched_off' => 'Die Unkenntlichmachung ist derzeit abgeschaltet. Setze „Kennzeichen unkenntlich machen" auf an, damit neue Videos wieder bearbeitet werden.',
         'not_installed' => 'Die Unkenntlichmachung ist auf diesem Server nicht eingerichtet. Diese Werte werden gespeichert, wirken sich aber erst aus, sobald die Werkzeuge installiert und freigeschaltet sind.',
     ],
     'keys' => [
+        CensorConfigEntry::ENABLED => 'Kennzeichen unkenntlich machen (schaltet die gesamte Verarbeitung an und aus)',
         CensorConfigEntry::COLUMNS => 'Spalten der Erkennungskacheln (1 bis 8)',
         CensorConfigEntry::ROWS => 'Zeilen der Erkennungskacheln (1 bis 8)',
         CensorConfigEntry::FRAME_STEP => 'Jedes wievielte Bild geprüft wird (1 bis 60)',
