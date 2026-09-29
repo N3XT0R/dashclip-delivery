@@ -24,4 +24,12 @@ enum DeliveredVersionEnum: string
     {
         return __('video_versions.' . $this->value . '.label');
     }
+
+    /**
+     * How the action that hands out this version is named.
+     */
+    public function action(): string
+    {
+        return __('video_versions.' . $this->value . '.action');
+    }
 }

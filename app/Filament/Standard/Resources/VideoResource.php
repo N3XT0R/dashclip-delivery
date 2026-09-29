@@ -380,9 +380,10 @@ class VideoResource extends Resource
     {
         return Action::make('blur-now')
             ->defaultColor('gray')
-            ->button()
+            ->iconButton()
             ->icon(Heroicon::OutlinedShieldCheck)
             ->label(__('video_versions.blur_now.action'))
+            ->tooltip(__('video_versions.blur_now.action'))
             ->requiresConfirmation()
             ->modalDescription(__('video_versions.blur_now.confirm'))
             ->visible(fn (Video $record): bool => self::mayBlurNow($record))
@@ -420,10 +421,10 @@ class VideoResource extends Resource
     {
         return Action::make('switch-version')
             ->defaultColor('gray')
-            ->button()
+            ->iconButton()
             ->icon(Heroicon::OutlinedArrowsRightLeft)
-            ->label(fn (Video $record): string => $record->delivered_version?->other()?->label()
-                ?? __('video_versions.original.label'))
+            ->label(fn (Video $record): string => self::switchVersionLabel($record))
+            ->tooltip(fn (Video $record): string => self::switchVersionLabel($record))
             ->requiresConfirmation()
             ->modalDescription(fn (Video $record): string => __(
                 'video_versions.' . ($record->delivered_version?->other()?->value
@@ -450,6 +451,15 @@ class VideoResource extends Resource
                     ->success()
                     ->send();
             });
+    }
+
+    /**
+     * What the switch would hand out, used as the label and as the hint on the icon.
+     */
+    private static function switchVersionLabel(Video $record): string
+    {
+        return $record->delivered_version?->other()?->action()
+            ?? __('video_versions.original.action');
     }
 
     /**
