@@ -26,7 +26,20 @@ final class TeamSettingRepositoryTest extends DatabaseTestCase
 
     public function testAnUnsetSettingAnswersWithItsDefault(): void
     {
-        self::assertFalse($this->repository->get($this->team(), TeamSettingEnum::CENSOR_LICENSE_PLATES));
+        $team = $this->team();
+
+        self::assertTrue($this->repository->get($team, TeamSettingEnum::CENSOR_LICENSE_PLATES));
+        self::assertFalse($this->repository->get($team, TeamSettingEnum::CENSOR_FACES));
+        self::assertFalse($this->repository->hasChosen($team, TeamSettingEnum::CENSOR_LICENSE_PLATES));
+    }
+
+    public function testChoosingIsToldApartFromLivingWithTheDefault(): void
+    {
+        $team = $this->team();
+        $this->repository->set($team, TeamSettingEnum::CENSOR_LICENSE_PLATES, true);
+
+        self::assertTrue($this->repository->hasChosen($team, TeamSettingEnum::CENSOR_LICENSE_PLATES));
+        self::assertFalse($this->repository->hasChosen($team, TeamSettingEnum::CENSOR_FACES));
     }
 
     public function testAStoredSettingComesBackInItsOwnType(): void
@@ -58,10 +71,10 @@ final class TeamSettingRepositoryTest extends DatabaseTestCase
     {
         $chose = $this->team();
         $other = $this->team();
-        $this->repository->set($chose, TeamSettingEnum::CENSOR_LICENSE_PLATES, true);
+        $this->repository->set($chose, TeamSettingEnum::CENSOR_LICENSE_PLATES, false);
 
-        self::assertTrue($this->repository->get($chose, TeamSettingEnum::CENSOR_LICENSE_PLATES));
-        self::assertFalse($this->repository->get($other, TeamSettingEnum::CENSOR_LICENSE_PLATES));
+        self::assertFalse($this->repository->get($chose, TeamSettingEnum::CENSOR_LICENSE_PLATES));
+        self::assertTrue($this->repository->get($other, TeamSettingEnum::CENSOR_LICENSE_PLATES));
     }
 
     public function testAllListsEverySettingIncludingTheUntouchedOnes(): void
@@ -72,7 +85,7 @@ final class TeamSettingRepositoryTest extends DatabaseTestCase
         $all = $this->repository->all($team);
 
         self::assertTrue($all[TeamSettingEnum::CENSOR_FACES->value]);
-        self::assertFalse($all[TeamSettingEnum::CENSOR_LICENSE_PLATES->value]);
+        self::assertTrue($all[TeamSettingEnum::CENSOR_LICENSE_PLATES->value]);
     }
 
     public function testSettingsGoAwayWithTheirTeam(): void

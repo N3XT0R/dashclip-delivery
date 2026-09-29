@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Storage;
 use Tests\DatabaseTestCase;
 
 /**
- * A video is only blurred when its team asked for it, and a video that asked for it is never
- * handed on unblurred.
+ * Videos are blurred unless their team switched it off, and a video that was to be blurred is
+ * never handed on unblurred. A team that never chose is not held up where the tooling is missing.
  */
 final class CensorVideoStepTest extends DatabaseTestCase
 {
@@ -29,14 +29,42 @@ final class CensorVideoStepTest extends DatabaseTestCase
         Storage::fake('local');
     }
 
-    public function testAVideoOfATeamThatDidNotAskIsLeftAlone(): void
+    public function testAVideoOfATeamThatSwitchedItOffIsLeftAlone(): void
     {
-        $video = $this->video($this->team());
+        $team = $this->team();
+        app(TeamSettingRepository::class)->set($team, TeamSettingEnum::CENSOR_LICENSE_PLATES, false);
+        $video = $this->video($team);
 
         $context = new IngestContext($video);
 
         self::assertFalse($this->step(new NeverCalledCensor())->isApplicable($context));
         self::assertNull($video->refresh()->source_path);
+    }
+
+    public function testATeamThatNeverChoseGetsTheBlurringAnyway(): void
+    {
+        $video = $this->video($this->team());
+
+        self::assertTrue($this->step(new FakeCensor())->isApplicable(new IngestContext($video)));
+    }
+
+    public function testATeamThatNeverChoseIsNotHeldUpWhereBlurringIsMissing(): void
+    {
+        $video = $this->video($this->team());
+
+        self::assertFalse($this->step(new UnavailableCensor())->isApplicable(new IngestContext($video)));
+        self::assertFalse((bool)$video->refresh()->censor_requested);
+    }
+
+    public function testATeamThatAskedForItIsHeldUpWhereBlurringIsMissing(): void
+    {
+        $team = $this->team(wantsBlurring: true);
+        $video = $this->video($team);
+
+        self::assertTrue($this->step(new UnavailableCensor())->isApplicable(new IngestContext($video)));
+
+        $this->expectException(VideoCensorException::class);
+        $this->step(new UnavailableCensor())->handle(new IngestContext($video));
     }
 
     public function testAVideoOfATeamThatAskedIsBlurredAndKeepsItsOriginal(): void

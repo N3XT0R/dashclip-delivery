@@ -8,13 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Blurring number plates before a video is offered** (#400): A team can ask for it in its profile
-  under "Einstellungen". Every video it uploads from then on has the number plates that are found
+- **Blurring number plates before a video is offered** (#400): Number plates that are found are
   covered before the previews are made, so the blurred picture is what channels see and download.
-  The untouched original is kept alongside. A video that was to be blurred is never offered
-  unblurred: when the blurring fails, the video does not go out. The detection runs on the
-  processor, no graphics card needed, and it is a help rather than a guarantee, which the setting
-  says as well.
+  This applies to every upload; the upload page says so, and whoever owns the team can switch it
+  off in their profile under "Einstellungen". The untouched original is kept alongside. A team that
+  asked for the blurring never has its videos offered unblurred: when the blurring fails, the video
+  does not go out. The detection runs on the processor, no graphics card needed, and it is a help
+  rather than a guarantee, which the upload page and the setting both say.
 - **Settings a team keeps for itself**: Teams can hold their own settings from now on, stored in the
   same shape as the settings of a channel. The blurring above is the first one.
 

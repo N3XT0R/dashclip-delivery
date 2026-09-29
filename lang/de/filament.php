@@ -170,6 +170,9 @@ return [
                 'role_helper_text' => 'Optional: Gibt die Kameraposition oder Perspektive des Videos an, z. B. Front (F) oder Rear (R)',
                 'preferred_channel' => 'Wunschkanal',
                 'preferred_channel_helper_text' => 'Optional: Wähle den Kanal, dem wir dein Video zuerst anbieten sollen. Klappt das nicht, weil der Kanal gerade keine Videos annimmt oder sein Wochenlimit erreicht hat, läuft die normale Verteilung.',
+                'censor_hint' => 'Erkannte Kennzeichen werden vor der Weitergabe automatisch unkenntlich gemacht. '
+                    . 'Das Original bleibt erhalten. Wer das Team besitzt, kann das im Profil unter '
+                    . '„Einstellungen“ abschalten.',
             ],
             'messages' => [
                 'success' => [

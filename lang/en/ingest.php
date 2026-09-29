@@ -22,6 +22,7 @@ return [
     'steps' => [
         'validate_input_file' => 'Checking file integrity',
         'lookup_and_update_video_hash' => 'Calculate and update video hash',
+        'censor_video' => 'Blur number plates',
         'generate_preview_for_clips' => 'Generate preview for clips',
         'upload_video_to_dropbox' => 'Upload video to storage',
     ],

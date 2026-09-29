@@ -9,6 +9,7 @@ use App\Models\Team;
 use App\Models\Video;
 use App\Repository\ClipRepository;
 use App\Repository\TeamRepository;
+use App\Services\Censor\CensorHintService;
 use App\Services\Channel\UploadTargetChannelService;
 use Carbon\CarbonInterval;
 use Closure;
@@ -109,9 +110,24 @@ class CreateVideo extends CreateRecord
                             )
                             ->trim(),
                         $this->getPreferredChannelComponent(),
+                        $this->getCensorHintComponent(),
                     ])
                     ->columnSpanFull()
             ]);
+    }
+
+    /**
+     * Say that plates will be blurred, and where that is switched off again.
+     */
+    protected function getCensorHintComponent(): TextEntry
+    {
+        return TextEntry::make('censor_hint')
+            ->hiddenLabel()
+            ->state(__('filament.video_upload.form.fields.censor_hint'))
+            ->visible(fn (): bool => app(CensorHintService::class)->appliesTo($this->getUploadTeam()))
+            ->icon(Heroicon::OutlinedShieldCheck)
+            ->extraAttributes(['class' => 'text-sm text-gray-500'])
+            ->columnSpanFull();
     }
 
     protected function getFileComponent(): FileUpload
