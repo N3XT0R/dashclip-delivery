@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Maintainability**: Events that carry the same thing share a base instead of repeating their
+  scaffolding, the three commands that put videos back into processing differ only in the status
+  and the age they look for, and the two offer actions share the rule that decides whether a
+  channel may still act on an offer. Behaviour is unchanged.
+
 ### Added
 - **Blurred videos say so**: A video whose number plates were blurred is marked as such in the
   offer details a channel opens, in the video details of its submitter and in the administration.

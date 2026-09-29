@@ -74,6 +74,26 @@ final readonly class Actions
     }
 
     /**
+     * Whether the channel can still act on this offer: it is listed on a tab that allows it, its
+     * video is there, and the offer itself may still be given back.
+     * @param Assignment|null $record
+     * @param MyOffers $page
+     * @return bool
+     */
+    private function isStillOpenToTheChannel(?Assignment $record, MyOffers $page): bool
+    {
+        if ($record === null || $record->videoWithTrashed?->trashed()) {
+            return false;
+        }
+
+        if (!in_array($page->activeTab, ['available', 'downloaded'], true)) {
+            return false;
+        }
+
+        return $this->assignmentService->canReturnAssignment($record);
+    }
+
+    /**
      * Whether the video of an offer can still be delivered: a deleted video keeps its files until
      * the purge run removes them.
      * @param Assignment|null $record
@@ -108,22 +128,7 @@ final readonly class Actions
             ->requiresConfirmation()
             ->label(__('my_offers.table.actions.return_offer'))
             ->color('danger')
-            ->visible(function (?Assignment $record) use ($page): bool {
-                $tabs = ['available', 'downloaded'];
-                if ($record === null) {
-                    return false;
-                }
-
-                if ($record->videoWithTrashed?->trashed()) {
-                    return false;
-                }
-
-                if (!in_array($page->activeTab, $tabs, true)) {
-                    return false;
-                }
-
-                return $this->assignmentService->canReturnAssignment($record);
-            })
+            ->visible(fn (?Assignment $record): bool => $this->isStillOpenToTheChannel($record, $page))
             ->action(function (Assignment $record) use ($page) {
                 $this->assignmentService->returnAssignment($record, auth()->user());
                 $page->resetTable();
@@ -135,22 +140,7 @@ final readonly class Actions
         return Action::make('submit')
             ->label(__('common.save'))
             ->color('primary')
-            ->visible(function (?Assignment $record) use ($page): bool {
-                $tabs = ['available', 'downloaded'];
-                if ($record === null) {
-                    return false;
-                }
-
-                if ($record->videoWithTrashed?->trashed()) {
-                    return false;
-                }
-
-                if (!in_array($page->activeTab, $tabs, true)) {
-                    return false;
-                }
-
-                return $this->assignmentService->canReturnAssignment($record);
-            })
+            ->visible(fn (?Assignment $record): bool => $this->isStillOpenToTheChannel($record, $page))
             ->action(function (Assignment $record) use ($page): void {
                 app(UpdateAssignmentNote::class)->handle($record, $page->note, auth()->user());
                 Notification::make()
