@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   channel may still act on an offer. Behaviour is unchanged.
 
 ### Added
+- **Blurring a video that is already there**: A submitter can ask for the number plates of an
+  existing video to be blurred, not only for new uploads. It runs in the background and reports
+  back when it is done. The original is kept, so the choice between the two versions is open from
+  then on.
 - **Choosing which version goes out**: A submitter decides per video whether channels get the
   blurred copy or the untouched original, and can change that later. The previews are made again
   from the file that is handed out, so a preview never shows what the chosen version hides.

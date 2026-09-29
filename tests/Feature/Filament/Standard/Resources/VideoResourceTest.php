@@ -19,6 +19,10 @@ use App\Models\Video;
 use App\Repository\TeamRepository;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\BlurVideoNowJob;
+use App\Services\Censor\VideoCensorInterface;
+use App\ValueObjects\CensorResult;
+use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Tests\DatabaseTestCase;
@@ -226,6 +230,38 @@ final class VideoResourceTest extends DatabaseTestCase
         }
 
         $this->user->givePermissionTo($permissions);
+    }
+
+    public function testTheSubmitterCanAskForTheBlurringAfterTheUpload(): void
+    {
+        Queue::fake();
+        $this->app->instance(VideoCensorInterface::class, new class () implements VideoCensorInterface {
+            public function isAvailable(): bool
+            {
+                return true;
+            }
+
+            public function censor(string $sourcePath, string $targetPath): CensorResult
+            {
+                return new CensorResult($targetPath);
+            }
+        });
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)
+            ->create(['processing_status' => ProcessingStatusEnum::Completed]);
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionVisible('blur-now', $video)
+            ->callTableAction('blur-now', $video);
+
+        Queue::assertPushed(BlurVideoNowJob::class);
+    }
+
+    public function testAVideoThatAlreadyCarriesBothVersionsIsNotOfferedTheBlurring(): void
+    {
+        $video = $this->videoWithBothVersions();
+
+        Livewire::test(ListVideos::class)
+            ->assertTableActionHidden('blur-now', $video);
     }
 
     public function testTheSubmitterCanHandOutTheOtherVersion(): void
