@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- **Maintainability**: Events that carry the same thing share a base instead of repeating their
-  scaffolding, the three commands that put videos back into processing differ only in the status
-  and the age they look for, and the two offer actions share the rule that decides whether a
-  channel may still act on an offer. Behaviour is unchanged.
-
 ### Added
 - **Blurring a video that is already there**: A submitter can ask for the number plates of an
   existing video to be blurred, not only for new uploads. It runs in the background and reports
@@ -42,6 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rather than a guarantee, which the upload page and the setting both say.
 - **Settings a team keeps for itself**: Teams can hold their own settings from now on, stored in the
   same shape as the settings of a channel. The blurring above is the first one.
+
+### Changed
+- **Maintainability**: Events that carry the same thing share a base instead of repeating their
+  scaffolding, the three commands that put videos back into processing differ only in the status
+  and the age they look for, and the two offer actions share the rule that decides whether a
+  channel may still act on an offer. Behaviour is unchanged.
 
 ### Fixed
 - **Keeping both video versions together**: Storage transfers now copy and verify the blurred
