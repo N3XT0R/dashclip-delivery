@@ -422,7 +422,10 @@ class VideoResource extends Resource
         return Action::make('switch-version')
             ->defaultColor('gray')
             ->iconButton()
-            ->icon(Heroicon::OutlinedArrowsRightLeft)
+            // filled shield while the blurred version is the one going out, outlined while it is not
+            ->icon(fn (Video $record): Heroicon => $record->hasBlurredPlates()
+                ? Heroicon::ShieldCheck
+                : Heroicon::OutlinedShieldCheck)
             ->label(fn (Video $record): string => self::switchVersionLabel($record))
             ->tooltip(fn (Video $record): string => self::switchVersionLabel($record))
             ->requiresConfirmation()
