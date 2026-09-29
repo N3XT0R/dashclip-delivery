@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   offer details a channel opens, in the video details of its submitter and in the administration.
   The note names the limit as well: the detection is a help, not a guarantee, and a plate can have
   slipped through.
+- **A warning where blurring is not set up**: The settings of the blurring say plainly when the
+  server has none of the tooling, so nobody adjusts values that nothing acts upon.
 - **Plate blurring settings**: Administrators can adjust detection thresholds, frame intervals,
   margins, tiling and processing time limits in a dedicated configuration category. Existing
   installation values are imported once; subsequent changes apply to the next video.
