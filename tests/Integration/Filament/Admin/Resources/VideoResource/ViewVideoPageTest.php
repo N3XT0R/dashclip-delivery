@@ -104,6 +104,20 @@ final class ViewVideoPageTest extends DatabaseTestCase
             ->assertSee('2 MB');
     }
 
+    public function testTheDetailsSayWhetherThePlatesWereBlurred(): void
+    {
+        $blurred = Video::factory()->create(['source_path' => 'videos/original.mp4']);
+        $untouched = Video::factory()->create();
+
+        $this->actingAs($this->admin);
+
+        Livewire::test(ViewVideo::class, ['record' => $blurred->getKey()])
+            ->assertSee(__('filament.admin.labels.blurred_yes'));
+
+        Livewire::test(ViewVideo::class, ['record' => $untouched->getKey()])
+            ->assertSee(__('filament.admin.labels.blurred_no'));
+    }
+
     public function testTheDetailsShowTheMetaData(): void
     {
         $meta = ['codec' => 'h264', 'fps' => 30];

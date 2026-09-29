@@ -103,6 +103,13 @@ class VideoResource extends Resource
                                     ->state(fn (Video $record) => self::preferredChannelName($record))
                                     ->visible(fn (Video $record) => filled(self::preferredChannelName($record))),
 
+                                TextEntry::make('blurred')
+                                    ->label(__('filament.video_resource.view.fields.blurred'))
+                                    ->translateLabel()
+                                    ->state(__('filament.video_resource.view.fields.blurred_state'))
+                                    ->icon(Heroicon::OutlinedShieldCheck)
+                                    ->visible(fn (Video $record): bool => $record->hasBlurredPlates()),
+
                                 TextEntry::make('created_at')
                                     ->label(__('filament.video_resource.view.fields.created_at'))
                                     ->translateLabel()

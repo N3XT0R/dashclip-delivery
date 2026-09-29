@@ -183,6 +183,12 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                         TextEntry::make('video.original_name')
                             ->label(__('my_offers.modal.metadata.filename'))
                             ->default('—'),
+                        TextEntry::make('blurred')
+                            ->label(__('my_offers.modal.metadata.blurred'))
+                            ->state(__('my_offers.modal.metadata.blurred_hint'))
+                            ->icon(Heroicon::OutlinedShieldCheck)
+                            ->columnSpanFull()
+                            ->visible($video?->hasBlurredPlates() ?? false),
                     ])
                     ->columns(3),
                 Section::make(__('my_offers.modal.note.heading'))
