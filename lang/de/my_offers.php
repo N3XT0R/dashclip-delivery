@@ -84,6 +84,8 @@ return [
             'file_size' => 'Dateigröße',
             'duration' => 'Länge',
             'filename' => 'Dateiname',
+            'blurred' => 'Bearbeitet',
+            'blurred_hint' => 'Erkannte Kennzeichen wurden vor der Weitergabe automatisch unkenntlich gemacht. Das ist eine Hilfe und keine Garantie, einzelne Kennzeichen können durchgerutscht sein.',
         ],
         'note' => [
             'heading' => 'Nachricht an den Einsender',

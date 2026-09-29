@@ -8,6 +8,7 @@ use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Resources\VideoResource\Pages\ListVideos;
+use App\Filament\Standard\Resources\VideoResource\Pages\ViewVideo;
 use App\Models\Assignment;
 use App\Models\Channel;
 use App\Models\Team;
@@ -223,6 +224,25 @@ final class VideoResourceTest extends DatabaseTestCase
         }
 
         $this->user->givePermissionTo($permissions);
+    }
+
+    public function testTheDetailsTellTheSubmitterThatThePlatesWereBlurred(): void
+    {
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
+        $video->update(['source_path' => 'videos/original.mp4']);
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertSee(__('filament.video_resource.view.fields.blurred_state'));
+    }
+
+    public function testTheDetailsOfAnUntouchedVideoSayNothingAboutBlurring(): void
+    {
+        $video = Video::factory()->for($this->tenant, 'team')->withClips(1, $this->user)->create();
+
+        Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
+            ->assertStatus(200)
+            ->assertDontSee(__('filament.video_resource.view.fields.blurred_state'));
     }
 
     public function testAVideoWhoseDistributionIsFinishedStaysVisibleWithItsState(): void

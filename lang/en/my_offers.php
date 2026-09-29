@@ -85,6 +85,9 @@ return [
             'file_size' => 'File size',
             'duration' => 'Duration',
             'filename' => 'Filename',
+            'blurred' => 'Edited',
+            'blurred_hint' => 'Number plates that were found have been blurred before this video was passed on. '
+                . 'That is a help, not a guarantee, and a plate may have slipped through.',
         ],
         'note' => [
             'heading' => 'Message to the submitter',

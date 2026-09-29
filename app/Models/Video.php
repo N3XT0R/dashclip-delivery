@@ -93,6 +93,16 @@ class Video extends Model
     }
 
     /**
+     * Whether the file that is handed out had its number plates blurred, which is the case once
+     * the untouched original was put aside.
+     * @return bool
+     */
+    public function hasBlurredPlates(): bool
+    {
+        return $this->getAttribute('source_path') !== null;
+    }
+
+    /**
      * Only videos whose files are still stored; a deleted video keeps them until the purge run.
      * @param Builder<Video> $query
      * @return Builder<Video>

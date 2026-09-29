@@ -35,6 +35,11 @@ class ViewVideo extends ViewRecord
                     ->placeholder('-')
                     ->getStateUsing(fn (Video $record): ?string => $record->clipsWithTrashed
                         ->first()?->preferredChannel?->getAttribute('name')),
+                TextEntry::make('blurred')
+                    ->label(__('filament.admin.labels.blurred'))
+                    ->getStateUsing(fn (Video $record): string => $record->hasBlurredPlates()
+                        ? __('filament.admin.labels.blurred_yes')
+                        : __('filament.admin.labels.blurred_no')),
                 TextEntry::make('hash')->label('Hash')->columnSpanFull(),
                 TextEntry::make('created_at')
                     ->label(__('filament.admin.labels.created'))

@@ -116,6 +116,57 @@ final class MyOffersTest extends DatabaseTestCase
         self::assertFalse($this->previewSectionOf($assignment->refresh())->isVisible());
     }
 
+    public function testTheDetailsSayWhenTheVideoWasBlurred(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = Assignment::factory()->forChannel($channel)->create([
+            'status' => StatusEnum::PICKEDUP->value,
+            'expires_at' => now()->addWeek(),
+        ]);
+        $assignment->video->update(['source_path' => 'videos/original.mp4']);
+
+        $schema = (new MyOffers())->getDetailsInfolist($assignment->refresh());
+
+        self::assertStringContainsString(
+            __('my_offers.modal.metadata.blurred_hint'),
+            $this->renderedText($schema)
+        );
+    }
+
+    public function testTheDetailsSayNothingAboutBlurringForAnUntouchedVideo(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = Assignment::factory()->forChannel($channel)->create([
+            'status' => StatusEnum::PICKEDUP->value,
+            'expires_at' => now()->addWeek(),
+        ]);
+
+        $schema = (new MyOffers())->getDetailsInfolist($assignment);
+
+        self::assertStringNotContainsString(
+            __('my_offers.modal.metadata.blurred_hint'),
+            $this->renderedText($schema)
+        );
+    }
+
+    /**
+     * The visible texts of every entry of a schema, so a hidden entry does not count.
+     */
+    private function renderedText(\Filament\Schemas\Schema $schema): string
+    {
+        $texts = [];
+        foreach ($schema->getComponents(withHidden: false) as $component) {
+            foreach ($component->getChildComponentContainers() as $container) {
+                foreach ($container->getComponents(withHidden: false) as $child) {
+                    $state = $child->getState();
+                    $texts[] = is_scalar($state) ? (string)$state : (string)json_encode($state);
+                }
+            }
+        }
+
+        return implode(' ', $texts);
+    }
+
     public function testThePreviewOfAStoredVideoPointsAtItsClip(): void
     {
         [$channel] = $this->actingOperator();
