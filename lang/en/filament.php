@@ -148,6 +148,8 @@ return [
             'messages' => [
                 'no_videos' => 'No videos available.',
                 'table_description' => 'This table shows all videos that have been uploaded and assigned to you.',
+                'version_switched' => 'The :version is handed out from now on.',
+                'version_not_switchable' => 'This video has no second version any more.',
                 'not_deletable' => 'The video can no longer be deleted because it has meanwhile been offered to a channel.',
             ],
         ],

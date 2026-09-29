@@ -8,6 +8,7 @@ use App\DTO\UploaderPoolInfo;
 use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Enum\UploaderTypeEnum;
+use App\Models\Channel;
 use App\Models\Clip;
 use App\Models\Team;
 use App\Models\User;
@@ -358,6 +359,23 @@ class VideoRepository
                     ->whereColumn('assignments.expires_at', '>', 'videos.deleted_at');
             })
             ->lazyById($chunkSize);
+    }
+
+    /**
+     * The channels that already downloaded this video, together with the people to tell.
+     *
+     * @param Video $video
+     * @return Collection<int, Channel>
+     */
+    public function channelsThatDownloaded(Video $video): Collection
+    {
+        return Channel::query()
+            ->whereHas('assignments', static function (Builder $query) use ($video): void {
+                $query->where('video_id', $video->getKey())
+                    ->whereHas('downloads');
+            })
+            ->with(['channelUsers' => static fn ($relation) => $relation->wherePivot('is_user_verified', true)])
+            ->get();
     }
 
     /**

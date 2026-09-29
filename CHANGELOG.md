@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Blurring a video that is already there**: A submitter can ask for the number plates of an
+  existing video to be blurred, not only for new uploads. It runs in the background and reports
+  back when it is done. The original is kept, so the choice between the two versions is open from
+  then on.
+- **Choosing which version goes out**: A submitter decides per video whether channels get the
+  blurred copy or the untouched original, and can change that later. The previews are made again
+  from the file that is handed out, so a preview never shows what the chosen version hides.
+  Channels that already downloaded the video are told by mail that what they hold is no longer
+  what the submitter passes on, and the offer details say when the version was changed.
+
 - **Blurred videos say so**: A video whose number plates were blurred is marked as such in the
   offer details a channel opens, in the video details of its submitter and in the administration.
   The note names the limit as well: the detection is a help, not a guarantee, and a plate can have
@@ -56,6 +66,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   whose files were already removed for good is left alone and reported.
 
 ### Changed
+- **Scheduled commands in the development environment**: The containers now carry a service that
+  runs the scheduled commands the way the crontab does on a server. It stays out of the way until
+  it is asked for, because a development copy usually carries real data.
+
 - **Maintainability**: The ZIP build passes the state of one run (job, progress, temporary copies)
   as one object instead of handing five values from method to method, and it no longer takes the
   address and browser of the caller, which it never used. The clip import carries its settings as

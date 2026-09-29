@@ -148,6 +148,8 @@ return [
             'messages' => [
                 'no_videos' => 'Es sind keine Videos verfügbar.',
                 'table_description' => 'Hier siehst du alle Videos, die du selbst für andere Kanäle hochgeladen hast.',
+                'version_switched' => 'Ab jetzt wird die :version ausgeliefert.',
+                'version_not_switchable' => 'Für dieses Video gibt es keine zweite Fassung mehr.',
                 'not_deletable' => 'Das Video kann nicht mehr gelöscht werden, weil es inzwischen einem Kanal angeboten wurde.',
             ],
         ],
