@@ -189,6 +189,14 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                             ->icon(Heroicon::OutlinedShieldCheck)
                             ->columnSpanFull()
                             ->visible($video?->hasBlurredPlates() ?? false),
+                        TextEntry::make('version_switched')
+                            ->label(__('video_versions.switched'))
+                            ->state(__('video_versions.switched_hint', [
+                                'date' => $video?->version_switched_at?->format('d.m.Y') ?? '',
+                            ]))
+                            ->icon(Heroicon::OutlinedArrowsRightLeft)
+                            ->columnSpanFull()
+                            ->visible($video?->version_switched_at !== null),
                     ])
                     ->columns(3),
                 Section::make(__('my_offers.modal.note.heading'))

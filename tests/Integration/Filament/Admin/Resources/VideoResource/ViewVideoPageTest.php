@@ -6,6 +6,7 @@ namespace Tests\Integration\Filament\Admin\Resources\VideoResource;
 
 use App\Enum\Guard\GuardEnum;
 use App\Filament\Admin\Resources\Videos\Pages\ViewVideo;
+use App\Enum\Video\DeliveredVersionEnum;
 use App\Models\User;
 use App\Models\Video;
 use Livewire\Livewire;
@@ -106,7 +107,10 @@ final class ViewVideoPageTest extends DatabaseTestCase
 
     public function testTheDetailsSayWhetherThePlatesWereBlurred(): void
     {
-        $blurred = Video::factory()->create(['source_path' => 'videos/original.mp4']);
+        $blurred = Video::factory()->create([
+            'source_path' => 'videos/original.mp4',
+            'delivered_version' => DeliveredVersionEnum::BLURRED->value,
+        ]);
         $untouched = Video::factory()->create();
 
         $this->actingAs($this->admin);

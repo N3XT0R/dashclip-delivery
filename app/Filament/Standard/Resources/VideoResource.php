@@ -2,6 +2,12 @@
 
 namespace App\Filament\Standard\Resources;
 
+use App\Application\Video\SwitchDeliveredVersionUseCase;
+use App\Enum\ProcessingStatusEnum;
+use App\Enum\Video\DeliveredVersionEnum;
+use App\Exceptions\Video\VersionNotSwitchableException;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use App\Application\Ingest\GetVideoIngestStatusUseCase;
 use App\Application\Video\DeleteVideoUseCase;
 use App\Application\Video\IsDeletableUseCase;
@@ -277,6 +283,7 @@ class VideoResource extends Resource
                     }),
             ])
             ->recordActions([
+                self::switchVersionAction(),
                 ViewAction::make('view-details')
                     ->defaultColor('gray')
                     ->label(__('filament.video_resource.view.fields.view_details'))
@@ -362,6 +369,62 @@ class VideoResource extends Resource
      * @param Video $record
      * @return string|null
      */
+    /**
+     * Lets the submitter decide which of the two versions of a video is handed out from now on.
+     */
+    private static function switchVersionAction(): Action
+    {
+        return Action::make('switch-version')
+            ->defaultColor('gray')
+            ->button()
+            ->icon(Heroicon::OutlinedArrowsRightLeft)
+            ->label(fn (Video $record): string => $record->delivered_version?->other()?->label()
+                ?? __('video_versions.original.label'))
+            ->requiresConfirmation()
+            ->modalDescription(fn (Video $record): string => __(
+                'video_versions.' . ($record->delivered_version?->other()?->value
+                    ?? DeliveredVersionEnum::ORIGINAL->value) . '.confirm'
+            ))
+            ->visible(fn (Video $record): bool => self::mayChooseVersion($record))
+            ->action(function (Video $record): void {
+                try {
+                    $switched = app(SwitchDeliveredVersionUseCase::class)
+                        ->handle($record, Filament::auth()->user());
+                } catch (VersionNotSwitchableException) {
+                    Notification::make()
+                        ->title(__('filament.video_resource.view.messages.version_not_switchable'))
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
+                Notification::make()
+                    ->title(__('filament.video_resource.view.messages.version_switched', [
+                        'version' => $switched->label(),
+                    ]))
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
+     * Only the person who submitted the video decides this, and only while both files are there.
+     */
+    private static function mayChooseVersion(Video $record): bool
+    {
+        if ($record->trashed() || !$record->hasBothVersions()) {
+            return false;
+        }
+
+        if ($record->processing_status === ProcessingStatusEnum::Deleted) {
+            return false;
+        }
+
+        return $record->clipsWithTrashed
+            ->contains(fn ($clip): bool => (int)$clip->user_id === (int)Filament::auth()->id());
+    }
+
     private static function preferredChannelName(Video $record): ?string
     {
         return $record->clipsWithTrashed

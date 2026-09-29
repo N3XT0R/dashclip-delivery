@@ -3,6 +3,16 @@
 declare(strict_types=1);
 
 return [
+    'video_version_switched' => [
+        'subject' => 'New version of :video',
+        'headline' => 'The submitter changed the version',
+        'greeting' => 'Hello :channel,',
+        'body' => 'The video :video is handed out as the :version from now on. '
+            . 'The file you downloaded earlier is no longer what the submitter wants passed on.',
+        'what_to_do' => 'Please download the video again if you still want to use it, and stop using the earlier file.',
+        'button' => 'To my offers',
+        'signature' => 'Kind regards, your :app_name team',
+    ],
     'common' => [
         'expires_at' => 'This link will expire on :date.',
         'unknown_user' => 'Unknown user',
