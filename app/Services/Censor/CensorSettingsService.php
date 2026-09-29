@@ -17,6 +17,19 @@ final readonly class CensorSettingsService
     }
 
     /**
+     * Whether an administrator has the blurring switched on, asked afresh each time.
+     */
+    public function isEnabled(): bool
+    {
+        return (bool)$this->config->get(
+            CensorConfigEntry::ENABLED,
+            CensorConfigEntry::CATEGORY,
+            false,
+            withoutCache: true,
+        );
+    }
+
+    /**
      * Return validated settings without retaining an earlier worker's cached values.
      * @return array{columns: int, rows: int, frame_step: int, confidence: float, margin: float, timeout_seconds: int}
      * @throws VideoCensorException when stored settings are outside the supported ranges

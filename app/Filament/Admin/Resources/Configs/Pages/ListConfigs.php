@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Configs\Pages;
 use App\Constants\Config\CensorConfigEntry;
 use App\Filament\Admin\Resources\Configs\ConfigResource;
 use App\Models\Config\Category;
+use App\Services\Censor\CensorSettingsService;
 use App\Services\Censor\VideoCensorInterface;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -36,7 +37,10 @@ class ListConfigs extends ListRecords
             return null;
         }
 
-        return __('configs.censor.not_installed');
+        // an administrator can switch it off here, the tooling is a matter of the machine
+        return __(app(CensorSettingsService::class)->isEnabled()
+            ? 'configs.censor.not_installed'
+            : 'configs.censor.switched_off');
     }
 
     private function isCensorTabActive(): bool

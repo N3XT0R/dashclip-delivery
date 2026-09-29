@@ -13,9 +13,11 @@ return [
         'description' => 'Description',
     ],
     'censor' => [
+        'switched_off' => 'Blurring is switched off at the moment. Set "Blur number plates" to on so new videos are worked on again.',
         'not_installed' => 'Blurring is not set up on this server. These values are stored, but they only take effect once the tooling is installed and switched on.',
     ],
     'keys' => [
+        CensorConfigEntry::ENABLED => 'Blur number plates (turns the whole processing on and off)',
         CensorConfigEntry::COLUMNS => 'Detection tile columns (1 to 8)',
         CensorConfigEntry::ROWS => 'Detection tile rows (1 to 8)',
         CensorConfigEntry::FRAME_STEP => 'Check every nth frame (1 to 60)',

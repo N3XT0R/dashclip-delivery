@@ -11,6 +11,7 @@ use App\Services\Censor\CensorSettingsService;
 use App\Services\Contracts\ConfigServiceInterface;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\DataProvider;
+use App\Facades\Cfg;
 use Tests\DatabaseTestCase;
 
 final class CensorSettingsServiceTest extends DatabaseTestCase
@@ -64,5 +65,17 @@ final class CensorSettingsServiceTest extends DatabaseTestCase
 
         $this->expectException(VideoCensorException::class);
         $this->app->make(CensorSettingsService::class)->current();
+    }
+
+    public function testTheBlurringIsOffUntilSomeoneTurnsItOn(): void
+    {
+        self::assertFalse(app(CensorSettingsService::class)->isEnabled());
+    }
+
+    public function testAnAdministratorCanTurnItOn(): void
+    {
+        Cfg::set(CensorConfigEntry::ENABLED, true, CensorConfigEntry::CATEGORY, 'bool');
+
+        self::assertTrue(app(CensorSettingsService::class)->isEnabled());
     }
 }
