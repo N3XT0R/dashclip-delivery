@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Console\Commands\VideoProcessing;
 
 use App\Enum\ProcessingStatusEnum;
-use App\Repository\VideoRepository;
-use Illuminate\Support\LazyCollection;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(
@@ -15,18 +13,9 @@ use Symfony\Component\Console\Attribute\AsCommand;
 )]
 class RequeueFailedVideosCommand extends AbstractRequeueVideosCommand
 {
-    protected function getVideos(VideoRepository $videoRepository): LazyCollection
-    {
-        return $videoRepository->getLazyForRequeue(
-            now()->subHour(),
-            ProcessingStatusEnum::Failed,
-            chunkSize: 50,
-        );
-    }
+    protected int $staleAfterHours = 1;
 
-    protected function getErrorLogMessage(): string
-    {
-        return 'Error requeuing failed videos';
-    }
+    protected ProcessingStatusEnum $processingStatus = ProcessingStatusEnum::Failed;
 
+    protected string $errorLogMessage = 'Error requeuing failed videos';
 }

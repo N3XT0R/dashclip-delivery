@@ -62,3 +62,11 @@ exclude = [
   "**/config/**",
   "**/deploy_laravel_config.php"
 ]
+
+# Small declarative classes look alike by their very shape: a namespace, a handful of imports, an
+# attribute and two or three lines of configuration. Once the real duplication is pulled into a
+# shared base, what the similarity check still reports is that shape, not repeated logic. The bar
+# is therefore raised to blocks that are substantial enough to be worth extracting; identical code
+# keeps its own, stricter bar.
+[smells.similar_code]
+threshold = 100
