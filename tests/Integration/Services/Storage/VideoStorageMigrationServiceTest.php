@@ -98,4 +98,57 @@ final class VideoStorageMigrationServiceTest extends DatabaseTestCase
         }
         $this->assertSame('dropbox', $video->refresh()->disk);
     }
+
+    public function testBothVersionsAreCopiedBeforeSwitching(): void
+    {
+        $video = $this->video();
+        $video->update(['source_path' => 'original.mp4']);
+        Storage::disk('dropbox')->put('original.mp4', 'original-content');
+        Storage::disk('hetzner')->put($video->path, 'video-content');
+
+        self::assertSame(VideoStorageMigrationResultEnum::WouldCopy, $this->migration->migrate($video, 'hetzner', true));
+        self::assertFalse(Storage::disk('hetzner')->exists('original.mp4'));
+        self::assertSame('dropbox', $video->refresh()->disk);
+        self::assertSame(VideoStorageMigrationResultEnum::Copied, $this->migration->migrate($video, 'hetzner'));
+        self::assertSame('original-content', Storage::disk('hetzner')->get('original.mp4'));
+        self::assertSame('video-content', Storage::disk('hetzner')->get($video->path));
+        self::assertSame('hetzner', $video->refresh()->disk);
+        self::assertTrue(Storage::disk('dropbox')->exists('original.mp4'));
+    }
+
+    public function testFailedOriginalCopyLeavesTheVideoOnItsSourceDisk(): void
+    {
+        $video = $this->video();
+        $video->update(['source_path' => 'original.mp4']);
+        Storage::disk('dropbox')->put('original.mp4', 'original-content');
+        Storage::disk('hetzner')->put('original.mp4/blocker', 'directory blocks file writes');
+
+        try {
+            $this->migration->migrate($video, 'hetzner');
+            self::fail('A failed original copy must prevent switching.');
+        } catch (VideoStorageMigrationException) {
+            self::assertSame('dropbox', $video->refresh()->disk);
+            self::assertSame('original-content', Storage::disk('dropbox')->get('original.mp4'));
+            self::assertTrue(Storage::disk('dropbox')->exists($video->path));
+        }
+    }
+
+    public function testMissingOriginalPreventsSwitchingAndCanBeRetried(): void
+    {
+        $video = $this->video();
+        $video->update(['source_path' => 'original.mp4']);
+
+        try {
+            $this->migration->migrate($video, 'hetzner');
+            self::fail('Both versions must exist before switching.');
+        } catch (VideoStorageMigrationException) {
+            self::assertSame('dropbox', $video->refresh()->disk);
+            self::assertTrue(Storage::disk('dropbox')->exists($video->path));
+        }
+
+        Storage::disk('dropbox')->put('original.mp4', 'original-content');
+        self::assertSame(VideoStorageMigrationResultEnum::Copied, $this->migration->migrate($video, 'hetzner'));
+        self::assertSame('original-content', Storage::disk('hetzner')->get('original.mp4'));
+        self::assertSame('hetzner', $video->refresh()->disk);
+    }
 }

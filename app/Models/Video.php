@@ -110,6 +110,15 @@ class Video extends Model
         return Storage::disk($this->getAttribute('disk'));
     }
 
+    /**
+     * Files owned by this video on its disk, including the retained original when present.
+     * @return list<string>
+     */
+    public function storedFilePaths(): array
+    {
+        return array_values(array_unique(array_filter([$this->path, $this->source_path])));
+    }
+
     protected function humanReadableSize(): Attribute
     {
         return Attribute::make(get: function () {

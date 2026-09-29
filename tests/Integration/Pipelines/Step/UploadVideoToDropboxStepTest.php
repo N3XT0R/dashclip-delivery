@@ -6,6 +6,7 @@ namespace Tests\Integration\Pipelines\Step;
 
 use App\Constants\Config\DefaultConfigEntry;
 use App\Enum\Ingest\IngestStepEnum;
+use App\Exceptions\Storage\VideoStorageMigrationException;
 use App\Models\Video;
 use App\Pipelines\Ingest\Context\IngestContext;
 use App\Pipelines\Ingest\Step\UploadVideoToDropboxStep;
@@ -102,7 +103,7 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
         }
     }
 
-    public function testItIsNotApplicableForDuplicatesInvalidFilesOrExistingCopies(): void
+    public function testItSkipsDuplicatesAndInvalidFilesButRetriesExistingTargetCopies(): void
     {
         $this->target('hetzner');
 
@@ -111,7 +112,7 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
         self::assertFalse($this->step->isApplicable($this->createContext(disk: 'hetzner')));
 
         Storage::disk('hetzner')->put('videos/test-video.mp4', 'content');
-        self::assertFalse($this->step->isApplicable($this->createContext()));
+        self::assertTrue($this->step->isApplicable($this->createContext()));
     }
 
     public function testItReturnsContextUnchangedWhenDuplicate(): void
@@ -127,6 +128,9 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
         $this->target('hetzner');
         $sourceDisk = Mockery::mock(Filesystem::class);
         $context = $this->createContext(sourceDisk: $sourceDisk);
+        $sourceDisk->shouldReceive('exists')->with('videos/test-video.mp4')->andReturn(true);
+        $sourceDisk->shouldReceive('size')->with('videos/test-video.mp4')->andReturn(7);
+        Storage::disk('hetzner')->put('videos/test-video.mp4', 'content');
 
         $this->uploadService->shouldReceive('uploadFile')->once()
             ->with(Mockery::type(Filesystem::class), 'videos/test-video.mp4', 'hetzner', 'videos/test-video.mp4');
@@ -143,6 +147,9 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
         $this->target('dropbox');
         $sourceDisk = Mockery::mock(Filesystem::class);
         $context = $this->createContext(sourceDisk: $sourceDisk);
+        $sourceDisk->shouldReceive('exists')->with('videos/test-video.mp4')->andReturn(true);
+        $sourceDisk->shouldReceive('size')->with('videos/test-video.mp4')->andReturn(7);
+        Storage::disk('dropbox')->put('videos/test-video.mp4', 'content');
 
         $this->uploadService->shouldReceive('uploadFile')->once()
             ->with(Mockery::type(Filesystem::class), 'videos/test-video.mp4', 'dropbox', 'videos/test-video.mp4');
@@ -150,6 +157,73 @@ final class UploadVideoToDropboxStepTest extends DatabaseTestCase
         $sourceDisk->shouldNotReceive('delete');
 
         self::assertSame('dropbox', $this->step->handle($context)->video->disk);
+    }
+
+    public function testBothVersionsMoveTogetherUsingRealStorage(): void
+    {
+        $context = $this->realVideoContext();
+        $step = $this->app->make(UploadVideoToDropboxStep::class);
+
+        $step->handle($context);
+
+        self::assertSame('hetzner', $context->video->refresh()->disk);
+        self::assertSame('blurred', Storage::disk('hetzner')->get('blurred.mp4'));
+        self::assertSame('original', Storage::disk('hetzner')->get('original.mp4'));
+        self::assertFalse(Storage::disk('videos')->exists('blurred.mp4'));
+        self::assertFalse(Storage::disk('videos')->exists('original.mp4'));
+        $step->handle($context);
+        self::assertSame('original', Storage::disk('hetzner')->get('original.mp4'));
+    }
+
+    public function testMissingOriginalKeepsSourceFilesAndRetryCompletesBothCopies(): void
+    {
+        $context = $this->realVideoContext();
+        Storage::disk('videos')->delete('original.mp4');
+        $step = $this->app->make(UploadVideoToDropboxStep::class);
+
+        try {
+            $step->handle($context);
+            self::fail('A missing original must prevent switching storage.');
+        } catch (VideoStorageMigrationException) {
+            self::assertSame('videos', $context->video->refresh()->disk);
+            self::assertTrue(Storage::disk('videos')->exists('blurred.mp4'));
+        }
+
+        Storage::disk('videos')->put('original.mp4', 'original');
+        self::assertTrue($step->isApplicable($context));
+        $step->handle($context);
+
+        self::assertSame('hetzner', $context->video->refresh()->disk);
+        self::assertSame('original', Storage::disk('hetzner')->get('original.mp4'));
+    }
+
+    public function testFailedOriginalUploadKeepsBothSourceFiles(): void
+    {
+        $context = $this->realVideoContext();
+        Storage::disk('hetzner')->put('original.mp4/blocker', 'directory blocks file writes');
+        $step = $this->app->make(UploadVideoToDropboxStep::class);
+
+        try {
+            $step->handle($context);
+            self::fail('A failed original upload must prevent switching.');
+        } catch (VideoStorageMigrationException) {
+            self::assertSame('videos', $context->video->refresh()->disk);
+            self::assertSame('original', Storage::disk('videos')->get('original.mp4'));
+            self::assertSame('blurred', Storage::disk('videos')->get('blurred.mp4'));
+        }
+    }
+
+    private function realVideoContext(): IngestContext
+    {
+        config()->set('filesystems.disks.videos', ['driver' => 'local', 'root' => $this->root.'/videos']);
+        Storage::forgetDisk('videos');
+        $this->app->make(ConfigServiceInterface::class)->set(DefaultConfigEntry::DEFAULT_FILE_SYSTEM, 'hetzner');
+        Storage::disk('videos')->put('blurred.mp4', 'blurred');
+        Storage::disk('videos')->put('original.mp4', 'original');
+
+        return new IngestContext(Video::factory()->create([
+            'disk' => 'videos', 'path' => 'blurred.mp4', 'source_path' => 'original.mp4',
+        ]));
     }
 
     private function createContext(
