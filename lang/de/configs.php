@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 
 use App\Constants\Config\DefaultConfigEntry;
+use App\Constants\Config\CensorConfigEntry;
 use App\Constants\Config\EmailConfigEntry;
 use App\Constants\Config\FFMPEGConfigEntry;
 use App\Constants\Config\PrivacyConfigEntry;
@@ -13,6 +14,12 @@ return [
         'description' => 'Beschreibung',
     ],
     'keys' => [
+        CensorConfigEntry::COLUMNS => 'Spalten der Erkennungskacheln (1 bis 8)',
+        CensorConfigEntry::ROWS => 'Zeilen der Erkennungskacheln (1 bis 8)',
+        CensorConfigEntry::FRAME_STEP => 'Jedes wievielte Bild geprüft wird (1 bis 60)',
+        CensorConfigEntry::CONFIDENCE => 'Erkennungsschwelle (0,01 bis 1; kleiner erkennt mehr)',
+        CensorConfigEntry::MARGIN => 'Zusätzlicher Rand je Fund (0 bis 1; 0,25 entspricht 25 %)',
+        CensorConfigEntry::TIMEOUT => 'Zeitlimit je Video in Sekunden (1 bis 3600)',
         PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Datenschutz: Name des Speicher-Anbieters (Auftragsverarbeiter), z. B. mit Serverstandort',
         EmailConfigEntry::ADMIN_EMAIL => 'Admin-Mail-Adresse',
         EmailConfigEntry::YOUR_NAME => 'Dein angezeigter Name',

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Plate blurring settings**: Administrators can adjust detection thresholds, frame intervals,
+  margins, tiling and processing time limits in a dedicated configuration category. Existing
+  installation values are imported once; subsequent changes apply to the next video.
 - **Blurring number plates before a video is offered** (#400): Number plates that are found are
   covered before the previews are made, so the blurred picture is what channels see and download.
   This applies to every upload; the upload page says so, and whoever owns the team can switch it

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Constants\Config\CensorConfigEntry;
 use App\Models\Config\Category;
 use App\Support\ConfigCaster;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -55,10 +56,10 @@ class Config extends Model
     protected function value(): Attribute
     {
         return Attribute::make(
-            get: fn($value, array $attributes) => ConfigCaster::toPhp($attributes['cast_type'] ?? 'string', $value),
+            get: fn ($value, array $attributes) => ConfigCaster::toPhp($attributes['cast_type'] ?? 'string', $value),
 
             // keep write-through; we normalize & validate on saving
-            set: static fn($value) => $value,
+            set: static fn ($value) => $value,
         );
     }
 
@@ -77,7 +78,7 @@ class Config extends Model
             // Validate raw input against dynamic rule
             Validator::make(
                 ['value' => $raw],
-                ['value' => ConfigCaster::rule($type, $raw)]
+                ['value' => CensorConfigEntry::RULES[$config->key] ?? ConfigCaster::rule($type, $raw)]
             )->validate();
 
             // Normalize to storage representation (strings for scalars, JSON string for arrays)

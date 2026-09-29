@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Constants\Config\DefaultConfigEntry;
+use App\Constants\Config\CensorConfigEntry;
 use App\Constants\Config\EmailConfigEntry;
 use App\Constants\Config\FFMPEGConfigEntry;
 use App\Constants\Config\PrivacyConfigEntry;
@@ -12,6 +13,12 @@ return [
         'description' => 'Description',
     ],
     'keys' => [
+        CensorConfigEntry::COLUMNS => 'Detection tile columns (1 to 8)',
+        CensorConfigEntry::ROWS => 'Detection tile rows (1 to 8)',
+        CensorConfigEntry::FRAME_STEP => 'Check every nth frame (1 to 60)',
+        CensorConfigEntry::CONFIDENCE => 'Detection threshold (0.01 to 1; lower detects more)',
+        CensorConfigEntry::MARGIN => 'Additional margin per detection (0 to 1; 0.25 means 25%)',
+        CensorConfigEntry::TIMEOUT => 'Time limit per video in seconds (1 to 3600)',
         PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Privacy: name of the storage provider (processor), e.g. with server location',
         EmailConfigEntry::ADMIN_EMAIL => 'Admin email address',
         EmailConfigEntry::YOUR_NAME => 'Your display name',

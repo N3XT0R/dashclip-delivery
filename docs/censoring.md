@@ -60,16 +60,30 @@ CENSOR_ENABLED=true
 Ohne diesen Schalter bleibt die Funktion aus. Schaltet ein Team die Unkenntlichmachung trotzdem ein,
 scheitert die Aufbereitung des Videos mit einer klaren Meldung, statt es unbearbeitet auszuliefern.
 
-Weitere Werte, alle optional, mit den Vorgaben aus `config/censor.php`:
+## Erkennung einstellen
 
-| Schlüssel | Vorgabe | Bedeutung |
-|-----------|---------|-----------|
-| `CENSOR_PYTHON` | `/opt/censor/venv/bin/python` | Pfad zum Python der Laufzeitumgebung. |
-| `CENSOR_MODEL` | `/opt/censor/plate.onnx` | Pfad zur Modelldatei. |
-| `CENSOR_FRAME_STEP` | `3` | Jedes wievielte Bild geprüft wird. Höher heißt schneller und ungenauer. |
-| `CENSOR_CONFIDENCE` | `0.15` | Ab welcher Sicherheit ein Fund gilt. Niedriger: mehr Funde, mehr Fehltreffer. |
-| `CENSOR_MARGIN` | `0.25` | Wie weit die Verpixelung über den erkannten Bereich hinausreicht. |
-| `CENSOR_TIMEOUT` | `3600` | Nach wie vielen Sekunden ein Lauf abgebrochen wird. |
+In der Administration unter Konfiguration steht die Kategorie „Kennzeichen-Verpixelung“ bereit.
+Die dort gespeicherten Werte werden für jedes Video neu gelesen, auch in bereits laufenden
+Arbeitern. Eine Änderung wirkt ab dem nächsten Verarbeitungslauf, nicht mitten in einem Video.
+
+| Einstellung | Vorgabe | Zulässiger Bereich |
+|-------------|---------|--------------------|
+| Kachelspalten | 3 | 1 bis 8 |
+| Kachelzeilen | 2 | 1 bis 8 |
+| Bildintervall | 3 | 1 bis 60; höher ist schneller, aber ungenauer |
+| Erkennungsschwelle | 0,15 | 0,01 bis 1; kleiner erkennt mehr, auch mehr Fehltreffer |
+| Zusätzlicher Rand | 0,25 | 0 bis 1; Anteil an der Größe des Fundes |
+| Zeitlimit in Sekunden | 3600 | 1 bis 3600 |
+
+Der idempotente `CensorConfigSeeder` legt die Kategorie und fehlende Einträge an. Die Migration
+ruft ihn beim Deployment auf; er ist auch im regulären `DatabaseSeeder` eingebunden. Vorhandene Werte aus `CENSOR_FRAME_STEP`,
+`CENSOR_CONFIDENCE`, `CENSOR_MARGIN` und `CENSOR_TIMEOUT` werden einmalig übernommen. Danach sind die
+Datenbankwerte maßgeblich; die alten Umgebungsvariablen ändern die Verarbeitung nicht mehr.
+Werte außerhalb der angegebenen Bereiche müssen vor der Migration korrigiert werden.
+
+Serverabhängig bleiben `CENSOR_ENABLED`, `CENSOR_PYTHON` (Vorgabe `/opt/censor/venv/bin/python`)
+und `CENSOR_MODEL` (Vorgabe `/opt/censor/plate.onnx`). Der Skriptpfad bleibt ebenfalls in der Datei.
+Die persönlichen Teamentscheidungen werden weiterhin separat gespeichert.
 
 ## Prüfen, ob es läuft
 
