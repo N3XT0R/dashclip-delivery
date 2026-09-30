@@ -15,6 +15,8 @@
 /docker/data/db
 /auth.json
 /node_modules
+/tmp/videos
+/tmp/censor-spikes
 /tmp/public-*
 /tmp/locale-*
 /tmp/pint-public.json
@@ -32,4 +34,4 @@ report/
 coverage/
 # superpowers subagent-driven-development scratch workspace
 /.superpowers/
-
+__pycache__/
