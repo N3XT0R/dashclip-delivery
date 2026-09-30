@@ -26,6 +26,8 @@ return [
         CensorConfigEntry::MARGIN => 'Zusätzlicher Rand je Fund (0 bis 1; 0,25 entspricht 25 %)',
         CensorConfigEntry::TIMEOUT => 'Zeitlimit je Video in Sekunden (1 bis 3600)',
         CensorConfigEntry::THREADS => 'Rechenfäden für die Erkennung (1 bis 16; einen Kern für die Videoausgabe frei lassen)',
+        CensorConfigEntry::SEARCH_FROM => 'Ab welcher Bildhöhe gesucht wird (0 bis 0,9; nur zusammen mit Kachelzeilen 1 sinnvoll)',
+        CensorConfigEntry::MARGIN_GROWTH => 'Wie stark der Rand je Bild ohne neue Erkennung wächst (0 bis 1; deckt die Bewegung ab)',
         PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Datenschutz: Name des Speicher-Anbieters (Auftragsverarbeiter), z. B. mit Serverstandort',
         EmailConfigEntry::ADMIN_EMAIL => 'Admin-Mail-Adresse',
         EmailConfigEntry::YOUR_NAME => 'Dein angezeigter Name',

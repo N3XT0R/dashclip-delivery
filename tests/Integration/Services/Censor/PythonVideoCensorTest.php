@@ -71,7 +71,7 @@ final class PythonVideoCensorTest extends DatabaseTestCase
         $disk = Storage::build(['driver' => 'local', 'root' => $root]);
         $disk->put('model', 'test model');
         $disk->put('input', 'test video');
-        $disk->put('process.php', '<?php $args = getopt("", ["input:", "output:", "model:", "columns:", "rows:", "frame-step:", "confidence:", "margin:", "threads:"]); file_put_contents($args["output"], json_encode($args)); echo json_encode(["frames" => 1, "regions" => 2]);');
+        $disk->put('process.php', '<?php $args = getopt("", ["input:", "output:", "model:", "columns:", "rows:", "frame-step:", "confidence:", "margin:", "threads:", "search-from:", "margin-growth:"]); file_put_contents($args["output"], json_encode($args)); echo json_encode(["frames" => 1, "regions" => 2]);');
         config()->set('censor', [
             'enabled' => true, 'python' => PHP_BINARY,
             'script' => $root . '/process.php', 'model' => $root . '/model',
@@ -87,6 +87,8 @@ final class PythonVideoCensorTest extends DatabaseTestCase
             $config->set(CensorConfigEntry::CONFIDENCE, 0.4, 'censor', 'float');
             $config->set(CensorConfigEntry::MARGIN, 0.5, 'censor', 'float');
             $config->set(CensorConfigEntry::THREADS, 3, 'censor', 'int');
+            $config->set(CensorConfigEntry::SEARCH_FROM, 0.5, 'censor', 'float');
+            $config->set(CensorConfigEntry::MARGIN_GROWTH, 0.3, 'censor', 'float');
             $result = $processor->censor($root . '/input', $root . '/output');
             $arguments = json_decode($disk->get('output'), true, flags: JSON_THROW_ON_ERROR);
             self::assertSame('5', $arguments['frame-step']);
@@ -95,6 +97,8 @@ final class PythonVideoCensorTest extends DatabaseTestCase
             self::assertSame('0.4', $arguments['confidence']);
             self::assertSame('0.5', $arguments['margin']);
             self::assertSame('3', $arguments['threads']);
+            self::assertSame('0.5', $arguments['search-from']);
+            self::assertSame('0.3', $arguments['margin-growth']);
             self::assertSame(2, $result->regionsBlurred);
 
             $config->set(CensorConfigEntry::FRAME_STEP, 8, 'censor', 'int');

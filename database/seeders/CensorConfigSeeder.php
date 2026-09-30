@@ -33,7 +33,7 @@ final class CensorConfigSeeder extends Seeder
             ]);
 
             foreach (['columns' => 3, 'rows' => 2, 'frame_step' => 3, 'confidence' => 0.15,
-                'margin' => 0.25, 'timeout_seconds' => 3600, 'threads' => 2] as $name => $default) {
+                'margin' => 0.25, 'timeout_seconds' => 3600, 'threads' => 2, 'search_from' => 0.0, 'margin_growth' => 0.2] as $name => $default) {
                 $legacyKey = match ($name) {
                     'columns' => 'tiles.columns',
                     'rows' => 'tiles.rows',
