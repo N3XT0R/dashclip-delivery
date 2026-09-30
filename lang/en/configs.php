@@ -24,6 +24,7 @@ return [
         CensorConfigEntry::CONFIDENCE => 'Detection threshold (0.01 to 1; lower detects more)',
         CensorConfigEntry::MARGIN => 'Additional margin per detection (0 to 1; 0.25 means 25%)',
         CensorConfigEntry::TIMEOUT => 'Time limit per video in seconds (1 to 3600)',
+        CensorConfigEntry::THREADS => 'Detection threads (1 to 16; leave one core for writing the video)',
         PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Privacy: name of the storage provider (processor), e.g. with server location',
         EmailConfigEntry::ADMIN_EMAIL => 'Admin email address',
         EmailConfigEntry::YOUR_NAME => 'Your display name',

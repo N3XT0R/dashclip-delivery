@@ -82,12 +82,18 @@ Arbeitern. Eine Änderung wirkt ab dem nächsten Verarbeitungslauf, nicht mitten
 | Erkennungsschwelle | 0,15 | 0,01 bis 1; kleiner erkennt mehr, auch mehr Fehltreffer |
 | Zusätzlicher Rand | 0,25 | 0 bis 1; Anteil an der Größe des Fundes |
 | Zeitlimit in Sekunden | 3600 | 1 bis 3600 |
+| Rechenfäden der Erkennung | 2 | 1 bis 16 |
 
 Der idempotente `CensorConfigSeeder` legt die Kategorie und fehlende Einträge an. Die Migration
 ruft ihn beim Deployment auf; er ist auch im regulären `DatabaseSeeder` eingebunden. Vorhandene Werte aus `CENSOR_FRAME_STEP`,
 `CENSOR_CONFIDENCE`, `CENSOR_MARGIN` und `CENSOR_TIMEOUT` werden einmalig übernommen. Danach sind die
 Datenbankwerte maßgeblich; die alten Umgebungsvariablen ändern die Verarbeitung nicht mehr.
 Werte außerhalb der angegebenen Bereiche müssen vor der Migration korrigiert werden.
+
+Die Rechenfäden bestimmen, wie viele Kerne die Erkennung selbst belegt. Die Vorgabe 2 passt auf
+die kleinste Maschine. Auf einer größeren lohnt es, sie zu erhöhen, aber nicht auf die volle
+Kernzahl: das Lesen und Schreiben des Videos läuft daneben und braucht ebenfalls einen Kern. Bei
+vier Kernen ist 3 die sinnvolle Einstellung.
 
 Serverabhängig bleiben `CENSOR_ENABLED`, `CENSOR_PYTHON` (Vorgabe `/opt/censor/venv/bin/python`)
 und `CENSOR_MODEL` (Vorgabe `/opt/censor/plate.onnx`). Der Skriptpfad bleibt ebenfalls in der Datei.
@@ -109,15 +115,17 @@ Bilder, verpixelte Bereiche, Bilder insgesamt. Danach lohnt ein Blick in die Aus
 
 ## Was es an Rechenzeit kostet
 
-Gemessen auf zwei Kernen, also auf der Ausstattung des Produktionsservers, mit Material in
-2560x1440 und 30 Bildern je Sekunde:
+Gemessen auf zwei Kernen mit zwei Rechenfäden, mit Material in 2560x1440 und 30 Bildern je
+Sekunde:
 
 | Material | Dauer |
 |----------|-------|
 | 10 Sekunden | rund 52 Sekunden |
 | 3 Minuten | rund 15 Minuten |
 
-Das entspricht etwa dem Fünffachen der Spielzeit. Weil die Verteilung wöchentlich läuft, fällt diese
+Das entspricht etwa dem Fünffachen der Spielzeit. Mit mehr Rechenfäden auf mehr Kernen sinkt die
+Dauer, aber nicht im gleichen Verhältnis: ein Teil der Zeit geht für das Lesen und Neuschreiben des
+Videos drauf und lässt sich so nicht verkürzen. Weil die Verteilung wöchentlich läuft, fällt diese
 Wartezeit im Ablauf nicht auf, sie belegt aber für die Dauer einen Arbeiter der Warteschlange.
 
 ## Wie gut es trifft

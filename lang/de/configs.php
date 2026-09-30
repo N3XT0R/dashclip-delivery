@@ -25,6 +25,7 @@ return [
         CensorConfigEntry::CONFIDENCE => 'Erkennungsschwelle (0,01 bis 1; kleiner erkennt mehr)',
         CensorConfigEntry::MARGIN => 'Zusätzlicher Rand je Fund (0 bis 1; 0,25 entspricht 25 %)',
         CensorConfigEntry::TIMEOUT => 'Zeitlimit je Video in Sekunden (1 bis 3600)',
+        CensorConfigEntry::THREADS => 'Rechenfäden für die Erkennung (1 bis 16; einen Kern für die Videoausgabe frei lassen)',
         PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Datenschutz: Name des Speicher-Anbieters (Auftragsverarbeiter), z. B. mit Serverstandort',
         EmailConfigEntry::ADMIN_EMAIL => 'Admin-Mail-Adresse',
         EmailConfigEntry::YOUR_NAME => 'Dein angezeigter Name',
