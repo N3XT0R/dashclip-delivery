@@ -84,12 +84,28 @@ Arbeitern. Eine Änderung wirkt ab dem nächsten Verarbeitungslauf, nicht mitten
 | Zeitlimit in Sekunden | 3600 | 1 bis 3600 |
 | Rechenfäden der Erkennung | 2 | 1 bis 16 |
 | Suchbeginn im Bild | 0 | 0 bis 0,9 |
+| Randwachstum je Bild | 0,2 | 0 bis 1 |
 
 Der idempotente `CensorConfigSeeder` legt die Kategorie und fehlende Einträge an. Die Migration
 ruft ihn beim Deployment auf; er ist auch im regulären `DatabaseSeeder` eingebunden. Vorhandene Werte aus `CENSOR_FRAME_STEP`,
 `CENSOR_CONFIDENCE`, `CENSOR_MARGIN` und `CENSOR_TIMEOUT` werden einmalig übernommen. Danach sind die
 Datenbankwerte maßgeblich; die alten Umgebungsvariablen ändern die Verarbeitung nicht mehr.
 Werte außerhalb der angegebenen Bereiche müssen vor der Migration korrigiert werden.
+
+Zwischen zwei Erkennungen wird ein gefundener Bereich weitergetragen, und was er verdeckt, bewegt
+sich in dieser Zeit weiter. Das Randwachstum lässt ihn deshalb mit seinem Alter mitwachsen. Gemessen
+an 20 Sekunden Material, bei jedem dritten Bild:
+
+| Rand | Kennzeichen bleibt offen | Kasten sitzt auf Hintergrund | verpixelte Fläche |
+|------|--------------------------|------------------------------|-------------------|
+| fest 0,25 | 46 | 49 | 0,27 % |
+| fest 0,45 | 39 | 48 | 0,40 % |
+| fest 0,65 | 35 | 46 | 0,56 % |
+| 0,25 mit Wachstum 0,2 | 35 | 47 | 0,41 % |
+
+Das Mitwachsen erreicht dasselbe wie ein fester Rand von 0,65 und verpixelt dabei ein Viertel
+weniger Fläche. Gegen Kästen, die auf Hintergrund sitzen, hilft es kaum: das sind überwiegend
+Fehltreffer des Modells, und dagegen wirkt nur die Erkennungsschwelle.
 
 Der Suchbeginn legt fest, ab welcher Bildhöhe überhaupt gesucht wird. 0,4 überspringt die oberen
 40 Prozent. Wichtig dabei: **allein spart das nichts.** Die Rechenzeit hängt an der Anzahl der

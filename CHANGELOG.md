@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Covering a number plate while it moves**: Between two detections a found region is carried over
+  the frames in between, and what it covers keeps moving. The cover now grows with its age, which
+  leaves a quarter fewer plates readable while blurring a quarter less of the picture than a fixed
+  cover of the same effect. It costs no extra detection.
+
 - **Searching only where number plates are**: Where in the picture the search starts is a setting
   now. Together with a single tile row it halves the detection work, because the cost follows the
   number of tiles rather than the searched area. It stays at zero until an administrator sets it,

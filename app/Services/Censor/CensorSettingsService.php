@@ -32,14 +32,15 @@ final readonly class CensorSettingsService
     /**
      * Return validated settings without retaining an earlier worker's cached values.
      * @return array{columns: int, rows: int, frame_step: int, confidence: float, margin: float,
-     *     timeout_seconds: int, threads: int, search_from: float}
+     *     timeout_seconds: int, threads: int, search_from: float, margin_growth: float}
      * @throws VideoCensorException when stored settings are outside the supported ranges
      */
     public function current(): array
     {
         $values = [];
         foreach (['columns' => 3, 'rows' => 2, 'frame_step' => 3, 'confidence' => 0.15,
-            'margin' => 0.25, 'timeout_seconds' => 3600, 'threads' => 2, 'search_from' => 0.0] as $name => $default) {
+            'margin' => 0.25, 'timeout_seconds' => 3600, 'threads' => 2, 'search_from' => 0.0,
+            'margin_growth' => 0.2] as $name => $default) {
             $key = 'censor_' . $name;
             $value = $this->config->get($key, CensorConfigEntry::CATEGORY, $default, withoutCache: true);
             if (Validator::make(['value' => $value], ['value' => CensorConfigEntry::RULES[$key]])->fails()) {

@@ -26,6 +26,7 @@ return [
         CensorConfigEntry::TIMEOUT => 'Time limit per video in seconds (1 to 3600)',
         CensorConfigEntry::THREADS => 'Detection threads (1 to 16; leave one core for writing the video)',
         CensorConfigEntry::SEARCH_FROM => 'Where the search starts in the picture (0 to 0.9; only worthwhile together with 1 tile row)',
+        CensorConfigEntry::MARGIN_GROWTH => 'How much the margin grows per frame without a fresh detection (0 to 1; covers the movement)',
         PrivacyConfigEntry::STORAGE_PROVIDER_NAME => 'Privacy: name of the storage provider (processor), e.g. with server location',
         EmailConfigEntry::ADMIN_EMAIL => 'Admin email address',
         EmailConfigEntry::YOUR_NAME => 'Your display name',
