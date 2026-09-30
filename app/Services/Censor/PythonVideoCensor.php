@@ -76,7 +76,8 @@ readonly class PythonVideoCensor implements VideoCensorInterface
     }
 
     /**
-     * @param array{columns: int, rows: int, frame_step: int, confidence: float, margin: float, timeout_seconds: int} $settings
+     * @param array{columns: int, rows: int, frame_step: int, confidence: float, margin: float,
+     *     timeout_seconds: int, threads: int} $settings
      * @return array<int, string>
      */
     private function command(string $sourcePath, string $targetPath, array $settings): array
@@ -92,6 +93,7 @@ readonly class PythonVideoCensor implements VideoCensorInterface
             '--frame-step', (string)$settings['frame_step'],
             '--confidence', (string)$settings['confidence'],
             '--margin', (string)$settings['margin'],
+            '--threads', (string)$settings['threads'],
         ];
     }
 

@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Using every core of the machine for blurring**: How many threads the detection may use is a
+  setting now, instead of a fixed two. On a machine with more cores the processing is set to use
+  them without a deployment; leaving one core for writing the video is the advice at the setting.
+
 - **Switching the blurring off without a deployment**: The settings carry a switch for the whole
   processing, which starts off. While it is off, no video is blurred, teams are not offered the
   choice, and the settings say why.

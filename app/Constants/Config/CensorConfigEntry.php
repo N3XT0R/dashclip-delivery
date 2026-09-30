@@ -14,6 +14,7 @@ final readonly class CensorConfigEntry
     public const string CONFIDENCE = 'censor_confidence';
     public const string MARGIN = 'censor_margin';
     public const string TIMEOUT = 'censor_timeout_seconds';
+    public const string THREADS = 'censor_threads';
 
     /** @var array<string, list<string>> Accepted operating ranges for editable settings. */
     public const array RULES = [
@@ -24,5 +25,6 @@ final readonly class CensorConfigEntry
         self::CONFIDENCE => ['required', 'numeric', 'between:0.01,1'],
         self::MARGIN => ['required', 'numeric', 'between:0,1'],
         self::TIMEOUT => ['required', 'integer', 'between:1,3600'],
+        self::THREADS => ['required', 'integer', 'between:1,16'],
     ];
 }

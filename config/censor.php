@@ -21,5 +21,6 @@ return [
         'confidence' => (float)env('CENSOR_CONFIDENCE', 0.15),
         'margin' => (float)env('CENSOR_MARGIN', 0.25),
         'timeout_seconds' => (int)env('CENSOR_TIMEOUT', 3600),
+        'threads' => (int)env('CENSOR_THREADS', 2),
     ],
 ];

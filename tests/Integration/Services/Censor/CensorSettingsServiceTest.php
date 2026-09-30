@@ -36,7 +36,7 @@ final class CensorSettingsServiceTest extends DatabaseTestCase
 
         self::assertSame([
             'columns' => 3, 'rows' => 2, 'frame_step' => 3,
-            'confidence' => 0.15, 'margin' => 0.25, 'timeout_seconds' => 3600,
+            'confidence' => 0.15, 'margin' => 0.25, 'timeout_seconds' => 3600, 'threads' => 2,
         ], $this->app->make(CensorSettingsService::class)->current());
     }
 
@@ -57,6 +57,8 @@ final class CensorSettingsServiceTest extends DatabaseTestCase
         yield 'negative margin' => [CensorConfigEntry::MARGIN, -0.1, 'float'];
         yield 'invalid confidence' => [CensorConfigEntry::CONFIDENCE, 1.1, 'float'];
         yield 'unlimited timeout' => [CensorConfigEntry::TIMEOUT, 0, 'int'];
+        yield 'no thread at all' => [CensorConfigEntry::THREADS, 0, 'int'];
+        yield 'more threads than any machine here has' => [CensorConfigEntry::THREADS, 17, 'int'];
     }
 
     public function testInvalidStoredValuesFailBeforeProcessing(): void
@@ -65,6 +67,13 @@ final class CensorSettingsServiceTest extends DatabaseTestCase
 
         $this->expectException(VideoCensorException::class);
         $this->app->make(CensorSettingsService::class)->current();
+    }
+
+    public function testTheThreadBudgetFollowsTheMachineItRunsOn(): void
+    {
+        $this->app->make(ConfigServiceInterface::class)->set(CensorConfigEntry::THREADS, 3, 'censor', 'int');
+
+        self::assertSame(3, $this->app->make(CensorSettingsService::class)->current()['threads']);
     }
 
     public function testTheBlurringIsOffUntilSomeoneTurnsItOn(): void
