@@ -83,12 +83,33 @@ Arbeitern. Eine Änderung wirkt ab dem nächsten Verarbeitungslauf, nicht mitten
 | Zusätzlicher Rand | 0,25 | 0 bis 1; Anteil an der Größe des Fundes |
 | Zeitlimit in Sekunden | 3600 | 1 bis 3600 |
 | Rechenfäden der Erkennung | 2 | 1 bis 16 |
+| Suchbeginn im Bild | 0 | 0 bis 0,9 |
 
 Der idempotente `CensorConfigSeeder` legt die Kategorie und fehlende Einträge an. Die Migration
 ruft ihn beim Deployment auf; er ist auch im regulären `DatabaseSeeder` eingebunden. Vorhandene Werte aus `CENSOR_FRAME_STEP`,
 `CENSOR_CONFIDENCE`, `CENSOR_MARGIN` und `CENSOR_TIMEOUT` werden einmalig übernommen. Danach sind die
 Datenbankwerte maßgeblich; die alten Umgebungsvariablen ändern die Verarbeitung nicht mehr.
 Werte außerhalb der angegebenen Bereiche müssen vor der Migration korrigiert werden.
+
+Der Suchbeginn legt fest, ab welcher Bildhöhe überhaupt gesucht wird. 0,4 überspringt die oberen
+40 Prozent. Wichtig dabei: **allein spart das nichts.** Die Rechenzeit hängt an der Anzahl der
+Kacheln, nicht an der durchsuchten Fläche, denn jede Kachel wird ohnehin auf dieselbe Größe
+gebracht, bevor das Modell sie ansieht. Wer nur den Suchbeginn anhebt und die Kachelzeilen auf 2
+stehen lässt, bekommt gleich lange Laufzeiten und flachere, verzerrte Kacheln, also schlechtere
+Erkennung.
+
+Der Gewinn entsteht erst im Paar: **Suchbeginn 0,4 zusammen mit einer Kachelzeile.** Aus sechs
+Kacheln werden drei, und die drei sind mit 853x864 nahezu quadratisch, was dem Modell entgegenkommt.
+Gemessen an 20 Sekunden Material in 2560x1440 auf zwei Rechenfäden:
+
+| Einstellung | Dauer | Erkennung allein |
+|-------------|-------|------------------|
+| 3 Spalten, 2 Zeilen, ab 0 (heutige Vorgabe) | 75 s | 1,00x |
+| 3 Spalten, 1 Zeile, ab 0,4 | 45 s | 2,06x |
+| 3 Spalten, 1 Zeile, ab 0,4, jedes 6. Bild | 30 s | |
+| 3 Spalten, 2 Zeilen, ab 0,4 (die Falle) | 73 s | 1,03x |
+
+Die Vorgabe steht deshalb auf 0: es ändert sich nichts, bis jemand das Paar bewusst setzt.
 
 Die Rechenfäden bestimmen, wie viele Kerne die Erkennung selbst belegt. Die Vorgabe 2 passt auf
 die kleinste Maschine. Auf einer größeren lohnt es, sie zu erhöhen, aber nicht auf die volle

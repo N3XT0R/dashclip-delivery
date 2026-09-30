@@ -22,5 +22,6 @@ return [
         'margin' => (float)env('CENSOR_MARGIN', 0.25),
         'timeout_seconds' => (int)env('CENSOR_TIMEOUT', 3600),
         'threads' => (int)env('CENSOR_THREADS', 2),
+        'search_from' => (float)env('CENSOR_SEARCH_FROM', 0.0),
     ],
 ];
