@@ -74,7 +74,7 @@ final class UsersRelationManagerTest extends DatabaseTestCase
 
     private function allowChannelAccessAbility(): void
     {
-        $this->app->bind(AccessChannelPageAbility::class, static fn(): AbilityContract => new class () implements AbilityContract {
+        $this->app->bind(AccessChannelPageAbility::class, static fn (): AbilityContract => new class () implements AbilityContract {
             public function check(User $user): bool
             {
                 return true;
@@ -100,15 +100,20 @@ final class UsersRelationManagerTest extends DatabaseTestCase
 
     private function grantChannelPermissions(): void
     {
-        $permissions = [
+        $permissionNames = [
             'ViewAny:Channel',
             'View:Channel',
             'Update:Channel',
+            'ViewAny:User',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::findOrCreate($permission, GuardEnum::STANDARD->value);
-        }
+        $permissions = array_map(
+            static fn (string $permissionName): Permission => Permission::findOrCreate(
+                $permissionName,
+                GuardEnum::STANDARD->value
+            ),
+            $permissionNames
+        );
 
         $this->user->givePermissionTo($permissions);
     }

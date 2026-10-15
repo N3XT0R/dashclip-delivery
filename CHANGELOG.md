@@ -56,6 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   video and its retained original before switching storage. File cleanup removes both versions,
   including when a previous cleanup already removed one of them.
 
+
+## [4.12.2] - 2026-10-15
+
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
 ## [4.12.1] - 2026-09-28
 
 ### Fixed
