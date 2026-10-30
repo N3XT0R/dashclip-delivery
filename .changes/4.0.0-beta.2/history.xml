@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**ChannelWorkspace cluster access**
+    - Fixed missing permission validation in `ChannelWorkspace::canAccess()`: the
+      Channel-Workspace cluster did not properly enforce access restrictions and
+      could appear in navigation without the intended authorization check.
+      Visibility is now limited to users with the
+      `page.channels.access` permission (Channel-Operators).</change>
+</feature>

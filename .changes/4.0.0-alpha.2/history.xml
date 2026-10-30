@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Video Ingest Pipeline**
+    - added `ValidateInputFileStep` as a preliminary validation step to ensure that the source file exists and is
+      processable before executing further ingest steps
+    - prevents downstream failures (e.g. hash calculation or preview generation) by stopping the pipeline early when the
+      input file is missing or invalid
+    - introduced `isInvalid` flag in `IngestContext` to distinguish invalid input from duplicate detection
+    - separates technical validation failures from business-level duplicate handling, improving pipeline semantics and
+      observability
+    - enhanced pipeline control flow to stop execution when a video is marked as invalid or duplicate
+    - ensures consistent early termination behavior across all ingest steps
+    - added support for detecting missing ingest steps for already processed videos based on the current pipeline
+      definition via `IngestStateService`
+    - enables identification of videos that were processed with an outdated pipeline definition
+    - added maintenance command to requeue completed videos with missing ingest steps
+    - enables retroactive execution of newly added pipeline steps without reprocessing already completed steps</change>
+  <change type="changed">**Video Deletion Handling**
+    - introduced soft deletes for videos to prevent immediate physical data loss
+    - decoupled logical deletion from physical file removal to improve system consistency
+    - videos are now hidden from users via soft delete while underlying files remain intact until explicitly removed
+    - prepared the system for deferred cleanup strategies (e.g. scheduled force deletion and storage cleanup)</change>
+  <change type="changed">**Video Ingest Status Query**
+    - refactored ingest metadata extraction and interpretation logic into `IngestStateService`
+    - centralized access to ingest step state (status, attempts, timestamps, current step) to avoid duplication across
+      use cases
+    - simplified `GetVideoIngestStatusUseCase` by delegating state evaluation to the service layer
+    - improves consistency between backend logic and frontend status representation</change>
+  <change type="changed">**Video Ingest Triggering**
+    - introduced a dispatch delay for `ProcessVideoIngestJob` to decouple ingest processing from the initial request
+      lifecycle
+    - prevents blocking behavior during video creation (e.g. Filament form submission and redirect) when using
+      synchronous or slow queue processing
+    - improves user experience by ensuring immediate response after form submission while deferring heavy ingest
+      processing to the background</change>
+</feature>

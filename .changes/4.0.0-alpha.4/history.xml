@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**adr**
+    - added architecture decision records for class naming, SOLID and design-pattern usage, exception hierarchies,
+      method-level PHPDoc conventions, changelog maintenance policy, and Conventional Commits
+    - documented in `AGENTS.md` that project ADRs are binding guidance, feature implementation should be
+      token-efficient, and Superpowers should only be used on explicit request
+    - clarified in `AGENTS.md` that project ADRs are the only normative rules for covered topics, enterprise
+      architecture guidance comes from ADRs, and Laravel is infrastructure</change>
+  <change type="added">**tooling**
+    - added a Pint configuration using the PSR-12 preset while preserving camelCase PHPUnit method names</change>
+  <change type="changed">**Refactored ZIP job payload handling**
+    - Introduced `AssignmentZipDto` to encapsulate ZIP creation parameters
+    - Replaced primitive constructor arguments in `BuildZipJob` with DTO
+    - Improved separation between domain data and infrastructure layer
+    - Simplified method signatures and reduced parameter coupling</change>
+  <change type="fixed">**Dropbox / storage**
+    - fixed `/tmp` exhaustion caused by Guzzle buffering Dropbox response bodies via `php://temp`;
+      both the Storage disk driver and `DropboxUploadService` now pass `stream: true` to the Guzzle
+      client so file data streams directly from the socket without touching `/tmp`
+    - fixed a stream-leak in `ZipService` where a failed `stream_copy_to_stream` call (Laravel
+      converts PHP warnings to `ErrorException`) left the Guzzle HTTP stream unclosed, causing
+      `/tmp` files to accumulate across failed jobs until disk space was exhausted
+    - `ZipService::build()` now cleans up `zips/tmp/` staging files in a `finally` block so they
+      are always removed regardless of whether the job succeeds or fails</change>
+  <change type="fixed">**testing**
+    - fixed the OnboardingWizard notification assertion to use Filament's notification testing API</change>
+</feature>

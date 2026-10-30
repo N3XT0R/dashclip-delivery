@@ -1,0 +1,89 @@
+name: Changelog
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+# CHANGELOG.md is built here and nowhere else (ADR 0009): tagging a version on a release branch
+# moves the unreleased fragments into a dated version folder, regenerates CHANGELOG.md and
+# commits both to the release branch the tag was cut from.
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+
+concurrency:
+  group: changelog
+  cancel-in-progress: false
+
+jobs:
+  release-changelog:
+    name: Build changelog for ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find the release branch of the tag
+        id: branch
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          branch=$(git branch -r --contains "refs/tags/$TAG" --format='%(refname:short)' \
+            | sed 's#^origin/##' | grep -E '^[0-9]+\.x$' | sort -V | tail -n 1)
+          if [ -z "$branch" ]; then
+            echo "::error::Tag $TAG is not on a release branch (e.g. 4.x)."
+            exit 1
+          fi
+          echo "name=$branch" >> "$GITHUB_OUTPUT"
+          git checkout "$branch"
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer
+          coverage: none
+
+      - name: Install PHP dependencies (cached)
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: --no-progress --no-interaction --prefer-dist
+
+      - name: Prepare application environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --no-interaction
+
+      - name: Release the unreleased fragments
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ -d ".changes/$TAG" ]; then
+            echo "Version $TAG is already released in .changes/, regenerating only."
+          else
+            php artisan changelog:release "$TAG"
+          fi
+
+      - name: Generate CHANGELOG.md
+        run: php artisan changelog:generate
+
+      - name: Commit and push the changelog
+        env:
+          TAG: ${{ github.ref_name }}
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .changes CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "Changelog is already up to date."
+            exit 0
+          fi
+          git commit -m "docs(changelog): release $TAG"
+          git push origin "HEAD:$BRANCH"

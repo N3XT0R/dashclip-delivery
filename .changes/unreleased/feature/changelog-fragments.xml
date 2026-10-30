@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="changed">**Changelog**: Entries are written as one fragment per branch below `.changes/`, so branches no longer conflict in the changelog when they are merged. `CHANGELOG.md` is built by a pipeline when a version is tagged, which also dates the release; the whole history was moved into fragments with its dates and order. A commit made through Claude Code is checked for a fragment, a valid category, an untouched `CHANGELOG.md` and code style, and a `changelog` skill describes the workflow. ADR 0009 records the decision and amends ADR 0006.</change>
+</feature>

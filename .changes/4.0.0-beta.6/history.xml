@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Assignments**
+    - respected channel weekly quotas across assignment batches so channels that already reached
+      their weekly limit no longer keep receiving new offers in later distribution runs.</change>
+</feature>
