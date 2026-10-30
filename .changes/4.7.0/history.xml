@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Operator API downloads**
+    - download offered videos through `GET /api/v1/offers/{offer}/download` with the dedicated
+      `offers:download` scope, channel access checks, expiry checks and download tracking.
+    - register the new scope by running the idempotent `PassportScopeTaxonomySeeder` on deployment.</change>
+  <change type="changed">**Blog preview on the start page**
+    - show the five newest articles instead of three, and move the section above the process
+      description so it is seen without scrolling past the product sections.
+    - the amount is configurable and is part of the cache key, so a changed value takes effect
+      instead of serving the previously cached selection.
+    - present the articles as flat image tiles with the heading on top instead of full cards, so the
+      row stays a teaser and no longer dominates the page.</change>
+  <change type="changed">**Panel configuration**
+    - share the common panel middleware stack between the administration and the standard panel
+      instead of duplicating it in both panel configurations.
+    - cover the resulting middleware stack with tests so a missing or misreferenced middleware
+      class is detected before deployment.</change>
+  <change type="fixed">**Scheduled mailbox scan during mailbox outages**
+    - treat an unreachable mailbox as a temporary condition: the scheduled reply scan now logs the
+      failure and completes instead of aborting with an error on every run.
+    - translate transport and folder failures into dedicated mail exceptions, and report a missing
+      inbox folder explicitly instead of failing on an empty result.</change>
+  <change type="fixed">**Filament log viewer compatibility**
+    - exclude the log viewer's detail page from Shield's permission label discovery so the current
+      log viewer release can initialize its record during mount without causing admin pages to fail.</change>
+  <change type="fixed">**Inactivity reminders for active sessions**
+    - track authenticated panel activity, including interactive panel updates, at five-minute
+      intervals so users with long-lived sessions are not incorrectly reminded based on an old login.
+    - preserve the last login timestamp separately; deployment requires the last activity migration.</change>
+  <change type="security">**Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)</change>
+</feature>

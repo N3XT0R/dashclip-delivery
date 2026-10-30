@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Assignments**
+    - fixed assignment expiration calculation when cached configuration values for the
+      default TTL are stored as strings.</change>
+  <change type="security">**Composer Packages**
+    - upgraded packages to newest version (e.g. laravel)</change>
+</feature>
