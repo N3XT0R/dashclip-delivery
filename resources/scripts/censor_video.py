@@ -3,7 +3,8 @@
 
 Reads the video through ffmpeg, looks at every n-th frame in tiles so small plates survive the
 scaling, keeps the found regions for the frames in between and writes the blurred video back
-through ffmpeg. Runs on the processor, no graphics card needed.
+through ffmpeg. Only the lower part of the picture is searched, because number plates are not in
+the sky. Runs on the processor, no graphics card needed.
 """
 from __future__ import annotations
 
@@ -28,6 +29,7 @@ def arguments() -> argparse.Namespace:
     parser.add_argument('--frame-step', type=int, default=3)
     parser.add_argument('--confidence', type=float, default=0.15)
     parser.add_argument('--margin', type=float, default=0.25)
+    parser.add_argument('--search-from', type=float, default=0.0)
     parser.add_argument('--threads', type=int, default=2)
     return parser.parse_args()
 
@@ -66,12 +68,17 @@ def detect(session, name: str, image: np.ndarray, confidence: float) -> list[tup
 
 
 def detect_tiled(session, name, frame, args) -> list[tuple[int, int, int, int]]:
+    """Search the band below ``--search-from`` only, laid out as the configured tiles."""
     height, width = frame.shape[:2]
+    top = min(max(int(height * args.search_from), 0), height - 1)
+    band = height - top
     found = []
     for row in range(args.rows):
         for column in range(args.columns):
-            x0, y0 = int(column * width / args.columns), int(row * height / args.rows)
-            x1, y1 = int((column + 1) * width / args.columns), int((row + 1) * height / args.rows)
+            x0 = int(column * width / args.columns)
+            y0 = top + int(row * band / args.rows)
+            x1 = int((column + 1) * width / args.columns)
+            y1 = top + int((row + 1) * band / args.rows)
             for (bx1, by1, bx2, by2) in detect(session, name, frame[y0:y1, x0:x1], args.confidence):
                 found.append((bx1 + x0, by1 + y0, bx2 + x0, by2 + y0))
     return found

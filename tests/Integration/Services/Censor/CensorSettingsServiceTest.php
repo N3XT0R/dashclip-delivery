@@ -37,6 +37,7 @@ final class CensorSettingsServiceTest extends DatabaseTestCase
         self::assertSame([
             'columns' => 3, 'rows' => 2, 'frame_step' => 3,
             'confidence' => 0.15, 'margin' => 0.25, 'timeout_seconds' => 3600, 'threads' => 2,
+            'search_from' => 0.0,
         ], $this->app->make(CensorSettingsService::class)->current());
     }
 
@@ -59,6 +60,8 @@ final class CensorSettingsServiceTest extends DatabaseTestCase
         yield 'unlimited timeout' => [CensorConfigEntry::TIMEOUT, 0, 'int'];
         yield 'no thread at all' => [CensorConfigEntry::THREADS, 0, 'int'];
         yield 'more threads than any machine here has' => [CensorConfigEntry::THREADS, 17, 'int'];
+        yield 'a search area that leaves no picture' => [CensorConfigEntry::SEARCH_FROM, 0.95, 'float'];
+        yield 'a search area above the picture' => [CensorConfigEntry::SEARCH_FROM, -0.1, 'float'];
     }
 
     public function testInvalidStoredValuesFailBeforeProcessing(): void
