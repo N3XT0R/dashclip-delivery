@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
 
 ## [4.12.2] - 2026-10-15
 
