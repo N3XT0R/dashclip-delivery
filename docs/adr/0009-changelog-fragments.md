@@ -42,8 +42,9 @@ The project skill `changelog` (`.claude/skills/changelog/`) walks through these 
 
 Releasing is done by `.github/workflows/changelog.yml`. Pushing a version tag on a release branch
 (e.g. `4.13.0` on `4.x`) runs `changelog:release <tag>` and `changelog:generate`, sets `version` in
-`config/app.php` to the tag and commits the dated version folder, the regenerated `CHANGELOG.md`
-and the version to that release branch. Between two tags `CHANGELOG.md` therefore shows the last
+`config/app.php` to the tag, regenerates the API documentation in `storage/api-docs` and commits
+the dated version folder, the regenerated `CHANGELOG.md`, the version and the API documentation to
+that release branch. Between two tags `CHANGELOG.md` therefore shows the last
 released state, and the upcoming changes live in `.changes/unreleased/`. The version in
 `config/app.php` is not bumped by hand.
 

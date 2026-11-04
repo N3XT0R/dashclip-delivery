@@ -7,8 +7,8 @@ env:
 
 # CHANGELOG.md is built here and nowhere else (ADR 0009): tagging a version on a release branch
 # moves the unreleased fragments into a dated version folder, regenerates CHANGELOG.md, sets
-# 'version' in config/app.php to the tag and commits all of it to the release branch the tag was
-# cut from.
+# 'version' in config/app.php to the tag, regenerates the API documentation in storage/api-docs and
+# commits all of it to the release branch the tag was cut from.
 on:
   push:
     tags:
@@ -86,6 +86,9 @@ jobs:
           sed -i -E "s/$pattern/\1$TAG\2/" config/app.php
           grep -E "^\s*'version' => '$TAG',$" config/app.php
 
+      - name: Regenerate the API documentation
+        run: php artisan l5-swagger:generate --all
+
       - name: Commit and push the changelog and version
         env:
           TAG: ${{ github.ref_name }}
@@ -93,9 +96,9 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .changes CHANGELOG.md config/app.php
+          git add .changes CHANGELOG.md config/app.php storage/api-docs
           if git diff --cached --quiet; then
-            echo "Changelog and version are already up to date."
+            echo "Changelog, version and API documentation are already up to date."
             exit 0
           fi
           git commit -m "chore(release): $TAG"
