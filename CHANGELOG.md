@@ -5,9 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- Generated from the fragments in .changes/, do not edit by hand. -->
+
 ## [Unreleased]
 
 ## [4.12.3] - 2026-11-04
+
+### Changed
+- **Changelog**: Entries are written as one fragment per branch below `.changes/`, so branches no
+  longer conflict in the changelog when they are merged. `CHANGELOG.md` is built by a pipeline when
+  a version is tagged, which also dates the release; the whole history was moved into fragments with
+  its dates and order. A commit made through Claude Code is checked for a fragment, a valid
+  category, an untouched `CHANGELOG.md` and code style, and a `changelog` skill describes the
+  workflow. ADR 0009 records the decision and amends ADR 0006.
 
 ### Security
 - **Packages**
@@ -197,7 +207,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   advances while a large video is transferred instead of staying at 0% until it is complete.
 - **Channel applications**: Record the approval of a channel application in the activity log.
   The entry was prepared but never saved.
-- **Offer downloads**: A closed download dialog no longer reappears when the offers page is reloaded.
+- **Offer downloads**: A closed download dialog no longer reappears when the offers page is
+  reloaded.
 - **Offer downloads**: The "Heruntergeladen" tab lists every offer once and shows only its latest
   download time, instead of one row and one time per download. Sorting by download time works in
   both directions.
@@ -545,7 +556,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.3.1] - 2026-08-02
 
 ### Fixed
-
 - **Cookie consent banner**
     - banner reappeared on every page load because Laravel's `EncryptCookies` middleware
       discarded the JavaScript-set cookie as undecryptable; `cookie_consent` is now excluded
@@ -554,14 +564,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.3.0] - 2026-08-02
 
 ### Added
-
 - **Channel video reception paused notification**
     - sends the channel owner an email when an admin pauses video reception for their channel,
       including a two-step reactivation link (confirm page → submit) backed by the existing
       ActionToken system with a one-month expiry and automatic deduplication of outstanding tokens.
 
 ### Changed
-
 - **Legal pages updated to current statutes**
     - Impressum: references updated from TMG to DDG (§§ 7–10, in force since 14 May 2024);
       added standard liability clauses for content awareness and link integrity.
@@ -580,7 +588,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.1.1] - 2026-07-25
 
 ### Fixed
-
 - **Admin activity log**
     - fixed activity properties failing to render after the Filament 5.7 update by normalizing
       property values into displayable text.
@@ -592,14 +599,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.1.0] - 2026-07-15
 
 ### Added
-
 - **My Offers navigation**
     - added a navigation badge showing the current channel's total number of available video offers,
       improving visibility and orientation for less experienced users in line with ISO 9241
       usability principles.
 
 ### Fixed
-
 - **Assignment distribution**
     - returned expired videos without a download to subsequent distribution pools and stopped
       expired queued offers from being displayed as fully distributed.
@@ -613,7 +618,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.1] - 2026-07-15
 
 ### Fixed
-
 - **Authorization / Shield seeding**
     - regenerated the Shield seeder with the current role and permission assignments, corrected
       direct-permission lookup by permission name, and added support for restoring optional tenant,
@@ -626,13 +630,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0] - 2026-07-07
 
 ### Changed
-
 - Marked v4 as the first stable release
 
 ## [4.0.0-beta.9] - 2026-07-07
 
 ### Fixed
-
 - **UX**
     - replaced the experimental video upload page title, subheading, and bundle ID helper
       text with clearer upload guidance.
@@ -640,7 +642,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.8] - 2026-07-06
 
 ### Fixed
-
 - **Assignments**
     - persisted offer notification expiry timestamps on assignments so newly distributed videos can
       expire and requeue correctly after notification.
@@ -648,7 +649,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.7] - 2026-07-05
 
 ### Fixed
-
 - **UX**
     - added exact date-time tooltips to relative date columns in admin Filament resources.
     - moved hardcoded Filament resource and page labels into English and German language files.
@@ -657,7 +657,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.6] - 2026-07-03
 
 ### Fixed
-
 - **Assignments**
     - respected channel weekly quotas across assignment batches so channels that already reached
       their weekly limit no longer keep receiving new offers in later distribution runs.
@@ -665,33 +664,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.5] - 2026-07-03
 
 ### Fixed
-
 - **Assignments**
     - fixed assignment expiration calculation when cached configuration values for the
       default TTL are stored as strings.
 
 ### Security
-
 - **Composer Packages**
     - upgraded packages to newest version (e.g. laravel)
 
 ## [4.0.0-beta.4] - 2026-06-06
 
 ### Fixed
-
-- **AssignmentService**: 
-  - Fixed a null pointer exception in `canReturnAssignment()` when `expires_at` is `null` 
+- **AssignmentService**:
+  - Fixed a null pointer exception in `canReturnAssignment()` when `expires_at` is `null`
     assignments without an expiry date are now correctly treated as non-expired.
 
 ### Security
 - **Packages**
     - upgraded packages to newest version (e.g. laravel or npm dependencies)
 
-
 ## [4.0.0-beta.3] - 2026-05-30
 
 ### Fixed
-
 - **Horizon video ingest processing**
     - Fixed an issue where `ProcessVideoIngestJob` could fail to be dispatched
       when stale unique job locks remained after interrupted processing or
@@ -708,7 +702,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.2] - 2026-05-30
 
 ### Fixed
-
 - **ChannelWorkspace cluster access**
     - Fixed missing permission validation in `ChannelWorkspace::canAccess()`: the
       Channel-Workspace cluster did not properly enforce access restrictions and
@@ -719,7 +712,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.1] - 2026-05-29
 
 ### Added
-
 - **WebDAV ingest pipeline**
     - `ZipUploadedListener` handles `FileCreatedEvent` and `FileUpdatedEvent` from the WebDAV
       package and dispatches `ProcessWebDavZipJob` for every `.zip` upload; registered in
@@ -735,7 +727,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       them via `ProcessWebDavZipJob`; acts as periodic fallback; scheduled every 15 minutes
     - `clean:webdav-non-zip` Artisan command removes non-ZIP files from WebDAV user directories;
       scheduled hourly
-
 - **WebDAV policy**
     - introduced `WebDavPathPolicy` that wraps the package's `PathPolicy` via composition (the
       original class is `final`) and restricts `createFile` and `write` to `.zip` files only;
@@ -744,7 +735,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `PathResourceDto`
 
 ### Fixed
-
 - **Dropbox upload**
     - `DropboxUploadService` switched to exclusively session-based uploads
       (`uploadSessionStart` → `uploadSessionAppend` → `uploadSessionFinish`); `upload()` is now
@@ -752,7 +742,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       streams
     - Chunks are now passed as `LimitStream` (PSR-7) instead of strings via `fread()`;
       Guzzle no longer buffers the request bodies through `php://temp` to `/tmp`
-
 - **FFmpeg / storage**
     - redirected FFmpeg temporary files from `/tmp` to `storage/app/ffmpeg-tmp` via `laravel-ffmpeg`
       config (`temporary_files_root` and `temporary_files_encrypted_hls`); stale temp files from
@@ -763,7 +752,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-alpha.4] - 2026-04-29
 
 ### Added
-
 - **adr**
     - added architecture decision records for class naming, SOLID and design-pattern usage, exception hierarchies,
       method-level PHPDoc conventions, changelog maintenance policy, and Conventional Commits
@@ -775,7 +763,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - added a Pint configuration using the PSR-12 preset while preserving camelCase PHPUnit method names
 
 ### Changed
-
 - **Refactored ZIP job payload handling**
     - Introduced `AssignmentZipDto` to encapsulate ZIP creation parameters
     - Replaced primitive constructor arguments in `BuildZipJob` with DTO
@@ -783,7 +770,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Simplified method signatures and reduced parameter coupling
 
 ### Fixed
-
 - **Dropbox / storage**
     - fixed `/tmp` exhaustion caused by Guzzle buffering Dropbox response bodies via `php://temp`;
       both the Storage disk driver and `DropboxUploadService` now pass `stream: true` to the Guzzle
@@ -793,14 +779,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `/tmp` files to accumulate across failed jobs until disk space was exhausted
     - `ZipService::build()` now cleans up `zips/tmp/` staging files in a `finally` block so they
       are always removed regardless of whether the job succeeds or fails
-
 - **testing**
     - fixed the OnboardingWizard notification assertion to use Filament's notification testing API
 
 ## [4.0.0-alpha.3] - 2026-04-11
 
 ### Added
-
 - **Laravel/horizon**
     - added Laravel Horizon for advanced queue monitoring and management
     - provides a dashboard to track job throughput, runtime, failures, and retry attempts
@@ -816,7 +800,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - improves AI-assisted development (debugging, refactoring, code navigation)
 
 ### Changed
-
 - **Queue Worker Configuration**
     - updated queue worker configuration to use Horizon's `horizon` connection for better performance and monitoring
     - adjusted `ProcessVideoIngestJob` to be dispatched to the `horizon` queue connection
@@ -829,13 +812,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - tested all major functionalities to ensure stability after the upgrade
 
 ### Fixed
-
-- Minor bugfixes around the application and ingest pipeline based on testing and feedback during the alpha phase.
+- Minor bugfixes around the application and ingest pipeline based on testing and feedback during the
+  alpha phase.
 
 ## [4.0.0-alpha.2] - 2026-04-07
 
 ### Added
-
 - **Video Ingest Pipeline**
     - added `ValidateInputFileStep` as a preliminary validation step to ensure that the source file exists and is
       processable before executing further ingest steps
@@ -853,7 +835,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - enables retroactive execution of newly added pipeline steps without reprocessing already completed steps
 
 ### Changed
-
 - **Video Deletion Handling**
     - introduced soft deletes for videos to prevent immediate physical data loss
     - decoupled logical deletion from physical file removal to improve system consistency
@@ -876,7 +857,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-alpha.1] - 2026-04-02
 
 ### Added
-
 - **Video Ingest Pipeline** [#265](https://github.com/N3XT0R/dashclip-delivery/issues/265)
     - introduced a deterministic, step-based ingest pipeline that processes videos through isolated and reproducible
       workflow steps
@@ -935,7 +915,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - `FFMPEGConfigEntry`
 
 ### Changed
-
 - **Video Ingest Flow**
     - replaced the legacy monolithic ingest workflow with the new modular step-based ingest pipeline
 - **Video-Upload Structure**
@@ -973,7 +952,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       reload
 
 ### Removed
-
 - **Video Ingest Flow**
     - replaced the legacy monolithic ingest workflow with the new modular step-based ingest pipeline
 - **Notification Table Resource**
@@ -991,6 +969,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - cleaned up `ChannelService` by removing legacy approval token handling.
 
 ### Security
-
 - **Composer Packages**
     - upgraded packages to newest version (e.g. laravel)
