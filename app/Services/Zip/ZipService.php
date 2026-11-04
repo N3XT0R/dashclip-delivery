@@ -12,8 +12,10 @@ use App\Models\{Assignment, Batch, Channel, Video};
 use App\Services\CsvService;
 use App\Services\DownloadCacheService;
 use App\Services\Storage\StorageDiskService;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use League\Flysystem\FilesystemException;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Log;
@@ -53,15 +55,45 @@ class ZipService
         }
         $tmpPath = $this->zipPath($jobId);
 
-        $this->prepareDirectories();
-
-        $zip = $this->createZipArchive($tmpPath);
-        $context = new ZipBuildContext($jobId, max($items->count(), 1));
-
         try {
             $this->cache->setStatus($jobId, DownloadStatusEnum::PREPARING->value);
             $this->cache->setProgress($jobId, 0);
 
+            $packed = $this->buildArchive(Storage::path($tmpPath), $channel, $items, $jobId);
+
+            // only packed offers are marked as downloaded once the archive is fetched
+            $this->cache->setAssignments($jobId, $packed->pluck('id')->all());
+            $this->cache->setFile($jobId, $tmpPath);
+            $this->cache->setName($jobId, $downloadName);
+            $this->cache->setProgress($jobId, 100);
+            $this->cache->setStatus($jobId, DownloadStatusEnum::READY->value);
+        } catch (\Throwable $e) {
+            $this->cache->setStatus($jobId, DownloadStatusEnum::FAILED->value);
+            throw $e;
+        }
+
+        return $tmpPath;
+    }
+
+    /**
+     * Pack the offers into a ZIP at the given absolute path, skipping videos that cannot be delivered.
+     * @param Collection<int, Assignment> $items
+     * @return EloquentCollection<int, Assignment> The offers whose videos are in the archive.
+     * @throws ZipEmptyException When no offered video could be packed.
+     * @throws ZipBuildException When the archive cannot be written.
+     */
+    public function buildArchive(string $absolutePath, Channel $channel, Collection $items, string $jobId): EloquentCollection
+    {
+        if ($items->isEmpty()) {
+            throw new ZipBuildException('No downloadable videos remain in this selection.');
+        }
+
+        $this->prepareDirectories();
+        File::ensureDirectoryExists(dirname($absolutePath));
+        $zip = $this->createZipArchive($absolutePath);
+        $context = new ZipBuildContext($jobId, max($items->count(), 1));
+
+        try {
             $packed = $this->addAssignmentsToZip($zip, $channel, $items, $context);
             if ($packed->isEmpty()) {
                 throw ZipEmptyException::allSkipped();
@@ -69,18 +101,21 @@ class ZipService
             if (!$zip->addFromString('info.csv', $this->csvService->buildInfoCsv($packed))) {
                 throw new ZipBuildException('Cannot add metadata to the ZIP archive.');
             }
-            // only packed offers are marked as downloaded once the archive is fetched
-            $this->cache->setAssignments($jobId, $packed->pluck('id')->all());
+            $this->cache->setStatus($jobId, DownloadStatusEnum::PACKING->value);
+            if (!$zip->close()) {
+                throw new ZipBuildException('The ZIP archive could not be finalized.');
+            }
 
-            $this->finalizeZip($zip, $context, $tmpPath, $downloadName);
+            return $packed;
         } catch (\Throwable $e) {
-            $this->cache->setStatus($jobId, DownloadStatusEnum::FAILED->value);
             // zip->close() must be called even on failure or libzip leaks file handles
             try {
                 $zip->close();
             } catch (\Throwable) {
             }
-            Storage::delete($tmpPath);
+            if (is_file($absolutePath)) {
+                unlink($absolutePath);
+            }
             throw $e;
         } finally {
             // always wipe temporary copies of remote videos regardless of success or failure
@@ -88,8 +123,6 @@ class ZipService
                 Storage::delete($file);
             }
         }
-
-        return $tmpPath;
     }
 
     private function jobId(Batch $batch, Channel $channel): string
@@ -119,10 +152,10 @@ class ZipService
         Storage::makeDirectory('zips/tmp');
     }
 
-    private function createZipArchive(string $tmpPath): ZipArchive
+    private function createZipArchive(string $absolutePath): ZipArchive
     {
         $zip = new ZipArchive();
-        if ($zip->open(Storage::path($tmpPath), ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+        if ($zip->open($absolutePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             throw new ZipBuildException('Cannot create the ZIP archive.');
         }
 
@@ -132,16 +165,16 @@ class ZipService
     /**
      * Pack every readable video and skip the others, so one broken video never blocks the rest.
      * @param Collection<Assignment> $items
-     * @return Collection<int, Assignment> The assignments whose videos are in the archive.
+     * @return EloquentCollection<int, Assignment> The assignments whose videos are in the archive.
      */
     private function addAssignmentsToZip(
         ZipArchive $zip,
         Channel $channel,
         Collection $items,
         ZipBuildContext $context
-    ): Collection {
+    ): EloquentCollection {
         $jobId = $context->jobId;
-        $packed = collect();
+        $packed = new EloquentCollection();
 
         foreach ($items as $assignment) {
             $nameInZip = $this->entryName($zip, $assignment);
@@ -322,27 +355,4 @@ class ZipService
         $pct = (int)floor(($context->processed() + $currentFileShare) * 100 / max($context->total, 1));
         $this->cache->setProgress($context->jobId, $pct);
     }
-
-    private function finalizeZip(
-        ZipArchive $zip,
-        ZipBuildContext $context,
-        string $tmpPath,
-        string $downloadName
-    ): void {
-        $jobId = $context->jobId;
-        $this->cache->setStatus($jobId, DownloadStatusEnum::PACKING->value);
-        if (!$zip->close()) {
-            throw new ZipBuildException('The ZIP archive could not be finalized.');
-        }
-
-        foreach ($context->temporaryFiles() as $file) {
-            Storage::delete($file);
-        }
-
-        $this->cache->setFile($jobId, $tmpPath);
-        $this->cache->setName($jobId, $downloadName);
-        $this->cache->setProgress($jobId, 100);
-        $this->cache->setStatus($jobId, DownloadStatusEnum::READY->value);
-    }
-
 }

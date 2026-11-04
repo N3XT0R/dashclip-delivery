@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Homepage**: The "How it works" section now includes an explainer video. It only loads from YouTube after visitors click play, and the privacy policy describes what data is transferred then.</change>
+</feature>

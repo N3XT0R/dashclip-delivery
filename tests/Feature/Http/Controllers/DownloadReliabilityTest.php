@@ -10,6 +10,7 @@ use App\Exceptions\Zip\ZipEmptyException;
 use App\Jobs\BuildZipJob;
 use Illuminate\Support\Facades\Log;
 use App\Models\Assignment;
+use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\Video;
 use App\Services\DownloadCacheService;
@@ -24,9 +25,12 @@ class DownloadReliabilityTest extends DatabaseTestCase
 {
     private string $root;
 
+    private Batch $batch;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->batch = Batch::factory()->create();
         $this->root = storage_path('framework/testing/downloads-'.Str::uuid());
         config()->set('filesystems.default', 'local');
         config()->set('filesystems.disks.local.root', $this->root);
@@ -45,7 +49,7 @@ class DownloadReliabilityTest extends DatabaseTestCase
     {
         $path = 'videos/'.Str::uuid().'.mp4';
         Storage::put($path, 'video-content');
-        return Assignment::factory()->forChannel($channel)->forVideo(Video::factory()->create([
+        return Assignment::factory()->withBatch($this->batch)->forChannel($channel)->forVideo(Video::factory()->create([
             'disk' => 'local', 'path' => $path, 'original_name' => $name, 'bytes' => 13,
         ]))->create();
     }
@@ -71,7 +75,7 @@ class DownloadReliabilityTest extends DatabaseTestCase
 
     private function startUrl(Channel $channel): string
     {
-        return URL::temporarySignedRoute('zips.channel.start', now()->addHour(), ['channel' => $channel->id]);
+        return URL::temporarySignedRoute('zips.start', now()->addHour(), ['batch' => $this->batch->id, 'channel' => $channel->id]);
     }
 
     public function testSingleVideoIsDeliveredAsZipWithInfoCsv(): void
@@ -287,7 +291,7 @@ class DownloadReliabilityTest extends DatabaseTestCase
         $this->get(str_replace('/offers/'.$offer->id.'/', '/offers/'.$other->id.'/', $url))->assertForbidden();
         $offer->update(['expires_at' => now()->subMinute()]);
         $this->get($url)->assertGone();
-        $this->postJson('/zips/channel/'.$channel->id, ['assignment_ids' => [$other->id]])->assertForbidden();
+        $this->postJson('/zips/'.$this->batch->id.'/'.$channel->id, ['assignment_ids' => [$other->id]])->assertForbidden();
         $this->get('/zips/unknown/download')->assertForbidden();
         $this->getJson('/zips/unknown/progress')->assertForbidden();
     }

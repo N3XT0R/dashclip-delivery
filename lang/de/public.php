@@ -89,6 +89,9 @@ return [
     'validation' => 'Bitte prüfe deine Eingaben:',
     'guide_heading' => 'Was passiert mit meinem Clip?',
     'guide_intro' => 'Ein Beispiel: Du hast eine interessante Situation auf der Straße aufgenommen und möchtest sie mit YouTube-Kanälen teilen. So hilft dir DashClip Delivery dabei.',
+    'video_title' => 'Erklärvideo: So funktioniert DashClip Delivery',
+    'video_load' => ':title abspielen',
+    'video_consent' => 'Beim Abspielen wird das Video von YouTube geladen. Dabei werden Daten wie deine IP-Adresse an YouTube (Google) übertragen. Mehr dazu in unserer',
     'guide_steps' => [
         ['Konto anlegen und Video hochladen', 'Du bist der Einsender: die Person, von der die Aufnahme stammt. Registriere dich, melde dich an und lade deine Videodatei hoch. Ergänze die Angaben zu deiner Aufnahme. Du musst sie nicht für jeden Kanal erneut hochladen.'],
         ['Du wählst die Kanäle aus', 'Ein Kanal ist hier ein Empfänger, der Videos für seinen YouTube-Kanal auswählt. Du entscheidest selbst, an welche Kanäle du deinen Clip einsenden möchtest. Die Plattform berücksichtigt deine Auswahl bei der automatischen Verteilung nach ihren Verteilungsregeln. Nicht jeder Clip geht sofort an jeden ausgewählten Kanal.'],

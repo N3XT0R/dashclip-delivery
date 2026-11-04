@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Development guidelines**: Every code file changed by a pull request must be fully covered by automated tests, so test coverage grows with each change.</change>
+</feature>
