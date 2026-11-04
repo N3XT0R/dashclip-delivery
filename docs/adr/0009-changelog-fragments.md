@@ -41,10 +41,11 @@ git add .changes/unreleased/<branch>.xml
 The project skill `changelog` (`.claude/skills/changelog/`) walks through these steps.
 
 Releasing is done by `.github/workflows/changelog.yml`. Pushing a version tag on a release branch
-(e.g. `4.13.0` on `4.x`) runs `changelog:release <tag>` and `changelog:generate` and commits the
-dated version folder and the regenerated `CHANGELOG.md` to that release branch. Between two tags
-`CHANGELOG.md` therefore shows the last released state, and the upcoming changes live in
-`.changes/unreleased/`.
+(e.g. `4.13.0` on `4.x`) runs `changelog:release <tag>` and `changelog:generate`, sets `version` in
+`config/app.php` to the tag and commits the dated version folder, the regenerated `CHANGELOG.md`
+and the version to that release branch. Between two tags `CHANGELOG.md` therefore shows the last
+released state, and the upcoming changes live in `.changes/unreleased/`. The version in
+`config/app.php` is not bumped by hand.
 
 A fragment may also be written or edited directly. A message that needs several lines, for example
 a label with a nested list, is written with its line breaks and continuation indentation in the
