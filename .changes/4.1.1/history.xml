@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Admin activity log**
+    - fixed activity properties failing to render after the Filament 5.7 update by normalizing
+      property values into displayable text.</change>
+  <change type="security">**Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)</change>
+</feature>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Dynamic XML sitemap**
+    - added `/sitemap.xml` for public pages and current German/English blog content,
+      advertised through a dynamically generated `robots.txt`.
+    - exclude unpublished, non-indexable and non-canonical articles; article modification
+      dates reflect stored content changes, and the existing blog sitemap shares the same source.</change>
+  <change type="added">**Editorial blog**
+    - added German and English article pages, search, categories, tags, RSS feeds,
+      a sitemap, and the latest published articles on the homepage.
+    - added permission-controlled editorial forms with translated content, media,
+      search-engine metadata, previews, duplication, and scheduled publication.
+    - added safe Markdown rendering with note and warning callouts, cached public
+      aggregates, responsive article cards, and plain sharing links without trackers.
+    - added an initial content seeder with three bilingual categories, five tags
+      and a complete German/English introduction; repeated runs preserve editorial
+      changes and deletions through a transactional, persistent execution marker.</change>
+  <change type="added">**Channel operators maintain their own public presentation**
+    - the channel area now carries the homepage visibility switch, which previously
+      only an administrator could set.
+    - channel operators can upload a logo for the public channel list. It is shown at
+      the same size as the previous neutral symbol, which remains the fallback.
+    - both changes are recorded in the channel history, so it stays traceable who
+      changed the public presentation and when.</change>
+  <change type="changed">**Blog test coverage**
+    - cover editorial duplication through its admin action, tag editing, taxonomy
+      ownership, article image fallbacks and missing-translation diagnostics.</change>
+  <change type="changed">**Shared public components**
+    - centralized language option styling for blog links and public language buttons
+      within the existing shared header, keeping both variants visually consistent.</change>
+  <change type="fixed">**Blog language selection**
+    - restored the active language background and outline on blog pages and aligned
+      language links with the buttons used throughout the public website.</change>
+  <change type="fixed">**Blog administration labels**
+    - corrected explicit singular and plural labels for posts, categories and tags
+      in German and English, including page headings and create actions.
+    - translated editorial field and icon labels, and show localized category and
+      tag names in article forms and lists with a slug fallback for missing translations.</change>
+  <change type="fixed">**Unreadable mail content in the mail log**
+    - incoming mail was stored exactly as it arrived, so the log showed transport
+      structure or encoded blocks instead of the message. It is now decoded while
+      reading, preferring the formatted part over the plain one.
+    - the content view no longer places a mail into the administration document.
+      It is shown in an isolated frame, which also repairs outgoing mail, whose
+      complete documents could never render correctly inside a panel.
+    - remote images are held back until they are explicitly requested, so opening
+      an entry no longer confirms the read to the sender.
+    - a maintenance command repairs entries that were stored before this fix.
+    - reading a mail without a usable header no longer aborts the scan, and a
+      stray debug output was removed from that path.</change>
+  <change type="fixed">**Missing API documentation after a deployment**
+    - the deployment now regenerates the interface specifications, which previously
+      existed only as a defined step that nothing ever invoked.
+    - the specifications are versioned instead of ignored, and are regenerated on
+      request by default so an environment can never serve an empty documentation page.</change>
+</feature>

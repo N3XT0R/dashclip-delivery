@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**UX**
+    - replaced the experimental video upload page title, subheading, and bundle ID helper
+      text with clearer upload guidance.</change>
+</feature>

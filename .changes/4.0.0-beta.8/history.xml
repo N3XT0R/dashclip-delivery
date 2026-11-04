@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Assignments**
+    - persisted offer notification expiry timestamps on assignments so newly distributed videos can
+      expire and requeue correctly after notification.</change>
+</feature>
