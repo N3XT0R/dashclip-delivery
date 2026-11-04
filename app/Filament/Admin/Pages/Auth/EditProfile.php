@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Pages\Auth;
 
 use App\Facades\NotificationDiscovery;
 use App\Models\User;
+use App\Notifications\AbstractUserNotification;
 use App\Repository\UserMailConfigRepository;
 use App\Services\LocaleDiscoveryService;
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
@@ -117,7 +118,7 @@ class EditProfile extends BaseEditProfile
             ->icon(Heroicon::OutlinedBell)
             ->collapsed()
             ->schema(
-                collect(NotificationDiscovery::list())
+                collect($this->visibleNotifications($user))
                     ->map(function ($class) use ($user, $repo) {
                         $key = self::CHECKBOX_NAMESPACE . $class;
                         $isAllowed = $repo->isAllowed($user, $class);
@@ -130,13 +131,26 @@ class EditProfile extends BaseEditProfile
             );
     }
 
+    /**
+     * Notifications whose mail preference the user may change.
+     * @param User $user
+     * @return list<class-string<AbstractUserNotification>>
+     */
+    private function visibleNotifications(User $user): array
+    {
+        return array_values(array_filter(
+            NotificationDiscovery::list(),
+            static fn (string $class): bool => $class::isVisibleFor($user),
+        ));
+    }
+
     protected function handleRecordUpdate(Model|User $record, array $data): Model
     {
         $repo = app(UserMailConfigRepository::class);
 
         $types = data_get($data, 'notifications.mail.types', []);
 
-        foreach (NotificationDiscovery::list() as $class) {
+        foreach ($this->visibleNotifications($record) as $class) {
             if (array_key_exists($class, $types)) {
                 $repo->setForUser($record, $class, $types[$class]);
             }

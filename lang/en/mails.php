@@ -76,4 +76,16 @@ return [
         'opt_out_hint' => 'You can turn off this reminder any time in your profile under "Notifications per Mail".',
         'signature' => 'Best regards<br>Your :app team',
     ],
+    'offer_download_ready' => [
+        'subject' => 'Your download is ready',
+        'headline' => 'Your download is ready',
+        'greeting' => 'Hi :name,',
+        'ready' => '{1} One video from “:channel” is ready for you as a ZIP.|[2,*] :count videos from “:channel” are ready for you as a ZIP.',
+        'ready_without_channel' => '{1} One video is ready for you as a ZIP.|[2,*] :count videos are ready for you as a ZIP.',
+        'skipped' => '{1} One video could not be packed and is missing from the ZIP.|[2,*] :count videos could not be packed and are missing from the ZIP.',
+        'button' => 'Download ZIP',
+        'validity' => 'The download stays ready for one day. After that you can simply prepare it again under “My Offers”.',
+        'opt_out_hint' => 'You can turn off this email at any time in your profile under “Notifications per Mail”.',
+        'signature' => 'Best regards<br>Your :app team',
+    ],
 ];
