@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Error log**: Manipulated requests that try to change protected form values are now rejected as bad requests instead of being logged as server errors.</change>
+</feature>
