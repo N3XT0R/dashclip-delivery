@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Passkeys**: Sign in with a passkey from the login page, or use one as a second sign-in step.
+  Add, rename and remove passkeys in the account profile.</change>
+  <change type="added">**Release news**: Publish a German and English news article with every version that explains the
+  changes for submitters and channel operators, starting with 4.9.0. It goes live with the
+  deployment.</change>
+  <change type="changed">**Account profile**: Group personal details, sign-in settings and notifications into translated
+  sections using the shared panel design.</change>
+  <change type="changed">**Account profile**: Open the profile inside the regular user area with the full navigation,
+  scoped to the user's own team.</change>
+  <change type="fixed">**Team channels**: Hide channels with paused video reception from the team channel list and only
+  offer channels that currently accept videos when assigning a channel to a team.</change>
+  <change type="security">**Account profile**: Require the current password before changing an email address or password.</change>
+</feature>

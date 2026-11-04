@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Authorization / Shield seeding**
+    - regenerated the Shield seeder with the current role and permission assignments, corrected
+      direct-permission lookup by permission name, and added support for restoring optional tenant,
+      user, and user-tenant data.</change>
+  <change type="security">**Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)</change>
+</feature>

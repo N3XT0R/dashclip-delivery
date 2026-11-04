@@ -16,8 +16,9 @@ Argument: the version (e.g. `4.10.0`). If missing, ask for it.
 ## Steps
 
 1. **Branch** off the highest `*-dev` branch: `feature/release-news-<version>`. Land it via PR.
-2. **Collect changes** from the `## [<version>]` section of `CHANGELOG.md`, or from
-   `## [Unreleased]` if the version is not cut yet. Keep only what users notice. Drop refactorings,
+2. **Collect changes** from the changelog fragments: `.changes/<version>/` if the version is
+   tagged already, otherwise `.changes/unreleased/` (`php artisan changelog:unreleased` lists them).
+   `CHANGELOG.md` only catches up when the version is tagged. Keep only what users notice. Drop refactorings,
    tests, tooling and internal fixes. Group into 3 to 5 topics, most useful first.
 3. **Check real UI wording** in `lang/de/*.php` and `lang/en/*.php` before naming buttons, sections
    or pages in the text. Quote labels exactly.

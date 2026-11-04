@@ -1,5 +1,21 @@
 {
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git *)",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check-commit-conditions.sh",
+            "timeout": 120,
+            "statusMessage": "Checking commit conditions (changelog, Pint)"
+          }
+        ]
+      }
+    ]
   }
 }

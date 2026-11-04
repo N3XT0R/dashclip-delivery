@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Bringing back videos that were removed too early**: The one-off `videos:restore-early-marked`
+  (with `--dry-run` and `--since`) lists and restores the videos that were marked as deleted while
+  one of their downloads was still running, together with the clips that went with them. A video
+  whose files were already removed for good is left alone and reported.</change>
+  <change type="changed">**Maintainability**: The ZIP build passes the state of one run (job, progress, temporary copies)
+  as one object instead of handing five values from method to method, and it no longer takes the
+  address and browser of the caller, which it never used. The clip import carries its settings as
+  one object instead of passing four values through every row, the action token repository takes
+  the data of a token as one object, and the storage connection keeps its credentials together. The
+  analysis no longer looks for structure smells in plain data carriers, where the list of fields is
+  the purpose of the class. The import command and the download script in the browser are split
+  into named steps instead of one long routine each. Behaviour is unchanged.</change>
+  <change type="changed">**Waiting videos take their turn**: When a run has fewer free places than waiting videos, the
+  places now go to the videos that have come off worst so far: the ones that reached the fewest
+  channels, and among those the ones waiting longest since their offer ran out or was given back.
+  Before, the queue was worked through by video number, so the same videos took every place and a
+  video that expired later could wait for months.</change>
+  <change type="changed">**A distribution run says what it left behind**: Its record in the administration now also counts
+  the videos it had no place left for and the videos of an uploader it could not serve at all, for
+  example because every channel of that team is paused. Before, both simply disappeared from the
+  numbers and a run that placed one video looked like a run with nothing to do. `assign:distribute`
+  prints the same figures.</change>
+  <change type="changed">**The wished channel is visible after the upload**: The channel a submitter picked while uploading
+  now shows in the video list of the user area and, in the administration, in the video list, in the
+  details of a video and in its clips. Before it could only be set and was then seen nowhere but in
+  the details of the user area. The details of a video in the administration also show name, format,
+  size, storage, checksum and the recorded technical data again.</change>
+  <change type="fixed">**Videos waited a week for their next channel**: An offer runs out exactly as many days after the
+  run that sent it, so the run that should have handed the video on missed it by the seconds it
+  needed to get there. The offer was closed the next morning and its video waited a whole cycle.
+  The run now closes the offers that run out while it works and hands their videos on in the same
+  pass; `assign:expire` takes `--grace-minutes` for that window.</change>
+  <change type="fixed">**Returning a video hands it on again**: A channel that gives an offer back releases the video for
+  the other channels, even when it had already downloaded it. Before, a download kept the video out
+  of the distribution for good, so a returned video was never offered again and never tidied up
+  either. A video a channel still holds stays out of the distribution as before, and the returning
+  channel does not receive it again.</change>
+  <change type="security">**Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)</change>
+</feature>

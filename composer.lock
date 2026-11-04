@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0df5f7261d5fb1cc868c783215e5532f",
+    "content-hash": "e38d815a60471f2407fd33815fef4942",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -16458,6 +16458,148 @@
                 "source": "https://github.com/laravel/sail"
             },
             "time": "2026-10-08T20:06:52+00:00"
+        },
+        {
+            "name": "markwalet/laravel-changelog",
+            "version": "v1.13.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/markwalet/laravel-changelog.git",
+                "reference": "ad7d5e3848d424b07196071e25b0db4d5a8f14a0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/markwalet/laravel-changelog/zipball/ad7d5e3848d424b07196071e25b0db4d5a8f14a0",
+                "reference": "ad7d5e3848d424b07196071e25b0db4d5a8f14a0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-simplexml": "*",
+                "laravel/framework": "^12.0|^13.0",
+                "markwalet/laravel-git-state": "~1.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.9",
+                "laravel/pint": "^1.29",
+                "mockery/mockery": "~1.4",
+                "orchestra/testbench": "10.*|11.*",
+                "phpunit/phpunit": "^10.5|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Changelog": "MarkWalet\\Changelog\\Facades\\Changelog"
+                    },
+                    "providers": [
+                        "MarkWalet\\Changelog\\ChangelogServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MarkWalet\\Changelog\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Walet",
+                    "email": "mark.walet@gmail.com"
+                }
+            ],
+            "description": "A Laravel package that prevents merge conflicts on your changelog file.",
+            "support": {
+                "issues": "https://github.com/markwalet/laravel-changelog/issues",
+                "source": "https://github.com/markwalet/laravel-changelog/tree/v1.13.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/markwalet",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/markwalet",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-03-29T11:43:51+00:00"
+        },
+        {
+            "name": "markwalet/laravel-git-state",
+            "version": "v1.11.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/markwalet/laravel-git-state.git",
+                "reference": "0a787f5f5fe0db3e25e7949f4b89e764884559f4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/markwalet/laravel-git-state/zipball/0a787f5f5fe0db3e25e7949f4b89e764884559f4",
+                "reference": "0a787f5f5fe0db3e25e7949f4b89e764884559f4",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^12.0|^13.0",
+                "php": "^8.2",
+                "phpoption/phpoption": ">=1.8",
+                "webmozart/assert": "^1.10 || ^2.0"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.29",
+                "orchestra/testbench": "10.*|11.*",
+                "phpunit/phpunit": "^10.5|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "GitState": "MarkWalet\\GitState\\Facades\\GitState"
+                    },
+                    "providers": [
+                        "MarkWalet\\GitState\\GitStateServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MarkWalet\\GitState\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Walet",
+                    "email": "mark.walet@gmail.com",
+                    "homepage": "https://markwalet.me",
+                    "role": "Owner"
+                }
+            ],
+            "description": "A Laravel package that gives you information about the current git state.",
+            "support": {
+                "issues": "https://github.com/markwalet/laravel-git-state/issues",
+                "source": "https://github.com/markwalet/laravel-git-state/tree/v1.11.2"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/markwalet",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/markwalet",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-03-28T16:56:43+00:00"
         },
         {
             "name": "mockery/mockery",

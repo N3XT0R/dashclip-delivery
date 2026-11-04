@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted
+Accepted. Amended by ADR 0009: entries are recorded as fragments below `.changes/` and
+`CHANGELOG.md` is generated from them. The content rules below stay in force.
 
 ## Context
 

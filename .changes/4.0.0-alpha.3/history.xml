@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Laravel/horizon**
+    - added Laravel Horizon for advanced queue monitoring and management
+    - provides a dashboard to track job throughput, runtime, failures, and retry attempts
+    - enables real-time insights into queue performance and bottlenecks
+    - supports multiple queue connections and job types with detailed metrics
+    - allows for easy identification of failed or long-running jobs for troubleshooting</change>
+  <change type="added">**Laravel/Boost**
+    - added Laravel Boost integration
+    - exposes application context (routes, models, config, logs, etc.) to AI tools
+    - allows interaction with the application via MCP (Model Context Protocol)
+    - enables code execution and inspection through Tinker
+    - provides access to framework-specific documentation and conventions
+    - improves AI-assisted development (debugging, refactoring, code navigation)</change>
+  <change type="changed">**Queue Worker Configuration**
+    - updated queue worker configuration to use Horizon's `horizon` connection for better performance and monitoring
+    - adjusted `ProcessVideoIngestJob` to be dispatched to the `horizon` queue connection
+    - ensures that all ingest processing benefits from Horizon's features and monitoring capabilities
+    - updated documentation to reflect the new queue configuration and Horizon setup instructions</change>
+  <change type="changed">**Laravel 13 Upgrade**
+    - upgraded Laravel framework to version 13 for improved performance, security, and new features
+    - updated related dependencies to ensure compatibility with Laravel 13
+    - refactored code to address any breaking changes introduced in Laravel 13
+    - tested all major functionalities to ensure stability after the upgrade</change>
+  <change type="fixed">Minor bugfixes around the application and ingest pipeline based on testing and feedback during the alpha phase.</change>
+</feature>
