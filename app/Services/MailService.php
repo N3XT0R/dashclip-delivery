@@ -10,9 +10,7 @@ use App\Mail\ChannelVideoReceptionPausedMail;
 use App\Mail\ChannelWelcomeMail;
 use App\Mail\NewOfferMail;
 use App\Mail\NoReplyFAQMail;
-use App\Mail\ReminderMail;
 use App\Mail\UserWelcomeMail;
-use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
 use App\Models\ChannelApplication;
@@ -22,13 +20,11 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\CircularDependencyException;
 use Illuminate\Contracts\Mail\Mailable as MailableContract;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use Random\RandomException;
 
 readonly class MailService
 {
-
     /**
      * Queue the given mail to the given mailable.
      * @param string|User $mailable
@@ -143,28 +139,6 @@ readonly class MailService
     public function sendUserWelcomeEmail(User $user, bool $fromBackend = false, ?string $plainPassword = null): void
     {
         $this->queueMail($user, new UserWelcomeMail($user, $fromBackend, $plainPassword));
-    }
-
-    /**
-     * Send reminder mail to the channel email.
-     * @param Channel $channel
-     * @param Collection<int, Assignment> $assignments
-     */
-    public function sendReminderMail(Channel $channel, Collection $assignments): void
-    {
-        $linkService = app(LinkService::class);
-        /**
-         * @var Assignment $first
-         */
-        $first = $assignments->first();
-        $batch = $first->batch;
-        $expireDate = $first->expires_at;
-        $offerUrl = $linkService->getOfferUrl($batch, $channel, $expireDate);
-
-        $this->queueMail(
-            $channel->email,
-            new ReminderMail($channel, $offerUrl, $expireDate, $assignments)
-        );
     }
 
     /**

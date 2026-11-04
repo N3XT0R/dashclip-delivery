@@ -49,7 +49,7 @@ final class DownloadHistoryTest extends DatabaseTestCase
         $page = app(DownloadHistory::class);
         $table = $page->table(Table::make($page));
 
-        $column = $table->getColumn('assignment.video.original_name');
+        $column = $table->getColumn('assignment.videoWithTrashed.original_name');
         $column->record($download);
 
         $expected = VideoResource::getUrl('view', ['record' => $video]);

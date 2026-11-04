@@ -59,13 +59,20 @@ class AssignmentResource extends Resource
                     ->searchable(),
 
                 // Show related video name if you have it; fallback to ID if not.
-                TextColumn::make('video.original_name')
+                TextColumn::make('videoWithTrashed.original_name')
                     ->label(__('filament.admin.labels.video'))
                     ->toggleable()
                     ->limit(40)
+                    ->description(
+                        fn (Assignment $assignment): ?string => $assignment->videoWithTrashed?->trashed()
+                            ? __('filament.admin.labels.deleted')
+                            : null
+                    )
                     ->url(function (Assignment $assignment) {
-                        $video = $assignment->video;
-                        return $video ? VideoResource::getUrl('view', ['record' => $video]) : null;
+                        $video = $assignment->videoWithTrashed;
+                        return ($video && ! $video->trashed())
+                            ? VideoResource::getUrl('view', ['record' => $video])
+                            : null;
                     })
                     ->openUrlInNewTab(),
                 TextColumn::make('created_at')
@@ -94,10 +101,11 @@ class AssignmentResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('attempts')
-                    ->label(__('filament.admin.labels.attempts'))
+                TextColumn::make('offer_round')
+                    ->label(__('filament.admin.labels.offer_round'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('last_notified_at')
                     ->dateTime()

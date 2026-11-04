@@ -5,7 +5,97 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- Generated from the fragments in .changes/, do not edit by hand. -->
+
 ## [Unreleased]
+
+## [4.12.3] - 2026-11-04
+
+### Changed
+- **Changelog**: Entries are written as one fragment per branch below `.changes/`, so branches no
+  longer conflict in the changelog when they are merged. `CHANGELOG.md` is built by a pipeline when
+  a version is tagged, which also dates the release; the whole history was moved into fragments with
+  its dates and order. A commit made through Claude Code is checked for a fragment, a valid
+  category, an untouched `CHANGELOG.md` and code style, and a `changelog` skill describes the
+  workflow. ADR 0009 records the decision and amends ADR 0006.
+
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
+## [4.12.2] - 2026-10-15
+
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
+## [4.12.1] - 2026-09-28
+
+### Fixed
+- **The preview stays until the video is really gone**: A video that is only marked as deleted keeps
+  its preview in the offer details, in the offer list and in the administration, as long as its
+  files are there. Only once they have been removed for good does the preview disappear. The offer
+  details and the download list also show a preview again at all: they read it from a field that had
+  been dropped from the database, so they always showed "no preview available".
+
+## [4.12.0] - 2026-09-28
+
+### Added
+- **Bringing back videos that were removed too early**: The one-off `videos:restore-early-marked`
+  (with `--dry-run` and `--since`) lists and restores the videos that were marked as deleted while
+  one of their downloads was still running, together with the clips that went with them. A video
+  whose files were already removed for good is left alone and reported.
+
+### Changed
+- **Maintainability**: The ZIP build passes the state of one run (job, progress, temporary copies)
+  as one object instead of handing five values from method to method, and it no longer takes the
+  address and browser of the caller, which it never used. The clip import carries its settings as
+  one object instead of passing four values through every row, the action token repository takes
+  the data of a token as one object, and the storage connection keeps its credentials together. The
+  analysis no longer looks for structure smells in plain data carriers, where the list of fields is
+  the purpose of the class. The import command and the download script in the browser are split
+  into named steps instead of one long routine each. Behaviour is unchanged.
+- **Waiting videos take their turn**: When a run has fewer free places than waiting videos, the
+  places now go to the videos that have come off worst so far: the ones that reached the fewest
+  channels, and among those the ones waiting longest since their offer ran out or was given back.
+  Before, the queue was worked through by video number, so the same videos took every place and a
+  video that expired later could wait for months.
+- **A distribution run says what it left behind**: Its record in the administration now also counts
+  the videos it had no place left for and the videos of an uploader it could not serve at all, for
+  example because every channel of that team is paused. Before, both simply disappeared from the
+  numbers and a run that placed one video looked like a run with nothing to do. `assign:distribute`
+  prints the same figures.
+- **The wished channel is visible after the upload**: The channel a submitter picked while uploading
+  now shows in the video list of the user area and, in the administration, in the video list, in the
+  details of a video and in its clips. Before it could only be set and was then seen nowhere but in
+  the details of the user area. The details of a video in the administration also show name, format,
+  size, storage, checksum and the recorded technical data again.
+
+### Fixed
+- **Videos waited a week for their next channel**: An offer runs out exactly as many days after the
+  run that sent it, so the run that should have handed the video on missed it by the seconds it
+  needed to get there. The offer was closed the next morning and its video waited a whole cycle.
+  The run now closes the offers that run out while it works and hands their videos on in the same
+  pass; `assign:expire` takes `--grace-minutes` for that window.
+- **Returning a video hands it on again**: A channel that gives an offer back releases the video for
+  the other channels, even when it had already downloaded it. Before, a download kept the video out
+  of the distribution for good, so a returned video was never offered again and never tidied up
+  either. A video a channel still holds stays out of the distribution as before, and the returning
+  channel does not receive it again.
+
+### Security
+- **Packages**
+    - upgraded packages to newest version (e.g. laravel or npm dependencies)
+
+## [4.11.1] - 2026-09-24
+
+### Fixed
+- **Downloaded videos are not removed right away**: A download ends the offer rounds, as before, but
+  the video now stays until that offer's window closes. Until then the channel can still return it
+  or fetch it again from "Heruntergeladen". Only afterwards is the video marked as deleted, and its
+  files follow after the retention period.
+
+## [4.11.0] - 2026-09-23
 
 ### Added
 - **Preferred channel when uploading**: The upload form offers an optional channel choice, so the
@@ -18,24 +108,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and unique. `POST /api/v1/channels/{channel}/logo` uploads a logo (PNG, JPEG or WebP, up to
   512 KB, shrunk to fit 256 x 256 pixels) and `DELETE` removes it. Channel responses include
   `show_on_homepage` and `logo_url`. The Channel Operator API documentation is now version 1.1.0.
-- **Download link by email**: Once an offer download is ready, channel operators also get its link
-  by email, with the number of ready and skipped videos, because the in-app notification is easily
-  missed. It can be turned off under "Benachrichtigungen per E-Mail" in the profile; the switch is
-  only shown to channel operators. Opening the link while signed out leads to the sign-in and then
-  straight to the download.
+- **Removing deleted videos for good**: A daily job (`videos:purge-deleted`, with `--dry-run`)
+  removes the files and previews of videos that have been deleted for longer than the retention
+  period set in the administration settings, "Aufbewahrungsfrist gelöschter Videos (in Wochen)".
+  The video entry, its offers and downloads stay as history. A video whose files cannot be removed
+  is retried on the next run.
+- **Offer rounds per video**: A new setting in the administration ("Angebotsrunden je Video", default 2) decides how
+  often a channel may be offered the same video. Channels that never had the video still come first; only once every
+  reachable channel had it do channels whose offer expired get it again, up to the configured number of rounds.
+  Returned and downloaded offers are never repeated. The offer list in the administration shows the round.
+- **Videos leave the platform on their own**: Once a video has no open offer left and the distribution will never
+  offer it again, because a channel downloaded it or every reachable channel had it without a round left, it is
+  marked as deleted by the daily `videos:mark-distributed` run (also part of the weekly run, with `--dry-run`).
+  Its files follow after the retention period; offers and downloads stay as history. Offers of deleted videos no
+  longer show on the offer pages or in the interface for other systems.
+- **Look at the user area as someone else**: Administrators can open the view of a user from the user list and see
+  exactly what that person sees, including their channel and their offers. A banner names whose view it is and ends
+  it again and returns to the user list. Downloads are not recorded meanwhile, so the channel keeps its own history,
+  and the start and the end of every such view are written to the activity log. Administrators cannot be opened this
+  way. Every column of the user list can be hidden now.
 
 ### Changed
+- **More generous default settings**: A video is offered in two rounds instead of one, and a deleted video keeps its
+  files for four weeks instead of one before they are removed for good. Installations that already set their own
+  value keep it.
 - **Development container**: The image library now supports WebP.
 - **Faster automated checks**: The coverage run on the core branches measures with PCOV instead
   of Xdebug, which is several times faster; the nightly coverage run keeps Xdebug as reference. The
   editorial permission seeder creates and grants its permissions in one pass instead of reloading
   all permissions for each one, which saves about a second in every database test.
-- **Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered
-  through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP
-  still contains the selected videos and their `info.csv`; unavailable videos are skipped and named
-  in the notification. Prepared downloads are kept for one day; opening an expired link afterwards
-  explains that instead of showing an error page. The dialog speaks of offers instead of internal
-  record names.
+- **Deleting videos through the API**: A deleted video keeps its stored file until it is removed for
+  good, like a video deleted in the user area; before, the API removed the file right away. The
+  Submitter API documentation is now version 1.0.1.
+
+### Removed
+- **Dead code**: The offer reminder mail had no sender left and is gone, together with its template. The `attempts`
+  column of the offers, which was shown in the administration but never written, is dropped; the round of an offer
+  took its place.
+
+### Fixed
+- **Fetching a video again after it was deleted**: An offer in "Heruntergeladen" can be fetched again as long as the
+  file is still there, even once the video was deleted. Only when the file has been removed for good does the offer
+  say that the video is no longer available.
+- **Videos of submitters stay visible**: A video whose distribution is finished no longer disappears from the video
+  list. It is shown with the state "Verteilung beendet", without details and without a delete action.
+- **Signing in to applications**: The pages where you allow an application to access your account
+  and where you connect a device with a code now work instead of failing with a server error. They
+  name the application and its requested permissions and use the sign-in of the user area; signed-out
+  visitors are sent to the sign-in and brought back afterwards.
+- **Authentication API documentation**: Client credentials tokens are documented as answered with
+  401 by the resource APIs, as they are. The documentation is now version 1.0.1.
+- **Deleting a video while it is being offered**: Deleting a video and offering it to a channel can no
+  longer overlap. Both now wait for each other, and the deletion rule is checked again at the moment
+  of deletion, so a deleted video never ends up with an active offer and a video that was just
+  offered is not deleted. The weekly distribution skips a video that was deleted during its run.
+- **Removing deleted videos keeps their history**: Views that crashed on a deleted video (download
+  history, downloaded offers and their details, administration lists) now render it, and offers of
+  deleted videos no longer show as available. The privacy policy describes the retention accordingly.
 
 ### Security
 - **Packages**
@@ -78,7 +207,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   advances while a large video is transferred instead of staying at 0% until it is complete.
 - **Channel applications**: Record the approval of a channel application in the activity log.
   The entry was prepared but never saved.
-- **Offer downloads**: A closed download dialog no longer reappears when the offers page is reloaded.
+- **Offer downloads**: A closed download dialog no longer reappears when the offers page is
+  reloaded.
 - **Offer downloads**: The "Heruntergeladen" tab lists every offer once and shows only its latest
   download time, instead of one row and one time per download. Sorting by download time works in
   both directions.
@@ -426,7 +556,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.3.1] - 2026-08-02
 
 ### Fixed
-
 - **Cookie consent banner**
     - banner reappeared on every page load because Laravel's `EncryptCookies` middleware
       discarded the JavaScript-set cookie as undecryptable; `cookie_consent` is now excluded
@@ -435,14 +564,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.3.0] - 2026-08-02
 
 ### Added
-
 - **Channel video reception paused notification**
     - sends the channel owner an email when an admin pauses video reception for their channel,
       including a two-step reactivation link (confirm page → submit) backed by the existing
       ActionToken system with a one-month expiry and automatic deduplication of outstanding tokens.
 
 ### Changed
-
 - **Legal pages updated to current statutes**
     - Impressum: references updated from TMG to DDG (§§ 7–10, in force since 14 May 2024);
       added standard liability clauses for content awareness and link integrity.
@@ -461,7 +588,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.1.1] - 2026-07-25
 
 ### Fixed
-
 - **Admin activity log**
     - fixed activity properties failing to render after the Filament 5.7 update by normalizing
       property values into displayable text.
@@ -473,14 +599,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.1.0] - 2026-07-15
 
 ### Added
-
 - **My Offers navigation**
     - added a navigation badge showing the current channel's total number of available video offers,
       improving visibility and orientation for less experienced users in line with ISO 9241
       usability principles.
 
 ### Fixed
-
 - **Assignment distribution**
     - returned expired videos without a download to subsequent distribution pools and stopped
       expired queued offers from being displayed as fully distributed.
@@ -494,7 +618,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.1] - 2026-07-15
 
 ### Fixed
-
 - **Authorization / Shield seeding**
     - regenerated the Shield seeder with the current role and permission assignments, corrected
       direct-permission lookup by permission name, and added support for restoring optional tenant,
@@ -507,13 +630,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0] - 2026-07-07
 
 ### Changed
-
 - Marked v4 as the first stable release
 
 ## [4.0.0-beta.9] - 2026-07-07
 
 ### Fixed
-
 - **UX**
     - replaced the experimental video upload page title, subheading, and bundle ID helper
       text with clearer upload guidance.
@@ -521,7 +642,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.8] - 2026-07-06
 
 ### Fixed
-
 - **Assignments**
     - persisted offer notification expiry timestamps on assignments so newly distributed videos can
       expire and requeue correctly after notification.
@@ -529,7 +649,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.7] - 2026-07-05
 
 ### Fixed
-
 - **UX**
     - added exact date-time tooltips to relative date columns in admin Filament resources.
     - moved hardcoded Filament resource and page labels into English and German language files.
@@ -538,7 +657,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.6] - 2026-07-03
 
 ### Fixed
-
 - **Assignments**
     - respected channel weekly quotas across assignment batches so channels that already reached
       their weekly limit no longer keep receiving new offers in later distribution runs.
@@ -546,33 +664,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.5] - 2026-07-03
 
 ### Fixed
-
 - **Assignments**
     - fixed assignment expiration calculation when cached configuration values for the
       default TTL are stored as strings.
 
 ### Security
-
 - **Composer Packages**
     - upgraded packages to newest version (e.g. laravel)
 
 ## [4.0.0-beta.4] - 2026-06-06
 
 ### Fixed
-
-- **AssignmentService**: 
-  - Fixed a null pointer exception in `canReturnAssignment()` when `expires_at` is `null` 
+- **AssignmentService**:
+  - Fixed a null pointer exception in `canReturnAssignment()` when `expires_at` is `null`
     assignments without an expiry date are now correctly treated as non-expired.
 
 ### Security
 - **Packages**
     - upgraded packages to newest version (e.g. laravel or npm dependencies)
 
-
 ## [4.0.0-beta.3] - 2026-05-30
 
 ### Fixed
-
 - **Horizon video ingest processing**
     - Fixed an issue where `ProcessVideoIngestJob` could fail to be dispatched
       when stale unique job locks remained after interrupted processing or
@@ -589,7 +702,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.2] - 2026-05-30
 
 ### Fixed
-
 - **ChannelWorkspace cluster access**
     - Fixed missing permission validation in `ChannelWorkspace::canAccess()`: the
       Channel-Workspace cluster did not properly enforce access restrictions and
@@ -600,7 +712,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-beta.1] - 2026-05-29
 
 ### Added
-
 - **WebDAV ingest pipeline**
     - `ZipUploadedListener` handles `FileCreatedEvent` and `FileUpdatedEvent` from the WebDAV
       package and dispatches `ProcessWebDavZipJob` for every `.zip` upload; registered in
@@ -616,7 +727,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       them via `ProcessWebDavZipJob`; acts as periodic fallback; scheduled every 15 minutes
     - `clean:webdav-non-zip` Artisan command removes non-ZIP files from WebDAV user directories;
       scheduled hourly
-
 - **WebDAV policy**
     - introduced `WebDavPathPolicy` that wraps the package's `PathPolicy` via composition (the
       original class is `final`) and restricts `createFile` and `write` to `.zip` files only;
@@ -625,7 +735,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `PathResourceDto`
 
 ### Fixed
-
 - **Dropbox upload**
     - `DropboxUploadService` switched to exclusively session-based uploads
       (`uploadSessionStart` → `uploadSessionAppend` → `uploadSessionFinish`); `upload()` is now
@@ -633,7 +742,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       streams
     - Chunks are now passed as `LimitStream` (PSR-7) instead of strings via `fread()`;
       Guzzle no longer buffers the request bodies through `php://temp` to `/tmp`
-
 - **FFmpeg / storage**
     - redirected FFmpeg temporary files from `/tmp` to `storage/app/ffmpeg-tmp` via `laravel-ffmpeg`
       config (`temporary_files_root` and `temporary_files_encrypted_hls`); stale temp files from
@@ -644,7 +752,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-alpha.4] - 2026-04-29
 
 ### Added
-
 - **adr**
     - added architecture decision records for class naming, SOLID and design-pattern usage, exception hierarchies,
       method-level PHPDoc conventions, changelog maintenance policy, and Conventional Commits
@@ -656,7 +763,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - added a Pint configuration using the PSR-12 preset while preserving camelCase PHPUnit method names
 
 ### Changed
-
 - **Refactored ZIP job payload handling**
     - Introduced `AssignmentZipDto` to encapsulate ZIP creation parameters
     - Replaced primitive constructor arguments in `BuildZipJob` with DTO
@@ -664,7 +770,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Simplified method signatures and reduced parameter coupling
 
 ### Fixed
-
 - **Dropbox / storage**
     - fixed `/tmp` exhaustion caused by Guzzle buffering Dropbox response bodies via `php://temp`;
       both the Storage disk driver and `DropboxUploadService` now pass `stream: true` to the Guzzle
@@ -674,14 +779,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `/tmp` files to accumulate across failed jobs until disk space was exhausted
     - `ZipService::build()` now cleans up `zips/tmp/` staging files in a `finally` block so they
       are always removed regardless of whether the job succeeds or fails
-
 - **testing**
     - fixed the OnboardingWizard notification assertion to use Filament's notification testing API
 
 ## [4.0.0-alpha.3] - 2026-04-11
 
 ### Added
-
 - **Laravel/horizon**
     - added Laravel Horizon for advanced queue monitoring and management
     - provides a dashboard to track job throughput, runtime, failures, and retry attempts
@@ -697,7 +800,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - improves AI-assisted development (debugging, refactoring, code navigation)
 
 ### Changed
-
 - **Queue Worker Configuration**
     - updated queue worker configuration to use Horizon's `horizon` connection for better performance and monitoring
     - adjusted `ProcessVideoIngestJob` to be dispatched to the `horizon` queue connection
@@ -710,13 +812,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - tested all major functionalities to ensure stability after the upgrade
 
 ### Fixed
-
-- Minor bugfixes around the application and ingest pipeline based on testing and feedback during the alpha phase.
+- Minor bugfixes around the application and ingest pipeline based on testing and feedback during the
+  alpha phase.
 
 ## [4.0.0-alpha.2] - 2026-04-07
 
 ### Added
-
 - **Video Ingest Pipeline**
     - added `ValidateInputFileStep` as a preliminary validation step to ensure that the source file exists and is
       processable before executing further ingest steps
@@ -734,7 +835,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - enables retroactive execution of newly added pipeline steps without reprocessing already completed steps
 
 ### Changed
-
 - **Video Deletion Handling**
     - introduced soft deletes for videos to prevent immediate physical data loss
     - decoupled logical deletion from physical file removal to improve system consistency
@@ -757,7 +857,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0-alpha.1] - 2026-04-02
 
 ### Added
-
 - **Video Ingest Pipeline** [#265](https://github.com/N3XT0R/dashclip-delivery/issues/265)
     - introduced a deterministic, step-based ingest pipeline that processes videos through isolated and reproducible
       workflow steps
@@ -816,7 +915,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - `FFMPEGConfigEntry`
 
 ### Changed
-
 - **Video Ingest Flow**
     - replaced the legacy monolithic ingest workflow with the new modular step-based ingest pipeline
 - **Video-Upload Structure**
@@ -854,7 +952,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       reload
 
 ### Removed
-
 - **Video Ingest Flow**
     - replaced the legacy monolithic ingest workflow with the new modular step-based ingest pipeline
 - **Notification Table Resource**
@@ -872,6 +969,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - cleaned up `ChannelService` by removing legacy approval token handling.
 
 ### Security
-
 - **Composer Packages**
     - upgraded packages to newest version (e.g. laravel)

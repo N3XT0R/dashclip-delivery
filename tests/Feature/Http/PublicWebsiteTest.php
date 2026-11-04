@@ -128,4 +128,23 @@ final class PublicWebsiteTest extends DatabaseTestCase
         $this->get('/')->assertSee(route('datenschutz'), false)
             ->assertSee('Testinstanz - Nicht zur produktiven Verwendung');
     }
+
+    public function testExplainerVideoIsLoadedFromYoutubeOnlyAfterConsentClick(): void
+    {
+        $this->withoutVite();
+        $document = new DOMDocument();
+        @$document->loadHTML('<?xml encoding="UTF-8">'.$this->get('/')->assertOk()->getContent());
+        $xpath = new DOMXPath($document);
+
+        $this->assertSame(0, $xpath->query('//iframe')->length);
+        $this->assertSame(0, $xpath->query('//*[@src[contains(., "youtube")]]')->length);
+        $embed = $xpath->query('//*[@id="ablauf"]//*[@data-youtube-embed]');
+        $this->assertSame(1, $embed->length);
+        $this->assertSame(
+            'https://www.youtube-nocookie.com/embed/AaC218-5BcY?autoplay=1&rel=0',
+            $embed->item(0)->getAttribute('data-youtube-embed'),
+        );
+        $this->assertSame(1, $xpath->query('.//button[@data-youtube-load and @aria-label]', $embed->item(0))->length);
+        $this->get(route('datenschutz'))->assertOk()->assertSee('youtube-nocookie.com');
+    }
 }

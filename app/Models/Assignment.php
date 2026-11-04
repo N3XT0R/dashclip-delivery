@@ -26,14 +26,15 @@ class Assignment extends Model
         'channel_id',
         'batch_id',
         'status',
+        'offer_round',
         'expires_at',
-        'attempts',
         'last_notified_at',
         'download_token',
         'note',
         'via_preferred_channel',
     ];
     protected $casts = [
+        'offer_round' => 'integer',
         'expires_at' => 'datetime',
         'last_notified_at' => 'datetime',
         'via_preferred_channel' => 'boolean',
@@ -48,8 +49,8 @@ class Assignment extends Model
                 'channel_id',
                 'batch_id',
                 'status',
+                'offer_round',
                 'expires_at',
-                'attempts',
                 'via_preferred_channel',
             ]);
     }
@@ -89,6 +90,7 @@ class Assignment extends Model
     public function scopeAvailable(Builder $query): Builder
     {
         return $query
+            ->whereHas('video')
             ->whereIn('status', [
                 StatusEnum::QUEUED->value,
                 StatusEnum::NOTIFIED->value,
@@ -159,6 +161,15 @@ class Assignment extends Model
     public function video(): BelongsTo
     {
         return $this->belongsTo(Video::class);
+    }
+
+    /**
+     * The video including a deleted one, for history views; offer logic keeps using video().
+     * @return BelongsTo<Video, $this>
+     */
+    public function videoWithTrashed(): BelongsTo
+    {
+        return $this->belongsTo(Video::class, 'video_id')->withTrashed();
     }
 
     public function channel(): BelongsTo

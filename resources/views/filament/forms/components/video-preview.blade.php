@@ -3,11 +3,13 @@
     use App\Enum\ProcessingStatusEnum;
     use App\Models\Video;
 
-    $video = $record instanceof Video ? $record : $record?->video;
-    $clip = $video?->clips()->first();
-    $previewUrl = app(GetPreviewUrl::class)->handle($clip);
+    // deleted videos keep their entry, their clips and their preview until the files are removed
+    $video = $record instanceof Video ? $record : ($record?->videoWithTrashed ?? $record?->video);
+    $filesRemoved = $video?->processing_status === ProcessingStatusEnum::Deleted;
+    $clip = $video?->clipsWithTrashed()->first();
+    $previewUrl = $filesRemoved ? null : app(GetPreviewUrl::class)->handle($clip);
 
-    $shouldPoll = $video !== null && !$previewUrl
+    $shouldPoll = $video !== null && !$previewUrl && !$filesRemoved
         && $video?->processing_status !== ProcessingStatusEnum::Completed
         && $video?->processing_status !== ProcessingStatusEnum::Failed;
 @endphp

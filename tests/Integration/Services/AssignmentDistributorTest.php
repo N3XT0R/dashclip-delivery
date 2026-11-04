@@ -4,6 +4,8 @@ namespace Tests\Integration\Services;
 
 use App\Enum\ProcessingStatusEnum;
 use App\Models\{Assignment, Channel, Clip, Video};
+use App\ValueObjects\DistributionRunResult;
+use Mockery;
 use App\Services\AssignmentDistributor;
 use Tests\DatabaseTestCase;
 use Tests\Integration\Services\Stubs\FakeDistributorDependencies;
@@ -59,7 +61,10 @@ class AssignmentDistributorTest extends DatabaseTestCase
 
         $result = $this->assignmentDistributor->distribute();
 
-        $this->assertSame(['assigned' => 1, 'skipped' => 0, 'deferred' => 0], $result);
+        $this->assertSame(
+            ['assigned' => 1, 'skipped' => 0, 'deferred' => 0, 'waiting' => 0, 'failed' => 0],
+            $result
+        );
         $this->assertDatabaseHas('assignments', ['video_id' => $video->getKey()]);
     }
 
@@ -75,7 +80,11 @@ class AssignmentDistributorTest extends DatabaseTestCase
         // Act
         $result = $distributor->distribute();
 
-        $this->assertSame(['assigned' => 0, 'skipped' => 0, 'deferred' => 0], $result);
+        // the uploader could not be served at all, which the run reports instead of swallowing it
+        $this->assertSame(
+            ['assigned' => 0, 'skipped' => 0, 'deferred' => 0, 'waiting' => 0, 'failed' => 1],
+            $result
+        );
         $this->assertDatabaseCount('assignments', 0);
     }
 
@@ -100,7 +109,9 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $this->assertSame($stubs->team->slug, $prepareCall['uploaderId']);
 
         $this->assertCount(1, $distributor->assignGroupRuns);
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, Mockery::on(
+            fn (DistributionRunResult $result): bool => $result->toArray() === (new DistributionRunResult())->toArray()
+        ));
     }
 
     public function testDistributorFallsBackToUploaderWhenUserIdIsPresent(): void
@@ -123,7 +134,9 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $prepareCall = $distributor->prepareChannelCalls->first();
         $this->assertSame('user', $prepareCall['uploaderType']);
         $this->assertSame($stubs->user->getKey(), $prepareCall['uploaderId']);
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, Mockery::on(
+            fn (DistributionRunResult $result): bool => $result->toArray() === (new DistributionRunResult())->toArray()
+        ));
     }
 
     public function testDistributorUsesFallbackPoolWhenTeamAndUserAreMissing(): void
@@ -146,6 +159,8 @@ class AssignmentDistributorTest extends DatabaseTestCase
         $prepareCall = $distributor->prepareChannelCalls->first();
         $this->assertSame('user', $prepareCall['uploaderType']);
         $this->assertSame(0, $prepareCall['uploaderId']);
-        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, 0, 0, 0);
+        $stubs->batchService->shouldHaveReceived('finishAssignBatch')->with($stubs->batch, Mockery::on(
+            fn (DistributionRunResult $result): bool => $result->toArray() === (new DistributionRunResult())->toArray()
+        ));
     }
 }

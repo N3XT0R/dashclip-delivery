@@ -129,6 +129,18 @@ final class VideoWriteEndpointsTest extends DatabaseTestCase
         $this->assertSoftDeleted('videos', ['id' => $video->getKey()]);
     }
 
+    public function testDestroyKeepsTheFileUntilTheVideoIsRemovedForGood(): void
+    {
+        Storage::fake('local');
+        $user = $this->actingUser(['videos:delete']);
+        $video = Video::factory()->withClips(1, $user)->create();
+        Storage::disk('local')->put($video->path, 'video-bytes');
+
+        $this->deleteJson('/api/v1/videos/' . $video->getKey())->assertNoContent();
+
+        Storage::disk('local')->assertExists($video->path);
+    }
+
     public function testDestroyRejectsVideoWithAnActiveOffer(): void
     {
         Storage::fake('videos');

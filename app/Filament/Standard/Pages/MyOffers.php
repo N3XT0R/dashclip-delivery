@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages;
 
 use App\Application\Channel\GetCurrentChannel;
+use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Filament\Standard\Pages\MyOffers\Table\AssignmentTable;
 use App\Filament\Standard\Pages\MyOffers\Tabs\AssignmentTabs;
@@ -130,11 +131,17 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
 
     public function getDetailsInfolist(Assignment $assignment): Schema
     {
+        $video = $assignment->videoWithTrashed;
+        $clips = $video?->clipsWithTrashed()->orderBy('start_sec')->get() ?? collect();
+        // the preview is worth showing as long as the file is there, being marked as deleted is not enough
+        $filesRemoved = $video === null
+            || $video->processing_status === ProcessingStatusEnum::Deleted;
+
         return Schema::make()
             ->livewire($this)
             ->state([
-                'video' => $assignment->video,
-                'clips' => $assignment->video->clips,
+                'video' => $video,
+                'clips' => $clips,
                 'note' => $assignment->note,
             ])
             ->schema([
@@ -143,10 +150,11 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                         ViewField::make('preview')
                             ->view('filament.standard.components.video-preview')
                             ->viewData([
-                                'video' => $assignment->video,
+                                'video' => $video,
                             ]),
                     ])
-                    ->collapsible(),
+                    ->collapsible()
+                    ->visible(!$filesRemoved),
 
                 Section::make(__('my_offers.modal.metadata.heading'))
                     ->schema([
@@ -175,11 +183,11 @@ class MyOffers extends AbstractChannelOwnerPage implements HasTable
                         ViewField::make('clips')
                             ->view('filament.standard.components.clips-table')
                             ->viewData([
-                                'clips' => $assignment->video->clips()->orderBy('start_sec')->get(),
+                                'clips' => $clips,
                             ]),
                     ])
                     ->collapsible()
-                    ->hidden(fn (): bool => $assignment->video->clips->isEmpty()),
+                    ->hidden(fn (): bool => $clips->isEmpty()),
             ]);
     }
 }

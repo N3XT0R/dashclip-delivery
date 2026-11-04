@@ -61,7 +61,10 @@
             </ul>
             <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.
                 Die Daten dienen der Verwaltung, Distribution und Deduplizierung der Inhalte.
-                Gelöschte Videos und Vorschauen werden vollständig entfernt.
+                Videodateien und Vorschauen gelöschter Videos werden nach Ablauf einer Aufbewahrungsfrist
+                entfernt. Angaben zur Verteilung bleiben zur Nachvollziehbarkeit erhalten: Titel, Kanal,
+                Zeitpunkte von Angeboten und Downloads, bei Downloads die IP-Adresse und die
+                Browser-Kennung sowie die Zuordnung zum einsendenden Konto.
             </p>
         </section>
 
@@ -148,6 +151,24 @@
             <p>Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG i.&nbsp;V.&nbsp;m. Art. 6 Abs. 1 lit. f DSGVO.</p>
         </section>
 
+        {{-- YOUTUBE --}}
+        <section class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">Eingebettete YouTube-Videos</h2>
+            <p>
+                Auf der Startseite ist ein Erklärvideo von YouTube eingebunden. Anbieter ist die Google Ireland Limited,
+                Gordon House, Barrow Street, Dublin 4, Irland. Das Video wird erst geladen, wenn Sie aktiv auf
+                „Abspielen“ klicken. Vorher findet keine Verbindung zu YouTube statt.
+            </p>
+            <p>
+                Nach dem Klick wird das Video über den erweiterten Datenschutzmodus (youtube-nocookie.com) geladen.
+                Dabei werden insbesondere Ihre IP-Adresse, Browser-Informationen und die aufgerufene Seite an Google
+                übertragen. Google kann beim Abspielen Cookies oder vergleichbare Technologien einsetzen und Daten
+                auch in die USA übermitteln. Weitere Informationen finden Sie in der Datenschutzerklärung von Google:
+                <a class="underline" href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank">policies.google.com/privacy</a>.
+            </p>
+            <p>Rechtsgrundlage ist Ihre Einwilligung durch den Klick (§ 25 Abs. 1 TDDDG, Art. 6 Abs. 1 lit. a DSGVO).</p>
+        </section>
+
         {{-- AUFTRAGSVERARBEITUNG SPEICHER --}}
         @php
             $storageProvider = trim((string) Cfg::get(\App\Constants\Config\PrivacyConfigEntry::STORAGE_PROVIDER_NAME, 'default', ''));
@@ -196,7 +217,8 @@
             <h2 class="text-xl font-semibold mb-2">Speicherdauer – Übersicht</h2>
             <ul class="list-disc list-inside mb-4">
                 <li><strong>Benutzerkonten:</strong> bis zur Löschung</li>
-                <li><strong>Videoinhalte:</strong> bis zur Entfernung</li>
+                <li><strong>Videodateien:</strong> bis zur Löschung zuzüglich Aufbewahrungsfrist</li>
+                <li><strong>Angaben zur Verteilung gelöschter Videos:</strong> gemäß Audit-Erfordernissen</li>
                 <li><strong>Angebots- und Verteilungsdaten:</strong> gemäß Audit-Erfordernissen, pseudonymisiert</li>
                 <li><strong>E-Mail-Logs:</strong> 24 Monate</li>
                 <li><strong>Activity Logs:</strong> 36 Monate</li>

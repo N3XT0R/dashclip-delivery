@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Standard\Pages\MyOffers\Table;
 
 use App\Application\Assignment\UpdateAssignmentNote;
+use App\Enum\ProcessingStatusEnum;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Services\AssignmentService;
@@ -48,7 +49,7 @@ final readonly class Actions
             ->modalHeading(__('my_offers.modal.title'))
             ->modalWidth(Width::FourExtraLarge)
             ->schema(
-                fn(?Assignment $record): ?Schema => $record !== null ? $page->getDetailsInfolist($record) : null
+                fn (?Assignment $record): ?Schema => $record !== null ? $page->getDetailsInfolist($record) : null
             )
             ->modalFooterActions([
                 $this->submit($page),
@@ -64,7 +65,23 @@ final readonly class Actions
             ->label(__('my_offers.table.actions.download_again'))
             ->icon('heroicon-m-arrow-path')
             ->color('gray')
-            ->visible(fn (): bool => $page->activeTab === 'downloaded');
+            ->visible(
+                fn (?Assignment $record): bool => $page->activeTab === 'downloaded'
+                    && $this->videoStillStoresItsFiles($record)
+            );
+    }
+
+    /**
+     * Whether the video of an offer can still be delivered: a deleted video keeps its files until
+     * the purge run removes them.
+     * @param Assignment|null $record
+     * @return bool
+     */
+    private function videoStillStoresItsFiles(?Assignment $record): bool
+    {
+        $video = $record?->videoWithTrashed;
+
+        return $video !== null && $video->processing_status !== ProcessingStatusEnum::Deleted;
     }
 
     public function download(MyOffers $page): ExportAction
@@ -73,7 +90,10 @@ final readonly class Actions
             ->label(__('my_offers.table.actions.download'))
             ->icon('heroicon-m-arrow-down-tray')
             ->color('primary')
-            ->visible(fn (): bool => $page->activeTab === 'available');
+            ->visible(
+                fn (?Assignment $record): bool => $page->activeTab === 'available'
+                    && !($record?->videoWithTrashed?->trashed() ?? false)
+            );
     }
 
     private function exportRecord(ExportAction $action): ExportAction
@@ -91,6 +111,10 @@ final readonly class Actions
             ->visible(function (?Assignment $record) use ($page): bool {
                 $tabs = ['available', 'downloaded'];
                 if ($record === null) {
+                    return false;
+                }
+
+                if ($record->videoWithTrashed?->trashed()) {
                     return false;
                 }
 
@@ -114,6 +138,10 @@ final readonly class Actions
             ->visible(function (?Assignment $record) use ($page): bool {
                 $tabs = ['available', 'downloaded'];
                 if ($record === null) {
+                    return false;
+                }
+
+                if ($record->videoWithTrashed?->trashed()) {
                     return false;
                 }
 

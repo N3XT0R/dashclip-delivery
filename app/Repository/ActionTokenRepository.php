@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\DTO\ActionToken\ActionTokenData;
 use App\Models\ActionToken;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\LazyCollection;
@@ -11,31 +12,20 @@ use Illuminate\Support\LazyCollection;
 final class ActionTokenRepository
 {
     /**
-     * Create a new action token record.
-     * @param string $purpose
-     * @param string $tokenHash
-     * @param Model|null $subject
-     * @param int|null $issuedForUserId
-     * @param \DateTimeInterface|null $expiresAt
-     * @param array|null $meta
+     * Store a new action token.
+     * @param ActionTokenData $data
      * @return ActionToken
      */
-    public function create(
-        string $purpose,
-        string $tokenHash,
-        ?Model $subject = null,
-        ?int $issuedForUserId = null,
-        ?\DateTimeInterface $expiresAt = null,
-        ?array $meta = null
-    ): ActionToken {
+    public function create(ActionTokenData $data): ActionToken
+    {
         return ActionToken::create([
-            'subject_type' => $subject?->getMorphClass(),
-            'subject_id' => $subject?->getKey(),
-            'purpose' => $purpose,
-            'token_hash' => $tokenHash,
-            'issued_for_user_id' => $issuedForUserId,
-            'expires_at' => $expiresAt,
-            'meta' => $meta,
+            'subject_type' => $data->subject?->getMorphClass(),
+            'subject_id' => $data->subject?->getKey(),
+            'purpose' => $data->purpose,
+            'token_hash' => $data->tokenHash,
+            'issued_for_user_id' => $data->issuedForUserId,
+            'expires_at' => $data->expiresAt,
+            'meta' => $data->meta,
         ]);
     }
 

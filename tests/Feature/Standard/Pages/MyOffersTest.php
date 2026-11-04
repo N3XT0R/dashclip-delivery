@@ -7,18 +7,22 @@ namespace Tests\Feature\Standard\Pages;
 use App\Auth\Abilities\AccessChannelPageAbility;
 use App\Enum\Guard\GuardEnum;
 use App\Enum\PanelEnum;
+use App\Enum\ProcessingStatusEnum;
 use App\Enum\StatusEnum;
 use App\Enum\Users\RoleEnum;
 use App\Filament\Standard\Exports\OfferExporter;
 use App\Filament\Standard\Pages\MyOffers;
 use App\Models\Assignment;
 use App\Models\Channel;
+use App\Models\Clip;
 use App\Models\Download;
 use App\Models\User;
+use App\Models\Video;
 use App\Repository\TeamRepository;
 use App\Services\AssignmentService;
 use Filament\Actions\Exports\Models\Export;
 use Filament\Facades\Filament;
+use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
@@ -65,7 +69,98 @@ final class MyOffersTest extends DatabaseTestCase
             ->assertForbidden();
     }
 
-    public function testOffersWithDeletedVideosRenderWithoutAPreview(): void
+    public function testDownloadedOffersOfDeletedVideosRenderWithoutAPreview(): void
+    {
+        [$channel] = $this->actingOperator();
+        $uploader = User::factory()->create();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4', $uploader);
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->assertCanSeeTableRecords([$assignment])
+            ->assertSee('Removed Clip.mp4')
+            ->assertSee('images/status/no_preview.jpg')
+            ->assertSee($uploader->display_name)
+            // its files are still stored, so it can be fetched again until the purge run
+            ->assertTableActionVisible('download_again', $assignment);
+    }
+
+    public function testReturnActionIsHiddenForADownloadedOfferOfADeletedVideoThatIsStillReturnable(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = Assignment::factory()->forChannel($channel)->create([
+            'status' => StatusEnum::PICKEDUP->value,
+            'expires_at' => now()->addDay(),
+        ]);
+        Download::factory()->forAssignment($assignment)->create();
+        $assignment->video->delete();
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->assertTableActionHidden('return', $assignment);
+    }
+
+    public function testDetailsOfADeletedVideoStillShowItsPreview(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4');
+
+        self::assertTrue($this->previewSectionOf($assignment)->isVisible());
+    }
+
+    public function testDetailsOfAVideoWhoseFilesAreGoneOpenWithoutAPreview(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Removed Clip.mp4');
+        Video::withTrashed()->whereKey($assignment->video_id)
+            ->update(['processing_status' => ProcessingStatusEnum::Deleted->value]);
+
+        self::assertFalse($this->previewSectionOf($assignment->refresh())->isVisible());
+    }
+
+    public function testThePreviewOfAStoredVideoPointsAtItsClip(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = Assignment::factory()->forChannel($channel)->create(['status' => StatusEnum::PICKEDUP->value]);
+        Clip::factory()->forVideo($assignment->video)->create(['preview_path' => 'previews/still-there.mp4']);
+        $assignment->video->delete();
+        $assignment->refresh();
+
+        $html = view('filament.standard.components.video-preview', [
+            'video' => $assignment->videoWithTrashed,
+        ])->render();
+
+        self::assertStringContainsString('previews/still-there.mp4', $html);
+    }
+
+    private function previewSectionOf(Assignment $assignment): Section
+    {
+        $section = collect((new MyOffers())->getDetailsInfolist($assignment)->getComponents(withHidden: true))
+            ->first(
+                fn (mixed $component): bool => $component instanceof Section
+                    && $component->getHeading() === __('my_offers.modal.preview.heading')
+            );
+
+        self::assertInstanceOf(Section::class, $section);
+
+        return $section;
+    }
+
+    public function testAvailableOffersOfDeletedVideosAreNotListed(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = Assignment::factory()->forChannel($channel)
+            ->create(['status' => StatusEnum::QUEUED->value, 'expires_at' => now()->addDay()]);
+        $assignment->video->delete();
+
+        Livewire::test(MyOffers::class)
+            ->assertCanNotSeeTableRecords([$assignment]);
+    }
+
+    /**
+     * @return array{0: Channel, 1: User}
+     */
+    private function actingOperator(): array
     {
         $user = User::factory()->create();
         Role::findOrCreate(RoleEnum::CHANNEL_OPERATOR->value, GuardEnum::STANDARD->value);
@@ -73,15 +168,24 @@ final class MyOffersTest extends DatabaseTestCase
         $team = $this->app->make(TeamRepository::class)->createOwnTeamForUser($user);
         $channel = Channel::factory()->create();
         $channel->channelUsers()->attach($user, ['is_user_verified' => true]);
-        $assignment = Assignment::factory()->forChannel($channel)->create();
-        $assignment->video->delete();
-
         Filament::setTenant($team, true);
+        Filament::auth()->login($user);
         $this->actingAs($user, GuardEnum::STANDARD->value);
 
-        $this->get(MyOffers::getUrl())
-            ->assertOk()
-            ->assertSee('images/status/no_preview.jpg');
+        return [$channel, $user];
+    }
+
+    private function downloadedOfferOfDeletedVideo(Channel $channel, string $name, ?User $uploader = null): Assignment
+    {
+        $assignment = Assignment::factory()->forChannel($channel)->create(['status' => StatusEnum::PICKEDUP->value]);
+        $assignment->video->update(['original_name' => $name]);
+        if ($uploader !== null) {
+            Clip::factory()->forVideo($assignment->video)->forUser($uploader)->create();
+        }
+        Download::factory()->forAssignment($assignment)->create();
+        $assignment->video->delete();
+
+        return $assignment;
     }
 
     public function testTabsAreRendered(): void
@@ -372,6 +476,29 @@ final class MyOffersTest extends DatabaseTestCase
 
         self::assertSame(['channelId' => $channel->getKey()], $page->instance()->getWidgetData());
     }
+
+    public function testADeletedVideoCanStillBeFetchedAgainWhileItsFilesExist(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Still Stored.mp4');
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->assertTableActionVisible('download_again', $assignment);
+    }
+
+    public function testOnceTheFilesAreGoneItCannotBeFetchedAgain(): void
+    {
+        [$channel] = $this->actingOperator();
+        $assignment = $this->downloadedOfferOfDeletedVideo($channel, 'Files Gone.mp4');
+        Video::withTrashed()->whereKey($assignment->video_id)
+            ->update(['processing_status' => ProcessingStatusEnum::Deleted->value]);
+
+        Livewire::test(MyOffers::class)
+            ->set('activeTab', 'downloaded')
+            ->assertSee(__('my_offers.table.no_longer_available'))
+            ->assertTableActionHidden('download_again', $assignment);
+    }
 }
 
 class MyOffersTestPage extends MyOffers
@@ -432,4 +559,5 @@ final readonly class RecordingAssignmentService extends AssignmentService
 
         return true;
     }
+
 }

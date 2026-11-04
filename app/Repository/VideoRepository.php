@@ -12,6 +12,7 @@ use App\Models\Clip;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Video;
+use Carbon\CarbonInterface;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -301,6 +302,91 @@ class VideoRepository
     public function delete(Video $video): bool
     {
         return $video->delete();
+    }
+
+    /**
+     * Videos that were offered at least once and have no open offer left, in chunks.
+     *
+     * An offer counts as open while the channel can still act on it: it is queued, notified or
+     * downloaded and has not expired yet. A downloaded offer therefore keeps its video until its
+     * window closes, because the channel may still return it or fetch it again.
+     * @param int $chunkSize
+     * @return LazyCollection<int, Video>
+     */
+    public function lazyWithoutOpenOffers(int $chunkSize = 100): LazyCollection
+    {
+        return Video::query()
+            ->whereHas('assignments')
+            ->whereDoesntHave('assignments', static function (Builder $query): void {
+                $query->whereIn('status', StatusEnum::getReturnableStatuses())
+                    ->where(static function (Builder $expiry): void {
+                        $expiry->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                    });
+            })
+            ->lazyById($chunkSize);
+    }
+
+    /**
+     * Load the video row again and lock it for the rest of the current transaction.
+     *
+     * Deleting a video and creating an offer for it both lock this row first, so the two can
+     * never interleave. Deleted videos are not returned.
+     * @param int $videoId
+     * @return Video|null null when the video does not exist or was deleted
+     */
+    public function lockForUpdate(int $videoId): ?Video
+    {
+        return Video::query()->whereKey($videoId)->lockForUpdate()->first();
+    }
+
+    /**
+     * Videos that were marked as deleted while one of their downloaded offers was still running.
+     *
+     * Until the 4.11.1 fix, a download ended the offer rounds and marked the video on the same
+     * night, although the channel could still return it or fetch it again. Those videos are the
+     * ones to restore; a video marked after its offers ran out does not match.
+     * @param CarbonInterface $since only videos marked at or after this moment
+     * @param int $chunkSize
+     * @return LazyCollection<int, Video>
+     */
+    public function lazyMarkedDuringOpenDownload(CarbonInterface $since, int $chunkSize = 100): LazyCollection
+    {
+        return Video::onlyTrashed()
+            ->where('deleted_at', '>=', $since)
+            ->whereHas('assignments', static function (Builder $query): void {
+                $query->where('status', StatusEnum::PICKEDUP->value)
+                    ->whereColumn('assignments.expires_at', '>', 'videos.deleted_at');
+            })
+            ->lazyById($chunkSize);
+    }
+
+    /**
+     * Take back the deletion of a video, including the clips that were deleted with it.
+     * @param Video $video
+     * @return bool
+     */
+    public function restoreWithClips(Video $video): bool
+    {
+        $video->clipsWithTrashed()->restore();
+
+        return (bool)$video->restore();
+    }
+
+    /**
+     * Deleted videos whose files are still stored and whose deletion is at or before the given moment.
+     * @param CarbonInterface $deletedBefore
+     * @param int $chunkSize
+     * @return LazyCollection<int, Video>
+     */
+    public function lazyDeletedBefore(CarbonInterface $deletedBefore, int $chunkSize = 100): LazyCollection
+    {
+        return Video::onlyTrashed()
+            ->where('deleted_at', '<=', $deletedBefore)
+            ->where(static function (Builder $query): void {
+                $query->whereNull('processing_status')
+                    ->orWhere('processing_status', '!=', ProcessingStatusEnum::Deleted->value);
+            })
+            ->lazyById($chunkSize);
     }
 
     /**

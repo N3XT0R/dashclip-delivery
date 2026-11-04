@@ -1,4 +1,11 @@
 exclude_patterns = [
+  # Data carriers: DTOs, value objects and mailables exist to carry a set of fields from one place
+  # to another. Their constructors list exactly those fields, so the number of them is the point of
+  # the class, not a smell, and wrapping them in yet another object would only move the list one
+  # level down. They hold no logic of their own, which the tests cover where it lives.
+  "**/app/DTO/**",
+  "**/app/ValueObjects/**",
+  "**/app/Mail/**",
   "**/vendor/**",
   "**/dist/**",
   "**/node_modules/**",

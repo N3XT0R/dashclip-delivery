@@ -6,6 +6,7 @@ return [
     'title' => 'Download History',
     'navigation_label' => 'Download History',
     'table' => [
+        'deleted' => 'deleted',
         'columns' => [
             'video' => 'Video',
             'channel' => 'Channel',

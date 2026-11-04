@@ -63,7 +63,7 @@ final class ViewVideoPageTest extends DatabaseTestCase
             ->assertStatus(200);
     }
 
-    public function testFormStateContainsOriginalNameAndExt(): void
+    public function testTheDetailsShowNameAndExtension(): void
     {
         $video = Video::factory()->create([
             'original_name' => 'integration-test.mp4',
@@ -74,11 +74,11 @@ final class ViewVideoPageTest extends DatabaseTestCase
 
         Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
             ->assertStatus(200)
-            ->assertSet('data.original_name', 'integration-test.mp4')
-            ->assertSet('data.ext', 'mp4');
+            ->assertSee('integration-test.mp4')
+            ->assertSee('mp4');
     }
 
-    public function testFormStateContainsDiskAndHash(): void
+    public function testTheDetailsShowDiskAndHash(): void
     {
         $video = Video::factory()->create([
             'disk' => 'local',
@@ -89,11 +89,11 @@ final class ViewVideoPageTest extends DatabaseTestCase
 
         Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
             ->assertStatus(200)
-            ->assertSet('data.disk', 'local')
-            ->assertSet('data.hash', 'abc123def456');
+            ->assertSee('local')
+            ->assertSee('abc123def456');
     }
 
-    public function testFormStateContainsByteValue(): void
+    public function testTheDetailsShowTheSizeInReadableForm(): void
     {
         $video = Video::factory()->create(['bytes' => 2_097_152]);
 
@@ -101,10 +101,10 @@ final class ViewVideoPageTest extends DatabaseTestCase
 
         Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
             ->assertStatus(200)
-            ->assertSet('data.bytes', 2_097_152);
+            ->assertSee('2 MB');
     }
 
-    public function testFormStateContainsMetaArray(): void
+    public function testTheDetailsShowTheMetaData(): void
     {
         $meta = ['codec' => 'h264', 'fps' => 30];
         $video = Video::factory()->create(['meta' => $meta]);
@@ -113,6 +113,7 @@ final class ViewVideoPageTest extends DatabaseTestCase
 
         Livewire::test(ViewVideo::class, ['record' => $video->getKey()])
             ->assertStatus(200)
-            ->assertSet('data.meta', $meta);
+            ->assertSee('h264')
+            ->assertSee('codec');
     }
 }

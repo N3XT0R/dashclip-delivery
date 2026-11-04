@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Downloaded videos are not removed right away**: A download ends the offer rounds, as before, but
+  the video now stays until that offer's window closes. Until then the channel can still return it
+  or fetch it again from "Heruntergeladen". Only afterwards is the video marked as deleted, and its
+  files follow after the retention period.</change>
+</feature>

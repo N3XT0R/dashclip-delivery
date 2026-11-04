@@ -20,9 +20,6 @@ class SpyZipService extends ZipService
     public ?int $seenChannelId = null;
     /** @var int[] */
     public array $seenAssignmentIds = [];
-    public ?string $seenIp = null;
-    public ?string $seenUserAgent = null;
-
     public ?string $seenJobId = null;
 
     // Intentionally do not call the parent constructor; we don't need its dependencies.
@@ -34,15 +31,11 @@ class SpyZipService extends ZipService
         ?Batch $batch,
         Channel $channel,
         Collection $items,
-        string $ip,
-        ?string $userAgent,
         ?string $jobId = null
     ): string {
         $this->seenBatchId = $batch?->getKey();
         $this->seenChannelId = $channel->getKey();
         $this->seenAssignmentIds = $items->pluck('id')->all();
-        $this->seenIp = $ip;
-        $this->seenUserAgent = $userAgent;
         $this->seenJobId = $jobId;
 
         if ($batch) {

@@ -6,30 +6,22 @@ namespace App\Repository;
 
 use App\Enum\BatchTypeEnum;
 use App\Models\Batch;
+use App\ValueObjects\DistributionRunResult;
 
 class BatchRepository
 {
     /**
      * Mark the given assigned batch as finished.
      * @param Batch $batch
-     * @param int $assigned
-     * @param int $skipped
-     * @param int $deferred
+     * @param Batch $batch
+     * @param DistributionRunResult $result what the run did and what it left behind
      * @return bool
      */
-    public function markAssignedBatchAsFinished(
-        Batch $batch,
-        int $assigned,
-        int $skipped,
-        int $deferred = 0
-    ): bool {
+    public function markAssignedBatchAsFinished(Batch $batch, DistributionRunResult $result): bool
+    {
         return $batch->update([
             'finished_at' => now(),
-            'stats' => [
-                'assigned' => $assigned,
-                'skipped' => $skipped,
-                'deferred' => $deferred,
-            ],
+            'stats' => $result->toArray(),
         ]);
     }
 

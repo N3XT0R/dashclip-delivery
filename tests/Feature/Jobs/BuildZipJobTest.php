@@ -114,8 +114,6 @@ final class BuildZipJobTest extends DatabaseTestCase
         );
 
         // IP & UA forwarded correctly (UA becomes empty string)
-        $this->assertSame('203.0.113.10', $zipSpy->seenIp);
-        $this->assertSame('', $zipSpy->seenUserAgent);
     }
 
     public function testHandleWithNoMatchingAssignmentsStillCallsZipServiceWithEmptyCollection(): void
@@ -172,8 +170,6 @@ final class BuildZipJobTest extends DatabaseTestCase
         $this->assertSame($batch->getKey(), $zipSpy->seenBatchId);
         $this->assertSame($channel->getKey(), $zipSpy->seenChannelId);
         $this->assertSame([], $zipSpy->seenAssignmentIds);
-        $this->assertSame('198.51.100.20', $zipSpy->seenIp);
-        $this->assertSame('TestAgent/1.0', $zipSpy->seenUserAgent);
     }
 
     public function testHandleWithoutBatchUsesChannelOnlyAndGeneratesJobId(): void
@@ -247,13 +243,11 @@ final class BuildZipJobTest extends DatabaseTestCase
         );
 
         $expectedJobId = 'channel_' . $channel->getKey() . '_' . hash(
-                'sha256',
-                implode('_', $ids)
-            );
+            'sha256',
+            implode('_', $ids)
+        );
 
         $this->assertSame($expectedJobId, $zipSpy->seenJobId);
-        $this->assertSame('192.0.2.55', $zipSpy->seenIp);
-        $this->assertSame('', $zipSpy->seenUserAgent);
     }
 
     public function testHandleThrowsRuntimeExceptionWhenChannelDoesNotExist(): void

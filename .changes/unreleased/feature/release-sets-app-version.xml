@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="changed">**Releases**: Tagging a version now also sets the application version shown in the app, so it no longer has to be bumped by hand.</change>
+</feature>

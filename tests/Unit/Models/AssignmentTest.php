@@ -34,14 +34,14 @@ final class AssignmentTest extends DatabaseTestCase
             ->create([
                 'status' => 'queued',
                 'expires_at' => $expires,
-                'attempts' => 0,
+                'offer_round' => 1,
                 'last_notified_at' => $notified,
                 'download_token' => 'tok_abc123',
             ])->fresh();
 
         // Fillable attributes persisted
         $this->assertSame('queued', $assignment->status);
-        $this->assertSame(0, $assignment->attempts);
+        $this->assertSame(1, $assignment->offer_round);
         $this->assertSame('tok_abc123', $assignment->download_token);
 
         // Casts are Carbon instances and match expected timestamps
@@ -72,7 +72,7 @@ final class AssignmentTest extends DatabaseTestCase
         $this->assertSame($batch->getKey(), $assignment->batch->getKey());
     }
 
-    public function testStatusAndAttemptsUpdatePersists(): void
+    public function testStatusAndOfferRoundUpdatePersists(): void
     {
         $assignment = Assignment::factory()
             ->for(Batch::factory()->type('assign')->finished(), 'batch')
@@ -80,17 +80,17 @@ final class AssignmentTest extends DatabaseTestCase
             ->for(Video::factory(), 'video')
             ->create([
                 'status' => 'queued',
-                'attempts' => 0,
+                'offer_round' => 1,
             ]);
 
         // Update attributes
         $assignment->update([
             'status' => 'notified',
-            'attempts' => 1,
+            'offer_round' => 2,
         ]);
 
         $fresh = $assignment->fresh();
         $this->assertSame('notified', $fresh->status);
-        $this->assertSame(1, $fresh->attempts);
+        $this->assertSame(2, $fresh->offer_round);
     }
 }

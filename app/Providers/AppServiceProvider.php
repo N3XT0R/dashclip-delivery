@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\DTO\Dropbox\DropboxCredentials;
 use App\Jobs\OfferExportCompletionJob;
 use Filament\Actions\Exports\Jobs\ExportCompletion;
 use App\Facades\Cfg;
@@ -103,9 +104,11 @@ class AppServiceProvider extends ServiceProvider
             $configService = $app->make(ConfigServiceInterface::class);
 
             return new AutoRefreshTokenProvider(
-                (string)($cfg['client_id'] ?: ''),
-                (string)($cfg['client_secret'] ?: ''),
-                $configService->get(key: 'dropbox_refresh_token', category: 'oauth', withoutCache: true),
+                new DropboxCredentials(
+                    (string)($cfg['client_id'] ?: ''),
+                    (string)($cfg['client_secret'] ?: ''),
+                    $configService->get(key: 'dropbox_refresh_token', category: 'oauth', withoutCache: true),
+                ),
                 Cache::store()
             );
         });
@@ -125,6 +128,8 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(ChannelVideoReceptionPaused::class, SendChannelVideoReceptionPausedMail::class);
         Event::listen(Login::class, RecordUserLastLoginListener::class);
 
+        // Consent and device pages of the OAuth flows: resources/views/oauth/...
+        Passport::viewPrefix('oauth');
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::personalAccessTokensExpireIn(now()->addMonths(6));

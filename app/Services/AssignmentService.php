@@ -3,13 +3,16 @@
 namespace App\Services;
 
 use App\Enum\StatusEnum;
+use App\Exceptions\Video\VideoUnavailableForOfferException;
 use App\Models\{Assignment, Batch, Channel, User, Video};
 use App\Repository\AssignmentRepository;
+use App\Services\Auth\ImpersonationService;
 use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
 use App\ValueObjects\AssignmentRun;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
@@ -48,8 +51,22 @@ readonly class AssignmentService
         return $this->assignmentRepository->markUnused($batch, $channel, $ids);
     }
 
+    /**
+     * Record that a channel downloaded an offer.
+     *
+     * While an administrator looks at the user area as someone else, nothing is recorded: the
+     * download runs through, but the channel keeps its own history.
+     * @param Assignment $assignment
+     * @param string $ip
+     * @param string|null $userAgent
+     * @return bool false when nothing was recorded
+     */
     public function markDownloaded(Assignment $assignment, string $ip, ?string $userAgent): bool
     {
+        if (app(ImpersonationService::class)->isActive()) {
+            return false;
+        }
+
         return null !== $this->assignmentRepository->markDownloaded($assignment, $ip, $userAgent);
     }
 
@@ -99,7 +116,17 @@ readonly class AssignmentService
     ): int {
         $count = 0;
         foreach ($group as $video) {
-            $this->assignmentRepository->createAssignment($video, $channel, $run->batch, $viaPreferred);
+            try {
+                $this->assignmentRepository->createAssignment($video, $channel, $run->batch, $viaPreferred);
+            } catch (VideoUnavailableForOfferException) {
+                // the submitter deleted the video after this run loaded it
+                Log::info('Video skipped in distribution because it was deleted', [
+                    'video_id' => $video->getKey(),
+                    'channel_id' => $channel->getKey(),
+                    'batch_id' => $run->batch->getKey(),
+                ]);
+                continue;
+            }
 
             $run->recordAssignment($video->getKey(), $channel->getKey());
             $run->decrementQuota($channel->getKey());
@@ -175,7 +202,7 @@ readonly class AssignmentService
                 ->withProperties([
                     'assignment_id' => $assignment->getKey(),
                     'channel_id' => $assignment->channel_id,
-                    'video_name' => $assignment->video->original_name,
+                    'video_name' => $assignment->videoWithTrashed?->original_name,
                     'returned_at' => now()->toDateTimeString(),
                 ])
                 ->log('Assignment rejected by channel');
@@ -203,7 +230,7 @@ readonly class AssignmentService
                 ->withProperties([
                     'assignment_id' => $assignment->getKey(),
                     'channel_id' => $assignment->channel_id,
-                    'video_name' => $assignment->video->original_name,
+                    'video_name' => $assignment->videoWithTrashed?->original_name,
                     'note_updated_at' => now()->toDateTimeString(),
                 ])
                 ->log('Assignment note updated by channel');

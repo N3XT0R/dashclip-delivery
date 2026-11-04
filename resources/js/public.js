@@ -52,3 +52,17 @@ mobileNavigation?.addEventListener('keydown', event => {
 mobileNavigation?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => { mobileNavigation.open = false; });
 });
+
+document.querySelectorAll('[data-youtube-embed]').forEach(container => {
+    container.querySelector('[data-youtube-load]')?.addEventListener('click', () => {
+        const frame = document.createElement('iframe');
+        frame.src = container.dataset.youtubeEmbed;
+        frame.title = container.dataset.youtubeTitle;
+        frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        frame.allowFullscreen = true;
+        frame.referrerPolicy = 'strict-origin-when-cross-origin';
+        frame.className = 'absolute inset-0 h-full w-full';
+        container.replaceChildren(frame);
+        frame.focus();
+    });
+});

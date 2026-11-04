@@ -105,7 +105,7 @@ final class FakeDistributorDependencies
             ->andReturn([]);
 
         $this->assignmentRepository
-            ->shouldReceive('preloadAssignedChannels')
+            ->shouldReceive('preloadBlockedChannels')
             ->andReturn([]);
     }
 

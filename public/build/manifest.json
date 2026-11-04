@@ -1,20 +1,20 @@
 {
-  "_bootstrap-DDCnxzVf.js": {
-    "file": "assets/bootstrap-DDCnxzVf.js",
+  "_bootstrap-dZ21-gdR.js": {
+    "file": "assets/bootstrap-dZ21-gdR.js",
     "name": "bootstrap"
   },
   "resources/css/app.css": {
-    "file": "assets/app-D7wo6Z0W.css",
+    "file": "assets/app-ZA5yiOXN.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-CrJ3MdUd.css",
+    "file": "assets/theme-BSCdpyB3.css",
     "src": "resources/css/filament/admin/theme.css",
     "isEntry": true
   },
   "resources/css/filament/standard/theme.css": {
-    "file": "assets/theme-FHnf2z7u.css",
+    "file": "assets/theme-C7sMtbHT.css",
     "src": "resources/css/filament/standard/theme.css",
     "isEntry": true
   },
@@ -24,17 +24,17 @@
     "isEntry": true
   },
   "resources/css/public.css": {
-    "file": "assets/public-Bu1a4WAK.css",
+    "file": "assets/public-DgPgZNXv.css",
     "src": "resources/css/public.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BtkE5U77.js",
+    "file": "assets/app-BrXoKy2o.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_bootstrap-DDCnxzVf.js"
+      "_bootstrap-dZ21-gdR.js"
     ],
     "css": [
       "assets/app-Bv9XE-cB.css"
@@ -47,16 +47,16 @@
     "isEntry": true
   },
   "resources/js/offers.js": {
-    "file": "assets/offers-D5fWp9er.js",
+    "file": "assets/offers-DlVpAgWO.js",
     "name": "offers",
     "src": "resources/js/offers.js",
     "isEntry": true,
     "imports": [
-      "_bootstrap-DDCnxzVf.js"
+      "_bootstrap-dZ21-gdR.js"
     ]
   },
   "resources/js/public.js": {
-    "file": "assets/public-B263rTMC.js",
+    "file": "assets/public-B_XbLlL2.js",
     "name": "public",
     "src": "resources/js/public.js",
     "isEntry": true

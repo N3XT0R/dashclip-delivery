@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**Cookie consent banner**
+    - banner reappeared on every page load because Laravel's `EncryptCookies` middleware
+      discarded the JavaScript-set cookie as undecryptable; `cookie_consent` is now excluded
+      from encryption so the consent is correctly persisted across requests.</change>
+</feature>

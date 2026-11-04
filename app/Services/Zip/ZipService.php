@@ -33,12 +33,9 @@ class ZipService
     }
 
     /**
-     *
      * @param Batch|null $batch
      * @param Channel $channel
      * @param Collection<Assignment> $items
-     * @param string $ip
-     * @param string|null $userAgent
      * @param string|null $jobId
      * @return string
      */
@@ -46,8 +43,6 @@ class ZipService
         ?Batch $batch,
         Channel $channel,
         Collection $items,
-        string $ip,
-        ?string $userAgent,
         ?string $jobId = null
     ): string {
         if ($batch && $jobId === null) {
@@ -96,10 +91,10 @@ class ZipService
         $this->prepareDirectories();
         File::ensureDirectoryExists(dirname($absolutePath));
         $zip = $this->createZipArchive($absolutePath);
-        $tmpFiles = [];
+        $context = new ZipBuildContext($jobId, max($items->count(), 1));
 
         try {
-            $packed = $this->addAssignmentsToZip($zip, $jobId, $channel, $items, $tmpFiles);
+            $packed = $this->addAssignmentsToZip($zip, $channel, $items, $context);
             if ($packed->isEmpty()) {
                 throw ZipEmptyException::allSkipped();
             }
@@ -124,7 +119,7 @@ class ZipService
             throw $e;
         } finally {
             // always wipe temporary copies of remote videos regardless of success or failure
-            foreach ($tmpFiles as $file) {
+            foreach ($context->temporaryFiles() as $file) {
                 Storage::delete($file);
             }
         }
@@ -170,24 +165,21 @@ class ZipService
     /**
      * Pack every readable video and skip the others, so one broken video never blocks the rest.
      * @param Collection<Assignment> $items
-     * @param array<int, string> $tmpFiles Temporary files to clean up even if processing fails.
      * @return EloquentCollection<int, Assignment> The assignments whose videos are in the archive.
      */
     private function addAssignmentsToZip(
         ZipArchive $zip,
-        string $jobId,
         Channel $channel,
         Collection $items,
-        array &$tmpFiles
+        ZipBuildContext $context
     ): EloquentCollection {
-        $total = max($items->count(), 1);
-        $processed = 0;
+        $jobId = $context->jobId;
         $packed = new EloquentCollection();
 
         foreach ($items as $assignment) {
             $nameInZip = $this->entryName($zip, $assignment);
             try {
-                $this->processAssignment($zip, $jobId, $assignment, $nameInZip, $tmpFiles, $processed, $total);
+                $this->processAssignment($zip, $assignment, $nameInZip, $context);
                 $packed->push($assignment);
             } catch (ZipEntrySkippedException|FilesystemException $exception) {
                 $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::SKIPPED->value);
@@ -202,8 +194,8 @@ class ZipService
                 ]);
             }
 
-            $processed++;
-            $this->updateProgress($jobId, $processed, $total);
+            $context->advance();
+            $this->updateProgress($context);
         }
 
         return $packed;
@@ -222,20 +214,15 @@ class ZipService
     }
 
     /**
-     * @param array<int, string> $tmpFiles
      * @throws ZipEntrySkippedException When this video cannot be packed.
-     * @param int $processed Number of assignments already packed, used for progress reporting.
-     * @param int $total Number of assignments in this archive.
      */
     private function processAssignment(
         ZipArchive $zip,
-        string $jobId,
         Assignment $assignment,
         string $nameInZip,
-        array &$tmpFiles,
-        int $processed,
-        int $total
+        ZipBuildContext $context
     ): void {
+        $jobId = $context->jobId;
         /** @var Video|null $video */
         $video = $assignment->video;
         if ($video === null) {
@@ -254,7 +241,7 @@ class ZipService
         }
 
         $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::QUEUED->value);
-        $localPath = $this->localVideoPath($video, $disk->path($path), $jobId, $nameInZip, $tmpFiles, $processed, $total);
+        $localPath = $this->localVideoPath($video, $disk->path($path), $nameInZip, $context);
 
         if ($localPath === null) {
             Log::warning('local path broken', [
@@ -285,17 +272,14 @@ class ZipService
 
     /**
      * Resolve a readable local file, copying remote videos in chunks so progress keeps moving.
-     * @param array<int, string> $tmpFiles
      */
     private function localVideoPath(
         Video $video,
         string $localDiskPath,
-        string $jobId,
         string $nameInZip,
-        array &$tmpFiles,
-        int $processed,
-        int $total
+        ZipBuildContext $context
     ): ?string {
+        $jobId = $context->jobId;
         if (app(StorageDiskService::class)->isLocal((string) $video->getAttribute('disk'))) {
             $this->cache->setStatus($jobId, DownloadStatusEnum::DOWNLOADED->value);
             $this->cache->setFileStatus($jobId, $nameInZip, DownloadStatusEnum::DOWNLOADED->value);
@@ -316,7 +300,7 @@ class ZipService
         }
 
         $tmpFile = 'zips/tmp/' . Str::uuid()->toString();
-        $tmpFiles[] = $tmpFile;
+        $context->rememberTemporaryFile($tmpFile);
         $localPath = Storage::path($tmpFile);
 
         try {
@@ -337,7 +321,7 @@ class ZipService
                 $bytes = 0;
                 while (($copied = stream_copy_to_stream($stream, $localHandle, self::TRANSFER_CHUNK_BYTES)) > 0) {
                     $bytes += $copied;
-                    $this->updateProgress($jobId, $processed, $total, $size > 0 ? min($bytes / $size, 1.0) : 0.0);
+                    $this->updateProgress($context, $size > 0 ? min($bytes / $size, 1.0) : 0.0);
                 }
                 if ($copied === false || $bytes !== $size) {
                     throw ZipEntrySkippedException::incompleteTransfer();
@@ -366,9 +350,9 @@ class ZipService
     /**
      * @param float $currentFileShare Transferred share of the file currently being processed, from 0 to 1.
      */
-    private function updateProgress(string $jobId, int $processed, int $total, float $currentFileShare = 0.0): void
+    private function updateProgress(ZipBuildContext $context, float $currentFileShare = 0.0): void
     {
-        $pct = (int)floor(($processed + $currentFileShare) * 100 / max($total, 1));
-        $this->cache->setProgress($jobId, $pct);
+        $pct = (int)floor(($context->processed() + $currentFileShare) * 100 / max($context->total, 1));
+        $this->cache->setProgress($context->jobId, $pct);
     }
 }

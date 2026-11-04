@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Constants\Config\DefaultConfigEntry;
 use App\DTO\ChannelPoolDto;
 use App\DTO\UploaderPoolInfo;
 use App\Enum\BatchTypeEnum;
+use App\Facades\Cfg;
 use App\Models\Batch;
 use App\Models\Video;
 use App\Repository\AssignmentRepository;
@@ -14,6 +16,7 @@ use App\Repository\ChannelVideoBlockRepository;
 use App\Repository\ClipRepository;
 use App\Repository\VideoRepository;
 use App\ValueObjects\AssignmentRun;
+use App\ValueObjects\DistributionRunResult;
 use App\ValueObjects\VideoAssignmentContext;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -25,6 +28,8 @@ use RuntimeException;
  */
 readonly class AssignmentDistributor
 {
+    private const int DEFAULT_ROUNDS = 2;
+
     public function __construct(
         private AssignmentRepository $assignmentRepository,
         private AssignmentService $assignmentService,
@@ -37,7 +42,7 @@ readonly class AssignmentDistributor
      * Distribute new and requeueable videos across channels.
      *
      * @param int|null $quotaOverride optional quota per channel
-     * @return array{assigned:int, skipped:int, deferred:int}
+     * @return array{assigned:int, skipped:int, deferred:int, waiting:int, failed:int}
      */
     public function distribute(?int $quotaOverride = null): array
     {
@@ -54,9 +59,8 @@ readonly class AssignmentDistributor
         $videoRepo = app(VideoRepository::class);
         $uploaderPools = $videoRepo->partitionByTeamOrUploader($poolVideos);
 
-        $totalAssigned = 0;
-        $totalSkipped = 0;
-        $totalDeferred = 0;
+        $total = new DistributionRunResult();
+        $totalFailed = 0;
 
         /** @var UploaderPoolInfo $uploaderPool */
         foreach ($uploaderPools as $uploaderPool) {
@@ -88,7 +92,11 @@ readonly class AssignmentDistributor
                 // 5) Preloads zur Minimierung von N+1
                 $videoContext = new VideoAssignmentContext(
                     blockedByVideo: $channelVideoBlockRepository->preloadActiveBlocks($videosOfUploader),
-                    assignedChannelsByVideo: $assignmentRepo->preloadAssignedChannels($videosOfUploader),
+                    assignedChannelsByVideo: $assignmentRepo->preloadBlockedChannels(
+                        $videosOfUploader,
+                        $channelPoolDto->channels->pluck('id'),
+                        $this->configuredRounds(),
+                    ),
                     preferredChannelIdByVideo: app(PreferredChannelService::class)
                         ->preloadForVideos($videosOfUploader),
                 );
@@ -102,11 +110,9 @@ readonly class AssignmentDistributor
                 );
 
                 // 7) Verteilung
-                [$assigned, $skipped, $deferred] = $this->assignGroups($run);
-                $totalAssigned += $assigned;
-                $totalSkipped += $skipped;
-                $totalDeferred += $deferred;
+                $total = $total->plus($this->assignGroups($run));
             } catch (\Throwable $e) {
+                $totalFailed += $videosOfUploader->count();
                 Log::warning(
                     'Error during distribution for uploader {type}#{id}: {message}',
                     [
@@ -118,11 +124,21 @@ readonly class AssignmentDistributor
             }
         }
 
-        $batchService->finishAssignBatch($batch, $totalAssigned, $totalSkipped, $totalDeferred);
+        $total = $total->withFailed($totalFailed);
+        $batchService->finishAssignBatch($batch, $total);
 
-        return ['assigned' => $totalAssigned, 'skipped' => $totalSkipped, 'deferred' => $totalDeferred];
+        return $total->toArray();
     }
 
+
+    /**
+     * How often a channel may be offered the same video, from the administration settings.
+     * @return int
+     */
+    private function configuredRounds(): int
+    {
+        return max(1, (int)Cfg::get(DefaultConfigEntry::DISTRIBUTION_ROUNDS, 'default', self::DEFAULT_ROUNDS, true));
+    }
 
     public function calculateBlockedChannels(Collection $group, $blockedByVideo): array
     {
@@ -137,7 +153,7 @@ readonly class AssignmentDistributor
         $poolVideos = $this->batchService->collectVideosForAssign();
 
         if ($poolVideos->isEmpty()) {
-            $this->batchService->finishAssignBatch($batch, 0, 0);
+            $this->batchService->finishAssignBatch($batch, new DistributionRunResult());
             throw new RuntimeException('nothing to assign');
         }
 
@@ -158,7 +174,7 @@ readonly class AssignmentDistributor
         );
 
         if ($channelPoolDto->channels->isEmpty()) {
-            $this->batchService->finishAssignBatch($batch, 0, 0);
+            $this->batchService->finishAssignBatch($batch, new DistributionRunResult());
             throw new RuntimeException('Keine Kanäle konfiguriert.');
         }
 
@@ -166,17 +182,27 @@ readonly class AssignmentDistributor
     }
 
     /**
-     * Distribute every group of a run, tallying assigned/skipped/deferred videos.
+     * Distribute every group of a run, tallying assigned/skipped/deferred/waiting videos.
      *
-     * @return array{0:int,1:int,2:int} [assigned, skipped, deferred]
+     * Once the last place is taken the run stops. The videos of the groups it did not get to are
+     * counted as waiting, so the size of the backlog is visible instead of silently disappearing.
+     *
+     * @return DistributionRunResult
      */
-    public function assignGroups(AssignmentRun $run): array
+    public function assignGroups(AssignmentRun $run): DistributionRunResult
     {
         $assigned = 0;
         $skipped = 0;
         $deferred = 0;
+        $waiting = 0;
+        $placesLeft = true;
 
         foreach ($run->groups as $group) {
+            if (!$placesLeft) {
+                $waiting += $group->count();
+                continue;
+            }
+
             $blockedChannelIds = $this->calculateBlockedChannels($group, $run->videoContext->blockedByVideo);
 
             $outcome = $this->placeGroup($group, $blockedChannelIds, $run);
@@ -188,11 +214,16 @@ readonly class AssignmentDistributor
             };
 
             if ($outcome === 'assigned' && $run->quotasUsedUp()) {
-                break;
+                $placesLeft = false;
             }
         }
 
-        return [$assigned, $skipped, $deferred];
+        return new DistributionRunResult(
+            assigned: $assigned,
+            skipped: $skipped,
+            deferred: $deferred,
+            waiting: $waiting,
+        );
     }
 
     /**

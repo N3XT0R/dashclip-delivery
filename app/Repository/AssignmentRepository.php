@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Enum\StatusEnum;
+use App\Exceptions\Video\VideoUnavailableForOfferException;
 use App\Models\Assignment;
 use App\Models\Batch;
 use App\Models\Channel;
@@ -16,9 +17,14 @@ use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AssignmentRepository
 {
+    public function __construct(private readonly VideoRepository $videoRepository)
+    {
+    }
+
     /**
      * @param list<int> $ids
      * @return EloquentCollection<int, Assignment>
@@ -49,7 +55,7 @@ class AssignmentRepository
      */
     public function visibleForUser(User $user): Builder
     {
-        return Assignment::query()->where(function (Builder $query) use ($user): void {
+        return Assignment::query()->whereHas('video')->where(function (Builder $query) use ($user): void {
             $query->whereHas('channel', static function (Builder $channel) use ($user): void {
                 $channel->userHasAccess($user);
             })->orWhere(static function (Builder $inner) use ($user): void {
@@ -60,11 +66,15 @@ class AssignmentRepository
 
     /**
      * Create a new assignment linking a video to a channel within a batch.
+     *
+     * The video row is locked first, the same lock deleting a video takes, so no offer can be
+     * created for a video that is being deleted.
      * @param Video $video
      * @param Channel $channel
      * @param Batch $batch
      * @param bool $viaPreferred
      * @return Assignment
+     * @throws VideoUnavailableForOfferException when the video was deleted in the meantime
      */
     public function createAssignment(
         Video $video,
@@ -72,13 +82,90 @@ class AssignmentRepository
         Batch $batch,
         bool $viaPreferred = false
     ): Assignment {
-        return Assignment::query()->create([
-            'video_id' => $video->getKey(),
-            'channel_id' => $channel->getKey(),
+        return DB::transaction(function () use ($video, $channel, $batch, $viaPreferred): Assignment {
+            if ($this->videoRepository->lockForUpdate((int)$video->getKey()) === null) {
+                throw new VideoUnavailableForOfferException('The video was deleted and cannot be offered.');
+            }
+
+            $expired = $this->findExpiredAssignment($video, $channel);
+            if ($expired instanceof Assignment) {
+                return $this->openNextRound($expired, $batch, $viaPreferred);
+            }
+
+            return Assignment::query()->create([
+                'video_id' => $video->getKey(),
+                'channel_id' => $channel->getKey(),
+                'batch_id' => $batch->getKey(),
+                'status' => StatusEnum::QUEUED->value,
+                'via_preferred_channel' => $viaPreferred,
+            ]);
+        });
+    }
+
+    /**
+     * Channels a video must not be offered to right now, per video.
+     *
+     * A channel is blocked while its offer is still open, was returned or picked up, and while its
+     * expired offer has used up the configured rounds. As long as a video can still reach a channel
+     * that never had it, channels with an expired offer stay blocked as well, so every channel gets
+     * the video once before any channel gets it again.
+     *
+     * @param Collection<int, Video> $poolVideos
+     * @param Collection<int, int> $poolChannelIds channels the videos can reach in this run
+     * @param int $rounds configured number of offer rounds per channel
+     * @return array<int, Collection<int, int>> video_id => blocked channel ids
+     */
+    public function preloadBlockedChannels(Collection $poolVideos, Collection $poolChannelIds, int $rounds): array
+    {
+        $reachable = $poolChannelIds->map(fn ($id): int => (int)$id)->unique();
+
+        return Assignment::query()
+            ->whereIn('video_id', $poolVideos->pluck('id'))
+            ->get()
+            ->groupBy('video_id')
+            ->map(function (Collection $rows) use ($reachable, $rounds): Collection {
+                $repeatable = $rows->filter(
+                    fn (Assignment $row): bool => $row->status === StatusEnum::EXPIRED->value
+                        && (int)$row->offer_round < $rounds
+                );
+                $blocked = $rows->reject(
+                    fn (Assignment $row): bool => $repeatable->contains('id', $row->getKey())
+                )->pluck('channel_id');
+
+                $hasUntouchedChannel = $reachable->diff($rows->pluck('channel_id'))->isNotEmpty();
+
+                return $hasUntouchedChannel
+                    ? $blocked->concat($repeatable->pluck('channel_id'))->unique()->values()
+                    : $blocked->unique()->values();
+            })
+            ->all();
+    }
+
+    private function findExpiredAssignment(Video $video, Channel $channel): ?Assignment
+    {
+        return Assignment::query()
+            ->where('video_id', $video->getKey())
+            ->where('channel_id', $channel->getKey())
+            ->where('status', StatusEnum::EXPIRED->value)
+            ->first();
+    }
+
+    /**
+     * Offer an expired assignment again: the row is reused, so the unique pair stays intact.
+     */
+    private function openNextRound(Assignment $assignment, Batch $batch, bool $viaPreferred): Assignment
+    {
+        $assignment->forceFill([
             'batch_id' => $batch->getKey(),
             'status' => StatusEnum::QUEUED->value,
+            'offer_round' => (int)$assignment->offer_round + 1,
             'via_preferred_channel' => $viaPreferred,
-        ]);
+            'expires_at' => null,
+            'last_notified_at' => null,
+            'download_token' => null,
+        ])->save();
+
+        return $assignment;
     }
 
     /**
@@ -111,22 +198,6 @@ class AssignmentRepository
             ->map(fn (int|string $count): int => (int)$count);
     }
 
-
-    /**
-     * Lade alle bereits (irgendwann) zugewiesenen Kanäle je Video vor,
-     * damit wir nicht doppelt an denselben Kanal verteilen.
-     *
-     * @return array<int, Collection<int,int>> video_id => collection(channel_id)
-     */
-    public function preloadAssignedChannels(Collection $poolVideos): array
-    {
-        return Assignment::query()
-            ->whereIn('video_id', $poolVideos->pluck('id'))
-            ->get()
-            ->groupBy('video_id')
-            ->map(fn (Collection $rows) => $rows->pluck('channel_id')->unique())
-            ->all();
-    }
 
     /**
      * Mark assignments as unused (rejected) for a given batch and channel.
@@ -179,6 +250,7 @@ class AssignmentRepository
     public function fetchPickedUp(Batch $batch, Channel $channel): EloquentCollection
     {
         return Assignment::with('video.clips')
+            ->whereHas('video')
             ->where('batch_id', $batch->getKey())
             ->where('channel_id', $channel->getKey())
             ->where('status', StatusEnum::PICKEDUP->value)
@@ -226,13 +298,13 @@ class AssignmentRepository
      */
     public function fetchDownloadableForChannel(Channel $channel, Collection $ids, ?Batch $batch = null): EloquentCollection
     {
-        return Assignment::with('video.clips.preferredChannel')
+        return Assignment::with('videoWithTrashed.clipsWithTrashed.preferredChannel')
             ->where('channel_id', $channel->getKey())
             ->when($batch, fn (Builder $query) => $query->where('batch_id', $batch->getKey()))
             ->whereIn('id', $ids)
             ->whereIn('status', StatusEnum::getReturnableStatuses())
             ->where(fn (Builder $query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))
-            ->whereHas('video')
+            ->whereHas('videoWithTrashed', static fn (Builder $video): Builder => $video->whereStoresItsFiles())
             ->get();
     }
 
@@ -242,6 +314,7 @@ class AssignmentRepository
     public function fetchPending(Batch $batch, Channel $channel): EloquentCollection
     {
         return Assignment::with(['video.clips'])
+            ->whereHas('video')
             ->where('batch_id', $batch->getKey())
             ->where('channel_id', $channel->getKey())
             ->whereIn('status', StatusEnum::getReadyStatus())
@@ -302,12 +375,8 @@ class AssignmentRepository
     private function getAvailableOfferQueryForChannel(Channel $channel): Builder
     {
         return Assignment::query()
-            ->where('channel_id', $channel->getKey())
-            ->whereIn('status', [StatusEnum::QUEUED->value, StatusEnum::NOTIFIED->value])
-            ->where(function (Builder $query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>=', now());
-            });
+            ->available()
+            ->where('channel_id', $channel->getKey());
     }
 
     /**
@@ -384,15 +453,21 @@ class AssignmentRepository
     }
 
     /**
-     * Expire assignments that have passed their TTL and apply cooldown blocks.
+     * Expire assignments that have reached their TTL and apply cooldown blocks.
+     *
+     * An offer counts as over the moment its expiry is reached. The grace reaches a little into the
+     * future, because an offer expires exactly as many days after the run that sent it, so without
+     * it the weekly run would miss the offers running out while it works and the video would wait a
+     * whole cycle for its next channel.
      * @param int $cooldownDays
+     * @param int $graceMinutes offers running out within this many minutes are expired as well
      * @return int
      */
-    public function expireAssignments(int $cooldownDays): int
+    public function expireAssignments(int $cooldownDays, int $graceMinutes = 0): int
     {
         $count = 0;
         Assignment::query()->whereIn('status', StatusEnum::getReadyStatus())
-            ->where('expires_at', '<', now())
+            ->where('expires_at', '<=', now()->addMinutes(max(0, $graceMinutes)))
             ->chunkById(500, function ($items) use (&$count, $cooldownDays) {
                 foreach ($items as $assignment) {
                     $assignment->update(['status' => StatusEnum::EXPIRED->value]);

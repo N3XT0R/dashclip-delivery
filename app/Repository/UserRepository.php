@@ -52,6 +52,16 @@ class UserRepository
         return auth()->user();
     }
 
+    /**
+     * Find a user by its id.
+     * @param int $id
+     * @return User|null
+     */
+    public function findById(int $id): ?User
+    {
+        return User::query()->find($id);
+    }
+
     public function getUserByEmail(string $email): ?User
     {
         return User::query()

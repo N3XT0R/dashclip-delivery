@@ -58,9 +58,14 @@ class DownloadHistory extends Page implements HasTable
             ->query(fn () => app(DownloadRepository::class)->forUser(Auth::user()))
             ->defaultSort('downloaded_at', 'desc')
             ->columns([
-                TextColumn::make('assignment.video.original_name')
+                TextColumn::make('assignment.videoWithTrashed.original_name')
                     ->label(__('download_history.table.columns.video'))
-                    ->url(fn (Download $record) => $this->videoUrl($record))
+                    ->url(fn (Download $record): ?string => $this->videoUrl($record))
+                    ->description(
+                        fn (Download $record): ?string => $this->isVideoDeleted($record)
+                            ? __('download_history.table.deleted')
+                            : null
+                    )
                     ->limit(60),
                 TextColumn::make('assignment.channel.name')
                     ->label(__('download_history.table.columns.channel')),
@@ -76,6 +81,7 @@ class DownloadHistory extends Page implements HasTable
                     ->icon('heroicon-m-eye')
                     ->color('gray')
                     ->button()
+                    ->hidden(fn (Download $record): bool => $this->isVideoDeleted($record))
                     ->url(fn (Download $record) => $this->videoUrl($record)),
             ])
             ->toolbarActions([])
@@ -83,8 +89,17 @@ class DownloadHistory extends Page implements HasTable
             ->emptyStateDescription(__('download_history.table.empty_state.description'));
     }
 
-    private function videoUrl(Download $record): string
+    private function videoUrl(Download $record): ?string
     {
-        return VideoResource::getUrl('view', ['record' => $record->assignment->video]);
+        if ($this->isVideoDeleted($record)) {
+            return null;
+        }
+
+        return VideoResource::getUrl('view', ['record' => $record->assignment->videoWithTrashed]);
+    }
+
+    private function isVideoDeleted(Download $record): bool
+    {
+        return $record->assignment?->videoWithTrashed?->trashed() ?? true;
     }
 }

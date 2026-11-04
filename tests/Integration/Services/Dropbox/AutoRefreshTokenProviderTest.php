@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Services\Dropbox;
 
+use App\DTO\Dropbox\DropboxCredentials;
 use App\Services\Dropbox\AutoRefreshTokenProvider;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Support\Carbon;
@@ -13,7 +14,6 @@ use Tests\DatabaseTestCase;
 
 class AutoRefreshTokenProviderTest extends DatabaseTestCase
 {
-
     private CacheRepository $cache;
     private string $cacheKey = 'dropbox.access_token';
     private string $tokenUrl = 'https://api.dropboxapi.com/oauth2/token';
@@ -40,9 +40,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
         $this->cache->put($this->cacheKey, 'CACHED_TOKEN', now()->addMinutes(10));
 
         $provider = new AutoRefreshTokenProvider(
-            clientId: 'cid',
-            clientSecret: 'secret',
-            refreshToken: 'RT',
+            credentials: new DropboxCredentials('cid', 'secret', 'RT'),
             cache: $this->cache,
             cacheKey: $this->cacheKey
         );
@@ -68,9 +66,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
         ]);
 
         $provider = new AutoRefreshTokenProvider(
-            clientId: 'cid',
-            clientSecret: 'secret',
-            refreshToken: 'RT_OLD',
+            credentials: new DropboxCredentials('cid', 'secret', 'RT_OLD'),
             cache: $this->cache,
             cacheKey: $this->cacheKey
         );
@@ -121,9 +117,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
             ], 200);
 
         $provider = new AutoRefreshTokenProvider(
-            clientId: 'cid',
-            clientSecret: 'secret',
-            refreshToken: 'RT0',
+            credentials: new DropboxCredentials('cid', 'secret', 'RT0'),
             cache: $this->cache,
             cacheKey: $this->cacheKey
         );
@@ -156,9 +150,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
         ]);
 
         $provider = new AutoRefreshTokenProvider(
-            clientId: 'cid',
-            clientSecret: 'secret',
-            refreshToken: 'RT_SAME',
+            credentials: new DropboxCredentials('cid', 'secret', 'RT_SAME'),
             cache: $this->cache,
             cacheKey: $this->cacheKey
         );
@@ -170,9 +162,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
     public function testAccessorAndMutatorForRefreshTokenWorkAsExpected(): void
     {
         $provider = new AutoRefreshTokenProvider(
-            clientId: 'cid',
-            clientSecret: 'secret',
-            refreshToken: null,
+            credentials: new DropboxCredentials('cid', 'secret', null),
             cache: $this->cache,
             cacheKey: $this->cacheKey
         );
@@ -190,9 +180,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
     public function testThrowsWhenNoRefreshTokenIsConfigured(): void
     {
         $provider = new AutoRefreshTokenProvider(
-            clientId: 'cid',
-            clientSecret: 'secret',
-            refreshToken: null,
+            credentials: new DropboxCredentials('cid', 'secret', null),
             cache: $this->cache,
             cacheKey: $this->cacheKey
         );
@@ -208,9 +196,7 @@ class AutoRefreshTokenProviderTest extends DatabaseTestCase
         Http::fake([$this->tokenUrl => Http::response(['expires_in' => 3600], 200)]);
 
         $provider = new AutoRefreshTokenProvider(
-            clientId: 'cid',
-            clientSecret: 'secret',
-            refreshToken: 'RT',
+            credentials: new DropboxCredentials('cid', 'secret', 'RT'),
             cache: $this->cache,
             cacheKey: $this->cacheKey
         );

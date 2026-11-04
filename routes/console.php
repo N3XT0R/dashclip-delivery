@@ -12,6 +12,9 @@ Schedule::command(Commands\WeeklyRun::class)
 Schedule::command(Commands\AssignExpire::class)
     ->dailyAt('03:00');
 
+Schedule::command(Commands\MarkDistributedVideosCommand::class)
+    ->dailyAt('03:30');
+
 # Inactivity
 Schedule::command(Commands\NotifyInactiveUsersCommand::class)->dailyAt('09:00');
 
@@ -36,6 +39,7 @@ Schedule::command(Commands\PublishScheduledPostsCommand::class)->everyMinute()->
 Schedule::command(Commands\CleanUpDatabaseCommand::class)->dailyAt('02:00');
 Schedule::command(Commands\CleanFfmpegTmpCommand::class)->hourly();
 Schedule::command(Commands\CleanExpiredZipsCommand::class)->hourly()->withoutOverlapping();
+Schedule::command(Commands\PurgeDeletedVideosCommand::class)->dailyAt('04:00')->withoutOverlapping();
 
 # WebDAV ingest
 Schedule::command(Commands\IngestWebDavCommand::class)->everyFifteenMinutes();

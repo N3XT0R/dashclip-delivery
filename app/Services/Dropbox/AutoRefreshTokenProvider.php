@@ -2,6 +2,7 @@
 
 namespace App\Services\Dropbox;
 
+use App\DTO\Dropbox\DropboxCredentials;
 use App\Models\Config;
 use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Repository;
@@ -11,9 +12,7 @@ use Spatie\Dropbox\TokenProvider;
 class AutoRefreshTokenProvider implements TokenProvider
 {
     public function __construct(
-        private string $clientId,
-        private string $clientSecret,
-        private ?string $refreshToken,
+        private DropboxCredentials $credentials,
         private Repository $cache,
         private string $cacheKey = 'dropbox.access_token',
         private string $expireCacheKey = 'dropbox.expire_at'
@@ -22,7 +21,7 @@ class AutoRefreshTokenProvider implements TokenProvider
 
     public function getRefreshToken(): ?string
     {
-        return $this->refreshToken;
+        return $this->credentials->refreshToken;
     }
 
     public function hasRefreshToken(): bool
@@ -32,7 +31,7 @@ class AutoRefreshTokenProvider implements TokenProvider
 
     public function setRefreshToken(?string $refreshToken): void
     {
-        $this->refreshToken = $refreshToken;
+        $this->credentials = $this->credentials->withRefreshToken($refreshToken);
     }
 
     public function getToken(): string
@@ -78,8 +77,8 @@ class AutoRefreshTokenProvider implements TokenProvider
         return Http::asForm()->post($tokenUrl, [
             'grant_type' => 'refresh_token',
             'refresh_token' => $this->getRefreshToken(),
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
+            'client_id' => $this->credentials->clientId,
+            'client_secret' => $this->credentials->clientSecret,
         ])->throw()->json();
     }
 }
