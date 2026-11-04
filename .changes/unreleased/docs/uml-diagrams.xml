@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Architecture documentation**: UML diagrams describe the use cases, components, data model, states and main workflows of the platform, from upload and distribution to offer downloads.</change>
+</feature>
