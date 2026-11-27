@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Searching only where number plates are**: Where in the picture the search starts is a setting
+  now. Together with a single tile row it halves the detection work, because the cost follows the
+  number of tiles rather than the searched area. It stays at zero until an administrator sets it,
+  since raising it on its own costs the same time and detects less.
+
 - **Using every core of the machine for blurring**: How many threads the detection may use is a
   setting now, instead of a fixed two. On a machine with more cores the processing is set to use
   them without a deployment; leaving one core for writing the video is the advice at the setting.
