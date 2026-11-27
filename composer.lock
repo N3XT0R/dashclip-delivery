@@ -10366,20 +10366,20 @@
         },
         {
             "name": "spatie/laravel-passkeys",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-passkeys.git",
-                "reference": "a9208c4c8f501c98392fd4db4ca719e30c9c7861"
+                "reference": "ceddbfb5272c14b97295f22f02c1744f0962d988"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-passkeys/zipball/a9208c4c8f501c98392fd4db4ca719e30c9c7861",
-                "reference": "a9208c4c8f501c98392fd4db4ca719e30c9c7861",
+                "url": "https://api.github.com/repos/spatie/laravel-passkeys/zipball/ceddbfb5272c14b97295f22f02c1744f0962d988",
+                "reference": "ceddbfb5272c14b97295f22f02c1744f0962d988",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/contracts": "^12.0|^13.0",
                 "php": "^8.2|^8.3|^8.4",
                 "spatie/laravel-package-tools": "^1.16",
                 "web-auth/webauthn-lib": "^5.3"
@@ -10432,7 +10432,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-passkeys/issues",
-                "source": "https://github.com/spatie/laravel-passkeys/tree/1.8.1"
+                "source": "https://github.com/spatie/laravel-passkeys/tree/1.8.2"
             },
             "funding": [
                 {
@@ -10440,7 +10440,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-06-05T16:43:48+00:00"
+            "time": "2026-11-04T16:35:03+00:00"
         },
         {
             "name": "spatie/laravel-permission",
