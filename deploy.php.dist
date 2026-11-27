@@ -29,6 +29,7 @@ set('writable_mode', 'chmod');
 set('writable_chmod_mode', '0775');
 set('writable_chmod_recursive', true);
 set('http_user', 'www-data');
+set('http_group', 'www-data');
 set('git_tty', false);
 set('ssh_type', 'native');
 
@@ -53,6 +54,14 @@ after('deploy:cleanup', 'artisan:up');
 // releases. 'artisan:passport:keys' skips itself when a key is already present, so a
 // later deploy never regenerates them and previously issued tokens stay valid.
 after('deploy:vendors', 'artisan:passport:keys');
+// The recursive writable chmod sets every file in storage to 0775, including the Passport
+// keys. The OAuth server warns on every token request unless they are 600/660, so the keys
+// are reset afterwards and stay readable for the web server group.
+task('passport:keys:permissions', static function () {
+    run('chown {{http_user}}:{{http_group}} {{release_path}}/storage/oauth-*.key');
+    run('chmod 660 {{release_path}}/storage/oauth-*.key');
+})->desc('Restrict the Passport key file permissions');
+after('artisan:passport:keys', 'passport:keys:permissions');
 // The specs are versioned, but a deploy replaces the whole storage directory with a
 // symlink to shared storage, so the committed copies never reach the running app.
 // They must be regenerated on every deploy. --all covers every documentation in

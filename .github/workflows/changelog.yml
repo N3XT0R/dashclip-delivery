@@ -6,8 +6,9 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 # CHANGELOG.md is built here and nowhere else (ADR 0009): tagging a version on a release branch
-# moves the unreleased fragments into a dated version folder, regenerates CHANGELOG.md and
-# commits both to the release branch the tag was cut from.
+# moves the unreleased fragments into a dated version folder, regenerates CHANGELOG.md, sets
+# 'version' in config/app.php to the tag and commits all of it to the release branch the tag was
+# cut from.
 on:
   push:
     tags:
@@ -73,17 +74,29 @@ jobs:
       - name: Generate CHANGELOG.md
         run: php artisan changelog:generate
 
-      - name: Commit and push the changelog
+      - name: Set the application version to the tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          pattern="^(\s*'version' => ')[^']*(',)$"
+          if [ "$(grep -cE "$pattern" config/app.php)" -ne 1 ]; then
+            echo "::error::config/app.php must contain exactly one 'version' => '...' line."
+            exit 1
+          fi
+          sed -i -E "s/$pattern/\1$TAG\2/" config/app.php
+          grep -E "^\s*'version' => '$TAG',$" config/app.php
+
+      - name: Commit and push the changelog and version
         env:
           TAG: ${{ github.ref_name }}
           BRANCH: ${{ steps.branch.outputs.name }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .changes CHANGELOG.md
+          git add .changes CHANGELOG.md config/app.php
           if git diff --cached --quiet; then
-            echo "Changelog is already up to date."
+            echo "Changelog and version are already up to date."
             exit 0
           fi
-          git commit -m "docs(changelog): release $TAG"
+          git commit -m "chore(release): $TAG"
           git push origin "HEAD:$BRANCH"

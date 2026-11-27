@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="fixed">**API sign-in**: Deployments keep the signing keys for API access restricted to the web server, which removes a warning that was logged on every token request.</change>
+</feature>

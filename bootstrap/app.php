@@ -10,6 +10,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Laravel\Passport\Http\Middleware\CheckToken;
 use Laravel\Passport\Http\Middleware\CheckTokenForAnyScope;
+use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -35,5 +37,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             static fn ($request) => $request->is('api/*') || $request->expectsJson()
+        );
+        $exceptions->dontReport(CannotUpdateLockedPropertyException::class);
+        $exceptions->map(
+            CannotUpdateLockedPropertyException::class,
+            static fn (CannotUpdateLockedPropertyException $exception) => new BadRequestHttpException($exception->getMessage(), $exception)
         );
     })->create();

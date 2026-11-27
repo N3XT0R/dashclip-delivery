@@ -89,6 +89,9 @@ return [
     'validation' => 'Please check your input:',
     'guide_heading' => 'What happens to my clip?',
     'guide_intro' => 'Imagine you recorded an interesting situation on the road and want to share it with YouTube channels. Here is how DashClip Delivery helps.',
+    'video_title' => 'Explainer video: how DashClip Delivery works',
+    'video_load' => 'Play :title',
+    'video_consent' => 'Playing the video loads it from YouTube. This transfers data such as your IP address to YouTube (Google). Learn more in our',
     'guide_steps' => [
         ['Create an account and upload your video', 'You are the submitter: the person who made the recording. Register, log in and upload your video file. Add the details of your recording. You do not need to upload it again for every channel.'],
         ['You choose the channels', 'A channel is a recipient who selects videos for their YouTube channel. You decide which channels you want to submit your clip to. The platform takes your selection into account when distributing clips automatically according to its distribution rules. Not every clip goes to every selected channel immediately.'],

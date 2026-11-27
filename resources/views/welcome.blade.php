@@ -53,6 +53,7 @@
         <div class="mt-14 rounded-2xl border border-border bg-panel p-6 sm:p-10" aria-labelledby="guide-title">
             <h2 id="guide-title" class="text-2xl font-bold sm:text-3xl">{{ __('public.guide_heading') }}</h2>
             <p class="mt-4 max-w-3xl text-muted">{{ __('public.guide_intro') }}</p>
+            <x-public.youtube-embed class="mt-8 max-w-3xl" video-id="AaC218-5BcY" :title="__('public.video_title')" />
             <ol class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
                 @foreach (__('public.guide_steps') as [$heading, $explanation])
                     <li class="min-w-0 border-t border-border pt-5">

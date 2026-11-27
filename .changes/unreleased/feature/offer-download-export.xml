@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature>
+  <change type="added">**Download link by email**: Once an offer download is ready, channel operators also get its link by email, with the number of ready and skipped videos, because the in-app notification is easily missed. It can be turned off under "Benachrichtigungen per E-Mail" in the profile; the switch is only shown to channel operators. Opening the link while signed out leads to the sign-in and then straight to the download.</change>
+  <change type="changed">**Offer downloads on "Meine Angebote"**: Downloads are prepared in the background and delivered through a notification with a "ZIP herunterladen" button instead of the progress dialog. The ZIP still contains the selected videos and their `info.csv`; unavailable videos are skipped and named in the notification. Prepared downloads are kept for one day; opening an expired link afterwards explains that instead of showing an error page. The dialog speaks of offers instead of internal record names.</change>
+</feature>
